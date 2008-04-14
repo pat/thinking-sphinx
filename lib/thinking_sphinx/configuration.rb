@@ -34,20 +34,21 @@ module ThinkingSphinx
   class Configuration
     attr_accessor :config_file, :searchd_log_file, :query_log_file,
       :pid_file, :searchd_file_path, :address, :port, :allow_star, :mem_limit,
-      :max_matches, :morphology, :charset_type
+      :max_matches, :morphology, :charset_type, :app_root
+    
     attr_reader :environment
     
     # Load in the configuration settings - this will look for config/sphinx.yml
     # and parse it according to the current environment.
     # 
     def initialize
-      @environment = ENV['RAILS_ENV'] || "development"
+      self.app_root          = defined?(RAILS_ROOT) ? RAILS_ROOT : Merb.root
       
-      self.config_file       = "#{RAILS_ROOT}/config/#{environment}.sphinx.conf"
-      self.searchd_log_file  = "#{RAILS_ROOT}/log/searchd.log"
-      self.query_log_file    = "#{RAILS_ROOT}/log/searchd.query.log"
-      self.pid_file          = "#{RAILS_ROOT}/log/searchd.#{environment}.pid"
-      self.searchd_file_path = "#{RAILS_ROOT}/db/sphinx/#{environment}/"
+      self.config_file       = "#{app_root}/config/#{environment}.sphinx.conf"
+      self.searchd_log_file  = "#{app_root}/log/searchd.log"
+      self.query_log_file    = "#{app_root}/log/searchd.query.log"
+      self.pid_file          = "#{app_root}/log/searchd.#{environment}.pid"
+      self.searchd_file_path = "#{app_root}/db/sphinx/#{environment}/"
       self.port              = 3312
       self.allow_star        = false
       self.mem_limit         = "64M"
@@ -58,6 +59,16 @@ module ThinkingSphinx
       parse_config
     end
     
+    def self.environment
+      @@environment ||= (
+        defined?(Merb) ? ENV['MERB_ENV'] : ENV['RAILS_ENV']
+      ) || "development"
+    end
+    
+    def environment
+      self.class.environment
+    end
+    
     # Generate the config file for Sphinx by using all the settings defined and
     # looping through all the models with indexes to build the relevant
     # indexer and searchd configuration, and sources and indexes details.
@@ -65,7 +76,8 @@ module ThinkingSphinx
     def build(file_path=nil)
       load_models
       file_path ||= "#{self.config_file}"
-      database_conf = YAML.load(File.open("#{RAILS_ROOT}/config/database.yml"))[environment]
+      database_conf = YAML.load(File.open("#{app_root}/config/database.yml"))[environment]
+      database_conf.symbolize_keys!
       
       open(file_path, "w") do |file|
         file.write <<-CONFIG
@@ -105,10 +117,10 @@ searchd
 source #{model.name.downcase}_#{i}_core
 {
   type = mysql
-  sql_host = #{database_conf["host"] || "localhost"}
-  sql_user = #{database_conf["username"]}
-  sql_pass = #{database_conf["password"]}
-  sql_db   = #{database_conf["database"]}
+  sql_host = #{database_conf[:host] || "localhost"}
+  sql_user = #{database_conf[:username]}
+  sql_pass = #{database_conf[:password]}
+  sql_db   = #{database_conf[:database]}
 
   sql_query_pre    = #{index.to_sql_query_pre}
   sql_query        = #{index.to_sql.gsub(/\n/, ' ')}
@@ -186,7 +198,7 @@ index #{model.name.downcase}
     # messy dependencies issues).
     # 
     def load_models
-      Dir[RAILS_ROOT + "/app/models/**/*.rb"].each do |file|
+      Dir["#{app_root}/app/models/**/*.rb"].each do |file|
         model_name = file.gsub(/^.*\/([\w_]+)\.rb/, '\1')
         
         next if model_name.nil?
@@ -208,7 +220,7 @@ index #{model.name.downcase}
     # accessors to set the appropriate values. Nothing too clever.
     # 
     def parse_config
-      path = "#{RAILS_ROOT}/config/sphinx.yml"
+      path = "#{app_root}/config/sphinx.yml"
       return unless File.exists?(path)
       
       conf = YAML.load(File.open(path))[environment]
