@@ -62,6 +62,8 @@ module ThinkingSphinx
           # the Builder class.
           # 
           def define_index(&block)
+            return unless ThinkingSphinx.define_indexes?
+            
             @indexes ||= []
             index = Index.new(self, &block)
             

@@ -66,7 +66,7 @@ module ThinkingSphinx
           # if running in the test environment.
           # 
           def index_delta
-            unless RAILS_ENV == "test"
+            unless RAILS_ENV == "test" || !ThinkingSphinx.deltas_enabled?
               configuration = ThinkingSphinx::Configuration.new
               system "indexer --config #{configuration.config_file} --rotate #{self.class.name.downcase}_delta"
             end

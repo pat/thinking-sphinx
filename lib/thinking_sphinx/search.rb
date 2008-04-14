@@ -61,21 +61,38 @@ module ThinkingSphinx
       # == Searching by Attributes
       #
       # Also known as filters, you can limit your searches to documents that
-      # have specific values for their attributes. This is done _exactly_ like
-      # limiting words to certain fields:
+      # have specific values for their attributes. There are two ways to do
+      # this. The first is one that works in all scenarios - using the :with
+      # option.
       #
-      #   ThinkingSphinx::Search.search :conditions => {:parent_id => 10}
+      #   ThinkingSphinx::Search.search :with => {:parent_id => 10}
       #
+      # The second is only viable if you're searching with a specific model
+      # (not multi-model searching). With a single model, Thinking Sphinx
+      # can figure out what attributes and fields are available, so you can
+      # put it all in the :conditions hash, and it will sort it out.
+      # 
+      #   Node.search :conditions => {:parent_id => 10}
+      # 
       # Filters can be single values, arrays of values, or ranges.
       # 
       #   Article.search "East Timor", :conditions => {:rating => 3..5}
       #
+      # == Excluding by Attributes
+      #
+      # Sphinx also supports negative filtering - where the filters are of
+      # attribute values to exclude. This is done with the :without option:
+      #
+      #   User.search :without => {:role_id => 1}
+      # 
       # == Sorting
       #
-      # Sphinx can only sort by attributes - but if you specify a field as
-      # sortable, you can use field names, and Thinking Sphinx will interpret
-      # accordingly, but only if you use the 'order' option - like a #find
-      # call.
+      # Sphinx can only sort by attributes, so generally you will need to avoid
+      # using field names in your :order option. However, if you're searching
+      # on a single model, and have specified some fields as sortable, you can
+      # use those field names and Thinking Sphinx will interpret accordingly.
+      # Remember: this will only happen for single-model searches, and only
+      # through the :order option.
       #
       #   Location.search "Melbourne", :order => :state
       #   User.search :conditions => {:role_id => 2}, :order => "name ASC"
@@ -110,7 +127,31 @@ module ThinkingSphinx
       # following syntax examples:
       # 
       #   Address.search "Melbourne", :geo => [1.4, -2.217]
-      #   Address.search "Australia", :geo => [-0.55, 3.108], 
+      #   Address.search "Australia", :geo => [-0.55, 3.108],
+      #     :latitude_attr => "latit", :longitude_attr => "longit"
+      # 
+      # The first example applies when your latitude and longitude attributes
+      # are named any of lat, latitude, lon, long or longitude. If that's not
+      # the case, you will need to explicitly state them in your search, _or_
+      # you can do so in your model:
+      #
+      #   define_index do
+      #     # ...
+      #     
+      #     set_property :latitude_attr   => "latit"
+      #     set_property :longitude_attr  => "longit"
+      #   end
+      # 
+      # Now, geo-location searching really only has an affect if you have a
+      # filter, sort or grouping clause related to it - otherwise it's just a
+      # normal search. To make use of the positioning difference, use the
+      # special attribute "@geo" in any of your filters or sorting or grouping
+      # clauses.
+      # 
+      # And don't forget - both the latitude and longitude you use in your
+      # search, and the values in your indexes, need to be stored in radians,
+      # _not_ degrees.
+      # 
       def search(*args)
         results, client = search_results(*args.clone)
         
@@ -215,11 +256,31 @@ module ThinkingSphinx
         
         client.anchor = anchor_conditions(klass, options) || {} if client.anchor.empty?
         
+        # class filters
         client.filters << Riddle::Client::Filter.new(
           "class_crc", options[:classes].collect { |klass| klass.to_crc32 }
         ) if options[:classes]
         
+        # normal attribute filters
+        client.filters += options[:with].collect { |attr,val|
+          Riddle::Client::Filter.new attr.to_s, filter_value(val)
+        } if options[:where]
+        
+        # exclusive attribute filters
+        client.filters += options[:without].collect { |attr,val|
+          Riddle::Client::Filter.new attr.to_s, filter_value(val), true
+        }
+        
         client
+      end
+      
+      def filter_value(value)
+        case value
+        when Range, Array
+          value
+        else
+          Array(value)
+        end
       end
       
       # Translate field and attribute conditions to the relevant search string

@@ -34,4 +34,32 @@ module ThinkingSphinx
   def self.indexed_models=(value) #:nodoc:
     @@indexed_models = value
   end
+  
+  # Check if index definition is disabled.
+  # 
+  def self.define_indexes?
+    @@define_indexes ||= true
+  end
+  
+  # Enable/disable indexes - you may want to do this while migrating data.
+  # 
+  #   ThinkingSphinx.define_indexes = false
+  # 
+  def self.define_indexes=(value)
+    @@define_indexes = value
+  end
+  
+  # Check if delta indexing is enabled.
+  # 
+  def self.deltas_enabled?
+    @@deltas_enabled ||= true
+  end
+  
+  # Enable/disable all delta indexing.
+  #
+  #   ThinkingSphinx.deltas_enabled = false
+  #
+  def self.deltas_enabled=(value)
+    @@deltas_enabled = value
+  end
 end
