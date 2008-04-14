@@ -6,6 +6,7 @@ require 'thinking_sphinx/association'
 require 'thinking_sphinx/attribute'
 require 'thinking_sphinx/field'
 require 'thinking_sphinx/index'
+require 'thinking_sphinx/rails_additions'
 require 'thinking_sphinx/search'
 
 ActiveRecord::Base.send(:include, ThinkingSphinx::ActiveRecord)
