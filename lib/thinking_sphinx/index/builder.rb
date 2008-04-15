@@ -152,7 +152,7 @@ module ThinkingSphinx
         # searches on the model.
         # 
         #   set_property :delta => true
-        #   set_property :field_weights => ["name" => 100]
+        #   set_property :field_weights => {"name" => 100}
         # 
         # Also, the following two properties are particularly relevant for
         # geo-location searching - latitude_attr and longitude_attr. If your
