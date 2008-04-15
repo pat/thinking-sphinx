@@ -269,7 +269,7 @@ module ThinkingSphinx
         # exclusive attribute filters
         client.filters += options[:without].collect { |attr,val|
           Riddle::Client::Filter.new attr.to_s, filter_value(val), true
-        }
+        } if options[:without]
         
         client
       end
