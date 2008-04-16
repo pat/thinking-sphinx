@@ -41,8 +41,10 @@ module ThinkingSphinx
     # Load in the configuration settings - this will look for config/sphinx.yml
     # and parse it according to the current environment.
     # 
-    def initialize
-      self.app_root          = defined?(RAILS_ROOT) ? RAILS_ROOT : Merb.root
+    def initialize(app_root = Dir.pwd)
+      self.app_root          = RAILS_ROOT if defined?(RAILS_ROOT)
+      self.app_root          = Merb.root  if defined?(Merb)
+      self.app_root        ||= app_root
       
       self.config_file       = "#{app_root}/config/#{environment}.sphinx.conf"
       self.searchd_log_file  = "#{app_root}/log/searchd.log"

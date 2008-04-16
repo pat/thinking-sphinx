@@ -1,6 +1,6 @@
 require 'spec/spec_helper'
 
-describe FauxColumn do
+describe ThinkingSphinx::Index::FauxColumn do
   it "should use the last argument as the name, with preceeding ones going into the stack" do
     #
   end
