@@ -264,7 +264,7 @@ module ThinkingSphinx
         # normal attribute filters
         client.filters += options[:with].collect { |attr,val|
           Riddle::Client::Filter.new attr.to_s, filter_value(val)
-        } if options[:where]
+        } if options[:with]
         
         # exclusive attribute filters
         client.filters += options[:without].collect { |attr,val|

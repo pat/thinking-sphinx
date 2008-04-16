@@ -39,7 +39,8 @@ module ThinkingSphinx
   # Check if index definition is disabled.
   # 
   def self.define_indexes?
-    @@define_indexes ||= true
+    @@define_indexes =  true unless defined?(@@define_indexes)
+    @@define_indexes == true
   end
   
   # Enable/disable indexes - you may want to do this while migrating data.
@@ -53,7 +54,8 @@ module ThinkingSphinx
   # Check if delta indexing is enabled.
   # 
   def self.deltas_enabled?
-    @@deltas_enabled ||= true
+    @@deltas_enabled =  true unless defined?(@@deltas_enabled)
+    @@deltas_enabled == true
   end
   
   # Enable/disable all delta indexing.
