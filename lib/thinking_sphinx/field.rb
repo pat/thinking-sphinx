@@ -100,7 +100,7 @@ module ThinkingSphinx
     # associations.
     # 
     def concat_ws?
-      multiple_sources? || multiple_associations?
+      @columns.length > 1 || multiple_associations?
     end
     
     # Checks the association tree for each column - if they're all the same,
