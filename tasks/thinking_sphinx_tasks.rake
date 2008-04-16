@@ -1,8 +1,16 @@
 require 'fileutils'
 
 namespace :thinking_sphinx do
+  desc :app_env do
+    if defined?(Merb)
+      Rake::Task[:merb_init].invoke
+    elsif defined?(RAILS_ROOT)
+      Rake::Task[:environment].invoke
+    end
+  end
+  
   desc "Start a Sphinx searchd daemon using Thinking Sphinx's settings"
-  task :start => :environment do
+  task :start => :app_env do
     config = ThinkingSphinx::Configuration.new
     
     FileUtils.mkdir_p config.searchd_file_path
@@ -24,7 +32,7 @@ namespace :thinking_sphinx do
   end
   
   desc "Stop Sphinx using Thinking Sphinx's settings"
-  task :stop => :environment do
+  task :stop => :app_env do
     raise RuntimeError, "searchd is not running." unless sphinx_running?
     pid = sphinx_pid
     system "kill #{pid}"
@@ -32,15 +40,15 @@ namespace :thinking_sphinx do
   end
   
   desc "Restart Sphinx"
-  task :restart => [:environment, :stop, :start]
+  task :restart => [:app_env, :stop, :start]
   
   desc "Generate the Sphinx configuration file using Thinking Sphinx's settings"
-  task :configure => :environment do
+  task :configure => :app_env do
     ThinkingSphinx::Configuration.new.build
   end
   
   desc "Index data for Sphinx using Thinking Sphinx's settings"
-  task :index => [:environment, :configure] do
+  task :index => [:app_env, :configure] do
     config = ThinkingSphinx::Configuration.new
     
     FileUtils.mkdir_p config.searchd_file_path
