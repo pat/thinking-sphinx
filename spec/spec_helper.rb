@@ -2,10 +2,14 @@ $:.unshift File.dirname(__FILE__) + '/../lib'
 
 require 'rubygems'
 require 'fileutils'
+require 'not_a_mock'
+
 require 'lib/thinking_sphinx'
 require 'spec/sphinx_helper'
 
 Spec::Runner.configure do |config|
+  config.mock_with NotAMock::RspecMockFrameworkAdapter
+  
   sphinx = SphinxHelper.new
   sphinx.setup_mysql
   
