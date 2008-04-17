@@ -78,8 +78,9 @@ module ThinkingSphinx
     def build(file_path=nil)
       load_models
       file_path ||= "#{self.config_file}"
-      database_conf = YAML.load(File.open("#{app_root}/config/database.yml"))[environment]
-      database_conf.symbolize_keys!
+      database_confs = YAML.load(File.open("#{app_root}/config/database.yml"))
+      database_confs.symbolize_keys!
+      database_conf  = database_confs[environment.to_sym]
       
       open(file_path, "w") do |file|
         file.write <<-CONFIG
