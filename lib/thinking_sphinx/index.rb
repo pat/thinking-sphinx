@@ -189,7 +189,7 @@ ORDER BY NULL
     # Gets a stack of associations for a specific path.
     # 
     def associations(path, parent = nil)
-      assocs  = []
+      assocs = []
       
       if parent.nil?
         assocs = association(path.shift)

@@ -72,10 +72,12 @@ module ThinkingSphinx
         column_with_prefix(column)
       }.join(', ')
       
-      clause = "CONCAT_WS(' ', #{clause})" if concat_ws?
-      clause = "CAST(GROUP_CONCAT(#{clause} SEPARATOR ',') AS CHAR)" if is_many?
-      clause = "UNIX_TIMESTAMP(#{clause})" if type == :datetime
-      clause = "IFNULL(#{clause}, '')" if type == :string
+      separator = all_ints? ? ',' : ' '
+      
+      clause = "CONCAT_WS('#{separator}', #{clause})" if concat_ws?
+      clause = "CAST(GROUP_CONCAT(#{clause} SEPARATOR '#{separator}') AS CHAR)" if is_many?
+      clause = "UNIX_TIMESTAMP(#{clause})"  if type == :datetime
+      clause = "IFNULL(#{clause}, '')"      if type == :string
       
       "#{clause} AS `#{unique_name}`"
     end
@@ -88,7 +90,7 @@ module ThinkingSphinx
     # 
     def to_group_sql
       case
-      when is_many?, is_string?
+      when is_many?, is_string?, ThinkingSphinx.use_group_by_shortcut?
         nil
       else
         @columns.collect { |column|
@@ -102,7 +104,7 @@ module ThinkingSphinx
     # associations.
     # 
     def concat_ws?
-      multiple_sources? || multiple_associations?
+      multiple_associations? || @columns.length > 1
     end
     
     # Checks the association tree for each column - if they're all the same,
@@ -202,6 +204,16 @@ module ThinkingSphinx
           @columns.collect { |c| c.__name.to_s }.include? col.name
         }.type
       end
+    end
+    
+    def all_ints?
+      @columns.all? { |col|
+        klasses = @associations[col].empty? ? [@model] :
+          @associations[col].collect { |assoc| assoc.reflection.klass }
+        klasses.all? { |klass|
+          klass.columns.detect { |column| column.name == col.__name.to_s }.type == :integer
+        }
+      }
     end
   end
 end

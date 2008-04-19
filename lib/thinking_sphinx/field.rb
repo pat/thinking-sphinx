@@ -75,9 +75,14 @@ module ThinkingSphinx
     # association).
     #
     def to_group_sql
-      is_many? ? nil : @columns.collect { |column|
-        column_with_prefix(column)
-      }
+      case
+      when is_many?, ThinkingSphinx.use_group_by_shortcut?
+        nil
+      else
+        @columns.collect { |column|
+          column_with_prefix(column)
+        }
+      end
     end
     
     # Returns the unique name of the field - which is either the alias of

@@ -8,7 +8,7 @@ require 'lib/thinking_sphinx'
 require 'spec/sphinx_helper'
 
 Spec::Runner.configure do |config|
-  config.mock_with NotAMock::RspecMockFrameworkAdapter
+  # config.mock_with NotAMock::RspecMockFrameworkAdapter
   
   sphinx = SphinxHelper.new
   sphinx.setup_mysql
@@ -18,7 +18,7 @@ Spec::Runner.configure do |config|
       FileUtils.mkdir_p "#{Dir.pwd}/#{path}"
     end
     
-    Kernel.const_set :RAILS_ROOT, "#{Dir.pwd}/tmp"
+    Kernel.const_set :RAILS_ROOT, "#{Dir.pwd}/tmp" unless defined?(RAILS_ROOT)
     
     # sphinx.start
   end

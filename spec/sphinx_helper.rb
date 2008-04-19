@@ -30,18 +30,14 @@ class SphinxHelper
     )
     # ActiveRecord::Base.logger = nil
     
-    if ActiveRecord::Base.connection.tables.include?("people")
-      ActiveRecord::Base.connection.drop_table "people"
-    end
-    
     structure = File.open("spec/fixtures/structure.sql") { |f| f.read }
-    ActiveRecord::Base.connection.execute structure
+    structure.split(';').each { |table|
+      ActiveRecord::Base.connection.execute table
+    }
     
     File.open("spec/fixtures/data.sql") { |f|
-      count = 0
-      while (line = f.gets) && (count < 1000)
+      while line = f.gets
         ActiveRecord::Base.connection.execute line
-        count += 1
       end
     }
   end

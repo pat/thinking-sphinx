@@ -32,4 +32,41 @@ describe ThinkingSphinx do
     ThinkingSphinx.deltas_enabled = true
     ThinkingSphinx.deltas_enabled?.should be_true
   end
+  
+  describe "use_group_by_shortcut? method" do
+    it "should return true if no ONLY_FULL_GROUP_BY" do
+      ::ActiveRecord::Base.connection.stub_method(
+        :select_all => {:a => "OTHER SETTINGS"}
+      )
+      
+      ThinkingSphinx.use_group_by_shortcut?.should be_true
+    end
+  
+    it "should return true if NULL value" do
+      ::ActiveRecord::Base.connection.stub_method(
+        :select_all => {:a => nil}
+      )
+      
+      ThinkingSphinx.use_group_by_shortcut?.should be_true
+    end
+  
+    it "should return false if ONLY_FULL_GROUP_BY is set" do
+      ::ActiveRecord::Base.connection.stub_method(
+        :select_all => {:a => "OTHER SETTINGS,ONLY_FULL_GROUP_BY,blah"}
+      )
+      
+      ThinkingSphinx.use_group_by_shortcut?.should be_false
+    end
+    
+    it "should return false if ONLY_FULL_GROUP_BY is set in any of the values" do
+      ::ActiveRecord::Base.connection.stub_method(
+        :select_all => {
+          :a => "OTHER SETTINGS",
+          :b => "ONLY_FULL_GROUP_BY"
+        }
+      )
+      
+      ThinkingSphinx.use_group_by_shortcut?.should be_false
+    end
+  end
 end

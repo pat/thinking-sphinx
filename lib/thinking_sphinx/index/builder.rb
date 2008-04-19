@@ -125,6 +125,15 @@ module ThinkingSphinx
             columns = case columns
             when Symbol, String
               FauxColumn.new(columns)
+            when Array
+              columns.collect { |col|
+                case col
+                when Symbol, String
+                  FauxColumn.new(col)
+                else
+                  col
+                end
+              }
             else
               columns
             end
