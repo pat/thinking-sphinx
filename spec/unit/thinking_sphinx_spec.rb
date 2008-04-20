@@ -40,13 +40,12 @@ describe ThinkingSphinx do
   end
   
   describe "use_group_by_shortcut? method" do
-    before :each do
-      @connection = ::ActiveRecord::ConnectionAdapters::MysqlAdapter.stub_instance
-      ::ActiveRecord::Base.stub_method(:connection => @connection)
+    after :each do
+      ::ActiveRecord::Base.connection.unstub_method(:select_all)
     end
     
     it "should return true if no ONLY_FULL_GROUP_BY" do
-      @connection.stub_method(
+      ::ActiveRecord::Base.connection.stub_method(
         :select_all => {:a => "OTHER SETTINGS"}
       )
       
@@ -54,7 +53,7 @@ describe ThinkingSphinx do
     end
   
     it "should return true if NULL value" do
-      @connection.stub_method(
+      ::ActiveRecord::Base.connection.stub_method(
         :select_all => {:a => nil}
       )
       
@@ -62,7 +61,7 @@ describe ThinkingSphinx do
     end
   
     it "should return false if ONLY_FULL_GROUP_BY is set" do
-      @connection.stub_method(
+      ::ActiveRecord::Base.connection.stub_method(
         :select_all => {:a => "OTHER SETTINGS,ONLY_FULL_GROUP_BY,blah"}
       )
       
@@ -70,7 +69,7 @@ describe ThinkingSphinx do
     end
     
     it "should return false if ONLY_FULL_GROUP_BY is set in any of the values" do
-      @connection.stub_method(
+      ::ActiveRecord::Base.connection.stub_method(
         :select_all => {
           :a => "OTHER SETTINGS",
           :b => "ONLY_FULL_GROUP_BY"
