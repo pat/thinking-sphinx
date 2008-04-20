@@ -3,36 +3,6 @@ require 'spec/spec_helper'
 describe ThinkingSphinx::Attribute do
   describe "to_select_sql method" do
     before :each do
-      class Person < ActiveRecord::Base
-        belongs_to :team, :polymorphic => :true
-        has_many :contacts
-        
-        define_index do
-          has [first_name, middle_initial, last_name], :as => :name
-          has team.name, :as => :team_name
-          
-          has [:id, :team_id], :as => :ids
-          has team(:id), :as => :team_id
-          
-          has contacts.phone_number, :as => :phone_numbers
-          has contacts(:id), :as => :contact_ids
-          
-          has birthday
-        end
-      end
-      
-      class Contact < ActiveRecord::Base
-        belongs_to :person
-      end
-      
-      class FootballTeam < ActiveRecord::Base
-        #
-      end
-      
-      class CricketTeam < ActiveRecord::Base
-        #
-      end
-      
       @index = Person.indexes.first
       @index.link!
     end
@@ -94,6 +64,10 @@ describe ThinkingSphinx::Attribute do
     
     it "should return an array if neither is_many? or shortcut allowed" do
       @attribute.to_group_sql.should be_a_kind_of(Array)
+    end
+    
+    after :each do
+      ThinkingSphinx.unstub_method(:use_group_by_shortcut?)
     end
   end
 end

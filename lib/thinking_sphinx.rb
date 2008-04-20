@@ -37,10 +37,6 @@ module ThinkingSphinx
     @@indexed_models ||= []
   end
   
-  def self.indexed_models=(value) #:nodoc:
-    @@indexed_models = value
-  end
-  
   # Check if index definition is disabled.
   # 
   def self.define_indexes?

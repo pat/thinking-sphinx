@@ -1,5 +1,6 @@
 require 'active_record'
 require 'yaml'
+require 'spec/fixtures/models'
 
 class SphinxHelper
   attr_accessor :host, :username, :password
