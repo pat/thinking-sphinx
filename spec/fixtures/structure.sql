@@ -14,6 +14,7 @@ CREATE TABLE `people` (
   `birthday` datetime NOT NULL,
   `team_id` int(11) NULL,
   `team_type` varchar(50) NULL,
+  `delta` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -156,13 +156,13 @@ source #{model.name.downcase}_#{i}_delta : #{model.name.downcase}_#{i}_core
 index #{model.name.downcase}_core
 {
   #{source_list}
-  morphology = #{self.morphology}
+  morphology = #{index.options[:morphology] || self.morphology}
   path = #{self.searchd_file_path}/#{model.name.downcase}_core
-  charset_type = #{self.charset_type}
+  charset_type = #{index.options[:charset_type] || self.charset_type}
   INDEX
-          unless self.charset_table.nil?
+          unless index.options[:charset_type].nil? && self.charset_table.nil?
             file.write <<-INDEX
-  charset_table  = #{self.charset_table}
+  charset_table  = #{index.options[:charset_type] || self.charset_table}
             INDEX
           end
           

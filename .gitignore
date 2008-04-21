@@ -1,3 +1,4 @@
 gem_deploy.rake
 pkg
 coverage
+*.tmproj
