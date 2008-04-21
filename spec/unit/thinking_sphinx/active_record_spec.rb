@@ -21,6 +21,15 @@ describe "ThinkingSphinx::ActiveRecord" do
       TestModule.send(:remove_const, :TestModel)
     end
     
+    it "should return nil and do nothing if indexes are disabled" do
+      ThinkingSphinx.stub_method(:define_indexes? => false)
+      
+      TestModule::TestModel.define_index {}.should be_nil
+      ThinkingSphinx::Index.should_not have_received(:new)
+      
+      ThinkingSphinx.unstub_method(:define_indexes?)
+    end
+    
     it "should add a new index to the model" do
       TestModule::TestModel.define_index do; end
       
