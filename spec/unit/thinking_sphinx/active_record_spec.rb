@@ -17,6 +17,7 @@ describe "ThinkingSphinx::ActiveRecord" do
     end
     
     after :each do
+      # Remove the class so we can redefine it
       TestModule.send(:remove_const, :TestModel)
     end
     

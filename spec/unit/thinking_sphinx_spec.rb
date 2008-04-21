@@ -3,7 +3,7 @@ require 'spec/spec_helper'
 describe ThinkingSphinx do
   describe "indexed_models methods" do
     it "should contain all the names of models that have indexes" do
-      ThinkingSphinx.indexed_models.should == %w( Person )
+      ThinkingSphinx.indexed_models.should include("Person")
     end
   end
   
