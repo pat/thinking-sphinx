@@ -1,5 +1,6 @@
 require 'thinking_sphinx/active_record/delta'
 require 'thinking_sphinx/active_record/search'
+require 'thinking_sphinx/active_record/has_many_association'
 
 module ThinkingSphinx
   # Core additions to ActiveRecord models - define_index for creating indexes
@@ -102,6 +103,13 @@ module ThinkingSphinx
       
       base.send(:include, ThinkingSphinx::ActiveRecord::Delta)
       base.send(:include, ThinkingSphinx::ActiveRecord::Search)
+      
+      ::ActiveRecord::Associations::HasManyAssociation.send(
+        :include, ThinkingSphinx::ActiveRecord::HasManyAssociation
+      )
+      ::ActiveRecord::Associations::HasManyThroughAssociation.send(
+        :include, ThinkingSphinx::ActiveRecord::HasManyAssociation
+      )
     end
   end
 end

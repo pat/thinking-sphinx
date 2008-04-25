@@ -2,6 +2,9 @@ class Person < ActiveRecord::Base
   belongs_to :team, :polymorphic => :true
   has_many :contacts
   
+  has_many :friendships
+  has_many :friends, :through => :friendships
+  
   define_index do
     indexes [first_name, middle_initial, last_name], :as => :name
     indexes team.name, :as => :team_name
@@ -15,6 +18,7 @@ class Person < ActiveRecord::Base
     
     has contacts.phone_number, :as => :phone_numbers
     has contacts(:id), :as => :contact_ids
+    has friendships.person_id, :as => :friendly_ids
     
     has birthday
   end
@@ -30,4 +34,13 @@ end
 
 class CricketTeam < ActiveRecord::Base
   #
+end
+
+class Friendship < ActiveRecord::Base
+  belongs_to :person
+  belongs_to :friend, :class_name => "Person"
+  
+  define_index do
+    has person_id, friend_id
+  end
 end

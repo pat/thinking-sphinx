@@ -276,8 +276,10 @@ module ThinkingSphinx
       
       def filter_value(value)
         case value
-        when Range, Array
-          value
+        when Range
+          value.first.is_a?(Time) ? value.first.to_i..value.last.to_i : value
+        when Array
+          value.collect { |val| val.is_a?(Time) ? val.to_i : val }
         else
           Array(value)
         end

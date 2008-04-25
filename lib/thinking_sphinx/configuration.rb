@@ -83,6 +83,7 @@ module ThinkingSphinx
       database_confs = YAML.load(File.open("#{app_root}/config/database.yml"))
       database_confs.symbolize_keys!
       database_conf  = database_confs[environment.to_sym]
+      database_conf.symbolize_keys!
       
       open(file_path, "w") do |file|
         file.write <<-CONFIG
@@ -156,13 +157,13 @@ source #{model.name.downcase}_#{i}_delta : #{model.name.downcase}_#{i}_core
 index #{model.name.downcase}_core
 {
   #{source_list}
-  morphology = #{index.options[:morphology] || self.morphology}
+  morphology = #{self.morphology}
   path = #{self.searchd_file_path}/#{model.name.downcase}_core
-  charset_type = #{index.options[:charset_type] || self.charset_type}
+  charset_type = #{self.charset_type}
   INDEX
-          unless index.options[:charset_type].nil? && self.charset_table.nil?
+          unless self.charset_table.nil?
             file.write <<-INDEX
-  charset_table  = #{index.options[:charset_type] || self.charset_table}
+  charset_table  = #{self.charset_table}
             INDEX
           end
           
