@@ -214,7 +214,7 @@ module ThinkingSphinx
       # 
       def instance_from_result(result, options, klass = nil)
         (klass ? klass : class_from_crc(result[:attributes]["class_crc"])).find(
-          result[:doc], :include => options[:include]
+          result[:doc], :include => options[:include], :select => options[:select]
         )
       end
       
