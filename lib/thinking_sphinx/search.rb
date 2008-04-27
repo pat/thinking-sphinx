@@ -379,6 +379,9 @@ module ThinkingSphinx
         else
           # do nothing
         end
+        
+        client.sort_mode = :attr_asc  if client.sort_mode == :asc
+        client.sort_mode = :attr_desc if client.sort_mode == :desc
       end
       
       # Search through a collection of fields and translate any appearances
