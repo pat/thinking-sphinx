@@ -68,6 +68,7 @@ module ThinkingSphinx
   end
   
   def self.use_group_by_shortcut?
+    ::ActiveRecord::ConnectionAdapters.constants.include?("MysqlAdapter") &&
     ::ActiveRecord::Base.connection.is_a?(
       ::ActiveRecord::ConnectionAdapters::MysqlAdapter
     ) &&
