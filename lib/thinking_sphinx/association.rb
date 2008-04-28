@@ -122,7 +122,7 @@ module ThinkingSphinx
       options[:class_name]    = klass.name
       options[:foreign_key] ||= "#{ref.name}_id"
       
-      foreign_type = ref.klass.quote_column_name ref.options[:foreign_type]
+      foreign_type = klass.connection.quote_column_name ref.options[:foreign_type]
       case options[:conditions]
       when nil
         options[:conditions] = "::ts_join_alias::.#{foreign_type} = '#{klass.name}'"

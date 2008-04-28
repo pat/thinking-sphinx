@@ -18,9 +18,10 @@ class Person < ActiveRecord::Base
     
     has contacts.phone_number, :as => :phone_numbers
     has contacts(:id), :as => :contact_ids
-    has friendships.person_id, :as => :friendly_ids
     
     has birthday
+    
+    has friendships.person_id, :as => :friendly_ids
   end
 end
 

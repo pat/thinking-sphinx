@@ -18,7 +18,7 @@ describe ThinkingSphinx::Search do
         Person
       )
       
-      Person.should have_received(:find).with(1, :include => :assoc)
+      Person.should have_received(:find).with(1, :include => :assoc, :select => nil)
     end
   end
 end
