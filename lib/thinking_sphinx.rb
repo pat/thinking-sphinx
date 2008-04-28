@@ -68,6 +68,9 @@ module ThinkingSphinx
   end
   
   def self.use_group_by_shortcut?
+    ::ActiveRecord::Base.connection.is_a?(
+      ::ActiveRecord::ConnectionAdapters::MysqlAdapter
+    ) &&
     ::ActiveRecord::Base.connection.select_all(
       "SELECT @@global.sql_mode, @@session.sql_mode;"
     ).all? { |key,value| value.nil? || value[/ONLY_FULL_GROUP_BY/].nil? }
