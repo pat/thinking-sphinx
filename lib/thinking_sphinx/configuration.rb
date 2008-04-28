@@ -118,11 +118,20 @@ searchd
               attrib.to_sphinx_clause
             }.join("\n  ")
             
+            adapter = case database_conf[:adapter]
+            when "postgresql"
+              "pgsql"
+            when "mysql"
+              "mysql"
+            else
+              raise "Unsupported Database Adapter: Sphinx only supports MySQL and PosgreSQL"
+            end
+            
             file.write <<-SOURCE
 
 source #{model.name.downcase}_#{i}_core
 {
-  type = mysql
+  type = #{adapter}
   sql_host = #{database_conf[:host] || "localhost"}
   sql_user = #{database_conf[:username]}
   sql_pass = #{database_conf[:password]}

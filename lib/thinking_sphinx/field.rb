@@ -66,7 +66,7 @@ module ThinkingSphinx
       clause = "CONCAT_WS(' ', #{clause})" if concat_ws?
       clause = "GROUP_CONCAT(#{clause} SEPARATOR ' ')" if is_many?
       
-      "CAST(#{clause} AS CHAR) AS `#{unique_name}`"
+      "CAST(#{clause} AS CHAR) AS #{@model.connection.quote_column_name(unique_name)}"
     end
     
     # Get the part of the GROUP BY clause related to this field - if one is
@@ -130,10 +130,11 @@ module ThinkingSphinx
     #
     def column_with_prefix(column)
       if associations[column].empty?
-        "`#{@model.table_name}`.`#{column.__name}`"
+        "#{@model.quoted_table_name}.#{@model.connection.quote_column_name(column.__name)}"
       else
         associations[column].collect { |assoc|
-          "`#{assoc.join.aliased_table_name}`.`#{column.__name}`"
+          "#{@model.connection.quote_table_name(assoc.join.aliased_table_name)}" + 
+          ".#{@model.connection.quote_column_name(column.__name)}"
         }.join(', ')
       end
     end

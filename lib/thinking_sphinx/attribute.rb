@@ -79,7 +79,7 @@ module ThinkingSphinx
       clause = "UNIX_TIMESTAMP(#{clause})"  if type == :datetime
       clause = "IFNULL(#{clause}, '')"      if type == :string
       
-      "#{clause} AS `#{unique_name}`"
+      "#{clause} AS #{@model.connection.quote_column_name(unique_name)}"
     end
     
     # Get the part of the GROUP BY clause related to this attribute - if one is
@@ -166,10 +166,11 @@ module ThinkingSphinx
       if column.is_string?
         column.__name
       elsif associations[column].empty?
-        "`#{@model.table_name}`.`#{column.__name}`"
+        "#{@model.quoted_table_name}.#{@model.connection.quote_column_name(column.__name)}"
       else
         associations[column].collect { |assoc|
-          "`#{assoc.join.aliased_table_name}`.`#{column.__name}`"
+          "#{@model.connection.quote_table_name(assoc.join.aliased_table_name)}" + 
+          ".#{@model.connection.quote_column_name(column.__name)}"
         }.join(', ')
       end
     end

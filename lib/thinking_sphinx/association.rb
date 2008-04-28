@@ -72,7 +72,7 @@ module ThinkingSphinx
     # 
     def to_sql
       @join.association_join.gsub(/::ts_join_alias::/,
-        "`#{@join.parent.aliased_table_name}`"
+        "#{@reflection.klass.connection.quote_table_name(@join.parent.aliased_table_name)}"
       )
     end
     
@@ -122,16 +122,16 @@ module ThinkingSphinx
       options[:class_name]    = klass.name
       options[:foreign_key] ||= "#{ref.name}_id"
       
-      foreign_type = ref.options[:foreign_type]
+      foreign_type = ref.klass.quote_column_name ref.options[:foreign_type]
       case options[:conditions]
       when nil
-        options[:conditions] = "::ts_join_alias::.`#{foreign_type}` = '#{klass.name}'"
+        options[:conditions] = "::ts_join_alias::.#{foreign_type} = '#{klass.name}'"
       when Array
-        options[:conditions] << "::ts_join_alias::.`#{foreign_type}` = '#{klass.name}'"
+        options[:conditions] << "::ts_join_alias::.#{foreign_type} = '#{klass.name}'"
       when Hash
         options[:conditions].merge!(foreign_type => klass.name)
       else
-        options[:conditions] << " AND `::ts_join_alias::.#{foreign_type}` = '#{klass.name}'"
+        options[:conditions] << " AND ::ts_join_alias::.#{foreign_type} = '#{klass.name}'"
       end
       
       options
