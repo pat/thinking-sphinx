@@ -137,6 +137,7 @@ source #{model.name.downcase}_#{i}_core
   sql_pass = #{database_conf[:password]}
   sql_db   = #{database_conf[:database]}
 
+  sql_query_pre    = #{self.charset_type == "utf-8" ? "SET NAMES utf8" : ""}
   sql_query_pre    = #{index.to_sql_query_pre}
   sql_query        = #{index.to_sql.gsub(/\n/, ' ')}
   sql_query_range  = #{index.to_sql_query_range}
@@ -150,7 +151,7 @@ source #{model.name.downcase}_#{i}_core
 
 source #{model.name.downcase}_#{i}_delta : #{model.name.downcase}_#{i}_core
 {
-  sql_query_pre    = 
+  sql_query_pre    = #{self.charset_type == "utf-8" ? "SET NAMES utf8; " : ""}
   sql_query        = #{index.to_sql(:delta => true).gsub(/\n/, ' ')}
   sql_query_range  = #{index.to_sql_query_range :delta => true}
 }
@@ -192,10 +193,12 @@ index #{model.name.downcase}_delta : #{model.name.downcase}_core
 {
   #{delta_list}
   path = #{self.searchd_file_path}/#{model.name.downcase}_delta
+  charset_type = #{self.charset_type}
 }
 
 index #{model.name.downcase}
 {
+  charset_type = #{self.charset_type}
   type = distributed
   local = #{model.name.downcase}_core
   local = #{model.name.downcase}_delta
