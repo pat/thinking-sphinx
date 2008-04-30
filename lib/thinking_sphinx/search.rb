@@ -238,7 +238,7 @@ module ThinkingSphinx
       # 
       def client_from_options(options)
         config = ThinkingSphinx::Configuration.new
-        client = Riddle::Client.new "localhost", config.port
+        client = Riddle::Client.new config.address, config.port
         klass  = options[:class]
         index_options = klass ? klass.indexes.last.options : {}
         
