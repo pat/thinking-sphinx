@@ -202,6 +202,7 @@ module ThinkingSphinx
         begin
           ::ActiveRecord::Base.logger.debug "Sphinx: #{query}"
           results = client.query query
+          ::ActiveRecord::Base.logger.debug "Sphinx Result: #{results[:matches].collect{|m| m[:doc]}.inspect}"
         rescue Errno::ECONNREFUSED => err
           raise ThinkingSphinx::ConnectionError, "Connection to Sphinx Daemon (searchd) failed."
         end
