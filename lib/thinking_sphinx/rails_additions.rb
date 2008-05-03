@@ -37,10 +37,11 @@ module ThinkingSphinx
   end
 end
 
-ActiveRecord::ConnectionAdapters::MysqlAdapter.send(
-  :include, ThinkingSphinx::MysqlQuotedTableName
-) unless ActiveRecord::ConnectionAdapters.constants.include?("MysqlAdapter") &&
-  ActiveRecord::ConnectionAdapters::MysqlAdapter.instance_methods.include?("quote_table_name")
+if ActiveRecord::ConnectionAdapters.constants.include?("MysqlAdapter")
+  ActiveRecord::ConnectionAdapters::MysqlAdapter.send(
+    :include, ThinkingSphinx::MysqlQuotedTableName
+  ) unless ActiveRecord::ConnectionAdapters::MysqlAdapter.instance_methods.include?("quote_table_name")
+end
 
 module ThinkingSphinx
   module ActiveRecordQuotedName
