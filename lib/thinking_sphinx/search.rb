@@ -212,7 +212,10 @@ module ThinkingSphinx
         else
           ids = results.collect { |result| result[:doc] }
           instances = klass.find(
-            *(ids + [{:include => options[:include], :select => options[:select]}])
+            :all,
+            :conditions => {klass.primary_key.to_sym => ids},
+            :include    => options[:include],
+            :select     => options[:select]
           )
           ids.collect { |obj_id| instances.detect { |obj| obj.id == obj_id } }
         end
