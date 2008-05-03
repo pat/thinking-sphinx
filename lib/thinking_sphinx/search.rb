@@ -166,13 +166,9 @@ module ThinkingSphinx
         begin
           pager = WillPaginate::Collection.new(page,
             client.limit, results[:total] || 0)
-          pager.replace results[:matches].collect { |match|
-            instance_from_result match, options, klass
-          }
+          pager.replace instances_from_results(results[:matches], options, klass)
         rescue StandardError => err
-          results[:matches].collect { |match|
-            instance_from_result match, options, klass
-          }
+          instances_from_results(results[:matches], options, klass)
         end
       end
       
@@ -210,11 +206,23 @@ module ThinkingSphinx
         return results, client
       end
       
+      def instances_from_results(results, options = {}, klass = nil)
+        if klass.nil?
+          results.collect { |result| instance_from_result result, options }
+        else
+          ids = results.collect { |result| result[:doc] }
+          instances = klass.find(
+            *(ids + [{:include => options[:include], :select => options[:select]}])
+          )
+          ids.collect { |obj_id| instances.detect { |obj| obj.id == obj_id } }
+        end
+      end
+      
       # Either use the provided class to instantiate a result from a model, or
       # get the result's CRC value and determine the class from that.
       # 
-      def instance_from_result(result, options, klass = nil)
-        (klass ? klass : class_from_crc(result[:attributes]["class_crc"])).find(
+      def instance_from_result(result, options)
+        class_from_crc(result[:attributes]["class_crc"]).find(
           result[:doc], :include => options[:include], :select => options[:select]
         )
       end
