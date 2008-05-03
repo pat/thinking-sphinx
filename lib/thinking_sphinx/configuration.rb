@@ -193,15 +193,14 @@ index #{model.name.downcase}_delta : #{model.name.downcase}_core
 {
   #{delta_list}
   path = #{self.searchd_file_path}/#{model.name.downcase}_delta
-  charset_type = #{self.charset_type}
 }
 
 index #{model.name.downcase}
 {
-  charset_type = #{self.charset_type}
   type = distributed
   local = #{model.name.downcase}_core
   local = #{model.name.downcase}_delta
+  charset_type = #{self.charset_type}
 }
             INDEX
           else
