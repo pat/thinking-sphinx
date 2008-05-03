@@ -6,11 +6,11 @@ describe ThinkingSphinx::Search do
       class Person < ActiveRecord::Base
         #
       end
+      
+      Person.stub_method(:find => true)
     end
     
     it "should honour the :include option" do
-      Person.stub_method(:find => true)
-      
       ThinkingSphinx::Search.send(
         :instance_from_result,
         {:doc => 1},
@@ -22,8 +22,6 @@ describe ThinkingSphinx::Search do
     end
     
     it "should honour the :select option" do
-      Person.stub_method(:find => true)
-      
       ThinkingSphinx::Search.send(
         :instance_from_result,
         {:doc => 1},
