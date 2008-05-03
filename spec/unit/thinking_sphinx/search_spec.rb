@@ -79,8 +79,10 @@ describe ThinkingSphinx::Search do
       )
       
       Person.should have_received(:find).with(
-        @person_a.id, @person_b.id, @person_c.id,
-        {:include => nil, :select => nil}
+        :all,
+        :conditions => {:id => [@person_a.id, @person_b.id, @person_c.id]},
+        :include    => nil,
+        :select     => nil
       )
     end
 
@@ -90,8 +92,10 @@ describe ThinkingSphinx::Search do
       )
       
       Person.should have_received(:find).with(
-        @person_a.id, @person_b.id, @person_c.id,
-        {:include => :something, :select => nil}
+        :all,
+        :conditions => {:id => [@person_a.id, @person_b.id, @person_c.id]},
+        :include    => :something,
+        :select     => nil
       )
     end
 
@@ -101,8 +105,10 @@ describe ThinkingSphinx::Search do
       )
       
       Person.should have_received(:find).with(
-        @person_a.id, @person_b.id, @person_c.id,
-        {:include => nil, :select => :fields}
+        :all,
+        :conditions => {:id => [@person_a.id, @person_b.id, @person_c.id]},
+        :include    => nil,
+        :select     => :fields
       )
     end
 
