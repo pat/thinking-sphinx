@@ -59,8 +59,8 @@ module ThinkingSphinx
           #     set_property :delta => true
           #   end
           #
-          # There's much more documentation for each of these methods over in
-          # the Builder class.
+          # Check out the more detailed documentation for each of these methods
+          # at ThinkingSphinx::Index::Builder.
           # 
           def define_index(&block)
             return unless ThinkingSphinx.define_indexes?
