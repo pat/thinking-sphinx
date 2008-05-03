@@ -13,6 +13,10 @@ module ThinkingSphinx
   end
 end
 
+Hash.send(
+  :include, ThinkingSphinx::HashExcept
+) unless Hash.instance_methods.include?("except")
+
 module ThinkingSphinx
   module ArrayExtractOptions
     def extract_options!
@@ -25,6 +29,27 @@ Array.send(
   :include, ThinkingSphinx::ArrayExtractOptions
 ) unless Array.instance_methods.include?("extract_options!")
 
-Hash.send(
-  :include, ThinkingSphinx::HashExcept
-) unless Hash.instance_methods.include?("except")
+module ThinkingSphinx
+  module MysqlQuotedTableName
+    def quote_table_name(name) #:nodoc:
+      quote_column_name(name).gsub('.', '`.`')
+    end
+  end
+end
+
+ActiveRecord::ConnectionAdapters::MysqlAdapter.send(
+  :include, ThinkingSphinx::MysqlQuotedTableName
+) unless ActiveRecord::ConnectionAdapters.constants.include?("MysqlAdapter") &&
+  ActiveRecord::ConnectionAdapters::MysqlAdapter.instance_methods.include?("quote_table_name")
+
+module ThinkingSphinx
+  module ActiveRecordQuotedName
+    def quoted_table_name
+      self.connection.quote_table_name(self.table_name)
+    end 
+  end
+end
+
+ActiveRecord::Base.extend(
+  ThinkingSphinx::ActiveRecordQuotedName
+) unless ActiveRecord::Base.respond_to?("quoted_table_name")
