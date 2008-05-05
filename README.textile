@@ -1,0 +1,24 @@
+h1. Thinking Sphinx
+
+h2. Usage
+
+First, if you haven't done so already, check out the main "usage":http://ts.freelancing-gods.com/usage.html page. Once you've done that, the next place to look for information is the specific method docs - ThinkingSphinx::Search and ThinkingSphinx::Index::Builder in particular.
+
+h2. Contributors
+
+Since I first released this library, there's been quite a few people who have submitted patches, to my immense gratitude. Others have suggested syntax changes and general improvements. So my thanks to the following people:
+
+* Joost Hietbrink
+* Jonathon Conway
+* Gregory Mirzayantz
+* Tung Nguyen
+* Sean Cribbs
+* Benoit Caccinolo
+* John Barton
+* Oliver Beddows
+* Arthur Zapparoli
+* Dusty Doris
+* Marcus Crafter
+* Patrick Lenz
+* Björn Andreasson
+* James Healy
