@@ -11,8 +11,9 @@ module ThinkingSphinx
       #
       def self.included(base)
         base.class_eval do
-          # This is something added since Rails 2.0.2 - we need to register the
-          # callback with ActiveRecord explicitly.
+          # define_callbacks was added post Rails 2.0.2 - if it doesn't
+          # exist, we define the callback manually
+          #
           if respond_to?(:define_callbacks)
             define_callbacks :after_commit
           else
