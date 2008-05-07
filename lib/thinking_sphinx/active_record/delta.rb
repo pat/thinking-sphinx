@@ -13,14 +13,16 @@ module ThinkingSphinx
         base.class_eval do
           # This is something added since Rails 2.0.2 - we need to register the
           # callback with ActiveRecord explicitly.
-          define_callbacks "after_commit" if respond_to?(:define_callbacks)
-          
-          class << self
-            # Handle after_commit callbacks - call all the registered callbacks.
-            # 
-            def after_commit(*callbacks, &block)
-              callbacks << block if block_given?
-              write_inheritable_array(:after_commit, callbacks)
+          if respond_to?(:define_callbacks)
+            define_callbacks :after_commit
+          else
+            class << self
+              # Handle after_commit callbacks - call all the registered callbacks.
+              #
+              def after_commit(*callbacks, &block)
+                callbacks << block if block_given?
+                write_inheritable_array(:after_commit, callbacks)
+              end
             end
           end
           
