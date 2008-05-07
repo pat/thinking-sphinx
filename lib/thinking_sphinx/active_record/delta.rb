@@ -11,8 +11,8 @@ module ThinkingSphinx
       #
       def self.included(base)
         base.class_eval do
-          # define_callbacks was added post Rails 2.0.2 - if it doesn't
-          # exist, we define the callback manually
+          # The define_callbacks method was added post Rails 2.0.2 - if it
+          # doesn't exist, we define the callback manually
           #
           if respond_to?(:define_callbacks)
             define_callbacks :after_commit
