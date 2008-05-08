@@ -80,7 +80,7 @@ module ThinkingSphinx
       
       where_clause = ""
       if self.delta?
-        where_clause << " AND #{@model.quoted_table_name}.#{@model.connection.quote_column_name('delta')}" +" = #{options[:delta] ? 1 : 0}"
+        where_clause << " AND #{@model.quoted_table_name}.#{quote_column('delta')}" +" = #{options[:delta] ? 1 : 0}"
       end
       unless @conditions.empty?
         where_clause << " AND " << @conditions.join(" AND ")
@@ -88,17 +88,17 @@ module ThinkingSphinx
       
       <<-SQL
 SELECT #{ (
-  ["#{@model.quoted_table_name}.#{@model.connection.quote_column_name(@model.primary_key)}"] + 
+  ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key)}"] + 
   @fields.collect { |field| field.to_select_sql } +
   @attributes.collect { |attribute| attribute.to_select_sql }
 ).join(", ") }
 FROM #{ @model.table_name }
   #{ assocs.collect { |assoc| assoc.to_sql }.join(' ') }
-WHERE #{@model.quoted_table_name}.#{@model.connection.quote_column_name(@model.primary_key)} >= $start
-  AND #{@model.quoted_table_name}.#{@model.connection.quote_column_name(@model.primary_key)} <= $end
+WHERE #{@model.quoted_table_name}.#{quote_column(@model.primary_key)} >= $start
+  AND #{@model.quoted_table_name}.#{quote_column(@model.primary_key)} <= $end
   #{ where_clause }
 GROUP BY #{ (
-  ["#{@model.quoted_table_name}.#{@model.connection.quote_column_name(@model.primary_key)}"] + 
+  ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key)}"] + 
   @fields.collect { |field| field.to_group_sql }.compact +
   @attributes.collect { |attribute| attribute.to_group_sql }.compact
 ).join(", ") }
@@ -111,7 +111,7 @@ ORDER BY NULL
     # 
     def to_sql_query_info
       "SELECT * FROM #{@model.quoted_table_name} WHERE " +
-      " #{@model.connection.quote_column_name(@model.primary_key)} = $id"
+      " #{quote_column(@model.primary_key)} = $id"
     end
     
     # Simple helper method for the query range SQL - which is a statement that
@@ -119,10 +119,10 @@ ORDER BY NULL
     # so pass in :delta => true to get the delta version of the SQL.
     # 
     def to_sql_query_range(options={})
-      sql = "SELECT MIN(#{@model.connection.quote_column_name(@model.primary_key)}), " +
-            "MAX(#{@model.connection.quote_column_name(@model.primary_key)}) " +
+      sql = "SELECT MIN(#{quote_column(@model.primary_key)}), " +
+            "MAX(#{quote_column(@model.primary_key)}) " +
             "FROM #{@model.quoted_table_name} "
-      sql << "WHERE #{@model.quoted_table_name}.#{@model.connection.quote_column_name('delta')} " + 
+      sql << "WHERE #{@model.quoted_table_name}.#{quote_column('delta')} " + 
             "= #{options[:delta] ? 1 : 0}" if self.delta?
       sql
     end
@@ -132,7 +132,7 @@ ORDER BY NULL
     # back to 0.
     #
     def to_sql_query_pre
-      self.delta? ? "UPDATE #{@model.quoted_table_name} SET #{@model.connection.quote_column_name('delta')} = 0" : ""
+      self.delta? ? "UPDATE #{@model.quoted_table_name} SET #{quote_column('delta')} = 0" : ""
     end
     
     # Flag to indicate whether this index has a corresponding delta index.
@@ -141,7 +141,22 @@ ORDER BY NULL
       @delta
     end
     
+    def adapter
+      @adapter ||= case @model.connection.class.name
+      when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
+        :mysql
+      when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
+        :postgres
+      else
+        raise "Invalid Database Adapter: Sphinx only supports MySQL and PostgreSQL"
+      end
+    end
+    
     private
+    
+    def quote_column(column)
+      @model.connection.quote_column_name(column)
+    end
     
     # Does all the magic with the block provided to the base #initialize.
     # Creates a new class subclassed from Builder, and evaluates the block

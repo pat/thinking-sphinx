@@ -118,10 +118,10 @@ searchd
               attrib.to_sphinx_clause
             }.join("\n  ")
             
-            adapter = case database_conf[:adapter]
-            when "postgresql"
+            adapter = case index.adapter
+            when :postgres
               "pgsql"
-            when "mysql"
+            when :mysql
               "mysql"
             else
               raise "Unsupported Database Adapter: Sphinx only supports MySQL and PosgreSQL"
@@ -131,7 +131,7 @@ searchd
 
 source #{model.name.downcase}_#{i}_core
 {
-  type = #{adapter}
+  type     = #{adapter}
   sql_host = #{database_conf[:host] || "localhost"}
   sql_user = #{database_conf[:username]}
   sql_pass = #{database_conf[:password]}
@@ -231,7 +231,7 @@ index #{model.name.downcase}
         
         begin
           model_name.camelize.constantize
-        rescue NameError
+        rescue NameError, LoadError
           next
         end
       end
