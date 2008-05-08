@@ -32,7 +32,7 @@ module ThinkingSphinx
       @attributes   = []
       @conditions   = []
       @options      = {}
-      @delat        = false
+      @delta        = false
       
       initialize_from_builder(&block) if block_given?
     end

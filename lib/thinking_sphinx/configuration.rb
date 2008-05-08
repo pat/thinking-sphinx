@@ -167,21 +167,16 @@ source #{model.name.downcase}_#{i}_delta : #{model.name.downcase}_#{i}_core
 index #{model.name.downcase}_core
 {
   #{source_list}
-  morphology = #{self.morphology}
   path = #{self.searchd_file_path}/#{model.name.downcase}_core
   charset_type = #{self.charset_type}
   INDEX
-          unless self.charset_table.nil?
-            file.write <<-INDEX
-  charset_table  = #{self.charset_table}
-            INDEX
-          end
+          
+          file.puts "  morphology = #{self.morphology}"        unless self.morphology.blank?
+          file.puts "  charset_table  = #{self.charset_table}" unless self.charset_table.nil?
           
           if self.allow_star
-            file.write <<-INDEX
-  enable_star    = 1
-  min_prefix_len = 1
-            INDEX
+            file.puts "  enable_star    = 1"
+            file.puts "  min_prefix_len = 1"
           end
           
           file.write("}\n")
