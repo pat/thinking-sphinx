@@ -141,6 +141,14 @@ ORDER BY NULL
       @delta
     end
     
+    def prefix_fields
+      @fields.collect { |field| field.prefixes }
+    end
+    
+    def infix_fields
+      @fields.collect { |field| field.infixes }
+    end
+    
     private
     
     # Does all the magic with the block provided to the base #initialize.

@@ -8,7 +8,7 @@ module ThinkingSphinx
   # associations. Which can get messy. Use Index.link!, it really helps.
   # 
   class Field
-    attr_accessor :alias, :columns, :sortable, :associations, :model
+    attr_accessor :alias, :columns, :sortable, :associations, :model, :infixes, :prefixes
     
     # To create a new field, you'll need to pass in either a single Column
     # or an array of them, and some (optional) options. The columns are
@@ -17,6 +17,8 @@ module ThinkingSphinx
     # Valid options are:
     # - :as       => :alias_name 
     # - :sortable => true
+    # - :infixes  => true
+    # - :prefixes => true
     #
     # Alias is only required in three circumstances: when there's
     # another attribute or field with the same name, when the column name is
@@ -27,6 +29,12 @@ module ThinkingSphinx
     # to an integer value), which can be sorted by. Thinking Sphinx is smart
     # enough to realise that when you specify fields in sort statements, you
     # mean their respective attributes.
+    # 
+    # If you have partial matching enabled (ie: enable_star), then you can
+    # specify certain fields to have their prefixes and infixes indexed. Keep
+    # in mind, though, that Sphinx's default is _all_ fields - so once you
+    # highlight a particular field, no other fields in the index will have
+    # these partial indexes.
     #
     # Here's some examples:
     #
@@ -41,7 +49,7 @@ module ThinkingSphinx
     # 
     #   Field.new(
     #     [Column.new(:posts, :subject), Column.new(:posts, :content)],
-    #     :as => :posts
+    #     :as => :posts, :prefixes => true
     #   )
     # 
     def initialize(columns, options = {})
@@ -50,6 +58,8 @@ module ThinkingSphinx
       
       @alias        = options[:as]
       @sortable     = options[:sortable] || false
+      @infixes      = options[:infixes]  || false
+      @prefixes     = options[:prefixes] || false
     end
     
     # Get the part of the SELECT clause related to this field. Don't forget

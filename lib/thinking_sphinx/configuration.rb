@@ -177,6 +177,15 @@ index #{model.name.downcase}_core
           if self.allow_star
             file.puts "  enable_star    = 1"
             file.puts "  min_prefix_len = 1"
+            file.puts "  min_infix_len  = 1"
+          end
+          
+          unless indexes.collect(&:prefix_fields).flatten.empty?
+            file.puts "  prefix_fields = #{indexes.collect(&:prefix_fields).flatten.join(', ')}"
+          end
+          
+          unless indexes.collect(&:infix_fields).flatten.empty?
+            file.puts "  infix_fields  = #{indexes.collect(&:infix_fields).flatten.join(', ')}"
           end
           
           file.write("}\n")
