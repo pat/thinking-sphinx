@@ -10,12 +10,6 @@ Gem::Specification.new do |s|
   s.rdoc_options     << "--title" << "Thinking Sphinx -- Rails/Merb Sphinx Plugin" <<
                         "--line-numbers"
   s.rubyforge_project = "thinking-sphinx"
-  s.test_files        = Dir["spec/**/*_spec.rb"]
-  s.files             = Dir[
-    "lib/**/*.rb",
-    "LICENCE",
-    "README",
-    "tasks/**/*.rb",
-    "tasks/**/*.rake"
-  ]
+  s.test_files        = ["spec/unit/thinking_sphinx/active_record/delta_spec.rb", "spec/unit/thinking_sphinx/active_record/has_many_association_spec.rb", "spec/unit/thinking_sphinx/active_record/search_spec.rb", "spec/unit/thinking_sphinx/active_record_spec.rb", "spec/unit/thinking_sphinx/association_spec.rb", "spec/unit/thinking_sphinx/attribute_spec.rb", "spec/unit/thinking_sphinx/configuration_spec.rb", "spec/unit/thinking_sphinx/field_spec.rb", "spec/unit/thinking_sphinx/index/builder_spec.rb", "spec/unit/thinking_sphinx/index/faux_column_spec.rb", "spec/unit/thinking_sphinx/index_spec.rb", "spec/unit/thinking_sphinx/search_spec.rb", "spec/unit/thinking_sphinx_spec.rb"]
+  s.files             = ["lib/riddle/client/filter.rb", "lib/riddle/client/message.rb", "lib/riddle/client/response.rb", "lib/riddle/client.rb", "lib/riddle.rb", "lib/test.rb", "lib/thinking_sphinx/active_record/delta.rb", "lib/thinking_sphinx/active_record/has_many_association.rb", "lib/thinking_sphinx/active_record/search.rb", "lib/thinking_sphinx/active_record.rb", "lib/thinking_sphinx/association.rb", "lib/thinking_sphinx/attribute.rb", "lib/thinking_sphinx/configuration.rb", "lib/thinking_sphinx/field.rb", "lib/thinking_sphinx/index/builder.rb", "lib/thinking_sphinx/index/faux_column.rb", "lib/thinking_sphinx/index.rb", "lib/thinking_sphinx/rails_additions.rb", "lib/thinking_sphinx/search.rb", "lib/thinking_sphinx.rb", "LICENCE", "README", "tasks/thinking_sphinx_tasks.rb", "tasks/thinking_sphinx_tasks.rake"]
 end
