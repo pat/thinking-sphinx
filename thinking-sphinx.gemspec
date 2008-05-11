@@ -10,8 +10,8 @@ Gem::Specification.new do |s|
   s.rdoc_options     << "--title" << "Thinking Sphinx -- Rails/Merb Sphinx Plugin" <<
                         "--line-numbers"
   s.rubyforge_project = "thinking-sphinx"
-  s.test_files        = FileList["spec/**/*_spec.rb"]
-  s.files             = FileList[
+  s.test_files        = Dir["spec/**/*_spec.rb"]
+  s.files             = Dir[
     "lib/**/*.rb",
     "LICENCE",
     "README",
