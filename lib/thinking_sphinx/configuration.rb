@@ -187,7 +187,10 @@ path = #{self.searchd_file_path}/#{model.name.downcase}_core
 charset_type = #{self.charset_type}
 INDEX
       
-      output += "  morphology     = #{self.morphology}\n"    unless self.morphology.blank?
+      morphology  = model.indexes.inject(self.morphology) { |morph, index|
+        index.options[:morphology] || morph
+      }
+      output += "  morphology     = #{morphology}\n"         unless morphology.blank?
       output += "  charset_table  = #{self.charset_table}\n" unless self.charset_table.nil?
       output += "  ignore_chars   = #{self.ignore_chars}\n"  unless self.ignore_chars.nil?
       
