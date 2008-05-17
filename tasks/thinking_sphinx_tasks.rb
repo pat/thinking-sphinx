@@ -82,5 +82,5 @@ def sphinx_pid
 end
 
 def sphinx_running?
-  sphinx_pid && `ps #{sphinx_pid} | wc -l`.to_i > 1
+  sphinx_pid && `ps -p #{sphinx_pid} | wc -l`.to_i > 1
 end
