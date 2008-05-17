@@ -172,6 +172,9 @@ module ThinkingSphinx
         #
         #   set_property :latitude_attr => "lt", :longitude => "lg"
         # 
+        # Please don't forget to add a boolean field named 'delta' to your
+        # model's database table if enabling the delta index for it.
+        # 
         def set_property(*args)
           options = args.extract_options!
           if options.empty?
