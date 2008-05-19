@@ -22,7 +22,7 @@ describe ThinkingSphinx::Field do
   
   describe "to_group_sql method" do
     before :each do
-      @field = ThinkingSphinx::Field.new([])
+      @field = ThinkingSphinx::Field.new([Object.stub_instance(:__stack => [])])
       @field.stub_methods(:is_many? => false)
       
       ThinkingSphinx.stub_method(:use_group_by_shortcut? => false)
@@ -41,11 +41,26 @@ describe ThinkingSphinx::Field do
     end
     
     it "should return an array if neither is_many? or shortcut allowed" do
+      @field.stub_method(:column_with_prefix => 'hello')
       @field.to_group_sql.should be_a_kind_of(Array)
     end
     
     after :each do
       ThinkingSphinx.unstub_method(:use_group_by_shortcut?)
+    end
+  end
+
+  describe '#initialize' do
+    it 'raises if no columns are provided so that configuration errors are easier to track down' do
+      lambda {
+        ThinkingSphinx::Field.new([])
+      }.should raise_error(RuntimeError)
+    end
+
+    it 'raises if an element of the columns param is an integer - as happens when you use id instead of :id - so that configuration errors are easier to track down' do
+      lambda {
+        ThinkingSphinx::Field.new([1234])
+      }.should raise_error(RuntimeError)
     end
   end
 end

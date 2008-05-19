@@ -48,14 +48,14 @@ module ThinkingSphinx
         # get access down the associations tree.
         # 
         #   indexes :id, :as => :my_id
+        #   indexes :name, :sortable => true
         #   indexes first_name, last_name, :sortable => true
-        #   indexes name, :sortable => true
         #   indexes users.posts.content, :as => :post_content
         #   indexes users(:id), :as => :user_ids
         #
-        # Keep in mind that if any keywords for Ruby methods - such as id -
+        # Keep in mind that if any keywords for Ruby methods - such as id or name -
         # clash with your column names, you need to use the symbol version (see
-        # the first and last examples above).
+        # the first, second and last examples above).
         #
         # If you specify multiple columns (example #2), a field will be created
         # for each. Don't use the :as option in this case. If you want to merge
