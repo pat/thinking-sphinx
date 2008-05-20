@@ -51,7 +51,7 @@ module ThinkingSphinx
       self.searchd_log_file  = "#{app_root}/log/searchd.log"
       self.query_log_file    = "#{app_root}/log/searchd.query.log"
       self.pid_file          = "#{app_root}/log/searchd.#{environment}.pid"
-      self.searchd_file_path = "#{app_root}/db/sphinx/#{environment}/"
+      self.searchd_file_path = "#{app_root}/db/sphinx/#{environment}"
       self.port              = 3312
       self.allow_star        = false
       self.mem_limit         = "64M"
