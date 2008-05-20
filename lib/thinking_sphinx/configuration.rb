@@ -120,6 +120,7 @@ searchd
             
             adapter = case index.adapter
             when :postgres
+              create_array_accum
               "pgsql"
             when :mysql
               "mysql"
@@ -251,6 +252,26 @@ index #{model.name.downcase}
       conf.each do |key,value|
         self.send("#{key}=", value) if self.methods.include?("#{key}=")
       end unless conf.nil?
+    end
+    
+    def create_array_accum
+      execute "begin"
+      execute "savepoint ts"
+      begin
+        execute <<-SQL
+          CREATE AGGREGATE array_accum (anyelement)
+          (
+              sfunc = array_append,
+              stype = anyarray,
+              initcond = '{}'
+          );
+        SQL
+      rescue
+        raise unless $!.to_s =~ /already exists with same argument types/
+        execute "rollback to savepoint ts"
+      end
+      execute "release savepoint foo"
+      execute "commit"
     end
   end
 end

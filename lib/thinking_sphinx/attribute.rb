@@ -150,7 +150,7 @@ module ThinkingSphinx
       when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
         "GROUP_CONCAT(#{clause} SEPARATOR '#{separator}')"
       when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
-        "array_to_string(array_cat(#{clause}), '#{separator}')"
+        "array_to_string(array_accum(#{clause}), '#{separator}')"
       else
         clause
       end
@@ -172,7 +172,7 @@ module ThinkingSphinx
       when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
         "UNIX_TIMESTAMP(#{clause})"
       when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
-        clause
+        clause # Rails' datetimes are timestamps in PostgreSQL
       else
         clause
       end
