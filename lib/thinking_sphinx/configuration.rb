@@ -17,13 +17,14 @@ module ThinkingSphinx
   # morphology::       stem_en
   # charset type::     utf-8
   # charset table::    nil
+  # ignore chars::     nil
   #
   # If you want to change these settings, create a YAML file at
   # config/sphinx.yml with settings for each environment, in a similar
   # fashion to database.yml - using the following keys: config_file,
   # searchd_log_file, query_log_file, pid_file, searchd_file_path, port,
   # allow_star, mem_limit, max_matches, morphology, charset_type,
-  # charset_table. I think you've got the idea.
+  # charset_table, ignore_chars. I think you've got the idea.
   # 
   # Each setting in the YAML file is optional - so only put in the ones you
   # want to change.
@@ -35,7 +36,8 @@ module ThinkingSphinx
   class Configuration
     attr_accessor :config_file, :searchd_log_file, :query_log_file,
       :pid_file, :searchd_file_path, :address, :port, :allow_star, :mem_limit,
-      :max_matches, :morphology, :charset_type, :charset_table, :app_root
+      :max_matches, :morphology, :charset_type, :charset_table, :ignore_chars,
+      :app_root
     
     attr_reader :environment
     
@@ -59,6 +61,7 @@ module ThinkingSphinx
       self.morphology        = "stem_en"
       self.charset_type      = "utf-8"
       self.charset_table     = nil
+      self.ignore_chars      = nil
       
       parse_config
     end
@@ -170,9 +173,9 @@ index #{model.name.downcase}_core
   path = #{self.searchd_file_path}/#{model.name.downcase}_core
   charset_type = #{self.charset_type}
   INDEX
-          
           file.puts "  morphology = #{self.morphology}"        unless self.morphology.blank?
           file.puts "  charset_table  = #{self.charset_table}" unless self.charset_table.nil?
+          file.puts "  ignore_chars   = #{self.ignore_chars}"  unless self.ignore_chars.nil?
           
           if self.allow_star
             file.puts "  enable_star    = 1"
