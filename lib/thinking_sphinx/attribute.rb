@@ -74,12 +74,12 @@ module ThinkingSphinx
       
       separator = all_ints? ? ',' : ' '
       
-      clause = "CONCAT_WS('#{separator}', #{clause})" if concat_ws?
-      clause = "CAST(GROUP_CONCAT(#{clause} SEPARATOR '#{separator}') AS CHAR)" if is_many?
-      clause = "UNIX_TIMESTAMP(#{clause})"  if type == :datetime
-      clause = "IFNULL(#{clause}, '')"      if type == :string
+      clause = concatenate(clause, separator)       if concat_ws?
+      clause = group_concatenate(clause, separator) if is_many?
+      clause = cast_to_datetime(clause)             if type == :datetime
+      clause = convert_nulls(clause)                if type == :string
       
-      "#{clause} AS #{@model.connection.quote_column_name(unique_name)}"
+      "#{clause} AS #{quote_column(unique_name)}"
     end
     
     # Get the part of the GROUP BY clause related to this attribute - if one is
@@ -97,30 +97,6 @@ module ThinkingSphinx
           column_with_prefix(column)
         }
       end
-    end
-    
-    # Indication of whether the columns should be concatenated with a space
-    # between each value. True if there's either multiple sources or multiple
-    # associations.
-    # 
-    def concat_ws?
-      multiple_associations? || @columns.length > 1
-    end
-    
-    # Checks the association tree for each column - if they're all the same,
-    # returns false.
-    # 
-    def multiple_sources?
-      first = associations[@columns.first]
-      
-      !@columns.all? { |col| associations[col] == first }
-    end
-    
-    # Checks whether any column requires multiple associations (which only
-    # happens for polymorphic situations).
-    # 
-    def multiple_associations?
-      associations.any? { |col,assocs| assocs.length > 1 }
     end
     
     # Generates the appropriate attribute statement for a Sphinx configuration
@@ -158,6 +134,89 @@ module ThinkingSphinx
     
     private
     
+    def concatenate(clause, separator = ' ')
+      case @model.connection.class.name
+      when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
+        "CONCAT_WS('#{separator}', #{clause})"
+      when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
+        clause.split(', ').join(" || #{separator} || ")
+      else
+        clause
+      end
+    end
+    
+    def group_concatenate(clause, separator = ' ')
+      case @model.connection.class.name
+      when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
+        "GROUP_CONCAT(#{clause} SEPARATOR '#{separator}')"
+      when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
+        "array_to_string(array_accum(#{clause}), '#{separator}')"
+      else
+        clause
+      end
+    end
+    
+    def cast_to_string(clause)
+      case @model.connection.class.name
+      when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
+        "CAST(#{clause} AS CHAR)"
+      when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
+        clause
+      else
+        clause
+      end
+    end
+    
+    def cast_to_datetime(column)
+      case @model.connection.class.name
+      when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
+        "UNIX_TIMESTAMP(#{clause})"
+      when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
+        clause # Rails' datetimes are timestamps in PostgreSQL
+      else
+        clause
+      end
+    end
+    
+    def convert_nulls(column)
+      case @model.connection.class.name
+      when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
+        "IFNULL(#{clause}, '')"
+      when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
+        "COALESCE(#{clause}, '')"
+      else
+        clause
+      end
+    end
+    
+    def quote_column(column)
+      @model.connection.quote_column_name(column)
+    end
+    
+    # Indication of whether the columns should be concatenated with a space
+    # between each value. True if there's either multiple sources or multiple
+    # associations.
+    # 
+    def concat_ws?
+      multiple_associations? || @columns.length > 1
+    end
+    
+    # Checks the association tree for each column - if they're all the same,
+    # returns false.
+    # 
+    def multiple_sources?
+      first = associations[@columns.first]
+      
+      !@columns.all? { |col| associations[col] == first }
+    end
+    
+    # Checks whether any column requires multiple associations (which only
+    # happens for polymorphic situations).
+    # 
+    def multiple_associations?
+      associations.any? { |col,assocs| assocs.length > 1 }
+    end
+    
     # Builds a column reference tied to the appropriate associations. This
     # dives into the associations hash and their corresponding joins to
     # figure out how to correctly reference a column in SQL.
@@ -166,11 +225,11 @@ module ThinkingSphinx
       if column.is_string?
         column.__name
       elsif associations[column].empty?
-        "#{@model.quoted_table_name}.#{@model.connection.quote_column_name(column.__name)}"
+        "#{@model.quoted_table_name}.#{quote_column(column.__name)}"
       else
         associations[column].collect { |assoc|
           "#{@model.connection.quote_table_name(assoc.join.aliased_table_name)}" + 
-          ".#{@model.connection.quote_column_name(column.__name)}"
+          ".#{quote_column(column.__name)}"
         }.join(', ')
       end
     end

@@ -121,10 +121,11 @@ searchd
               attrib.to_sphinx_clause
             }.join("\n  ")
             
-            adapter = case database_conf[:adapter]
-            when "postgresql"
+            adapter = case index.adapter
+            when :postgres
+              create_array_accum
               "pgsql"
-            when "mysql"
+            when :mysql
               "mysql"
             else
               raise "Unsupported Database Adapter: Sphinx only supports MySQL and PosgreSQL"
@@ -134,7 +135,7 @@ searchd
 
 source #{model.name.downcase}_#{i}_core
 {
-  type = #{adapter}
+  type     = #{adapter}
   sql_host = #{database_conf[:host] || "localhost"}
   sql_user = #{database_conf[:username]}
   sql_pass = #{database_conf[:password]}
@@ -229,7 +230,7 @@ index #{model.name.downcase}
         
         begin
           model_name.camelize.constantize
-        rescue NameError
+        rescue NameError, LoadError
           next
         end
       end
@@ -249,6 +250,26 @@ index #{model.name.downcase}
       conf.each do |key,value|
         self.send("#{key}=", value) if self.methods.include?("#{key}=")
       end unless conf.nil?
+    end
+    
+    def create_array_accum
+      execute "begin"
+      execute "savepoint ts"
+      begin
+        execute <<-SQL
+          CREATE AGGREGATE array_accum (anyelement)
+          (
+              sfunc = array_append,
+              stype = anyarray,
+              initcond = '{}'
+          );
+        SQL
+      rescue
+        raise unless $!.to_s =~ /already exists with same argument types/
+        execute "rollback to savepoint ts"
+      end
+      execute "release savepoint foo"
+      execute "commit"
     end
   end
 end
