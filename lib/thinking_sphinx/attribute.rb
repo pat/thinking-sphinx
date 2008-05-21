@@ -167,7 +167,7 @@ module ThinkingSphinx
       end
     end
     
-    def cast_to_datetime(column)
+    def cast_to_datetime(clause)
       case @model.connection.class.name
       when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
         "UNIX_TIMESTAMP(#{clause})"
@@ -178,7 +178,7 @@ module ThinkingSphinx
       end
     end
     
-    def convert_nulls(column)
+    def convert_nulls(clause)
       case @model.connection.class.name
       when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
         "IFNULL(#{clause}, '')"
