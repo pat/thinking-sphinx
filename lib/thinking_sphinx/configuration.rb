@@ -253,10 +253,10 @@ index #{model.name.downcase}
     end
     
     def create_array_accum
-      execute "begin"
-      execute "savepoint ts"
+      ::ActiveRecord::Base.connection.execute "begin"
+      ::ActiveRecord::Base.connection.execute "savepoint ts"
       begin
-        execute <<-SQL
+        ::ActiveRecord::Base.connection.execute <<-SQL
           CREATE AGGREGATE array_accum (anyelement)
           (
               sfunc = array_append,
@@ -266,10 +266,10 @@ index #{model.name.downcase}
         SQL
       rescue
         raise unless $!.to_s =~ /already exists with same argument types/
-        execute "rollback to savepoint ts"
+        ::ActiveRecord::Base.connection.execute "rollback to savepoint ts"
       end
-      execute "release savepoint foo"
-      execute "commit"
+      ::ActiveRecord::Base.connection.execute "release savepoint ts"
+      ::ActiveRecord::Base.connection.execute "commit"
     end
   end
 end

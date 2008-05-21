@@ -86,7 +86,7 @@ module ThinkingSphinx
         where_clause << " AND " << @conditions.join(" AND ")
       end
       
-      <<-SQL
+      sql = <<-SQL
 SELECT #{ (
   ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key)}"] + 
   @fields.collect { |field| field.to_select_sql } +
@@ -102,8 +102,13 @@ GROUP BY #{ (
   @fields.collect { |field| field.to_group_sql }.compact +
   @attributes.collect { |attribute| attribute.to_group_sql }.compact
 ).join(", ") }
-ORDER BY NULL
       SQL
+      
+      if @model.connection.class.name == "ActiveRecord::ConnectionAdapters::MysqlAdapter"
+        sql += " ORDER BY NULL"
+      end
+      
+      sql
     end
     
     # Simple helper method for the query info SQL - which is a statement that
