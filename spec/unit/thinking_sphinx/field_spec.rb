@@ -48,4 +48,28 @@ describe ThinkingSphinx::Field do
       ThinkingSphinx.unstub_method(:use_group_by_shortcut?)
     end
   end
+  
+  describe "prefixes method" do
+    it "should default to false" do
+      @field = ThinkingSphinx::Field.new([])
+      @field.prefixes.should be_false
+    end
+    
+    it "should be true if the corresponding option is set" do
+      @field = ThinkingSphinx::Field.new([], :prefixes => true)
+      @field.prefixes.should be_true
+    end
+  end
+  
+  describe "infixes method" do
+    it "should default to false" do
+      @field = ThinkingSphinx::Field.new([])
+      @field.infixes.should be_false
+    end
+    
+    it "should be true if the corresponding option is set" do
+      @field = ThinkingSphinx::Field.new([], :infixes => true)
+      @field.infixes.should be_true
+    end
+  end
 end
