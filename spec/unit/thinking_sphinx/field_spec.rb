@@ -63,4 +63,32 @@ describe ThinkingSphinx::Field do
       }.should raise_error(RuntimeError)
     end
   end
+  
+  describe "prefixes method" do
+    it "should default to false" do
+      @field = ThinkingSphinx::Field.new([Object.stub_instance(:__stack => [])])
+      @field.prefixes.should be_false
+    end
+    
+    it "should be true if the corresponding option is set" do
+      @field = ThinkingSphinx::Field.new(
+        [Object.stub_instance(:__stack => [])], :prefixes => true
+      )
+      @field.prefixes.should be_true
+    end
+  end
+  
+  describe "infixes method" do
+    it "should default to false" do
+      @field = ThinkingSphinx::Field.new([Object.stub_instance(:__stack => [])])
+      @field.infixes.should be_false
+    end
+    
+    it "should be true if the corresponding option is set" do
+      @field = ThinkingSphinx::Field.new(
+        [Object.stub_instance(:__stack => [])], :infixes => true
+      )
+      @field.infixes.should be_true
+    end
+  end
 end

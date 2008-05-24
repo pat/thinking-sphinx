@@ -157,6 +157,14 @@ GROUP BY #{ (
       end
     end
     
+    def prefix_fields
+      @fields.select { |field| field.prefixes }
+    end
+    
+    def infix_fields
+      @fields.select { |field| field.infixes }
+    end
+    
     private
     
     def quote_column(column)
