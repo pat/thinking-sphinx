@@ -53,9 +53,9 @@ module ThinkingSphinx
         #   indexes users.posts.content, :as => :post_content
         #   indexes users(:id), :as => :user_ids
         #
-        # Keep in mind that if any keywords for Ruby methods - such as id or name -
-        # clash with your column names, you need to use the symbol version (see
-        # the first, second and last examples above).
+        # Keep in mind that if any keywords for Ruby methods - such as id or 
+        # name - clash with your column names, you need to use the symbol
+        # version (see the first, second and last examples above).
         #
         # If you specify multiple columns (example #2), a field will be created
         # for each. Don't use the :as option in this case. If you want to merge

@@ -48,7 +48,7 @@ module ThinkingSphinx
       @columns      = Array(columns)
       @associations = {}
 
-      raise "Cannot define a field with no columns. Maybe you are trying to index a field with a reserved name (id, name). You can fix this error by using a symbol rather than a bare name (:id instead of id)." if @columns.empty? || @columns.any? {|column| !column.respond_to?(:__stack) }
+      raise "Cannot define a field with no columns. Maybe you are trying to index a field with a reserved name (id, name). You can fix this error by using a symbol rather than a bare name (:id instead of id)." if @columns.empty? || @columns.any? { |column| !column.respond_to?(:__stack) }
       
       @alias        = options[:as]
       @sortable     = options[:sortable] || false
