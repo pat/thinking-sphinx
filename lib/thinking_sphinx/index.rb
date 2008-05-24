@@ -142,11 +142,11 @@ ORDER BY NULL
     end
     
     def prefix_fields
-      @fields.collect { |field| field.prefixes }
+      @fields.select { |field| field.prefixes }
     end
     
     def infix_fields
-      @fields.collect { |field| field.infixes }
+      @fields.select { |field| field.infixes }
     end
     
     private

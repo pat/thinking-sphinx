@@ -171,13 +171,13 @@ index #{model.name.downcase}_core
   charset_type = #{self.charset_type}
   INDEX
           
-          file.puts "  morphology = #{self.morphology}"        unless self.morphology.blank?
+          file.puts "  morphology     = #{self.morphology}"    unless self.morphology.blank?
           file.puts "  charset_table  = #{self.charset_table}" unless self.charset_table.nil?
           
           if self.allow_star
             file.puts "  enable_star    = 1"
             file.puts "  min_prefix_len = 1"
-            file.puts "  min_infix_len  = 1"
+            file.puts "  min_infix_len  = 1"            
           end
           
           unless indexes.collect(&:prefix_fields).flatten.empty?
