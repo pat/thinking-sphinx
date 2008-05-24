@@ -117,7 +117,7 @@ module ThinkingSphinx
       when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
         "CONCAT_WS(' ', #{clause})"
       when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
-        clause.split(', ').join(" || #{separator} || ")
+        clause.split(', ').join(" || ' ' || ")
       else
         clause
       end
@@ -128,7 +128,7 @@ module ThinkingSphinx
       when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
         "GROUP_CONCAT(#{clause} SEPARATOR ' ')"
       when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
-        "array_to_string(array_accum(#{clause}), '#{separator}')"
+        "array_to_string(array_accum(#{clause}), ' ')"
       else
         clause
       end
