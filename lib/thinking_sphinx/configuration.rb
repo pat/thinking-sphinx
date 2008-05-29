@@ -114,113 +114,21 @@ searchd
           infixed_fields  = []
           
           model.indexes.each_with_index do |index, i|
-            # Set up associations and joins
-            index.link!
+            file.write index.to_config(database_conf, charset_type)
             
-            attr_sources = index.attributes.collect { |attrib|
-              attrib.to_sphinx_clause
-            }.join("\n  ")
-            
-            adapter = case index.adapter
-            when :postgres
-              create_array_accum
-              "pgsql"
-            when :mysql
-              "mysql"
-            else
-              raise "Unsupported Database Adapter: Sphinx only supports MySQL and PosgreSQL"
-            end
-            
-            file.write <<-SOURCE
-
-source #{model.name.downcase}_#{i}_core
-{
-  type     = #{adapter}
-  sql_host = #{database_conf[:host] || "localhost"}
-  sql_user = #{database_conf[:username]}
-  sql_pass = #{database_conf[:password]}
-  sql_db   = #{database_conf[:database]}
-
-  sql_query_pre    = #{charset_type == "utf-8" && adapter == "mysql" ? "SET NAMES utf8" : ""}
-  sql_query_pre    = #{index.to_sql_query_pre}
-  sql_query        = #{index.to_sql.gsub(/\n/, ' ')}
-  sql_query_range  = #{index.to_sql_query_range}
-  sql_query_info   = #{index.to_sql_query_info}
-  #{attr_sources}
-}
-            SOURCE
-            
-            if index.delta?
-              file.write <<-SOURCE
-
-source #{model.name.downcase}_#{i}_delta : #{model.name.downcase}_#{i}_core
-{
-  sql_query_pre    = #{charset_type == "utf-8" && adapter == "mysql" ? "SET NAMES utf8" : ""}
-  sql_query        = #{index.to_sql(:delta => true).gsub(/\n/, ' ')}
-  sql_query_range  = #{index.to_sql_query_range :delta => true}
-}
-              SOURCE
-            end
+            create_array_accum if index.adapter == :postgres
             sources << "#{model.name.downcase}_#{i}_core"
           end
           
           source_list = sources.collect { |s| "source = #{s}" }.join("\n")
           delta_list  = source_list.gsub(/_core$/, "_delta")
-          file.write <<-INDEX
-
-index #{model.name.downcase}_core
-{
-  #{source_list}
-  path = #{self.searchd_file_path}/#{model.name.downcase}_core
-  charset_type = #{self.charset_type}
-  INDEX
           
-          file.puts "  morphology     = #{self.morphology}"    unless self.morphology.blank?
-          file.puts "  charset_table  = #{self.charset_table}" unless self.charset_table.nil?
-          file.puts "  ignore_chars   = #{self.ignore_chars}"  unless self.ignore_chars.nil?
-          
-          if self.allow_star
-            file.puts "  enable_star    = 1"
-            file.puts "  min_prefix_len = 1"
-            file.puts "  min_infix_len  = 1"            
-          end
-          
-          unless indexes.collect(&:prefix_fields).flatten.empty?
-            file.puts "  prefix_fields = #{indexes.collect(&:prefix_fields).flatten.join(', ')}"
-          end
-          
-          unless indexes.collect(&:infix_fields).flatten.empty?
-            file.puts "  infix_fields  = #{indexes.collect(&:infix_fields).flatten.join(', ')}"
-          end
-          
-          file.write("}\n")
-          
+          file.write core_index_for_model(model, source_list)
           if model.indexes.any? { |index| index.delta? }
-            file.write <<-INDEX
-
-index #{model.name.downcase}_delta : #{model.name.downcase}_core
-{
-  #{delta_list}
-  path = #{self.searchd_file_path}/#{model.name.downcase}_delta
-}
-
-index #{model.name.downcase}
-{
-  type = distributed
-  local = #{model.name.downcase}_core
-  local = #{model.name.downcase}_delta
-  charset_type = #{self.charset_type}
-}
-            INDEX
-          else
-            file.write <<-INDEX
-index #{model.name.downcase}
-{
-  type = distributed
-  local = #{model.name.downcase}_core
-}
-            INDEX
+            file.write delta_index_for_model(model, delta_list)
           end
+          
+          file.write distributed_index_for_model(model)
         end
       end
     end
@@ -260,6 +168,63 @@ index #{model.name.downcase}
       conf.each do |key,value|
         self.send("#{key}=", value) if self.methods.include?("#{key}=")
       end unless conf.nil?
+    end
+    
+    def core_index_for_model(model, sources)
+      output = <<-INDEX
+
+index #{model.name.downcase}_core
+{
+#{sources}
+path = #{self.searchd_file_path}/#{model.name.downcase}_core
+charset_type = #{self.charset_type}
+INDEX
+      
+      output += "  morphology     = #{self.morphology}\n"    unless self.morphology.blank?
+      output += "  charset_table  = #{self.charset_table}\n" unless self.charset_table.nil?
+      output += "  ignore_chars   = #{self.ignore_chars}\n"  unless self.ignore_chars.nil?
+      
+      if self.allow_star
+        output += "  enable_star    = 1\n"
+        output += "  min_prefix_len = 1\n"
+        output += "  min_infix_len  = 1\n"
+      end
+      
+      unless model.indexes.collect(&:prefix_fields).flatten.empty?
+        output += "  prefix_fields = #{model.indexes.collect(&:prefix_fields).flatten.join(', ')}\n"
+      end
+      
+      unless model.indexes.collect(&:infix_fields).flatten.empty?
+        output += "  infix_fields  = #{model.indexes.collect(&:infix_fields).flatten.join(', ')}\n"
+      end
+      
+      output + "}\n"
+    end
+    
+    def delta_index_for_model(model, sources)
+      <<-INDEX
+index #{model.name.downcase}_delta : #{model.name.downcase}_core
+{
+  #{sources}
+  path = #{self.searchd_file_path}/#{model.name.downcase}_delta
+}
+      INDEX
+    end
+    
+    def distributed_index_for_model(model)
+      sources = ["local = #{model.name.downcase}_core"]
+      if model.indexes.any? { |index| index.delta? }
+        sources << "local = #{model.name.downcase}_delta"
+      end
+      
+      <<-INDEX
+index #{model.name.downcase}
+{
+  type = distributed
+  #{ sources.join("\n  ") }
+  charset_type = #{self.charset_type}
+}
+      INDEX
     end
     
     def create_array_accum
