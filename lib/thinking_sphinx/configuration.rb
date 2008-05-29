@@ -142,8 +142,9 @@ searchd
     # messy dependencies issues).
     # 
     def load_models
-      Dir["#{app_root}/app/models/**/*.rb"].each do |file|
-        model_name = file.gsub(/^.*\/([\w_]+)\.rb/, '\1')
+      base = "#{app_root}/app/models/"
+      Dir["#{base}**/*.rb"].each do |file|
+        model_name = file.gsub(/^#{base}([\w_\/\\]+)\.rb/, '\1')
         
         next if model_name.nil?
         next if ::ActiveRecord::Base.send(:subclasses).detect { |model|
@@ -151,8 +152,10 @@ searchd
         }
         
         begin
-          model_name.camelize.constantize
-        rescue NameError, LoadError
+          model_name.classify.constantize
+        rescue LoadError
+          model_name.gsub(/.*[\/\\]/, '').classify.constantize
+        rescue NameError
           next
         end
       end
