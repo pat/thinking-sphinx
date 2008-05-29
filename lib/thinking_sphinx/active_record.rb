@@ -75,6 +75,7 @@ module ThinkingSphinx
             
             if index.delta?
               before_save   :toggle_delta
+              after_destroy :toggle_deleted
               after_commit  :index_delta
             end
             
@@ -97,6 +98,17 @@ module ThinkingSphinx
               end
             end
             result ^ 0xFFFFFFFF
+          end
+          
+          def toggle_deleted
+            config = ThinkingSphinx::Configuration.new
+            client = Riddle::Client.new config.address, config.port
+            
+            client.update(
+              "#{self.class.name.downcase}_core",
+              ['sphinx_deleted'],
+              {self.id => 1}
+            )
           end
         end
       end

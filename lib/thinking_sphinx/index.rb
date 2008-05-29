@@ -245,6 +245,11 @@ GROUP BY #{ (
         :type => :integer,
         :as   => :class_crc
       )
+      @attributes << Attribute.new(
+        FauxColumn.new("0"),
+        :type => :integer,
+        :as   => :sphinx_deleted
+      )
     end
     
     # Returns all associations used amongst all the fields and attributes.

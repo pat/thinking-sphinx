@@ -268,6 +268,9 @@ module ThinkingSphinx
         
         client.anchor = anchor_conditions(klass, options) || {} if client.anchor.empty?
         
+        client.filters << Riddle::Client::Filter.new(
+          "sphinx_deleted", [0]
+        )
         # class filters
         client.filters << Riddle::Client::Filter.new(
           "class_crc", options[:classes].collect { |klass| klass.to_crc32 }
