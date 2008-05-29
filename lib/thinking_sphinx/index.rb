@@ -37,6 +37,56 @@ module ThinkingSphinx
       initialize_from_builder(&block) if block_given?
     end
     
+    def to_config(index, database_conf, charset_type)
+      # Set up associations and joins
+      link!
+      
+      attr_sources = attributes.collect { |attrib|
+        attrib.to_sphinx_clause
+      }.join("\n  ")
+      
+      db_adapter = case adapter
+      when :postgres
+        "pgsql"
+      when :mysql
+        "mysql"
+      else
+        raise "Unsupported Database Adapter: Sphinx only supports MySQL and PosgreSQL"
+      end
+      
+      config = <<-SOURCE
+
+source #{model.name.downcase}_#{index}_core
+{
+type     = #{db_adapter}
+sql_host = #{database_conf[:host] || "localhost"}
+sql_user = #{database_conf[:username]}
+sql_pass = #{database_conf[:password]}
+sql_db   = #{database_conf[:database]}
+
+sql_query_pre    = #{charset_type == "utf-8" && adapter == :mysql ? "SET NAMES utf8" : ""}
+sql_query_pre    = #{to_sql_query_pre}
+sql_query        = #{to_sql.gsub(/\n/, ' ')}
+sql_query_range  = #{to_sql_query_range}
+sql_query_info   = #{to_sql_query_info}
+#{attr_sources}
+}
+      SOURCE
+      
+      if delta?
+        config += <<-SOURCE
+
+source #{model.name.downcase}_#{index}_delta : #{model.name.downcase}_#{index}_core
+{
+sql_query        = #{to_sql(:delta => true).gsub(/\n/, ' ')}
+sql_query_range  = #{to_sql_query_range :delta => true}
+}
+        SOURCE
+      end
+      
+      config
+    end
+    
     # Link all the fields and associations to their corresponding
     # associations and joins. This _must_ be called before interrogating
     # the index's fields and associations for anything that may reference

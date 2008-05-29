@@ -1,6 +1,143 @@
 require 'spec/spec_helper'
 
 describe ThinkingSphinx::Index do
+  describe "to_config method" do
+    before :each do
+      @index = ThinkingSphinx::Index.new(Person)
+      
+      @index.stub_methods(
+        :attributes => [
+          ThinkingSphinx::Attribute.stub_instance(:to_sphinx_clause => "attr a"),
+          ThinkingSphinx::Attribute.stub_instance(:to_sphinx_clause => "attr b")
+        ],
+        :link!              => true,
+        :adapter            => :mysql,
+        :to_sql_query_pre   => "sql_query_pre",
+        :to_sql             => "SQL",
+        :to_sql_query_range => "sql_query_range",
+        :to_sql_query_info  => "sql_query_info",
+        :delta?             => false
+      )
+      
+      @database = {
+        :host     => "localhost",
+        :username => "username",
+        :password => "blank",
+        :database => "db"
+      }
+    end
+    
+    it "should call link!" do
+      @index.to_config(0, @database, "utf-8")
+      
+      @index.should have_received(:link!)
+    end
+    
+    it "should raise an exception if the adapter isn't mysql or postgres" do
+      @index.stub_method(:adapter => :sqlite)
+      
+      lambda { @index.to_config(0, @database, "utf-8") }.should raise_error
+    end
+    
+    it "should set the core source name to {model}_{index}_core" do
+      @index.to_config(0, @database, "utf-8").should match(
+        /source person_0_core/
+      )
+    end
+    
+    it "should include the database config supplied" do
+      conf = @index.to_config(0, @database, "utf-8")
+      conf.should match(/type\s+= mysql/)
+      conf.should match(/sql_host\s+= localhost/)
+      conf.should match(/sql_user\s+= username/)
+      conf.should match(/sql_pass\s+= blank/)
+      conf.should match(/sql_db\s+= db/)
+    end
+    
+    it "should have a pre query 'SET NAMES utf8' if using mysql and utf8 charset" do
+      @index.to_config(0, @database, "utf-8").should match(
+        /sql_query_pre\s+= SET NAMES utf8/
+      )
+      
+      @index.to_config(0, @database, "non-utf-8").should_not match(
+        /SET NAMES utf8/
+      )
+      
+      @index.stub_method(:adapter => :postgres)
+      @index.to_config(0, @database, "utf-8").should_not match(
+        /SET NAMES utf8/
+      )
+    end
+    
+    it "should use the pre query from the index" do
+      @index.to_config(0, @database, "utf-8").should match(
+        /sql_query_pre\s+= sql_query_pre/
+      )
+    end
+    
+    it "should use the main query from the index" do
+      @index.to_config(0, @database, "utf-8").should match(
+        /sql_query\s+= SQL/
+      )
+    end
+    
+    it "should use the range query from the index" do
+      @index.to_config(0, @database, "utf-8").should match(
+        /sql_query_range\s+= sql_query_range/
+      )
+    end
+    
+    it "should use the info query from the index" do
+      @index.to_config(0, @database, "utf-8").should match(
+        /sql_query_info\s+= sql_query_info/
+      )
+    end
+    
+    it "should include the attribute sources" do
+      @index.to_config(0, @database, "utf-8").should match(
+        /attr a\n\s+attr b/
+      )
+    end
+    
+    it "should add a delta index with name {model}_{index}_delta if requested" do
+      @index.stub_method(:delta? => true)
+      
+      @index.to_config(0, @database, "utf-8").should match(
+        /source person_0_delta/
+      )
+    end
+    
+    it "should not add a delta index unless requested" do
+      @index.to_config(0, @database, "utf-8").should_not match(
+        /source person_0_delta/
+      )
+    end
+    
+    it "should have the delta index inherit from the core index" do
+      @index.stub_method(:delta? => true)
+      
+      @index.to_config(0, @database, "utf-8").should match(
+        /source person_0_delta : person_0_core/
+      )
+    end
+    
+    it "should redefine the main query for the delta index" do
+      @index.stub_method(:delta? => true)
+      
+      @index.to_config(0, @database, "utf-8").should match(
+        /source person_0_delta.+sql_query\s+= SQL/m
+      )
+    end
+    
+    it "should redefine the range query for the delta index" do
+      @index.stub_method(:delta? => true)
+      
+      @index.to_config(0, @database, "utf-8").should match(
+        /source person_0_delta.+sql_query_range\s+= sql_query_range/m
+      )
+    end
+  end
+  
   describe "prefix_fields method" do
     before :each do
       @index = ThinkingSphinx::Index.new(Person)
