@@ -114,7 +114,7 @@ searchd
           infixed_fields  = []
           
           model.indexes.each_with_index do |index, i|
-            file.write index.to_config(database_conf, charset_type)
+            file.write index.to_config(i, database_conf, charset_type)
             
             create_array_accum if index.adapter == :postgres
             sources << "#{model.name.downcase}_#{i}_core"

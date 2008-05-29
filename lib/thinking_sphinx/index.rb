@@ -37,7 +37,7 @@ module ThinkingSphinx
       initialize_from_builder(&block) if block_given?
     end
     
-    def to_config(database_conf, charset_type)
+    def to_config(index, database_conf, charset_type)
       # Set up associations and joins
       link!
       
@@ -56,7 +56,7 @@ module ThinkingSphinx
       
       config = <<-SOURCE
 
-source #{model.name.downcase}_#{i}_core
+source #{model.name.downcase}_#{index}_core
 {
 type     = #{db_adapter}
 sql_host = #{database_conf[:host] || "localhost"}
