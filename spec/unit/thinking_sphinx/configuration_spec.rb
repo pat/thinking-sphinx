@@ -2,7 +2,160 @@ require 'spec/spec_helper'
 
 describe ThinkingSphinx::Configuration do
   describe "build method" do
-    #
+    before :each do
+      @config = ThinkingSphinx::Configuration.new
+      
+      @config.stub_methods(
+        :load_models                  => "",
+        :core_index_for_model         => "",
+        :delta_index_for_model        => "",
+        :distributed_index_for_model  => "",
+        :create_array_accum           => true
+      )
+      
+      ThinkingSphinx.stub_method :indexed_models => ["Person", "Friendship"]
+      YAML.stub_method(:load => {
+        :development => {
+          "option" => "value"
+        }
+      })
+      
+      @person_index_a = ThinkingSphinx::Index.stub_instance(
+        :to_config => "", :adapter => :mysql, :delta? => false
+      )
+      @person_index_b = ThinkingSphinx::Index.stub_instance(
+        :to_config => "", :adapter => :mysql, :delta? => false
+      )
+      @friendship_index_a = ThinkingSphinx::Index.stub_instance(
+        :to_config => "", :adapter => :mysql, :delta? => false
+      )
+      
+      Person.stub_method(:indexes => [@person_index_a, @person_index_b])
+      Friendship.stub_method(:indexes => [@friendship_index_a])
+      
+      FileUtils.mkdir_p "#{@config.app_root}/config"
+      FileUtils.touch   "#{@config.app_root}/config/database.yml"
+    end
+    
+    after :each do
+      ThinkingSphinx.unstub_method :indexed_models
+      YAML.unstub_method :load
+      
+      Person.unstub_method      :indexes
+      Friendship.unstub_method  :indexes
+      
+      FileUtils.rm_rf "#{@config.app_root}/config"
+    end
+    
+    it "should load the models" do
+      @config.build
+      
+      @config.should have_received(:load_models)
+    end
+    
+    it "should load in the database YAML configuration" do
+      @config.build
+      
+      YAML.should have_received(:load)
+    end
+    
+    it "should set the mem limit based on the configuration" do
+      @config.build
+      
+      file = open(@config.config_file) { |f| f.read }
+      file.should match(/mem_limit\s+= #{@config.mem_limit}/)
+    end
+    
+    it "should use the configuration port" do
+      @config.build
+      
+      file = open(@config.config_file) { |f| f.read }
+      file.should match(/port\s+= #{@config.port}/)
+    end
+    
+    it "should use the configuration's log file locations" do
+      @config.build
+      
+      file = open(@config.config_file) { |f| f.read }
+      file.should match(/log\s+= #{@config.searchd_log_file}/)
+      file.should match(/query_log\s+= #{@config.query_log_file}/)
+    end
+    
+    it "should use the configuration's pid file location" do
+      @config.build
+      
+      file = open(@config.config_file) { |f| f.read }
+      file.should match(/pid_file\s+= #{@config.pid_file}/)
+    end
+    
+    it "should set max matches from configuration" do
+      @config.build
+      
+      file = open(@config.config_file) { |f| f.read }
+      file.should match(/max_matches\s+= #{@config.max_matches}/)
+    end
+    
+    it "should request configuration for each index for each model" do
+      @config.build
+      
+      @person_index_a.should have_received(:to_config).with(
+        0, {:option => "value"}, @config.charset_type
+      )
+      @person_index_b.should have_received(:to_config).with(
+        1, {:option => "value"}, @config.charset_type
+      )
+      @friendship_index_a.should have_received(:to_config).with(
+        0, {:option => "value"}, @config.charset_type
+      )
+    end
+    
+    it "should call create_array_accum if any index uses postgres" do
+      @person_index_a.stub_method(:adapter => :postgres)
+      
+      @config.build
+      
+      @config.should have_received(:create_array_accum)
+    end
+    
+    it "should not call create_array_accum if no index uses postgres" do
+      @config.build
+      
+      @config.should_not have_received(:create_array_accum)
+    end
+    
+    it "should call core_index_for_model for each model" do
+      @config.build
+      
+      @config.should have_received(:core_index_for_model).with(
+        Person, "source = person_0_core\nsource = person_1_core"
+      )
+      @config.should have_received(:core_index_for_model).with(
+        Friendship, "source = friendship_0_core"
+      )
+    end
+    
+    it "should call delta_index_for_model for each model if any index has a delta" do
+      @person_index_b.stub_method(:delta? => true)
+      
+      @config.build
+      
+      @config.should have_received(:delta_index_for_model).with(
+        Person, "source = person_1_delta"
+      )
+    end
+    
+    it "should not call delta_index_for_model for each model if no indexes have deltas" do
+      @config.build
+      
+      @config.should_not have_received(:delta_index_for_model)
+    end
+    
+    it "should call distributed_index_for_model for each model" do
+      @config.build
+      
+      @config.should have_received(:distributed_index_for_model).with(Person)
+      @config.should have_received(:distributed_index_for_model).with(Friendship)
+    end
   end
   
   describe "core_index_for_model method" do

@@ -49,11 +49,11 @@ module ThinkingSphinx
       self.app_root          = Merb.root  if defined?(Merb)
       self.app_root        ||= app_root
       
-      self.config_file       = "#{app_root}/config/#{environment}.sphinx.conf"
-      self.searchd_log_file  = "#{app_root}/log/searchd.log"
-      self.query_log_file    = "#{app_root}/log/searchd.query.log"
-      self.pid_file          = "#{app_root}/log/searchd.#{environment}.pid"
-      self.searchd_file_path = "#{app_root}/db/sphinx/#{environment}"
+      self.config_file       = "#{self.app_root}/config/#{environment}.sphinx.conf"
+      self.searchd_log_file  = "#{self.app_root}/log/searchd.log"
+      self.query_log_file    = "#{self.app_root}/log/searchd.query.log"
+      self.pid_file          = "#{self.app_root}/log/searchd.#{environment}.pid"
+      self.searchd_file_path = "#{self.app_root}/db/sphinx/#{environment}"
       self.port              = 3312
       self.allow_star        = false
       self.mem_limit         = "64M"
@@ -110,6 +110,7 @@ searchd
         ThinkingSphinx.indexed_models.each do |model|
           model           = model.constantize
           sources         = []
+          delta_sources   = []
           prefixed_fields = []
           infixed_fields  = []
           
@@ -118,13 +119,14 @@ searchd
             
             create_array_accum if index.adapter == :postgres
             sources << "#{model.name.downcase}_#{i}_core"
+            delta_sources << "#{model.name.downcase}_#{i}_delta" if index.delta?
           end
           
           source_list = sources.collect { |s| "source = #{s}" }.join("\n")
-          delta_list  = source_list.gsub(/_core$/, "_delta")
+          delta_list  = delta_sources.collect { |s| "source = #{s}" }.join("\n")
           
           file.write core_index_for_model(model, source_list)
-          if model.indexes.any? { |index| index.delta? }
+          unless delta_list.blank?
             file.write delta_index_for_model(model, delta_list)
           end
           

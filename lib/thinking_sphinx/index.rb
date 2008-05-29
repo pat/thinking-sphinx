@@ -76,7 +76,7 @@ sql_query_info   = #{to_sql_query_info}
       if delta?
         config += <<-SOURCE
 
-source #{model.name.downcase}_#{i}_delta : #{model.name.downcase}_#{i}_core
+source #{model.name.downcase}_#{index}_delta : #{model.name.downcase}_#{index}_core
 {
 sql_query        = #{to_sql(:delta => true).gsub(/\n/, ' ')}
 sql_query_range  = #{to_sql_query_range :delta => true}

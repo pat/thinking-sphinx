@@ -273,7 +273,8 @@ module ThinkingSphinx
         klasses = @associations[col].empty? ? [@model] :
           @associations[col].collect { |assoc| assoc.reflection.klass }
         klasses.all? { |klass|
-          klass.columns.detect { |column| column.name == col.__name.to_s }.type == :integer
+          column = klass.columns.detect { |column| column.name == col.__name.to_s }
+          !column.nil? && column.type == :integer
         }
       }
     end
