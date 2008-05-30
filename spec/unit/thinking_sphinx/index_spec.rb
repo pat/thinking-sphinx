@@ -136,6 +136,14 @@ describe ThinkingSphinx::Index do
         /source person_0_delta.+sql_query_range\s+= sql_query_range/m
       )
     end
+    
+    it "should redefine the pre query for the delta index" do
+      @index.stub_method(:delta? => true)
+      
+      @index.to_config(0, @database, "utf-8").should match(
+        /source person_0_delta.+sql_query_pre\s+=\s*\n/m
+      )
+    end
   end
   
   describe "prefix_fields method" do
