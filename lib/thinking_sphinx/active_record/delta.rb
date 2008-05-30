@@ -27,6 +27,10 @@ module ThinkingSphinx
             end
           end
           
+          def after_commit
+            # Deliberately blank.
+          end
+          
           # Normal boolean save wrapped in a handler for the after_commit
           # callback.
           # 

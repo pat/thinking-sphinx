@@ -75,9 +75,10 @@ module ThinkingSphinx
             
             if index.delta?
               before_save   :toggle_delta
-              after_destroy :toggle_deleted
               after_commit  :index_delta
             end
+            
+            after_destroy :toggle_deleted
             
             index
           end
@@ -99,17 +100,6 @@ module ThinkingSphinx
             end
             result ^ 0xFFFFFFFF
           end
-          
-          def toggle_deleted
-            config = ThinkingSphinx::Configuration.new
-            client = Riddle::Client.new config.address, config.port
-            
-            client.update(
-              "#{self.class.name.downcase}_core",
-              ['sphinx_deleted'],
-              {self.id => 1}
-            )
-          end
         end
       end
       
@@ -122,6 +112,23 @@ module ThinkingSphinx
       ::ActiveRecord::Associations::HasManyThroughAssociation.send(
         :include, ThinkingSphinx::ActiveRecord::HasManyAssociation
       )
+    end
+    
+    def toggle_deleted
+      config = ThinkingSphinx::Configuration.new
+      client = Riddle::Client.new config.address, config.port
+      
+      client.update(
+        "#{self.class.name.downcase}_core",
+        ['sphinx_deleted'],
+        {self.id => 1}
+      )
+      
+      client.update(
+        "#{self.class.name.downcase}_delta",
+        ['sphinx_deleted'],
+        {self.id => 1}
+      ) if self.class.indexes.any? { |index| index.delta? }
     end
   end
 end
