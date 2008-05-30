@@ -78,6 +78,7 @@ sql_query_info   = #{to_sql_query_info}
 
 source #{model.name.downcase}_#{index}_delta : #{model.name.downcase}_#{index}_core
 {
+sql_query_pre    = 
 sql_query        = #{to_sql(:delta => true).gsub(/\n/, ' ')}
 sql_query_range  = #{to_sql_query_range :delta => true}
 }
