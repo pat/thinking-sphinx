@@ -15,9 +15,12 @@ module ThinkingSphinx
       def search_for_ids(*args)
         results, client = search_results(*args.clone)
         
+        options = args.extract_options!
+        page    = options[:page] ? options[:page].to_i : 1
+        
         begin
           pager = WillPaginate::Collection.new(page,
-            client.limit, results[:total])
+            client.limit, results[:total] || 0)
           pager.replace results[:matches].collect { |match| match[:doc] }
         rescue
           results[:matches].collect { |match| match[:doc] }
