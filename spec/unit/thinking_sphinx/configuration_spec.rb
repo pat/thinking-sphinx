@@ -331,7 +331,8 @@ describe ThinkingSphinx::Configuration do
     it "should set prefix_fields if any fields are flagged explicitly" do
       @index = ThinkingSphinx::Index.stub_instance(
         :prefix_fields => ["a", "b", "c"],
-        :infix_fields  => ["d", "e", "f"]
+        :infix_fields  => ["d", "e", "f"],
+        :options       => {}
       )
       @model.stub_method(:indexes => [@index])
       
@@ -349,7 +350,8 @@ describe ThinkingSphinx::Configuration do
     it "should set infix_fields if any fields are flagged explicitly" do
       @index = ThinkingSphinx::Index.stub_instance(
         :prefix_fields => ["a", "b", "c"],
-        :infix_fields  => ["d", "e", "f"]
+        :infix_fields  => ["d", "e", "f"],
+        :options       => {}
       )
       @model.stub_method(:indexes => [@index])
       
