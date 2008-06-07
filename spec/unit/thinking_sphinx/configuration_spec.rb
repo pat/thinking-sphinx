@@ -212,6 +212,8 @@ describe ThinkingSphinx::Configuration do
           "address"           => "127.0.0.1",
           "port"              => 3333,
           "allow_star"        => true,
+          "min_prefix_len"    => 2,
+          "min_infix_len"     => 3,
           "mem_limit"         => "128M",
           "max_matches"       => 1001,
           "morphology"        => "stem_ru",
@@ -317,6 +319,16 @@ describe ThinkingSphinx::Configuration do
       text.should match(/enable_star\s+= 1/)
       text.should match(/min_prefix_len\s+= 1/)
       text.should match(/min_infix_len\s+= 1/)
+    end
+    
+    it "should use the configuration's infix and prefix length values if set" do
+      @config.allow_star     = true
+      @config.min_prefix_len = 3
+      @config.min_infix_len  = 2
+      text =  @config.send(:core_index_for_model, @model, "my sources")
+      
+      text.should match(/min_prefix_len\s+= 3/)
+      text.should match(/min_infix_len\s+= 2/)
     end
     
     it "should not include the star-related settings when allow_star is false" do

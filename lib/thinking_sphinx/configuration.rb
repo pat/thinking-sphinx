@@ -35,9 +35,9 @@ module ThinkingSphinx
   # 
   class Configuration
     attr_accessor :config_file, :searchd_log_file, :query_log_file,
-      :pid_file, :searchd_file_path, :address, :port, :allow_star, :mem_limit,
-      :max_matches, :morphology, :charset_type, :charset_table, :ignore_chars,
-      :app_root
+      :pid_file, :searchd_file_path, :address, :port, :allow_star,
+      :min_prefix_len, :min_infix_len, :mem_limit, :max_matches, :morphology,
+      :charset_type, :charset_table, :ignore_chars, :app_root
     
     attr_reader :environment
     
@@ -57,6 +57,8 @@ module ThinkingSphinx
       self.address           = "0.0.0.0"
       self.port              = 3312
       self.allow_star        = false
+      self.min_prefix_len    = 1
+      self.min_infix_len     = 1
       self.mem_limit         = "64M"
       self.max_matches       = 1000
       self.morphology        = "stem_en"
@@ -196,8 +198,8 @@ INDEX
       
       if self.allow_star
         output += "  enable_star    = 1\n"
-        output += "  min_prefix_len = 1\n"
-        output += "  min_infix_len  = 1\n"
+        output += "  min_prefix_len = #{self.min_prefix_len}\n"
+        output += "  min_infix_len  = #{self.min_infix_len}\n"
       end
       
       unless model.indexes.collect(&:prefix_fields).flatten.empty?
