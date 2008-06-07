@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name              = "thinking-sphinx"
-  s.version           = "0.9.6"
+  s.version           = "0.9.7"
   s.summary           = "A concise and easy-to-use Ruby library that connects ActiveRecord to the Sphinx search daemon, managing configuration, indexing and searching."
   s.description       = "A concise and easy-to-use Ruby library that connects ActiveRecord to the Sphinx search daemon, managing configuration, indexing and searching."
   s.author            = "Pat Allan"

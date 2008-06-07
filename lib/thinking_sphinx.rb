@@ -20,7 +20,7 @@ module ThinkingSphinx
   module Version #:nodoc:
     Major = 0
     Minor = 9
-    Tiny  = 6
+    Tiny  = 7
     
     String = [Major, Minor, Tiny].join('.')
   end
@@ -67,6 +67,9 @@ module ThinkingSphinx
     @@deltas_enabled = value
   end
   
+  # Checks to see if MySQL will allow simplistic GROUP BY statements. If not,
+  # or if not using MySQL, this will return false.
+  # 
   def self.use_group_by_shortcut?
     ::ActiveRecord::ConnectionAdapters.constants.include?("MysqlAdapter") &&
     ::ActiveRecord::Base.connection.is_a?(

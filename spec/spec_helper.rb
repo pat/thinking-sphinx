@@ -23,6 +23,11 @@ Spec::Runner.configure do |config|
     # sphinx.start
   end
   
+  config.before :each do
+    NotAMock::CallRecorder.instance.reset
+    NotAMock::Stubber.instance.reset
+  end
+  
   config.after :all do
     # sphinx.stop
     

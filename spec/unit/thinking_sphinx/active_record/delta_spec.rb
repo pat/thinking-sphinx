@@ -17,6 +17,10 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
         :after_commit, [:toggle_delta]
       )
     end
+    
+    it "should have an after_commit method by default" do
+      Person.instance_methods.should include("after_commit")
+    end
   end
   
   describe "save_with_after_commit_callback method" do

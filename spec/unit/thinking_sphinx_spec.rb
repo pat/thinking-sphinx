@@ -78,5 +78,30 @@ describe ThinkingSphinx do
       
       ThinkingSphinx.use_group_by_shortcut?.should be_false
     end
+    
+    describe "if not using MySQL" do
+      before :each do
+        @connection = ::ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.stub_instance(
+          :select_all => true
+        )
+        ::ActiveRecord::Base.stub_method(
+          :connection => @connection
+        )
+      end
+      
+      after :each do
+        ::ActiveRecord::Base.unstub_method(:connection)
+      end
+    
+      it "should return false" do
+        ThinkingSphinx.use_group_by_shortcut?.should be_false
+      end
+    
+      it "should not call select_all" do
+        ThinkingSphinx.use_group_by_shortcut?
+        
+        @connection.should_not have_received(:select_all)
+      end
+    end
   end
 end

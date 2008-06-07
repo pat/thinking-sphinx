@@ -1,6 +1,44 @@
 require 'spec/spec_helper'
 
 describe ThinkingSphinx::Configuration do
+  describe "environment class method" do
+    before :each do
+      ThinkingSphinx::Configuration.send(:class_variable_set, :@@environment, nil)
+      
+      ENV["RAILS_ENV"]  = nil
+      ENV["MERB_ENV"]   = nil
+    end
+    
+    it "should use the Merb environment value if set" do
+      unless defined?(Merb)
+        module Merb; end
+      end
+      
+      ThinkingSphinx::Configuration.stub_method(:defined? => true)
+      ENV["MERB_ENV"] = "merb_production"
+      ThinkingSphinx::Configuration.environment.should == "merb_production"
+      
+      Object.send(:remove_const, :Merb)
+    end
+    
+    it "should use the Rails environment value if set" do
+      ENV["RAILS_ENV"] = "rails_production"
+      ThinkingSphinx::Configuration.environment.should == "rails_production"
+    end
+    
+    it "should default to development" do
+      ThinkingSphinx::Configuration.environment.should == "development"
+    end
+  end
+  
+  describe "environment instance method" do
+    it "should return the class method" do
+      ThinkingSphinx::Configuration.stub_method(:environment => "spec")
+      ThinkingSphinx::Configuration.new.environment.should == "spec"
+      ThinkingSphinx::Configuration.should have_received(:environment)
+    end
+  end
+  
   describe "build method" do
     before :each do
       @config = ThinkingSphinx::Configuration.new
@@ -155,6 +193,44 @@ describe ThinkingSphinx::Configuration do
       
       @config.should have_received(:distributed_index_for_model).with(Person)
       @config.should have_received(:distributed_index_for_model).with(Friendship)
+    end
+  end
+  
+  describe "load_models method" do
+    it "should have some specs"
+  end
+  
+  describe "parse_config method" do
+    before :each do
+      @settings = {
+        "development" => {
+          "config_file"       => "my_conf_file.conf",
+          "searchd_log_file"  => "searchd_log_file.log",
+          "query_log_file"    => "query_log_file.log",
+          "pid_file"          => "pid_file.pid",
+          "searchd_file_path" => "searchd/file/path",
+          "address"           => "127.0.0.1",
+          "port"              => 3333,
+          "allow_star"        => true,
+          "mem_limit"         => "128M",
+          "max_matches"       => 1001,
+          "morphology"        => "stem_ru",
+          "charset_type"      => "latin1",
+          "charset_table"     => "table",
+          "ignore_chars"      => "e"
+        }
+      }
+      # puts YAML.dump(settings)
+      open("#{RAILS_ROOT}/config/sphinx.yml", "w") do |f|
+        f.write  YAML.dump(@settings)
+      end
+    end
+    
+    it "should use the accessors to set the configuration values" do
+      config = ThinkingSphinx::Configuration.new
+      @settings["development"].each do |key, value|
+        config.send(key).should == value
+      end
     end
   end
   
@@ -354,5 +430,9 @@ describe ThinkingSphinx::Configuration do
         /local = specmodel_delta/
       )
     end
+  end
+  
+  describe "create_array_accum method" do
+    it "should create the array_accum method on PostgreSQL"
   end
 end

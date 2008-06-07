@@ -8,8 +8,9 @@ describe "ThinkingSphinx::ActiveRecord" do
       end
       
       TestModule::TestModel.stub_methods(
-        :before_save  => true,
-        :after_commit => true
+        :before_save    => true,
+        :after_commit   => true,
+        :after_destroy  => true
       )
       
       @index = ThinkingSphinx::Index.stub_instance(:delta? => false)
@@ -74,6 +75,20 @@ describe "ThinkingSphinx::ActiveRecord" do
       TestModule::TestModel.should_not have_received(:after_commit)
     end
     
+    it "should add an after_destroy hook with delta indexing enabled" do
+      @index.stub_method(:delta? => true)
+      
+      TestModule::TestModel.define_index do; end
+      
+      TestModule::TestModel.should have_received(:after_destroy).with(:toggle_deleted)
+    end
+    
+    it "should add an after_destroy hook with delta indexing disabled" do
+      TestModule::TestModel.define_index do; end
+      
+      TestModule::TestModel.should have_received(:after_destroy).with(:toggle_deleted)
+    end
+    
     it "should return the new index" do
       TestModule::TestModel.define_index.should == @index
     end
@@ -82,6 +97,61 @@ describe "ThinkingSphinx::ActiveRecord" do
   describe "to_crc32 method" do
     it "should return an integer" do
       Person.to_crc32.should be_a_kind_of(Integer)
+    end
+  end
+  
+  describe "toggle_deleted method" do
+    before :each do
+      @configuration = ThinkingSphinx::Configuration.stub_instance(
+        :address  => "an address",
+        :port     => 123
+      )
+      @client = Riddle::Client.stub_instance(:update => true)
+      @person = Person.new
+      
+      ThinkingSphinx::Configuration.stub_method(:new => @configuration)
+      Riddle::Client.stub_method(:new => @client)
+      Person.indexes.each { |index| index.stub_method(:delta? => false) }
+    end
+    
+    after :each do
+      ThinkingSphinx::Configuration.unstub_method(:new)
+      Riddle::Client.unstub_method(:new)
+      Person.indexes.each { |index| index.unstub_method(:delta?) }
+    end
+    
+    it "should create a client using the Configuration's address and port" do
+      @person.toggle_deleted
+      
+      Riddle::Client.should have_received(:new).with(
+        @configuration.address, @configuration.port
+      )
+    end
+    
+    it "should update the core index's deleted flag" do
+      @person.toggle_deleted
+      
+      @client.should have_received(:update).with(
+        "person_core", ["sphinx_deleted"], {@person.id => 1}
+      )
+    end
+    
+    it "should update the delta index's deleted flag if delta indexing is enabled" do
+      Person.indexes.each { |index| index.stub_method(:delta? => true) }
+      
+      @person.toggle_deleted
+      
+      @client.should have_received(:update).with(
+        "person_delta", ["sphinx_deleted"], {@person.id => 1}
+      )
+    end
+    
+    it "shouldn't update the delta index if delta indexing is disabled" do
+      @person.toggle_deleted
+      
+      @client.should_not have_received(:update).with(
+        "person_delta", ["sphinx_deleted"], {@person.id => 1}
+      )
     end
   end
 end
