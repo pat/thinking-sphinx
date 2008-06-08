@@ -12,6 +12,8 @@ module ThinkingSphinx
   # address::          0.0.0.0 (all)
   # port::             3312
   # allow star::       false
+  # min prefix len::   1
+  # min infix len::    1
   # mem limit::        64M
   # max matches::      1000
   # morphology::       stem_en
@@ -23,8 +25,9 @@ module ThinkingSphinx
   # config/sphinx.yml with settings for each environment, in a similar
   # fashion to database.yml - using the following keys: config_file,
   # searchd_log_file, query_log_file, pid_file, searchd_file_path, port,
-  # allow_star, mem_limit, max_matches, morphology, charset_type,
-  # charset_table, ignore_chars. I think you've got the idea.
+  # allow_star, min_prefix_len, min_infix_len, mem_limit, max_matches,
+  # morphology, charset_type, charset_table, ignore_chars. I think you've got
+  # the idea.
   # 
   # Each setting in the YAML file is optional - so only put in the ones you
   # want to change.
