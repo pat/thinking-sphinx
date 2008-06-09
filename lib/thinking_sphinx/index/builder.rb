@@ -71,6 +71,13 @@ module ThinkingSphinx
         # limitations on whether they're symbols or methods or what level of
         # associations they come from.
         # 
+        # Adding SQL Fragment Fields
+        #
+        # You can also define an index using an SQL fragment, useful for when
+        # you would like to index a calculated value.
+        #
+        #   indexes "age < 18", :as => :minor
+        #
         def indexes(*args)
           options = args.extract_options!
           args.each do |columns|
