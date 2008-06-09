@@ -128,7 +128,7 @@ module ThinkingSphinx
         "#{self.class.name.downcase}_delta",
         ['sphinx_deleted'],
         {self.id => 1}
-      ) if self.class.indexes.any? { |index| index.delta? }
+      ) if self.class.indexes.any? { |index| index.delta? } && self.delta
     end
   end
 end
