@@ -73,7 +73,7 @@ module ThinkingSphinx
         # 
         # Adding SQL Fragment Fields
         #
-        # You can also define an index using an SQL fragment, useful for when
+        # You can also define a field using an SQL fragment, useful for when
         # you would like to index a calculated value.
         #
         #   indexes "age < 18", :as => :minor
@@ -122,6 +122,14 @@ module ThinkingSphinx
         # This allows you to filter on any of the values tied to a specific
         # record. Might be best to read through the Sphinx documentation to get
         # a better idea of that though.
+        # 
+        # Adding SQL Fragment Attributes
+        #
+        # You can also define an attribute using an SQL fragment, useful for
+        # when you would like to index a calculated value. Don't forget to set
+        # the type of the attribute though:
+        #
+        #   indexes "age < 18", :as => :minor, :type => :boolean
         # 
         # If you're creating attributes for latitude and longitude, don't
         # forget that Sphinx expects these values to be in radians.
