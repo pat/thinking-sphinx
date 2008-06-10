@@ -1,3 +1,5 @@
+require 'erb'
+
 module ThinkingSphinx
   # This class both keeps track of the configuration settings for Sphinx and
   # also generates the resulting file for Sphinx to use.
