@@ -89,7 +89,7 @@ module ThinkingSphinx
     def build(file_path=nil)
       load_models
       file_path ||= "#{self.config_file}"
-      database_confs = YAML.load(File.open("#{app_root}/config/database.yml"))
+      database_confs = YAML::load(ERB.new(IO.read("#{app_root}/config/database.yml")).result)
       database_confs.symbolize_keys!
       database_conf  = database_confs[environment.to_sym]
       database_conf.symbolize_keys!
