@@ -65,6 +65,7 @@ sql_pass = #{database_conf[:password]}
 sql_db   = #{database_conf[:database]}
 
 sql_query_pre    = #{charset_type == "utf-8" && adapter == :mysql ? "SET NAMES utf8" : ""}
+#{"sql_query_pre    = SET SESSION group_concat_max_len = #{@options[:group_concat_max_len]}" if @options[:group_concat_max_len]}
 sql_query_pre    = #{to_sql_query_pre}
 sql_query        = #{to_sql.gsub(/\n/, ' ')}
 sql_query_range  = #{to_sql_query_range}

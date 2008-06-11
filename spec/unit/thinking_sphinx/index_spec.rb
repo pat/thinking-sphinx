@@ -75,6 +75,19 @@ describe ThinkingSphinx::Index do
       )
     end
     
+    it "should not set group_concat_max_len if not specified" do
+      @index.to_config(0, @database, "utf-8").should_not match(
+        /group_concat_max_len/
+      )
+    end
+
+    it "should set group_concat_max_len if specified" do
+      @index.options.merge! :group_concat_max_len => 2056
+      @index.to_config(0, @database, "utf-8").should match(
+        /sql_query_pre\s+= SET SESSION group_concat_max_len = 2056/
+      )
+    end
+    
     it "should use the main query from the index" do
       @index.to_config(0, @database, "utf-8").should match(
         /sql_query\s+= SQL/
