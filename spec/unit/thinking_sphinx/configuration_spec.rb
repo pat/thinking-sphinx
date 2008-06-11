@@ -377,6 +377,28 @@ describe ThinkingSphinx::Configuration do
         /infix_fields\s+=/
       )
     end
+
+    it "should include html_strip if value is set" do
+      @config.html_strip = 1
+      text =  @config.send(:core_index_for_model, @model, "my sources")
+      text.should match(/html_strip\s+= 1/)
+    end
+
+    it "shouldn't include html_strip if value is not set" do
+      text =  @config.send(:core_index_for_model, @model, "my sources")
+      text.should_not match(/html_strip/)
+    end
+
+    it "should include html_remove_elements if values are set" do
+      @config.html_remove_elements = 'script'
+      text =  @config.send(:core_index_for_model, @model, "my sources")
+      text.should match(/html_remove_elements\s+= script/)
+    end
+
+    it "shouldn't include html_remove_elements if no values are set" do
+      text =  @config.send(:core_index_for_model, @model, "my sources")
+      text.should_not match(/html_remove_elements/)
+    end
   end
   
   describe "delta_index_for_model method" do
