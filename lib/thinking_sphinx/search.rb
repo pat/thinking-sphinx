@@ -139,7 +139,8 @@ module ThinkingSphinx
       # you can do so in your model:
       #
       #   define_index do
-      #     # ...
+      #     has :latit  # Float column, stored in radians
+      #     has :longit # Float column, stored in radians
       #     
       #     set_property :latitude_attr   => "latit"
       #     set_property :longitude_attr  => "longit"
@@ -148,12 +149,18 @@ module ThinkingSphinx
       # Now, geo-location searching really only has an affect if you have a
       # filter, sort or grouping clause related to it - otherwise it's just a
       # normal search. To make use of the positioning difference, use the
-      # special attribute "@geo" in any of your filters or sorting or grouping
+      # special attribute "@geodist" in any of your filters or sorting or grouping
       # clauses.
       # 
       # And don't forget - both the latitude and longitude you use in your
-      # search, and the values in your indexes, need to be stored in radians,
-      # _not_ degrees.
+      # search, and the values in your indexes, need to be stored as a float in radians,
+      # _not_ degrees. Keep in mind that if you do this conversion in SQL
+      # you will need to explicitly declare a column type of :float.
+      #
+      #   define_index do
+      #     has 'RADIANS(lat)', :as => :lat,  :type => :float
+      #     # ...
+      #   end
       # 
       def search(*args)
         results, client = search_results(*args.clone)
