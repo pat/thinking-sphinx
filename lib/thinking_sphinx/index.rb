@@ -56,7 +56,7 @@ module ThinkingSphinx
       
       config = <<-SOURCE
 
-source #{model.name.downcase}_#{index}_core
+source #{model.name.underscore.tr(':/\\', '_')}_#{index}_core
 {
 type     = #{db_adapter}
 sql_host = #{database_conf[:host] || "localhost"}
@@ -77,7 +77,7 @@ sql_query_info   = #{to_sql_query_info}
       if delta?
         config += <<-SOURCE
 
-source #{model.name.downcase}_#{index}_delta : #{model.name.downcase}_#{index}_core
+source #{model.name.underscore.tr(':/\\', '_')}_#{index}_delta : #{model.name.underscore.tr(':/\\', '_')}_#{index}_core
 {
 sql_query_pre    = 
 sql_query_pre    = #{charset_type == "utf-8" && adapter == :mysql ? "SET NAMES utf8" : ""}

@@ -79,7 +79,7 @@ module ThinkingSphinx
             end
             
             configuration = ThinkingSphinx::Configuration.new
-            system "indexer --config #{configuration.config_file} --rotate #{self.class.name.downcase}_delta"
+            system "indexer --config #{configuration.config_file} --rotate #{self.class.name.underscore.tr(':/\\', '_')}_delta"
             
             true
           end

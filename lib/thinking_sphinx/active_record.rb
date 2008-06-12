@@ -119,13 +119,13 @@ module ThinkingSphinx
       client = Riddle::Client.new config.address, config.port
       
       client.update(
-        "#{self.class.name.downcase}_core",
+        "#{self.class.name.underscore.tr(':/\\', '_')}_core",
         ['sphinx_deleted'],
         {self.id => 1}
       )
       
       client.update(
-        "#{self.class.name.downcase}_delta",
+        "#{self.class.name.underscore.tr(':/\\', '_')}_delta",
         ['sphinx_deleted'],
         {self.id => 1}
       ) if self.class.indexes.any? { |index| index.delta? } && self.delta
