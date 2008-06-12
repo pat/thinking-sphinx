@@ -80,6 +80,8 @@ sql_query_info   = #{to_sql_query_info}
 source #{model.name.downcase}_#{index}_delta : #{model.name.downcase}_#{index}_core
 {
 sql_query_pre    = 
+sql_query_pre    = #{charset_type == "utf-8" && adapter == :mysql ? "SET NAMES utf8" : ""}
+#{"sql_query_pre    = SET SESSION group_concat_max_len = #{@options[:group_concat_max_len]}" if @options[:group_concat_max_len]}
 sql_query        = #{to_sql(:delta => true).gsub(/\n/, ' ')}
 sql_query_range  = #{to_sql_query_range :delta => true}
 }
