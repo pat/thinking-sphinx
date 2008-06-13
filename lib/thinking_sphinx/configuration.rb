@@ -183,7 +183,7 @@ searchd
       path = "#{app_root}/config/sphinx.yml"
       return unless File.exists?(path)
       
-      conf = YAML.load(File.open(path))[environment]
+      conf = YAML::load(ERB.new(IO.read(path)).result)[environment]
       
       conf.each do |key,value|
         self.send("#{key}=", value) if self.methods.include?("#{key}=")
