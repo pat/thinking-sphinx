@@ -133,8 +133,8 @@ searchd
             file.write index.to_config(i, database_conf, charset_type)
             
             create_array_accum if index.adapter == :postgres
-            sources << "#{model.name.underscore.tr(':/\\', '_')}_#{i}_core"
-            delta_sources << "#{model.name.underscore.tr(':/\\', '_')}_#{i}_delta" if index.delta?
+            sources << "#{model.indexes.first.name}_#{i}_core"
+            delta_sources << "#{model.indexes.first.name}_#{i}_delta" if index.delta?
           end
           
           source_list = sources.collect { |s| "source = #{s}" }.join("\n")
@@ -193,10 +193,10 @@ searchd
     def core_index_for_model(model, sources)
       output = <<-INDEX
 
-index #{model.name.underscore.tr(':/\\', '_')}_core
+index #{model.indexes.first.name}_core
 {
 #{sources}
-path = #{self.searchd_file_path}/#{model.name.underscore.tr(':/\\', '_')}_core
+path = #{self.searchd_file_path}/#{model.indexes.first.name}_core
 charset_type = #{self.charset_type}
 INDEX
       
@@ -229,22 +229,22 @@ INDEX
     
     def delta_index_for_model(model, sources)
       <<-INDEX
-index #{model.name.underscore.tr(':/\\', '_')}_delta : #{model.name.underscore.tr(':/\\', '_')}_core
+index #{model.indexes.first.name}_delta : #{model.indexes.first.name}_core
 {
   #{sources}
-  path = #{self.searchd_file_path}/#{model.name.underscore.tr(':/\\', '_')}_delta
+  path = #{self.searchd_file_path}/#{model.indexes.first.name}_delta
 }
       INDEX
     end
     
     def distributed_index_for_model(model)
-      sources = ["local = #{model.name.underscore.tr(':/\\', '_')}_core"]
+      sources = ["local = #{model.indexes.first.name}_core"]
       if model.indexes.any? { |index| index.delta? }
-        sources << "local = #{model.name.underscore.tr(':/\\', '_')}_delta"
+        sources << "local = #{model.indexes.first.name}_delta"
       end
       
       <<-INDEX
-index #{model.name.underscore.tr(':/\\', '_')}
+index #{model.indexes.first.name}
 {
   type = distributed
   #{ sources.join("\n  ") }

@@ -37,6 +37,10 @@ module ThinkingSphinx
       initialize_from_builder(&block) if block_given?
     end
     
+    def name
+      model.name.underscore.tr(':/\\', '_')
+    end
+    
     def to_config(index, database_conf, charset_type)
       # Set up associations and joins
       link!
@@ -56,7 +60,7 @@ module ThinkingSphinx
       
       config = <<-SOURCE
 
-source #{model.name.underscore.tr(':/\\', '_')}_#{index}_core
+source #{model.indexes.first.name}_#{index}_core
 {
 type     = #{db_adapter}
 sql_host = #{database_conf[:host] || "localhost"}
@@ -77,7 +81,7 @@ sql_query_info   = #{to_sql_query_info}
       if delta?
         config += <<-SOURCE
 
-source #{model.name.underscore.tr(':/\\', '_')}_#{index}_delta : #{model.name.underscore.tr(':/\\', '_')}_#{index}_core
+source #{model.indexes.first.name}_#{index}_delta : #{model.indexes.first.name}_#{index}_core
 {
 sql_query_pre    = 
 sql_query_pre    = #{charset_type == "utf-8" && adapter == :mysql ? "SET NAMES utf8" : ""}

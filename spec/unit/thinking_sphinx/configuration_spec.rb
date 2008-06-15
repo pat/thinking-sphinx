@@ -59,13 +59,13 @@ describe ThinkingSphinx::Configuration do
       })
       
       @person_index_a = ThinkingSphinx::Index.stub_instance(
-        :to_config => "", :adapter => :mysql, :delta? => false
+        :to_config => "", :adapter => :mysql, :delta? => false, :name => "person"
       )
       @person_index_b = ThinkingSphinx::Index.stub_instance(
-        :to_config => "", :adapter => :mysql, :delta? => false
+        :to_config => "", :adapter => :mysql, :delta? => false, :name => "person"
       )
       @friendship_index_a = ThinkingSphinx::Index.stub_instance(
-        :to_config => "", :adapter => :mysql, :delta? => false
+        :to_config => "", :adapter => :mysql, :delta? => false, :name => "friendship"
       )
       
       Person.stub_method(:indexes => [@person_index_a, @person_index_b])
@@ -240,21 +240,20 @@ describe ThinkingSphinx::Configuration do
     before :each do
       @config = ThinkingSphinx::Configuration.new
       @model  = Class.stub_instance(
-        :indexes  => [],
-        :name     => "SpecModel"
+        :indexes  => [ThinkingSphinx::Index.new(Person)]
       )
     end
     
     it "should take its name from the model, with _core appended" do
       @config.send(:core_index_for_model, @model, "my sources").should match(
-        /index specmodel_core/
+        /index person_core/
       )
     end
     
     it "should set the path to follow the name" do
       @config.searchd_file_path = "/my/file/path"
       @config.send(:core_index_for_model, @model, "my sources").should match(
-        /path = \/my\/file\/path\/specmodel_core/
+        /path = \/my\/file\/path\/person_core/
       )
     end
     
@@ -341,12 +340,10 @@ describe ThinkingSphinx::Configuration do
     end
     
     it "should set prefix_fields if any fields are flagged explicitly" do
-      @index = ThinkingSphinx::Index.stub_instance(
+      @model.indexes.first.stub_methods(
         :prefix_fields => ["a", "b", "c"],
-        :infix_fields  => ["d", "e", "f"],
-        :options       => {}
+        :infix_fields  => ["d", "e", "f"]
       )
-      @model.stub_method(:indexes => [@index])
       
       @config.send(:core_index_for_model, @model, "my sources").should match(
         /prefix_fields\s+= a, b, c/
@@ -360,12 +357,10 @@ describe ThinkingSphinx::Configuration do
     end
     
     it "should set infix_fields if any fields are flagged explicitly" do
-      @index = ThinkingSphinx::Index.stub_instance(
+      @model.indexes.first.stub_methods(
         :prefix_fields => ["a", "b", "c"],
-        :infix_fields  => ["d", "e", "f"],
-        :options       => {}
+        :infix_fields  => ["d", "e", "f"]
       )
-      @model.stub_method(:indexes => [@index])
       
       @config.send(:core_index_for_model, @model, "my sources").should match(
         /infix_fields\s+= d, e, f/
@@ -380,23 +375,23 @@ describe ThinkingSphinx::Configuration do
 
     it "should include html_strip if value is set" do
       @config.html_strip = 1
-      text =  @config.send(:core_index_for_model, @model, "my sources")
+      text = @config.send(:core_index_for_model, @model, "my sources")
       text.should match(/html_strip\s+= 1/)
     end
 
     it "shouldn't include html_strip if value is not set" do
-      text =  @config.send(:core_index_for_model, @model, "my sources")
+      text = @config.send(:core_index_for_model, @model, "my sources")
       text.should_not match(/html_strip/)
     end
 
     it "should include html_remove_elements if values are set" do
       @config.html_remove_elements = 'script'
-      text =  @config.send(:core_index_for_model, @model, "my sources")
+      text = @config.send(:core_index_for_model, @model, "my sources")
       text.should match(/html_remove_elements\s+= script/)
     end
 
     it "shouldn't include html_remove_elements if no values are set" do
-      text =  @config.send(:core_index_for_model, @model, "my sources")
+      text = @config.send(:core_index_for_model, @model, "my sources")
       text.should_not match(/html_remove_elements/)
     end
   end
@@ -405,26 +400,26 @@ describe ThinkingSphinx::Configuration do
     before :each do
       @config = ThinkingSphinx::Configuration.new
       @model  = Class.stub_instance(
-        :name     => "SpecModel"
+        :indexes => [ThinkingSphinx::Index.new(Person)]
       )
     end
     
     it "should take its name from the model, with _delta appended" do
       @config.send(:delta_index_for_model, @model, "delta_sources").should match(
-        /index specmodel_delta/
+        /index person_delta/
       )
     end
     
     it "should inherit from the equivalent core index" do
       @config.send(:delta_index_for_model, @model, "delta_sources").should match(
-        /index specmodel_delta : specmodel_core/
+        /index person_delta : person_core/
       )
     end
     
     it "should set the path to follow the name" do
       @config.searchd_file_path = "/my/file/path"
       @config.send(:delta_index_for_model, @model, "delta_sources").should match(
-        /path = \/my\/file\/path\/specmodel_delta/
+        /path = \/my\/file\/path\/person_delta/
       )
     end
   end
@@ -433,14 +428,13 @@ describe ThinkingSphinx::Configuration do
     before :each do
       @config = ThinkingSphinx::Configuration.new
       @model  = Class.stub_instance(
-        :name     => "SpecModel",
-        :indexes  => []
+        :indexes  => [ThinkingSphinx::Index.new(Person)]
       )
     end
     
     it "should take its name from the model" do
       @config.send(:distributed_index_for_model, @model).should match(
-        /index specmodel/
+        /index person/
       )
     end
     
@@ -452,18 +446,26 @@ describe ThinkingSphinx::Configuration do
     
     it "should include the core as a local source" do
       @config.send(:distributed_index_for_model, @model).should match(
-        /local = specmodel_core/
+        /local = person_core/
       )
     end
     
     it "should only include the delta as a local source if an index is flagged to be delta" do
       @config.send(:distributed_index_for_model, @model).should_not match(
-        /local = specmodel_delta/
+        /local = person_delta/
       )
       
-      @model.stub_method(:indexes => [ThinkingSphinx::Index.stub_instance(:delta? => true)])
+      @model.indexes.first.stub_method(:delta? => true)
       @config.send(:distributed_index_for_model, @model).should match(
-        /local = specmodel_delta/
+        /local = person_delta/
+      )
+    end
+    
+    it "should handle namespaced models correctly" do
+      Person.stub_method(:name => "Namespaced::Model")
+      
+      @config.send(:distributed_index_for_model, @model).should match(
+        /index namespaced_model/
       )
     end
   end
