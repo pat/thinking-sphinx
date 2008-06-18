@@ -182,8 +182,16 @@ GROUP BY #{ (
     # so pass in :delta => true to get the delta version of the SQL.
     # 
     def to_sql_query_range(options={})
-      sql = "SELECT MIN(#{quote_column(@model.primary_key)}), " +
-            "MAX(#{quote_column(@model.primary_key)}) " +
+      min_statement = "MIN(#{quote_column(@model.primary_key)})"
+      max_statement = "MAX(#{quote_column(@model.primary_key)})"
+      
+      # Fix to handle Sphinx PostgreSQL bug (it doesn't like NULLs or 0's)
+      if adapter == :postgres
+        min_statement = "COALESCE(#{min_statement}, 1)"
+        max_statement = "COALESCE(#{max_statement}, 1)"
+      end
+      
+      sql = "SELECT #{min_statement}, #{max_statement} " +
             "FROM #{@model.quoted_table_name} "
       sql << "WHERE #{@model.quoted_table_name}.#{quote_column('delta')} " + 
             "= #{options[:delta] ? db_boolean(true) : db_boolean(false)}" if self.delta?
