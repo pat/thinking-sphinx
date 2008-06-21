@@ -46,6 +46,7 @@ Since I first released this library, there's been quite a few people who have su
 * Xavier Shay
 * Jason Rust
 * Gopal Patel
+* Chris Heald
 * Peter Vandenberk
 * Josh French
 * Andrew Bennett
