@@ -158,6 +158,17 @@ describe "ThinkingSphinx::ActiveRecord" do
       )
     end
     
+    it "should not update the delta index's deleted flag if delta indexing is enabled and the instance's delta is equivalent to false" do
+      Person.indexes.each { |index| index.stub_method(:delta? => true) }
+      @person.delta = 0
+
+      @person.toggle_deleted
+
+      @client.should_not have_received(:update).with(
+        "person_delta", ["sphinx_deleted"], {@person.id => 1}
+      )
+    end
+
     it "shouldn't update the delta index if delta indexing is disabled" do
       @person.toggle_deleted
       
