@@ -100,6 +100,16 @@ describe "ThinkingSphinx::ActiveRecord" do
     end
   end
   
+  describe "in_core_index? method" do
+    it "should return the model's corresponding search_for_id value" do
+      Person.stub_method(:search_for_id => :searching_for_id)
+      
+      person = Person.find(:first)
+      person.in_core_index?.should == :searching_for_id
+      Person.should have_received(:search_for_id).with(person.id, "person_core")
+    end
+  end
+  
   describe "toggle_deleted method" do
     before :each do
       @configuration = ThinkingSphinx::Configuration.stub_instance(
@@ -112,13 +122,14 @@ describe "ThinkingSphinx::ActiveRecord" do
       ThinkingSphinx::Configuration.stub_method(:new => @configuration)
       Riddle::Client.stub_method(:new => @client)
       Person.indexes.each { |index| index.stub_method(:delta? => false) }
+      @person.stub_method(:in_core_index? => true)
     end
     
-    after :each do
-      ThinkingSphinx::Configuration.unstub_method(:new)
-      Riddle::Client.unstub_method(:new)
-      Person.indexes.each { |index| index.unstub_method(:delta?) }
-    end
+    # after :each do
+    #   ThinkingSphinx::Configuration.unstub_method(:new)
+    #   Riddle::Client.unstub_method(:new)
+    #   Person.indexes.each { |index| index.unstub_method(:delta?) }
+    # end
     
     it "should create a client using the Configuration's address and port" do
       @person.toggle_deleted
@@ -128,10 +139,20 @@ describe "ThinkingSphinx::ActiveRecord" do
       )
     end
     
-    it "should update the core index's deleted flag" do
+    it "should update the core index's deleted flag if in core index" do
       @person.toggle_deleted
       
       @client.should have_received(:update).with(
+        "person_core", ["sphinx_deleted"], {@person.id => 1}
+      )
+    end
+    
+    it "shouldn't update the core index's deleted flag if the record isn't in it" do
+      @person.stub_method(:in_core_index? => false)
+      
+      @person.toggle_deleted
+      
+      @client.should_not have_received(:update).with(
         "person_core", ["sphinx_deleted"], {@person.id => 1}
       )
     end

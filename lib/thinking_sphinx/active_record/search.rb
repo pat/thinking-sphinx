@@ -28,6 +28,13 @@ module ThinkingSphinx
               args << options
               ThinkingSphinx::Search.search(*args)
             end
+            
+            def search_for_id(*args)
+              options = args.extract_options!
+              options[:class] = self
+              args << options
+              ThinkingSphinx::Search.search_for_id(*args)
+            end
           end
         end
       end

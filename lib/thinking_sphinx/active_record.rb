@@ -114,6 +114,10 @@ module ThinkingSphinx
       )
     end
     
+    def in_core_index?
+      @in_core_index ||= self.class.search_for_id(self.id, "#{self.class.name.downcase}_core")
+    end
+    
     def toggle_deleted
       config = ThinkingSphinx::Configuration.new
       client = Riddle::Client.new config.address, config.port
@@ -122,7 +126,7 @@ module ThinkingSphinx
         "#{self.class.indexes.first.name}_core",
         ['sphinx_deleted'],
         {self.id => 1}
-      )
+      ) if self.in_core_index?
       
       client.update(
         "#{self.class.indexes.first.name}_delta",

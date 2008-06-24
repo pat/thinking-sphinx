@@ -182,6 +182,35 @@ module ThinkingSphinx
         end
       end
       
+      # Checks if a document with the given id exists within a specific index.
+      # Expected parameters:
+      #
+      # - ID of the document
+      # - Index to check within
+      # - Options hash (defaults to {})
+      # 
+      # Example:
+      # 
+      #   ThinkingSphinx::Search.search_for_id(10, "user_core", :class => User)
+      # 
+      def search_for_id(*args)
+        options = args.extract_options!
+        client  = client_from_options options
+        
+        query, filters    = search_conditions(
+          options[:class], options[:conditions] || {}
+        )
+        client.filters   += filters
+        client.match_mode = :extended unless query.empty?
+        client.id_range   = args.first..args.first
+        
+        begin
+          return client.query(query, args[1])[:matches].length > 0
+        rescue Errno::ECONNREFUSED => err
+          raise ThinkingSphinx::ConnectionError, "Connection to Sphinx Daemon (searchd) failed."
+        end
+      end
+      
       private
       
       # This method handles the common search functionality, and returns both
