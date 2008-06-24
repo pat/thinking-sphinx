@@ -179,12 +179,10 @@ describe ThinkingSphinx::Index do
       @index.stub_method(:adapter => :postgres)
       
       @index.to_sql_query_range.should match(/COALESCE\(MIN.+COALESCE\(MAX/)
-      puts @index.to_sql_query_range
     end
     
     it "shouldn't add COALESCE if using MySQL" do
       @index.to_sql_query_range.should_not match(/COALESCE/)
-      puts @index.to_sql_query_range
     end
   end
   
