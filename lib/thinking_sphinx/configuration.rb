@@ -167,7 +167,8 @@ searchd
         begin
           model_name.classify.constantize
         rescue LoadError
-          model_name.gsub(/.*[\/\\]/, '').classify.constantize
+          model_name.gsub!(/.*[\/\\]/, '')
+          retry
         rescue NameError
           next
         end
