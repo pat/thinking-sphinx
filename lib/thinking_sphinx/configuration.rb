@@ -11,7 +11,7 @@ module ThinkingSphinx
   # query log file::        log/searchd.query.log
   # pid file::              log/searchd.#{environment}.pid
   # searchd files::         db/sphinx/#{environment}/
-  # address::               0.0.0.0 (all)
+  # address::               127.0.0.1
   # port::                  3312
   # allow star::            false
   # min prefix length::     1
@@ -63,7 +63,7 @@ module ThinkingSphinx
       self.query_log_file       = "#{self.app_root}/log/searchd.query.log"
       self.pid_file             = "#{self.app_root}/log/searchd.#{environment}.pid"
       self.searchd_file_path    = "#{self.app_root}/db/sphinx/#{environment}"
-      self.address              = "0.0.0.0"
+      self.address              = "127.0.0.1"
       self.port                 = 3312
       self.allow_star           = false
       self.min_prefix_len       = 1
