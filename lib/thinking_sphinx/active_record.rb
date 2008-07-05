@@ -10,9 +10,8 @@ module ThinkingSphinx
   module ActiveRecord
     def self.included(base)
       base.class_eval do
+        class_inheritable_array :indexes
         class << self
-          attr_accessor :indexes
-          
           # Allows creation of indexes for Sphinx. If you don't do this, there
           # isn't much point trying to search (or using this plugin at all,
           # really).
@@ -65,10 +64,10 @@ module ThinkingSphinx
           def define_index(&block)
             return unless ThinkingSphinx.define_indexes?
             
-            @indexes ||= []
+            self.indexes ||= []
             index = Index.new(self, &block)
             
-            @indexes << index
+            self.indexes << index
             unless ThinkingSphinx.indexed_models.include?(self.name)
               ThinkingSphinx.indexed_models << self.name
             end

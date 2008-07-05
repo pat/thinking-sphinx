@@ -25,6 +25,8 @@ class Person < ActiveRecord::Base
   end
 end
 
+class Child < Person; end
+
 class Contact < ActiveRecord::Base
   belongs_to :person
 end

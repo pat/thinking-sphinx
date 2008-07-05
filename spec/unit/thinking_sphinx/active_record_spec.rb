@@ -198,4 +198,13 @@ describe "ThinkingSphinx::ActiveRecord" do
       )
     end
   end
+
+  describe "indexes in the inheritance chain (STI)" do
+
+    it "should hand defined indexes on a class down to its child classes" do
+      Child.indexes.should == Person.indexes
+    end
+
+  end
+
 end
