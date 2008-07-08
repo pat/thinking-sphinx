@@ -421,7 +421,7 @@ module ThinkingSphinx
         
         case order = options[:order]
         when Symbol
-          client.sort_mode ||= :attr_asc
+          client.sort_mode = :attr_asc if client.sort_mode == :relevance || client.sort_mode.nil?
           if fields.include?(order)
             client.sort_by = order.to_s.concat("_sort")
           else
