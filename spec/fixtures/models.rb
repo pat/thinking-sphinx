@@ -25,7 +25,15 @@ class Person < ActiveRecord::Base
   end
 end
 
-class Child < Person; end
+class Parent < Person
+end
+
+class Child < Person
+  belongs_to :parent
+  define_index do
+    indexes [parent.first_name, parent.middle_initial, parent.last_name], :as => :parent_name
+  end
+end
 
 class Contact < ActiveRecord::Base
   belongs_to :person

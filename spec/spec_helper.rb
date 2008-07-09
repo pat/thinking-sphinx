@@ -12,6 +12,7 @@ Spec::Runner.configure do |config|
   
   sphinx = SphinxHelper.new
   sphinx.setup_mysql
+  require 'spec/fixtures/models'
   
   config.before :all do
     %w( tmp tmp/config tmp/log tmp/db ).each do |path|

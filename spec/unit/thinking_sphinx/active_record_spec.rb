@@ -211,7 +211,13 @@ describe "ThinkingSphinx::ActiveRecord" do
 
   describe "indexes in the inheritance chain (STI)" do
     it "should hand defined indexes on a class down to its child classes" do
-      Child.indexes.should == Person.indexes
+      Child.indexes.should include(*Person.indexes)
+    end
+
+    it "should allow associations to other STI models" do
+      Child.indexes.last.link!
+      sql = Child.indexes.last.to_sql.gsub('$start', '0').gsub('$end', '100')
+      lambda { Child.connection.execute(sql) }.should_not raise_error(ActiveRecord::StatementInvalid)
     end
   end
 end
