@@ -131,7 +131,8 @@ module ThinkingSphinx
         "#{self.class.indexes.first.name}_delta",
         ['sphinx_deleted'],
         {self.id => 1}
-      ) if self.class.indexes.any? { |index| index.delta? } && self.delta?
+      ) if self.class.indexes.any? { |index| index.delta? } && self.delta? && ThinkingSphinx.deltas_enabled?
+    rescue ThinkingSphinx::ConnectionError
     end
   end
 end

@@ -158,6 +158,7 @@ describe "ThinkingSphinx::ActiveRecord" do
     end
     
     it "should update the delta index's deleted flag if delta indexing is enabled and the instance's delta is true" do
+      ThinkingSphinx.stub_method(:deltas_enabled? => true)
       Person.indexes.each { |index| index.stub_method(:delta? => true) }
       @person.delta = true
       

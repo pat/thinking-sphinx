@@ -167,6 +167,7 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
     end
     
     it "shouldn't index if the environment is 'test'" do
+      ThinkingSphinx.unstub_method(:deltas_enabled?)
       ThinkingSphinx::Configuration.stub_method(:environment => "test")
       
       @person.send(:index_delta)
