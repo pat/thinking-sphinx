@@ -4,6 +4,8 @@
 
 First, if you haven't done so already, check out the main usage[http://ts.freelancing-gods.com/usage.html] page. Once you've done that, the next place to look for information is the specific method docs - ThinkingSphinx::Search and ThinkingSphinx::Index::Builder in particular.
 
+Keep in mind that while Thinking Sphinx works for ActiveRecord with Merb, it doesn't yet support DataMapper (although that is planned).
+
 == Contributing
 
 Fork on GitHub and after you've committed tested patches, send a pull request.
