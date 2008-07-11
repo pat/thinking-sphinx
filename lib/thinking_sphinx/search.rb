@@ -287,7 +287,7 @@ module ThinkingSphinx
       # Set all the appropriate settings for the client, using the provided
       # options hash.
       # 
-      def client_from_options(options)
+      def client_from_options(options = {})
         config = ThinkingSphinx::Configuration.new
         client = Riddle::Client.new config.address, config.port
         klass  = options[:class]
