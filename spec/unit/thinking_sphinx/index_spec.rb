@@ -207,7 +207,7 @@ describe ThinkingSphinx::Index do
     end
   end
   
-  describe "infix_fields" do
+  describe "infix_fields method" do
     before :each do
       @index = ThinkingSphinx::Index.new(Person)
       
@@ -225,6 +225,34 @@ describe ThinkingSphinx::Index do
     
     it "should not return fields that aren't flagged as infixed" do
       @index.infix_fields.should_not include(@field_b)
+    end
+  end
+  
+  describe "empty? method" do
+    before :each do
+      @index = ThinkingSphinx::Index.new(Person)
+      config = ThinkingSphinx::Configuration.new
+      
+      `mkdir -p #{config.searchd_file_path}`
+      @file_path = "#{config.searchd_file_path}/#{@index.name}_core.spa"
+    end
+    
+    after :each do
+      `rm #{@file_path}` if File.exists?(@file_path)
+    end
+    
+    it "should return true if the index files are empty" do
+      `touch #{@file_path}`
+      @index.should be_empty
+    end
+    
+    it "should return true if the index files don't exist" do
+      @index.should be_empty
+    end
+    
+    it "should return false if the index files aren't empty" do
+      `echo 'a' > #{@file_path}`
+      @index.should_not be_empty
     end
   end
 end
