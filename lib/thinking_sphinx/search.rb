@@ -50,6 +50,24 @@ module ThinkingSphinx
       # 
       #   User.search "pat", :include => :posts
       #
+      # == Advanced Searching
+      #
+      # Sphinx supports 5 different matching modes. By default Thinking Sphinx
+      # uses :all, which unsurprisingly requires all the supplied search terms
+      # to match a result.
+      #
+      # Alternative modes include:
+      #
+      #   User.search "pat allan", :match_mode => :any
+      #   User.search "pat allan", :match_mode => :phrase
+      #   User.search "pat | allan", :match_mode => :boolean
+      #   User.search "@name pat | @username pat", :match_mode => :extended
+      #
+      # Any will find results with any of the search terms. Phrase treats the search
+      # terms a single phrase instead of individual words. Boolean and extended allow
+      # for more complex query syntax, refer to the sphinx documentation for further
+      # details.
+      #
       # == Searching by Fields
       # 
       # If you want to step it up a level, you can limit your search terms to
