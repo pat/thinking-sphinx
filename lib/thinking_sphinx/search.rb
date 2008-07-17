@@ -19,9 +19,11 @@ module ThinkingSphinx
         page    = options[:page] ? options[:page].to_i : 1
         
         begin
-          pager = WillPaginate::Collection.new(page,
-            client.limit, results[:total_found] || 0)
-          pager.replace results[:matches].collect { |match| match[:doc] }
+          pager = WillPaginate::Collection.create(page,
+            client.limit, results[:total_found] || 0) do |collection|
+            collection.replace results[:matches].collect { |match| match[:doc] }
+            collection.instance_variable_set :@total_entries, results[:total_found]
+          end
         rescue
           results[:matches].collect { |match| match[:doc] }
         end
