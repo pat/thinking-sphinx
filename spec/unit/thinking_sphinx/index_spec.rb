@@ -241,18 +241,27 @@ describe ThinkingSphinx::Index do
       `rm #{@file_path}` if File.exists?(@file_path)
     end
     
-    it "should return true if the index files are empty" do
+    it "should return true if the core index files are empty" do
       `touch #{@file_path}`
       @index.should be_empty
     end
     
-    it "should return true if the index files don't exist" do
+    it "should return true if the core index files don't exist" do
       @index.should be_empty
     end
     
-    it "should return false if the index files aren't empty" do
+    it "should return false if the core index files aren't empty" do
       `echo 'a' > #{@file_path}`
       @index.should_not be_empty
+    end
+    
+    it "should check the delta files if specified" do
+      @index.should be_empty(:delta)
+      
+      `echo 'a' > #{@file_path.gsub(/_core.spa$/, '_delta.spa')}`
+      @index.should_not be_empty(:delta)
+      
+      `rm #{@file_path}` if File.exists?(@file_path.gsub(/_core.spa$/, '_delta.spa'))
     end
   end
 end

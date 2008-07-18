@@ -41,9 +41,9 @@ module ThinkingSphinx
       model.name.underscore.tr(':/\\', '_')
     end
     
-    def empty?
+    def empty?(part = :core)
       config = ThinkingSphinx::Configuration.new
-      File.size?("#{config.searchd_file_path}/#{self.name}_core.spa").nil?
+      File.size?("#{config.searchd_file_path}/#{self.name}_#{part}.spa").nil?
     end
     
     def to_config(index, database_conf, charset_type)
