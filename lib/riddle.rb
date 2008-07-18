@@ -1,4 +1,5 @@
 require 'socket'
+require 'timeout'
 require 'riddle/client'
 require 'riddle/client/filter'
 require 'riddle/client/message'
@@ -9,14 +10,17 @@ module Riddle #:nodoc:
   end
   
   module Version #:nodoc:
-    Major = 0
-    Minor = 9
-    Tiny  = 8
+    Major   = 0
+    Minor   = 9
+    Tiny    = 8
     # Revision number for RubyForge's sake, taken from what Sphinx
     # outputs to the command line.
-    Rev   = 1198
+    Rev     = 1371
+    # Release number to mark my own fixes, beyond feature parity with
+    # Sphinx itself.
+    Release = 0
     
-    String      = [Major, Minor, Tiny].join('.') + "rc1"
-    GemVersion  = [Major, Minor, Tiny, Rev].join('.')
+    String      = [Major, Minor, Tiny].join('.')
+    GemVersion  = [Major, Minor, Tiny, Rev, Release].join('.')
   end
 end
