@@ -165,7 +165,7 @@ searchd
         }
         
         begin
-          model_name.classify.constantize
+          model_name.camelize.constantize
         rescue LoadError
           model_name.gsub!(/.*[\/\\]/, '')
           retry
