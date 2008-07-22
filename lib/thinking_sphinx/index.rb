@@ -38,6 +38,10 @@ module ThinkingSphinx
     end
     
     def name
+      self.class.name(@model)
+    end
+    
+    def self.name(model)
       model.name.underscore.tr(':/\\', '_')
     end
     
@@ -46,7 +50,7 @@ module ThinkingSphinx
       File.size?("#{config.searchd_file_path}/#{self.name}_#{part}.spa").nil?
     end
     
-    def to_config(index, database_conf, charset_type)
+    def to_config(model, index, database_conf, charset_type)
       # Set up associations and joins
       link!
       
@@ -65,7 +69,7 @@ module ThinkingSphinx
       
       config = <<-SOURCE
 
-source #{model.indexes.first.name}_#{index}_core
+source #{self.class.name(model)}_#{index}_core
 {
 type     = #{db_adapter}
 sql_host = #{database_conf[:host] || "localhost"}
@@ -86,7 +90,7 @@ sql_query_info   = #{to_sql_query_info}
       if delta?
         config += <<-SOURCE
 
-source #{model.indexes.first.name}_#{index}_delta : #{model.indexes.first.name}_#{index}_core
+source #{self.class.name(model)}_#{index}_delta : #{self.class.name(model)}_#{index}_core
 {
 sql_query_pre    = 
 sql_query_pre    = #{charset_type == "utf-8" && adapter == :mysql ? "SET NAMES utf8" : ""}

@@ -14,6 +14,8 @@ Spec::Runner.configure do |config|
   sphinx.setup_mysql
   require 'spec/fixtures/models'
   
+  # puts "Models:", ThinkingSphinx.indexed_models
+  
   config.before :all do
     %w( tmp tmp/config tmp/log tmp/db ).each do |path|
       FileUtils.mkdir_p "#{Dir.pwd}/#{path}"
@@ -21,7 +23,8 @@ Spec::Runner.configure do |config|
     
     Kernel.const_set :RAILS_ROOT, "#{Dir.pwd}/tmp" unless defined?(RAILS_ROOT)
     
-    # sphinx.start
+    sphinx.setup_sphinx
+    sphinx.start
   end
   
   config.before :each do
@@ -30,8 +33,8 @@ Spec::Runner.configure do |config|
   end
   
   config.after :all do
-    # sphinx.stop
+    sphinx.stop
     
-    FileUtils.rm_r "#{Dir.pwd}/tmp"
+    # FileUtils.rm_r "#{Dir.pwd}/tmp"
   end
 end
