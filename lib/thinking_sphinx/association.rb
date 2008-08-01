@@ -95,6 +95,10 @@ module ThinkingSphinx
       (parent ? parent.ancestors : []) << self
     end
     
+    def has_column?(column)
+      @reflection.klass.column_names.include?(column.to_s)
+    end
+    
     private
     
     # Returns all the objects that could be currently instantiated from a

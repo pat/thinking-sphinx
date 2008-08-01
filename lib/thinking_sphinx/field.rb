@@ -182,9 +182,11 @@ module ThinkingSphinx
         "#{@model.quoted_table_name}.#{quote_column(column.__name)}"
       else
         associations[column].collect { |assoc|
+          assoc.has_column?(column.__name) ?
           "#{@model.connection.quote_table_name(assoc.join.aliased_table_name)}" + 
-          ".#{quote_column(column.__name)}"
-        }.join(', ')
+          ".#{quote_column(column.__name)}" :
+          nil
+        }.compact.join(', ')
       end
     end
     
