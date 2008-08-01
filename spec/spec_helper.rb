@@ -3,6 +3,7 @@ $:.unshift File.dirname(__FILE__) + '/../lib'
 require 'rubygems'
 require 'fileutils'
 require 'not_a_mock'
+require 'will_paginate'
 
 require 'lib/thinking_sphinx'
 require 'spec/sphinx_helper'

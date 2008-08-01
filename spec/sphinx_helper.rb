@@ -30,7 +30,7 @@ class SphinxHelper
       :password => @password,
       :host     => @host
     )
-    # ActiveRecord::Base.logger = nil
+    ActiveRecord::Base.logger = Logger.new(File.open("tmp/activerecord.log", "a"))
     
     structure = File.open("spec/fixtures/structure.sql") { |f| f.read.chomp }
     structure.split(';').each { |table|

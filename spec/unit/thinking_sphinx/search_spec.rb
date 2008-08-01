@@ -1,51 +1,48 @@
 require 'spec/spec_helper'
+require 'will_paginate/collection'
 
 describe ThinkingSphinx::Search do
-  # describe "search_for_id method" do
-  #   before :each do
-  #     @client = Riddle::Client.stub_instance(
-  #       :filters    => [],
-  #       :filters=   => true,
-  #       :id_range=  => true,
-  #       :query      => {
-  #         :matches  => []
-  #       }
-  #     )
-  #     
-  #     ThinkingSphinx::Search.stub_methods(
-  #       :client_from_options => @client,
-  #       :search_conditions   => ["", []]
-  #     )
-  #   end
-  #   
-  #   after :each do
-  #     ThinkingSphinx::Search.unstub_method(:client_from_options)
-  #   end
-  #   
-  #   it "should set the client id range to focus on the given id" do
-  #     ThinkingSphinx::Search.search_for_id 42, "an_index"
-  #     
-  #     @client.should have_received(:id_range=).with(42..42)
-  #   end
-  #   
-  #   it "should query on the given index" do
-  #     ThinkingSphinx::Search.search_for_id 42, "an_index"
-  #     
-  #     @client.should have_received(:query).with("", "an_index")
-  #   end
-  #   
-  #   it "should return true if a record is returned" do
-  #     @client.stub_method(:query => {
-  #       :matches => [24]
-  #     })
-  #     
-  #     ThinkingSphinx::Search.search_for_id(42, "an_index").should be_true
-  #   end
-  #   
-  #   it "should return false if no records are returned" do
-  #     ThinkingSphinx::Search.search_for_id(42, "an_index").should be_false
-  #   end
-  # end
+  describe "search_for_id method" do
+    before :each do
+      @client = Riddle::Client.stub_instance(
+        :filters    => [],
+        :filters=   => true,
+        :id_range=  => true,
+        :query      => {
+          :matches  => []
+        }
+      )
+      
+      ThinkingSphinx::Search.stub_methods(
+        :client_from_options => @client,
+        :search_conditions   => ["", []]
+      )
+    end
+    
+    it "should set the client id range to focus on the given id" do
+      ThinkingSphinx::Search.search_for_id 42, "an_index"
+      
+      @client.should have_received(:id_range=).with(42..42)
+    end
+    
+    it "should query on the given index" do
+      ThinkingSphinx::Search.search_for_id 42, "an_index"
+      
+      @client.should have_received(:query).with("", "an_index")
+    end
+    
+    it "should return true if a record is returned" do
+      @client.stub_method(:query => {
+        :matches => [24]
+      })
+      
+      ThinkingSphinx::Search.search_for_id(42, "an_index").should be_true
+    end
+    
+    it "should return false if no records are returned" do
+      ThinkingSphinx::Search.search_for_id(42, "an_index").should be_false
+    end
+  end
   
   describe "instance_from_result method" do
     before :each do
@@ -171,31 +168,31 @@ describe ThinkingSphinx::Search do
     end
     
     it "should respond to previous_page" do
-      #
+      @results.should respond_to(:previous_page)
     end
     
     it "should respond to next_page" do
-      #
+      @results.should respond_to(:next_page)
     end
     
     it "should respond to current_page" do
-      #
+      @results.should respond_to(:current_page)
     end
     
     it "should respond to total_pages" do
-      #
+      @results.should respond_to(:total_pages)
     end
     
     it "should respond to total_entries" do
-      #
+      @results.should respond_to(:total_entries)
     end
     
     it "should respond to offset" do
-      #
+      @results.should respond_to(:offset)
     end
         
     it "should be a subclass of Array" do
-      #
+      @results.should be_kind_of(Array)
     end
   end
 end
