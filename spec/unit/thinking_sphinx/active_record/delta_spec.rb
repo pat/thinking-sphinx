@@ -153,13 +153,16 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
       @person.stub_method(:system => true)
     end
     
-    after :each do
-      ThinkingSphinx::Configuration.unstub_method(:environment)
-      ThinkingSphinx.unstub_method(:deltas_enabled?)
-    end
-    
     it "shouldn't index if delta indexing is disabled" do
       ThinkingSphinx.stub_method(:deltas_enabled? => false)
+      
+      @person.send(:index_delta)
+      
+      @person.should_not have_received(:system)
+    end
+    
+    it "shouldn't index if index updating is disabled" do
+      ThinkingSphinx.stub_method(:updates_enabled? => false)
       
       @person.send(:index_delta)
       

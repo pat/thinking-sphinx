@@ -207,6 +207,19 @@ describe "ThinkingSphinx::ActiveRecord" do
         "person_delta", ["sphinx_deleted"], {@person.id => 1}
       )
     end
+    
+    it "should not update either index if updates are disabled" do
+      ThinkingSphinx.stub_methods(
+        :updates_enabled? => false,
+        :deltas_enabled   => true
+      )
+      Person.indexes.each { |index| index.stub_method(:delta? => true) }
+      @person.delta = true
+      
+      @person.toggle_deleted
+      
+      @client.should_not have_received(:update)
+    end
   end
 
   describe "indexes in the inheritance chain (STI)" do

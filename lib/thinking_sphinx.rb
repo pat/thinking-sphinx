@@ -58,7 +58,7 @@ module ThinkingSphinx
   # 
   def self.deltas_enabled?
     @@deltas_enabled  = (ThinkingSphinx::Configuration.environment != 'test') if @@deltas_enabled.nil?
-    @@deltas_enabled == true
+    @@deltas_enabled
   end
   
   # Enable/disable all delta indexing.
@@ -67,6 +67,24 @@ module ThinkingSphinx
   #
   def self.deltas_enabled=(value)
     @@deltas_enabled = value
+  end
+  
+  @@updates_enabled = nil
+  
+  # Check if updates are enabled. True by default, unless within the test
+  # environment.
+  # 
+  def self.updates_enabled?
+    @@updates_enabled  = (ThinkingSphinx::Configuration.environment != 'test') if @@updates_enabled.nil?
+    @@updates_enabled
+  end
+  
+  # Enable/disable updates to Sphinx
+  # 
+  #   ThinkingSphinx.updates_enabled = false
+  #
+  def self.updates_enabled=(value)
+    @@updates_enabled = value
   end
   
   # Checks to see if MySQL will allow simplistic GROUP BY statements. If not,

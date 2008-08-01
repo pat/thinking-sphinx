@@ -40,6 +40,23 @@ describe ThinkingSphinx do
     ThinkingSphinx.deltas_enabled?.should be_true
   end
   
+  it "should update indexes by default" do
+    ThinkingSphinx.updates_enabled = nil
+    ThinkingSphinx.updates_enabled?.should be_true
+  end
+  
+  it "should disable index updating" do
+    ThinkingSphinx.updates_enabled = false
+    ThinkingSphinx.updates_enabled?.should be_false
+  end
+  
+  it "should enable index updating" do
+    ThinkingSphinx.updates_enabled = false
+    ThinkingSphinx.updates_enabled?.should be_false
+    ThinkingSphinx.updates_enabled = true
+    ThinkingSphinx.updates_enabled?.should be_true
+  end
+  
   describe "use_group_by_shortcut? method" do
     after :each do
       ::ActiveRecord::Base.connection.unstub_method(:select_all)
