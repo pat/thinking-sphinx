@@ -69,6 +69,28 @@ module ThinkingSphinx
     @@deltas_enabled = value
   end
   
+  @@offline_indexing = nil
+  
+  # Enable/disable to handle delta indexing outside of rails.
+  # This is so the delta index doesn't get run every time
+  # there is a change to a model.  Helpful when certain
+  # actions can cause many models to change at once or
+  # when certain models in large tables get updated often.
+  # This could go in environment.rb:
+  #   ThinkingSphinx.offline_indexing = true
+  #
+  # You need to then handle the delta reindexing manually via cron, etc.
+  # 
+  def self.offline_indexing=(value)
+    @@offline_indexing = value
+  end
+  
+  # Check if offline indexing is enabled.
+  # 
+  def self.offline_indexing?
+    @@offline_indexing == true
+  end
+  
   @@updates_enabled = nil
   
   # Check if updates are enabled. True by default, unless within the test

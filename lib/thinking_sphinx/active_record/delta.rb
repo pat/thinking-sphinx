@@ -74,7 +74,7 @@ module ThinkingSphinx
           # 
           def index_delta
             return true unless ThinkingSphinx.updates_enabled? &&
-              ThinkingSphinx.deltas_enabled?
+              ThinkingSphinx.deltas_enabled? && !ThinkingSphinx.offline_indexing?
             
             config = ThinkingSphinx::Configuration.new
             client = Riddle::Client.new config.address, config.port

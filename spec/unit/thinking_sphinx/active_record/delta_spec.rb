@@ -204,4 +204,30 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
       @client.should have_received(:update)
     end
   end
+  
+  describe "index_delta method with offline indexing" do
+    before :each do
+      ThinkingSphinx.offline_indexing = true
+      ThinkingSphinx::Configuration.stub_method(:environment => "spec")
+      ThinkingSphinx.stub_method(:deltas_enabled? => true)
+
+      @person = Person.new
+      @person.stub_method(:system => true)
+    end
+    
+    after :each do
+      ThinkingSphinx::Configuration.unstub_method(:environment)
+      ThinkingSphinx.unstub_method(:deltas_enabled?)
+      ThinkingSphinx.offline_indexing = false
+    end
+  
+    it "should not call indexer for the delta index if offline_indexing is enabled" do
+      ThinkingSphinx.offline_indexing?.should be_true
+      @person.send(:index_delta)
+      
+      @person.should_not have_received(:system)
+    end
+    
+  end
+  
 end
