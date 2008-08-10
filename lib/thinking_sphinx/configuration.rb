@@ -218,11 +218,11 @@ INDEX
       output += "  html_remove_elements = #{self.html_remove_elements}\n" unless self.html_remove_elements.blank?
 
       unless model.indexes.collect(&:prefix_fields).flatten.empty?
-        output += "  prefix_fields = #{model.indexes.collect(&:prefix_fields).flatten.join(', ')}\n"
+        output += "  prefix_fields = #{model.indexes.collect(&:prefix_fields).flatten.map(&:unique_name).join(', ')}\n"
       end
       
       unless model.indexes.collect(&:infix_fields).flatten.empty?
-        output += "  infix_fields  = #{model.indexes.collect(&:infix_fields).flatten.join(', ')}\n"
+        output += "  infix_fields  = #{model.indexes.collect(&:infix_fields).flatten.map(&:unique_name).join(', ')}\n"
       end
       
       output + "}\n"
