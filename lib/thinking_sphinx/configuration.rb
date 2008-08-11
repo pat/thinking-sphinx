@@ -43,7 +43,7 @@ module ThinkingSphinx
   # 
   class Configuration
     attr_accessor :config_file, :searchd_log_file, :query_log_file,
-      :pid_file, :searchd_file_path, :address, :port, :allow_star,
+      :pid_file, :searchd_file_path, :address, :port, :enable_star,
       :min_prefix_len, :min_infix_len, :mem_limit, :max_matches, :morphology,
       :charset_type, :charset_table, :ignore_chars, :html_strip,
       :html_remove_elements, :app_root
@@ -66,8 +66,9 @@ module ThinkingSphinx
       self.address              = "127.0.0.1"
       self.port                 = 3312
       self.allow_star           = false
-      self.min_prefix_len       = 1
-      self.min_infix_len        = 1
+      self.enable_star          = false
+      self.min_prefix_len       = nil
+      self.min_infix_len        = nil
       self.mem_limit            = "64M"
       self.max_matches          = 1000
       self.morphology           = "stem_en"
@@ -209,11 +210,17 @@ INDEX
       output += "  ignore_chars   = #{self.ignore_chars}\n"  unless self.ignore_chars.nil?
       
       if self.allow_star
+        # ye olde way of turning on enable_star
         output += "  enable_star    = 1\n"
         output += "  min_prefix_len = #{self.min_prefix_len}\n"
-        output += "  min_infix_len  = #{self.min_infix_len}\n"
+      else
+        # james' new, manual way of turning on enable_star
+        output += "  enable_star    = 1\n" if self.enable_star
+        output += "  min_prefix_len = #{self.min_prefix_len}\n" unless self.min_prefix_len.nil?
+        output += "  min_infix_len = #{self.min_infix_len}\n" unless self.min_infix_len.nil?
       end
       
+
       output += "  html_strip     = 1\n" if self.html_strip
       output += "  html_remove_elements = #{self.html_remove_elements}\n" unless self.html_remove_elements.blank?
 
