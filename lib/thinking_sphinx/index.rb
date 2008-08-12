@@ -50,7 +50,7 @@ module ThinkingSphinx
       File.size?("#{config.searchd_file_path}/#{self.name}_#{part}.spa").nil?
     end
     
-    def to_config(model, index, database_conf, charset_type)
+    def to_config(model, index, database_conf, charset_type, offset)
       # Set up associations and joins
       link!
       
@@ -80,9 +80,9 @@ sql_db   = #{database_conf[:database]}
 sql_query_pre    = #{charset_type == "utf-8" && adapter == :mysql ? "SET NAMES utf8" : ""}
 #{"sql_query_pre    = SET SESSION group_concat_max_len = #{@options[:group_concat_max_len]}" if @options[:group_concat_max_len]}
 sql_query_pre    = #{to_sql_query_pre}
-sql_query        = #{to_sql.gsub(/\n/, ' ')}
+sql_query        = #{to_sql(:offset => offset).gsub(/\n/, ' ')}
 sql_query_range  = #{to_sql_query_range}
-sql_query_info   = #{to_sql_query_info}
+sql_query_info   = #{to_sql_query_info(offset)}
 #{attr_sources}
 }
       SOURCE
@@ -95,7 +95,7 @@ source #{self.class.name(model)}_#{index}_delta : #{self.class.name(model)}_#{in
 sql_query_pre    = 
 sql_query_pre    = #{charset_type == "utf-8" && adapter == :mysql ? "SET NAMES utf8" : ""}
 #{"sql_query_pre    = SET SESSION group_concat_max_len = #{@options[:group_concat_max_len]}" if @options[:group_concat_max_len]}
-sql_query        = #{to_sql(:delta => true).gsub(/\n/, ' ')}
+sql_query        = #{to_sql(:delta => true, :offset => offset).gsub(/\n/, ' ')}
 sql_query_range  = #{to_sql_query_range :delta => true}
 }
         SOURCE
@@ -153,9 +153,11 @@ sql_query_range  = #{to_sql_query_range :delta => true}
         where_clause << " AND " << @conditions.join(" AND ")
       end
       
+      unique_id_expr = "* #{ThinkingSphinx.indexed_models.size} + #{options[:offset] || 0}"
+      
       sql = <<-SQL
 SELECT #{ (
-  ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key)}"] + 
+  ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key)} #{unique_id_expr} AS #{quote_column(@model.primary_key)} "] + 
   @fields.collect { |field| field.to_select_sql } +
   @attributes.collect { |attribute| attribute.to_select_sql }
 ).join(", ") }
@@ -181,9 +183,9 @@ GROUP BY #{ (
     # Simple helper method for the query info SQL - which is a statement that
     # returns the single row for a corresponding id.
     # 
-    def to_sql_query_info
+    def to_sql_query_info(offset)
       "SELECT * FROM #{@model.quoted_table_name} WHERE " +
-      " #{quote_column(@model.primary_key)} = $id"
+      " #{quote_column(@model.primary_key)} = (($id - #{offset}) / #{ThinkingSphinx.indexed_models.size})"
     end
     
     # Simple helper method for the query range SQL - which is a statement that

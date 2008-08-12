@@ -123,7 +123,7 @@ searchd
 }
         CONFIG
         
-        ThinkingSphinx.indexed_models.each do |model|
+        ThinkingSphinx.indexed_models.each_with_index do |model, model_index|
           model           = model.constantize
           sources         = []
           delta_sources   = []
@@ -131,7 +131,7 @@ searchd
           infixed_fields  = []
           
           model.indexes.each_with_index do |index, i|
-            file.write index.to_config(model, i, database_conf, charset_type)
+            file.write index.to_config(model, i, database_conf, charset_type, model_index)
             
             create_array_accum if index.adapter == :postgres
             sources << "#{ThinkingSphinx::Index.name(model)}_#{i}_core"
