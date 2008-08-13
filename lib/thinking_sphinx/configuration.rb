@@ -29,10 +29,9 @@ module ThinkingSphinx
   # config/sphinx.yml with settings for each environment, in a similar
   # fashion to database.yml - using the following keys: config_file,
   # searchd_log_file, query_log_file, pid_file, searchd_file_path, port,
-  # allow_star, min_prefix_len, min_infix_len, mem_limit, max_matches,
-  # morphology, charset_type, charset_table, ignore_chars, html_strip,
-  # html_remove_elements. I think you've got
-  # the idea.
+  # allow_star, enable_star, min_prefix_len, min_infix_len, mem_limit,
+  # max_matches, # morphology, charset_type, charset_table, ignore_chars,
+  # html_strip, # html_remove_elements. I think you've got the idea.
   # 
   # Each setting in the YAML file is optional - so only put in the ones you
   # want to change.
@@ -43,7 +42,7 @@ module ThinkingSphinx
   # 
   class Configuration
     attr_accessor :config_file, :searchd_log_file, :query_log_file,
-      :pid_file, :searchd_file_path, :address, :port, :enable_star,
+      :pid_file, :searchd_file_path, :address, :port, :enable_star, :allow_star,
       :min_prefix_len, :min_infix_len, :mem_limit, :max_matches, :morphology,
       :charset_type, :charset_table, :ignore_chars, :html_strip,
       :html_remove_elements, :app_root
