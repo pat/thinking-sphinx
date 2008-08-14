@@ -160,4 +160,31 @@ describe ThinkingSphinx::Search do
       ).should == [@person_a, @person_b, @person_c]
     end
   end
+
+  describe "count method" do
+    before :each do
+      @client = Riddle::Client.stub_instance(
+        :filters    => [],
+        :filters=   => true,
+        :id_range=  => true,
+        :sort_mode  => :asc,
+        :limit      => 5,
+        :offset=    => 0,
+        :sort_mode= => true,
+        :query      => {
+          :matches  => [],
+          :total    => 50
+        }
+      )
+
+      ThinkingSphinx::Search.stub_methods(
+        :client_from_options => @client,
+        :search_conditions   => ["", []]
+      )
+    end
+
+    it "should return query total" do
+      ThinkingSphinx::Search.count(42, "an_index").should == 50
+    end
+  end
 end

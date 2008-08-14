@@ -7,6 +7,8 @@ require 'not_a_mock'
 require 'lib/thinking_sphinx'
 require 'spec/sphinx_helper'
 
+ActiveRecord::Base.logger = Logger.new(StringIO.new)
+
 Spec::Runner.configure do |config|
   # config.mock_with NotAMock::RspecMockFrameworkAdapter
   
