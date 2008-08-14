@@ -42,9 +42,9 @@ module ThinkingSphinx
   # 
   class Configuration
     attr_accessor :config_file, :searchd_log_file, :query_log_file,
-      :pid_file, :searchd_file_path, :address, :port, :enable_star, :allow_star,
-      :min_prefix_len, :min_infix_len, :mem_limit, :max_matches, :morphology,
-      :charset_type, :charset_table, :ignore_chars, :html_strip,
+      :pid_file, :searchd_file_path, :address, :port, :enable_star,
+      :allow_star, :min_prefix_len, :min_infix_len, :mem_limit, :max_matches,
+      :morphology, :charset_type, :charset_table, :ignore_chars, :html_strip,
       :html_remove_elements, :app_root
     
     attr_reader :environment
@@ -209,14 +209,14 @@ INDEX
       output += "  ignore_chars   = #{self.ignore_chars}\n"  unless self.ignore_chars.nil?
       
       if self.allow_star
-        # ye olde way of turning on enable_star
+        # Ye Olde way of turning on enable_star
         output += "  enable_star    = 1\n"
         output += "  min_prefix_len = #{self.min_prefix_len}\n"
       else
-        # james' new, manual way of turning on enable_star
+        # New, better way of turning on enable_star - thanks to James Healy
         output += "  enable_star    = 1\n" if self.enable_star
         output += "  min_prefix_len = #{self.min_prefix_len}\n" unless self.min_prefix_len.nil?
-        output += "  min_infix_len = #{self.min_infix_len}\n" unless self.min_infix_len.nil?
+        output += "  min_infix_len  = #{self.min_infix_len}\n" unless self.min_infix_len.nil?
       end
       
 
