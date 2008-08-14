@@ -1,6 +1,10 @@
 require 'active_record'
 require 'active_record/connection_adapters/mysql_adapter'
-require 'active_record/connection_adapters/postgresql_adapter'
+begin
+  require 'active_record/connection_adapters/postgresql_adapter'
+rescue LoadError
+  # No postgres?  no prob...
+end
 require 'yaml'
 
 class SphinxHelper

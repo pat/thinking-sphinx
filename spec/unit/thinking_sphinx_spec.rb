@@ -99,6 +99,10 @@ describe ThinkingSphinx do
     
     describe "if not using MySQL" do
       before :each do
+        unless ::ActiveRecord::ConnectionAdapters.const_defined?(:PostgreSQLAdapter)
+          pending "No PostgreSQL"
+          return
+        end
         @connection = ::ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.stub_instance(
           :select_all => true
         )
