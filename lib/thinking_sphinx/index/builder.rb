@@ -81,8 +81,7 @@ module ThinkingSphinx
         def indexes(*args)
           options = args.extract_options!
           args.each do |columns|
-            columns = FauxColumn.new(columns) if columns.is_a?(Symbol)
-            fields << Field.new(columns, options)
+            fields << Field.new(FauxColumn.coerce(columns), options)
             
             if fields.last.sortable
               attributes << Attribute.new(
@@ -137,23 +136,7 @@ module ThinkingSphinx
         def has(*args)
           options = args.extract_options!
           args.each do |columns|
-            columns = case columns
-            when Symbol, String
-              FauxColumn.new(columns)
-            when Array
-              columns.collect { |col|
-                case col
-                when Symbol, String
-                  FauxColumn.new(col)
-                else
-                  col
-                end
-              }
-            else
-              columns
-            end
-            
-            attributes << Attribute.new(columns, options)
+            attributes << Attribute.new(FauxColumn.coerce(columns), options)
           end
         end
         alias_method :attribute, :has
