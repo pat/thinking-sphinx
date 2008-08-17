@@ -9,26 +9,23 @@ require 'lib/thinking_sphinx'
 require 'spec/sphinx_helper'
 
 Spec::Runner.configure do |config|
-  # config.mock_with NotAMock::RspecMockFrameworkAdapter
+  %w( tmp tmp/config tmp/log tmp/db ).each do |path|
+    FileUtils.mkdir_p "#{Dir.pwd}/#{path}"
+  end
   
   sphinx = SphinxHelper.new
   sphinx.setup_mysql
+  
   require 'spec/fixtures/models'
   
-  # puts "Models:", ThinkingSphinx.indexed_models
-  
-  config.before :all do
-    %w( tmp tmp/config tmp/log tmp/db ).each do |path|
-      FileUtils.mkdir_p "#{Dir.pwd}/#{path}"
-    end
-    
+  config.before :all do    
     Kernel.const_set :RAILS_ROOT, "#{Dir.pwd}/tmp" unless defined?(RAILS_ROOT)
     
     sphinx.setup_sphinx
     sphinx.start
   end
   
-  config.before :each do
+  config.after :each do
     NotAMock::CallRecorder.instance.reset
     NotAMock::Stubber.instance.reset
   end

@@ -81,8 +81,8 @@ describe ThinkingSphinx::Configuration do
       
       Person.unstub_method      :indexes
       Friendship.unstub_method  :indexes
-      
-      FileUtils.rm_rf "#{@config.app_root}/config"
+      # 
+      # FileUtils.rm_rf "#{@config.app_root}/config"
     end
     
     it "should load the models" do
@@ -239,9 +239,7 @@ describe ThinkingSphinx::Configuration do
   describe "core_index_for_model method" do
     before :each do
       @config = ThinkingSphinx::Configuration.new
-      @model  = Class.stub_instance(
-        :indexes  => [ThinkingSphinx::Index.new(Person)]
-      )
+      @model  = Person
     end
     
     it "should take its name from the model, with _core appended" do
@@ -399,9 +397,7 @@ describe ThinkingSphinx::Configuration do
   describe "delta_index_for_model method" do
     before :each do
       @config = ThinkingSphinx::Configuration.new
-      @model  = Class.stub_instance(
-        :indexes => [ThinkingSphinx::Index.new(Person)]
-      )
+      @model  = Person
     end
     
     it "should take its name from the model, with _delta appended" do
@@ -427,9 +423,7 @@ describe ThinkingSphinx::Configuration do
   describe "distributed_index_for_model method" do
     before :each do
       @config = ThinkingSphinx::Configuration.new
-      @model  = Class.stub_instance(
-        :indexes  => [ThinkingSphinx::Index.new(Person)]
-      )
+      @model  = Person
     end
     
     it "should take its name from the model" do

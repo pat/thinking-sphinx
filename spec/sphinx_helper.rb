@@ -75,9 +75,9 @@ class SphinxHelper
   
   def start
     return if running?
-
+    
     cmd = "searchd --config #{@configuration.config_file}"
-    `#{cmd}`
+    `#{cmd}`    
 
     sleep(1)
 
