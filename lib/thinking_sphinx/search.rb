@@ -291,7 +291,8 @@ module ThinkingSphinx
       # 
       def instance_from_result(result, options)
         class_from_crc(result[:attributes]["class_crc"]).find(
-          result[:doc], :include => options[:include], :select => options[:select]
+          result[:attributes]["sphinx_internal_id"],
+          :include => options[:include], :select => options[:select]
         )
       end
       
@@ -331,14 +332,17 @@ module ThinkingSphinx
           )
         end
         
+        options[:classes] = [klass.to_crc32] if klass
+        
         client.anchor = anchor_conditions(klass, options) || {} if client.anchor.empty?
         
         client.filters << Riddle::Client::Filter.new(
           "sphinx_deleted", [0]
         )
+        
         # class filters
         client.filters << Riddle::Client::Filter.new(
-          "class_crc", options[:classes].collect { |klass| klass.to_crc32 }
+          "subclass_crcs", options[:classes].collect { |subclass| subclass.to_crc32 }
         ) if options[:classes]
         
         # normal attribute filters
@@ -386,10 +390,6 @@ module ThinkingSphinx
             search_string << "@#{key} #{val} "
           end
         end
-        
-        filters << Riddle::Client::Filter.new(
-          "class_crc", [klass.to_crc32]
-        ) if klass
         
         return search_string, filters
       end

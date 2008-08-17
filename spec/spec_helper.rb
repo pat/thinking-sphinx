@@ -18,7 +18,7 @@ Spec::Runner.configure do |config|
   
   require 'spec/fixtures/models'
   
-  config.before :all do    
+  config.before :all do
     Kernel.const_set :RAILS_ROOT, "#{Dir.pwd}/tmp" unless defined?(RAILS_ROOT)
     
     sphinx.setup_sphinx

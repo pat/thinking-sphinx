@@ -193,8 +193,10 @@ GROUP BY #{ (
     # so pass in :delta => true to get the delta version of the SQL.
     # 
     def to_sql_query_range(options={})
-      min_statement = "MIN(#{quote_column(@model.primary_key)})"
-      max_statement = "MAX(#{quote_column(@model.primary_key)})"
+      unique_id_expr = "* #{ThinkingSphinx.indexed_models.size} + #{options[:offset] || 0}"
+      
+      min_statement = "MIN(#{quote_column(@model.primary_key)} #{unique_id_expr})"
+      max_statement = "MAX(#{quote_column(@model.primary_key)} #{unique_id_expr})"
       
       # Fix to handle Sphinx PostgreSQL bug (it doesn't like NULLs or 0's)
       if adapter == :postgres
@@ -273,9 +275,21 @@ GROUP BY #{ (
       @options    = builder.properties.except(:delta)
       
       @attributes << Attribute.new(
+        FauxColumn.new(:id),
+        :type => :integer,
+        :as   => :sphinx_internal_id
+      )
+      @attributes << Attribute.new(
         FauxColumn.new(@model.to_crc32.to_s),
         :type => :integer,
         :as   => :class_crc
+      )
+      @attributes << Attribute.new(
+        FauxColumn.new((@model.send(:subclasses).collect { |klass|
+          klass.to_crc32.to_s
+        } + [@model.to_crc32.to_s]).join(",")),
+        :type => :integer,
+        :as   => :subclass_crcs
       )
       @attributes << Attribute.new(
         FauxColumn.new("0"),
