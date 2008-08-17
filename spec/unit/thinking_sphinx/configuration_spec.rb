@@ -59,13 +59,16 @@ describe ThinkingSphinx::Configuration do
       })
       
       @person_index_a = ThinkingSphinx::Index.stub_instance(
-        :to_config => "", :adapter => :mysql, :delta? => false, :name => "person"
+        :to_config => "",   :adapter => :mysql, :delta? => false,
+        :name => "person",  :model => Person
       )
       @person_index_b = ThinkingSphinx::Index.stub_instance(
-        :to_config => "", :adapter => :mysql, :delta? => false, :name => "person"
+        :to_config => "",   :adapter => :mysql, :delta? => false,
+        :name => "person",  :model => Person
       )
       @friendship_index_a = ThinkingSphinx::Index.stub_instance(
-        :to_config => "", :adapter => :mysql, :delta? => false, :name => "friendship"
+        :to_config => "",       :adapter => :mysql, :delta? => false,
+        :name => "friendship",  :model => Friendship
       )
       
       Person.stub_method(:indexes => [@person_index_a, @person_index_b])
@@ -137,13 +140,13 @@ describe ThinkingSphinx::Configuration do
       @config.build
       
       @person_index_a.should have_received(:to_config).with(
-        0, {:option => "value"}, @config.charset_type
+        Person, 0, {:option => "value"}, @config.charset_type, 0
       )
       @person_index_b.should have_received(:to_config).with(
-        1, {:option => "value"}, @config.charset_type
+        Person, 1, {:option => "value"}, @config.charset_type, 0
       )
       @friendship_index_a.should have_received(:to_config).with(
-        0, {:option => "value"}, @config.charset_type
+        Friendship, 0, {:option => "value"}, @config.charset_type, 1
       )
     end
     
@@ -204,7 +207,7 @@ describe ThinkingSphinx::Configuration do
     before :each do
       @settings = {
         "development" => {
-          "config_file"       => "my_conf_file.conf",
+          "config_file"       => "tmp/config/development.sphinx.conf",
           "searchd_log_file"  => "searchd_log_file.log",
           "query_log_file"    => "query_log_file.log",
           "pid_file"          => "pid_file.pid",
@@ -222,7 +225,7 @@ describe ThinkingSphinx::Configuration do
           "ignore_chars"      => "e"
         }
       }
-      # puts YAML.dump(settings)
+      
       open("#{RAILS_ROOT}/config/sphinx.yml", "w") do |f|
         f.write  YAML.dump(@settings)
       end
@@ -233,6 +236,10 @@ describe ThinkingSphinx::Configuration do
       @settings["development"].each do |key, value|
         config.send(key).should == value
       end
+    end
+    
+    after :each do
+      FileUtils.rm "#{RAILS_ROOT}/config/sphinx.yml"
     end
   end
   

@@ -58,21 +58,29 @@ describe ThinkingSphinx::Search do
     it "should honour the :include option" do
       ThinkingSphinx::Search.send(
         :instance_from_result,
-        {:doc => 1, :attributes => {"class_crc" => 123}},
+        {
+          :doc => 1, :attributes => {
+            "sphinx_internal_id" => 2, "class_crc" => 123
+          }
+        },
         {:include => :assoc}
       )
 
-      Person.should have_received(:find).with(1, :include => :assoc, :select => nil)
+      Person.should have_received(:find).with(2, :include => :assoc, :select => nil)
     end
 
     it "should honour the :select option" do
       ThinkingSphinx::Search.send(
         :instance_from_result,
-        {:doc => 1, :attributes => {"class_crc" => 123}},
+        {
+          :doc => 1, :attributes => {
+            "sphinx_internal_id" => 2, "class_crc" => 123
+          }
+        },
         {:select => :columns}
       )
 
-      Person.should have_received(:find).with(1, :include => nil, :select => :columns)
+      Person.should have_received(:find).with(2, :include => nil, :select => :columns)
     end
 
   end

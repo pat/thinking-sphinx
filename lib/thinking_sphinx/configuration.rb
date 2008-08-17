@@ -130,13 +130,15 @@ searchd
           prefixed_fields = []
           infixed_fields  = []
           
-          model.indexes.each_with_index do |index, i|
+          model.indexes.select { |index| index.model == model }.each_with_index do |index, i|
             file.write index.to_config(model, i, database_conf, charset_type, model_index)
             
             create_array_accum if index.adapter == :postgres
             sources << "#{ThinkingSphinx::Index.name(model)}_#{i}_core"
             delta_sources << "#{ThinkingSphinx::Index.name(model)}_#{i}_delta" if index.delta?
           end
+          
+          next if sources.empty?
           
           source_list = sources.collect       { |s| "source = #{s}" }.join("\n")
           delta_list  = delta_sources.collect { |s| "source = #{s}" }.join("\n")
