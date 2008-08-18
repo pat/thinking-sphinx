@@ -163,8 +163,8 @@ SELECT #{ (
 ).join(", ") }
 FROM #{ @model.table_name }
   #{ assocs.collect { |assoc| assoc.to_sql }.join(' ') }
-WHERE #{@model.quoted_table_name}.#{quote_column(@model.primary_key)} >= $start
-  AND #{@model.quoted_table_name}.#{quote_column(@model.primary_key)} <= $end
+WHERE #{@model.quoted_table_name}.#{quote_column(@model.primary_key)} #{unique_id_expr} >= $start
+  AND #{@model.quoted_table_name}.#{quote_column(@model.primary_key)} #{unique_id_expr} <= $end
   #{ where_clause }
 GROUP BY #{ (
   ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key)}"] + 
