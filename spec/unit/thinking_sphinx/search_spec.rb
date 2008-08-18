@@ -92,9 +92,9 @@ describe ThinkingSphinx::Search do
       @person_c = Person.stub_instance
 
       @results = [
-        {:doc => @person_a.id},
-        {:doc => @person_b.id},
-        {:doc => @person_c.id}
+        {:attributes => {"sphinx_internal_id" => @person_a.id}},
+        {:attributes => {"sphinx_internal_id" => @person_b.id}},
+        {:attributes => {"sphinx_internal_id" => @person_c.id}}
       ]
       
       Person.stub_method(
@@ -114,13 +114,13 @@ describe ThinkingSphinx::Search do
       )
 
       ThinkingSphinx::Search.should have_received(:instance_from_result).with(
-        {:doc => @person_a.id}, {}
+        {:attributes => {"sphinx_internal_id" => @person_a.id}}, {}
       )
       ThinkingSphinx::Search.should have_received(:instance_from_result).with(
-        {:doc => @person_b.id}, {}
+        {:attributes => {"sphinx_internal_id" => @person_b.id}}, {}
       )
       ThinkingSphinx::Search.should have_received(:instance_from_result).with(
-        {:doc => @person_c.id}, {}
+        {:attributes => {"sphinx_internal_id" => @person_c.id}}, {}
       )
     end
 
