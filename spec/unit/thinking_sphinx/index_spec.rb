@@ -54,6 +54,16 @@ describe ThinkingSphinx::Index do
       conf.should match(/sql_db\s+= db/)
     end
     
+    it "should include the database socket if set" do
+      conf = @index.to_config(0, @database.merge(:socket => "dbsocket"), "utf-8")
+      conf.should match(/sql_sock\s+= dbsocket/)
+    end
+    
+    it "should not include the database socket if not set" do
+      conf = @index.to_config(0, @database, "utf-8")
+      conf.should_not match(/sql_sock/)
+    end
+    
     it "should have a pre query 'SET NAMES utf8' if using mysql and utf8 charset" do
       @index.to_config(0, @database, "utf-8").should match(
         /sql_query_pre\s+= SET NAMES utf8/
