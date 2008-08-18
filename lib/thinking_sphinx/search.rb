@@ -21,11 +21,11 @@ module ThinkingSphinx
         begin
           pager = WillPaginate::Collection.create(page,
             client.limit, results[:total_found] || 0) do |collection|
-            collection.replace results[:matches].collect { |match| match[:doc] }
+            collection.replace results[:matches].collect { |match| match[:attributes]["sphinx_internal_id"] }
             collection.instance_variable_set :@total_entries, results[:total_found]
           end
         rescue
-          results[:matches].collect { |match| match[:doc] }
+          results[:matches].collect { |match| match[:attributes]["sphinx_internal_id"] }
         end
       end
 
@@ -263,7 +263,7 @@ module ThinkingSphinx
         begin
           ::ActiveRecord::Base.logger.debug "Sphinx: #{query}"
           results = client.query query
-          ::ActiveRecord::Base.logger.debug "Sphinx Result: #{results[:matches].collect{|m| m[:doc]}.inspect}"
+          ::ActiveRecord::Base.logger.debug "Sphinx Result: #{results[:matches].collect{|m| m[:attributes]["sphinx_internal_id"]}.inspect}"
         rescue Errno::ECONNREFUSED => err
           raise ThinkingSphinx::ConnectionError, "Connection to Sphinx Daemon (searchd) failed."
         end
@@ -275,7 +275,7 @@ module ThinkingSphinx
         if klass.nil?
           results.collect { |result| instance_from_result result, options }
         else
-          ids = results.collect { |result| result[:doc] }
+          ids = results.collect { |result| result[:attributes]["sphinx_internal_id"] }
           instances = klass.find(
             :all,
             :conditions => {klass.primary_key.to_sym => ids},
@@ -332,7 +332,7 @@ module ThinkingSphinx
           )
         end
         
-        options[:classes] = [klass.to_crc32] if klass
+        options[:classes] = [klass] if klass
         
         client.anchor = anchor_conditions(klass, options) || {} if client.anchor.empty?
         
