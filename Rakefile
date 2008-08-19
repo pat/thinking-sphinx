@@ -65,3 +65,8 @@ Rake::GemPackageTask.new(spec) do |p|
   p.need_tar = true
   p.need_zip = true
 end
+
+desc "Build gemspec file"
+task :build do
+  File.open('thinking-sphinx.gemspec', 'w') { |f| f.write spec.to_ruby }
+end
