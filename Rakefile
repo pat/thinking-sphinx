@@ -39,7 +39,7 @@ Spec::Rake::SpecTask.new(:rcov) do |t|
 end
 
 spec = Gem::Specification.new do |s|
-  s.name              = "thinking_sphinx"
+  s.name              = "thinking-sphinx"
   s.version           = ThinkingSphinx::Version::String
   s.summary           = "A concise and easy-to-use Ruby library that connects ActiveRecord to the Sphinx search daemon, managing configuration, indexing and searching."
   s.description       = "A concise and easy-to-use Ruby library that connects ActiveRecord to the Sphinx search daemon, managing configuration, indexing and searching."
