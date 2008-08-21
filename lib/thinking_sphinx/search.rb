@@ -283,12 +283,12 @@ module ThinkingSphinx
           results.collect { |result| instance_from_result result, options }
         else
           ids = results.collect { |result| result[:attributes]["sphinx_internal_id"] }
-          instances = klass.find(
+          instances = ids.length > 0 ? klass.find(
             :all,
             :conditions => {klass.primary_key.to_sym => ids},
             :include    => options[:include],
             :select     => options[:select]
-          )
+          ) : []
           ids.collect { |obj_id| instances.detect { |obj| obj.id == obj_id } }
         end
       end
