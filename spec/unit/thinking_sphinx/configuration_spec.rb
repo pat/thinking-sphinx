@@ -36,7 +36,7 @@ describe ThinkingSphinx::Configuration do
       ThinkingSphinx::Configuration.stub_method(:environment => "spec")
       ThinkingSphinx::Configuration.new.environment.should == "spec"
       ThinkingSphinx::Configuration.should have_received(:environment)
-    end
+    end    
   end
   
   describe "build method" do

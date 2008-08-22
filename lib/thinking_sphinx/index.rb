@@ -52,6 +52,7 @@ module ThinkingSphinx
     
     def to_config(model, index, database_conf, charset_type, offset)
       # Set up associations and joins
+      add_internal_attributes
       link!
       
       attr_sources = attributes.collect { |attrib|
@@ -273,29 +274,6 @@ GROUP BY #{ (
       @conditions = builder.conditions
       @delta      = builder.properties[:delta]
       @options    = builder.properties.except(:delta)
-      
-      @attributes << Attribute.new(
-        FauxColumn.new(:id),
-        :type => :integer,
-        :as   => :sphinx_internal_id
-      )
-      @attributes << Attribute.new(
-        FauxColumn.new(@model.to_crc32.to_s),
-        :type => :integer,
-        :as   => :class_crc
-      )
-      @attributes << Attribute.new(
-        FauxColumn.new((@model.send(:subclasses).collect { |klass|
-          klass.to_crc32.to_s
-        } + [@model.to_crc32.to_s]).join(",")),
-        :type => :integer,
-        :as   => :subclass_crcs
-      )
-      @attributes << Attribute.new(
-        FauxColumn.new("0"),
-        :type => :integer,
-        :as   => :sphinx_deleted
-      )
     end
     
     # Returns all associations used amongst all the fields and attributes.
@@ -354,6 +332,44 @@ GROUP BY #{ (
       else
         val ? '1' : '0'
       end
+    end
+    
+    def crc_column
+      if adapter == :postgres
+        @model.to_crc32.to_s
+      elsif @model.column_names.include?(@model.inheritance_column)
+        "IFNULL(CRC32(#{@model.quoted_table_name}.#{quote_column(@model.inheritance_column)}), #{@model.to_crc32.to_s})"
+      else
+        @model.to_crc32.to_s
+      end
+    end
+    
+    def add_internal_attributes
+      @attributes << Attribute.new(
+        FauxColumn.new(:id),
+        :type => :integer,
+        :as   => :sphinx_internal_id
+      ) unless @attributes.detect { |attr| attr.alias == :sphinx_internal_id }
+      
+      @attributes << Attribute.new(
+        FauxColumn.new(crc_column),
+        :type => :integer,
+        :as   => :class_crc
+      ) unless @attributes.detect { |attr| attr.alias == :class_crc }
+      
+      @attributes << Attribute.new(
+        FauxColumn.new("'" + (@model.send(:subclasses).collect { |klass|
+          klass.to_crc32.to_s
+        } << @model.to_crc32.to_s).join(",") + "'"),
+        :type => :integer,
+        :as   => :subclass_crcs
+      ) unless @attributes.detect { |attr| attr.alias == :subclass_crcs }
+      
+      @attributes << Attribute.new(
+        FauxColumn.new("0"),
+        :type => :integer,
+        :as   => :sphinx_deleted
+      ) unless @attributes.detect { |attr| attr.alias == :sphinx_deleted }
     end
   end
 end

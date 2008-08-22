@@ -172,7 +172,7 @@ describe ThinkingSphinx::Search do
   
   describe "search result" do
     before :each do
-      @results = ThinkingSphinx::Search.search ""
+      @results = ThinkingSphinx::Search.search "nothing will match this"
     end
     
     it "should respond to previous_page" do

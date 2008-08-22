@@ -21,7 +21,9 @@ module ThinkingSphinx
         begin
           pager = WillPaginate::Collection.create(page,
             client.limit, results[:total_found] || 0) do |collection|
-            collection.replace results[:matches].collect { |match| match[:attributes]["sphinx_internal_id"] }
+            collection.replace results[:matches].collect { |match|
+              match[:attributes]["sphinx_internal_id"]
+            }
             collection.instance_variable_set :@total_entries, results[:total_found]
           end
         rescue
@@ -342,7 +344,7 @@ module ThinkingSphinx
         
         # class filters
         client.filters << Riddle::Client::Filter.new(
-          "subclass_crcs", options[:classes].collect { |subclass| subclass.to_crc32 }
+          "subclass_crcs", options[:classes].collect { |k| k.to_crc32s }.flatten
         ) if options[:classes]
         
         # normal attribute filters
