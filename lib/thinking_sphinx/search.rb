@@ -390,8 +390,7 @@ module ThinkingSphinx
         conditions.each do |key,val|
           if attributes.include?(key.to_sym)
             filters << Riddle::Client::Filter.new(
-              key.to_s,
-              val.is_a?(Range) ? val : Array(val)
+              key.to_s, filter_value(val)
             )
           else
             search_string << "@#{key} #{val} "
