@@ -58,3 +58,4 @@ Since I first released this library, there's been quite a few people who have su
 * Wolfgang Postler
 * Rick Olson
 * Killian Murphy
+* Morten Primdahl

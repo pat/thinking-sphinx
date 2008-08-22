@@ -21,7 +21,7 @@ describe "ThinkingSphinx::ActiveRecord" do
       # Remove the class so we can redefine it
       TestModule.send(:remove_const, :TestModel)
       
-      ThinkingSphinx::Index.unstub_method(:new)
+      ThinkingSphinx.indexed_models.delete "TestModule::TestModel"
     end
     
     it "should return nil and do nothing if indexes are disabled" do

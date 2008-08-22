@@ -45,7 +45,7 @@ module ThinkingSphinx
       :pid_file, :searchd_file_path, :address, :port, :enable_star,
       :allow_star, :min_prefix_len, :min_infix_len, :mem_limit, :max_matches,
       :morphology, :charset_type, :charset_table, :ignore_chars, :html_strip,
-      :html_remove_elements, :app_root
+      :html_remove_elements, :database_yml_file, :app_root
     
     attr_reader :environment
     
@@ -57,6 +57,7 @@ module ThinkingSphinx
       self.app_root          = Merb.root  if defined?(Merb)
       self.app_root        ||= app_root
       
+      self.database_yml_file    = "#{self.app_root}/config/database.yml"
       self.config_file          = "#{self.app_root}/config/#{environment}.sphinx.conf"
       self.searchd_log_file     = "#{self.app_root}/log/searchd.log"
       self.query_log_file       = "#{self.app_root}/log/searchd.query.log"
@@ -97,7 +98,7 @@ module ThinkingSphinx
     def build(file_path=nil)
       load_models
       file_path ||= "#{self.config_file}"
-      database_confs = YAML::load(ERB.new(IO.read("#{app_root}/config/database.yml")).result)
+      database_confs = YAML::load(ERB.new(IO.read("#{self.database_yml_file}")).result)
       database_confs.symbolize_keys!
       database_conf  = database_confs[environment.to_sym]
       database_conf.symbolize_keys!
@@ -122,22 +123,24 @@ searchd
 }
         CONFIG
         
-        ThinkingSphinx.indexed_models.each do |model|
+        ThinkingSphinx.indexed_models.each_with_index do |model, model_index|
           model           = model.constantize
           sources         = []
           delta_sources   = []
           prefixed_fields = []
           infixed_fields  = []
           
-          model.indexes.each_with_index do |index, i|
-            file.write index.to_config(i, database_conf, charset_type)
+          model.indexes.select { |index| index.model == model }.each_with_index do |index, i|
+            file.write index.to_config(model, i, database_conf, charset_type, model_index)
             
             create_array_accum if index.adapter == :postgres
-            sources << "#{model.indexes.first.name}_#{i}_core"
-            delta_sources << "#{model.indexes.first.name}_#{i}_delta" if index.delta?
+            sources << "#{ThinkingSphinx::Index.name(model)}_#{i}_core"
+            delta_sources << "#{ThinkingSphinx::Index.name(model)}_#{i}_delta" if index.delta?
           end
           
-          source_list = sources.collect { |s| "source = #{s}" }.join("\n")
+          next if sources.empty?
+          
+          source_list = sources.collect       { |s| "source = #{s}" }.join("\n")
           delta_list  = delta_sources.collect { |s| "source = #{s}" }.join("\n")
           
           file.write core_index_for_model(model, source_list)
@@ -194,10 +197,10 @@ searchd
     def core_index_for_model(model, sources)
       output = <<-INDEX
 
-index #{model.indexes.first.name}_core
+index #{ThinkingSphinx::Index.name(model)}_core
 {
 #{sources}
-path = #{self.searchd_file_path}/#{model.indexes.first.name}_core
+path = #{self.searchd_file_path}/#{ThinkingSphinx::Index.name(model)}_core
 charset_type = #{self.charset_type}
 INDEX
       
@@ -236,22 +239,22 @@ INDEX
     
     def delta_index_for_model(model, sources)
       <<-INDEX
-index #{model.indexes.first.name}_delta : #{model.indexes.first.name}_core
+index #{ThinkingSphinx::Index.name(model)}_delta : #{ThinkingSphinx::Index.name(model)}_core
 {
   #{sources}
-  path = #{self.searchd_file_path}/#{model.indexes.first.name}_delta
+  path = #{self.searchd_file_path}/#{ThinkingSphinx::Index.name(model)}_delta
 }
       INDEX
     end
     
     def distributed_index_for_model(model)
-      sources = ["local = #{model.indexes.first.name}_core"]
+      sources = ["local = #{ThinkingSphinx::Index.name(model)}_core"]
       if model.indexes.any? { |index| index.delta? }
-        sources << "local = #{model.indexes.first.name}_delta"
+        sources << "local = #{ThinkingSphinx::Index.name(model)}_delta"
       end
       
       <<-INDEX
-index #{model.indexes.first.name}
+index #{ThinkingSphinx::Index.name(model)}
 {
   type = distributed
   #{ sources.join("\n  ") }

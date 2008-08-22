@@ -99,6 +99,10 @@ module ThinkingSphinx
             end
             result ^ 0xFFFFFFFF
           end
+          
+          def to_crc32s
+            (subclasses << self).collect { |klass| klass.to_crc32 }
+          end
         end
       end
       
