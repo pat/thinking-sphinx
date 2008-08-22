@@ -5,7 +5,7 @@ module ThinkingSphinx
     def initialize(page, per_page, entries, total_entries)
       @current_page, @per_page, @total_entries = page, per_page, total_entries
       
-      @total_pages = (@total_entries / @per_page.to_f).ceil
+      @total_pages = (entries / @per_page.to_f).ceil
     end
     
     def previous_page
