@@ -178,7 +178,9 @@ module ThinkingSphinx
     # figure out how to correctly reference a column in SQL.
     #
     def column_with_prefix(column)
-      if associations[column].empty?
+      if column.is_string?
+        column.__name
+      elsif associations[column].empty?
         "#{@model.quoted_table_name}.#{quote_column(column.__name)}"
       else
         associations[column].collect { |assoc|
@@ -195,6 +197,10 @@ module ThinkingSphinx
     #
     def is_many?
       associations.values.flatten.any? { |assoc| assoc.is_many? }
+    end
+    
+    def is_string?
+      columns.all? { |col| col.is_string? }
     end
   end
 end

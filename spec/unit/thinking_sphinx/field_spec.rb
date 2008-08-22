@@ -166,6 +166,11 @@ describe ThinkingSphinx::Field do
       )
     end
     
+    it "should return the column name if the column is a string" do
+      @field.columns = [ThinkingSphinx::Index::FauxColumn.new("string")]
+      @field.send(:column_with_prefix, @field.columns.first).should == "string"
+    end
+    
     it "should return the column with model's table prefix if there's no associations for the column" do
       @field.send(:column_with_prefix, @field.columns.first).should == "`people`.`col_name`"
     end
