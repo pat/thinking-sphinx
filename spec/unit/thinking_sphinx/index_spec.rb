@@ -54,6 +54,14 @@ describe ThinkingSphinx::Index do
       conf.should match(/sql_db\s+= db/)
     end
     
+    it "should use 'user' if 'username' doesn't exist in database configuration" do
+      conf = @index.to_config(Person, 0,
+        @database.except(:username).merge(:user => "username"),
+        "utf-8", 0
+      )
+      conf.should match(/sql_user\s+= username/)
+    end
+    
     it "should include the database socket if set" do
       conf = @index.to_config(Person, 0, @database.merge(:socket => "dbsocket"), "utf-8", 0)
       conf.should match(/sql_sock\s+= dbsocket/)
@@ -248,7 +256,7 @@ describe ThinkingSphinx::Index do
     end
     
     after :each do
-      `rm #{@file_path}` if File.exists?(@file_path)
+      FileUtils.rm(@file_path, :force => true)
     end
     
     it "should return true if the core index files are empty" do
