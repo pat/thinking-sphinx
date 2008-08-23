@@ -228,10 +228,14 @@ INDEX
 
       unless model.indexes.collect(&:prefix_fields).flatten.empty?
         output += "  prefix_fields = #{model.indexes.collect(&:prefix_fields).flatten.map(&:unique_name).join(', ')}\n"
+      else
+        output += " prefix_fields = _\n" unless model.indexes.collect(&:infix_fields).flatten.empty?
       end
       
       unless model.indexes.collect(&:infix_fields).flatten.empty?
         output += "  infix_fields  = #{model.indexes.collect(&:infix_fields).flatten.map(&:unique_name).join(', ')}\n"
+      else
+        output += " infix_fields = -\n" unless model.indexes.collect(&:prefix_fields).flatten.empty?
       end
       
       output + "}\n"
