@@ -4,3 +4,4 @@ coverage
 *.tmproj
 rdoc
 spec/fixtures/database.yml
+.svn
