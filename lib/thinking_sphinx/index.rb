@@ -362,7 +362,7 @@ GROUP BY #{ (
         FauxColumn.new("'" + (@model.send(:subclasses).collect { |klass|
           klass.to_crc32.to_s
         } << @model.to_crc32.to_s).join(",") + "'"),
-        :type => :integer,
+        :type => :multi,
         :as   => :subclass_crcs
       ) unless @attributes.detect { |attr| attr.alias == :subclass_crcs }
       
