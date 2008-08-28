@@ -349,7 +349,7 @@ module ThinkingSphinx
         
         # class filters
         client.filters << Riddle::Client::Filter.new(
-          "subclass_crcs", options[:classes].collect { |k| k.to_crc32s }.flatten
+          "class_crc", options[:classes].collect { |k| k.to_crc32s }.flatten
         ) if options[:classes]
         
         # normal attribute filters
