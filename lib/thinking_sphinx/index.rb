@@ -83,7 +83,7 @@ sql_query_pre    = #{charset_type == "utf-8" && adapter == :mysql ? "SET NAMES u
 #{"sql_query_pre    = SET SESSION group_concat_max_len = #{@options[:group_concat_max_len]}" if @options[:group_concat_max_len]}
 sql_query_pre    = #{to_sql_query_pre}
 sql_query        = #{to_sql(:offset => offset).gsub(/\n/, ' ')}
-sql_query_range  = #{to_sql_query_range :offset => offset}
+sql_query_range  = #{to_sql_query_range}
 sql_query_info   = #{to_sql_query_info(offset)}
 #{attr_sources}
 }
@@ -98,7 +98,7 @@ sql_query_pre    =
 sql_query_pre    = #{charset_type == "utf-8" && adapter == :mysql ? "SET NAMES utf8" : ""}
 #{"sql_query_pre    = SET SESSION group_concat_max_len = #{@options[:group_concat_max_len]}" if @options[:group_concat_max_len]}
 sql_query        = #{to_sql(:delta => true, :offset => offset).gsub(/\n/, ' ')}
-sql_query_range  = #{to_sql_query_range :offset => offset, :delta => true}
+sql_query_range  = #{to_sql_query_range :delta => true}
 }
         SOURCE
       end
@@ -165,8 +165,8 @@ SELECT #{ (
 ).join(", ") }
 FROM #{ @model.table_name }
   #{ assocs.collect { |assoc| assoc.to_sql }.join(' ') }
-WHERE #{@model.quoted_table_name}.#{quote_column(@model.primary_key)} #{unique_id_expr} >= $start
-  AND #{@model.quoted_table_name}.#{quote_column(@model.primary_key)} #{unique_id_expr} <= $end
+WHERE #{@model.quoted_table_name}.#{quote_column(@model.primary_key)} >= $start
+  AND #{@model.quoted_table_name}.#{quote_column(@model.primary_key)} <= $end
   #{ where_clause }
 GROUP BY #{ (
   ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key)}"] + 
@@ -195,10 +195,8 @@ GROUP BY #{ (
     # so pass in :delta => true to get the delta version of the SQL.
     # 
     def to_sql_query_range(options={})
-      unique_id_expr = "* #{ThinkingSphinx.indexed_models.size} + #{options[:offset] || 0}"
-      
-      min_statement = "MIN(#{quote_column(@model.primary_key)} #{unique_id_expr})"
-      max_statement = "MAX(#{quote_column(@model.primary_key)} #{unique_id_expr})"
+      min_statement = "MIN(#{quote_column(@model.primary_key)})"
+      max_statement = "MAX(#{quote_column(@model.primary_key)})"
       
       # Fix to handle Sphinx PostgreSQL bug (it doesn't like NULLs or 0's)
       if adapter == :postgres

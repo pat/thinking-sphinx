@@ -128,13 +128,6 @@ describe ThinkingSphinx::Index do
         /sql_query_range\s+= sql_query_range/
       )
     end
-    
-    it "should pass the offset to the range query" do
-      @index.unstub_method(:to_sql_query_range)
-      @index.to_config(Person, 0, @database, "utf-8", 7).should include(
-        "sql_query_range  = SELECT MIN(`id` * 3 + 7), MAX(`id` * 3 + 7)"
-      )
-    end
 
     it "should use the info query from the index" do
       @index.to_config(Person, 0, @database, "utf-8", 0).should match(

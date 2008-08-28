@@ -88,11 +88,11 @@ describe ThinkingSphinx::Configuration do
       # FileUtils.rm_rf "#{@config.app_root}/config"
     end
     
-    it "should load the models" do
-      @config.build
-      
-      @config.should have_received(:load_models)
-    end
+    # it "should load the models" do
+    #   @config.build
+    #   
+    #   @config.should have_received(:load_models)
+    # end
     
     it "should load in the database YAML configuration" do
       @config.build
