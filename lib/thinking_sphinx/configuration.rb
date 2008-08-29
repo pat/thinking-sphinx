@@ -96,6 +96,7 @@ module ThinkingSphinx
     # indexer and searchd configuration, and sources and indexes details.
     #
     def build(file_path=nil)
+      load_models
       file_path ||= "#{self.config_file}"
       database_confs = YAML::load(ERB.new(IO.read("#{self.database_yml_file}")).result)
       database_confs.symbolize_keys!
