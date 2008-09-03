@@ -2,6 +2,7 @@ require 'active_record'
 require 'riddle'
 
 require 'thinking_sphinx/active_record'
+require 'thinking_sphinx/collection'
 require 'thinking_sphinx/association'
 require 'thinking_sphinx/attribute'
 require 'thinking_sphinx/configuration'

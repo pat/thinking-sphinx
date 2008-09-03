@@ -49,7 +49,7 @@ module ThinkingSphinx
     def to_config(index, database_conf, charset_type)
       # Set up associations and joins
       link!
-      
+
       attr_sources = attributes.collect { |attrib|
         attrib.to_sphinx_clause
       }.join("\n  ")
@@ -84,22 +84,40 @@ sql_query_info   = #{to_sql_query_info}
       SOURCE
       
       if delta?
-        config += <<-SOURCE
-
-source #{model.indexes.first.name}_#{index}_delta : #{model.indexes.first.name}_#{index}_core
-{
-sql_query_pre    = 
-sql_query_pre    = #{charset_type == "utf-8" && adapter == :mysql ? "SET NAMES utf8" : ""}
-#{"sql_query_pre    = SET SESSION group_concat_max_len = #{@options[:group_concat_max_len]}" if @options[:group_concat_max_len]}
-sql_query        = #{to_sql(:delta => true).gsub(/\n/, ' ')}
-sql_query_range  = #{to_sql_query_range :delta => true}
-}
-        SOURCE
+        config += delta_config(index, adapter, charset_type)
       end
       
       config
     end
     
+    def delta_config(index, adapter, charset_type)
+      return '' unless delta?
+
+      sql = <<-SOURCE
+      
+      source #{model.indexes.first.name}_#{index}_delta : #{model.indexes.first.name}_#{index}_core
+      {
+      sql_query_pre    = 
+      sql_query_pre    = #{charset_type == "utf-8" && adapter == :mysql ? "SET NAMES utf8" : ""}
+      #{"sql_query_pre    = SET SESSION group_concat_max_len = #{@options[:group_concat_max_len]}" if @options[:group_concat_max_len]}
+      SOURCE
+      
+      if !complex_delta?
+        sql += <<-SOURCE
+        sql_query        = #{to_sql(true, :delta => true).gsub(/\n/, ' ')}
+        sql_query_range  = #{to_sql_query_range(true, :delta => true)}
+        }
+        SOURCE
+      else        
+        sql += <<-SOURCE
+        sql_query        = #{to_sql(true, @delta).gsub(/\n/, ' ')}
+        sql_query_range  = #{to_sql_query_range(true, @delta)}
+        }
+        SOURCE
+      end
+      
+      sql
+    end
     # Link all the fields and associations to their corresponding
     # associations and joins. This _must_ be called before interrogating
     # the index's fields and associations for anything that may reference
@@ -138,12 +156,16 @@ sql_query_range  = #{to_sql_query_range :delta => true}
     #   index.to_sql
     #   index.to_sql(:delta => true)
     #
-    def to_sql(options={})
+    def to_sql(for_delta=false, options={})
       assocs = all_associations
       
       where_clause = ""
-      if self.delta?
-        where_clause << " AND #{@model.quoted_table_name}.#{quote_column('delta')}" +" = #{options[:delta] ? db_boolean(true) : db_boolean(false)}"
+      if for_delta && self.delta?
+        if !self.complex_delta?
+          where_clause << " AND #{@model.quoted_table_name}.#{quote_column('delta')}" +" = #{options[:delta] ? db_boolean(true) : db_boolean(false)}"
+        else
+          where_clause << " AND #{@model.quoted_table_name}.#{quote_column(options[:field])} > DATE_SUB(NOW(), INTERVAL #{options[:threshold]} SECOND)"
+        end
       end
       unless @conditions.empty?
         where_clause << " AND " << @conditions.join(" AND ")
@@ -186,7 +208,7 @@ GROUP BY #{ (
     # returns minimum and maximum id values. These can be filtered by delta -
     # so pass in :delta => true to get the delta version of the SQL.
     # 
-    def to_sql_query_range(options={})
+    def to_sql_query_range(for_delta=false, options={})
       min_statement = "MIN(#{quote_column(@model.primary_key)})"
       max_statement = "MAX(#{quote_column(@model.primary_key)})"
       
@@ -198,8 +220,16 @@ GROUP BY #{ (
       
       sql = "SELECT #{min_statement}, #{max_statement} " +
             "FROM #{@model.quoted_table_name} "
-      sql << "WHERE #{@model.quoted_table_name}.#{quote_column('delta')} " + 
-            "= #{options[:delta] ? db_boolean(true) : db_boolean(false)}" if self.delta?
+            
+      if for_delta && self.delta?
+        if !self.complex_delta?
+          sql << "WHERE #{@model.quoted_table_name}.#{quote_column('delta')} " + 
+            "= #{options[:delta] ? db_boolean(true) : db_boolean(false)}" 
+        else
+          sql << "WHERE #{@model.quoted_table_name}.#{quote_column(options[:field])} > DATE_SUB(NOW(), INTERVAL #{options[:threshold]} SECOND)"
+        end
+      end
+
       sql
     end
     
@@ -208,13 +238,26 @@ GROUP BY #{ (
     # back to 0.
     #
     def to_sql_query_pre
-      self.delta? ? "UPDATE #{@model.quoted_table_name} SET #{quote_column('delta')} = #{db_boolean(false)}" : ""
+      if self.simple_delta? 
+        "UPDATE #{@model.quoted_table_name} SET #{quote_column('delta')} = #{db_boolean(false)}"
+      else
+        ""
+      end
+      
     end
     
     # Flag to indicate whether this index has a corresponding delta index.
     #
     def delta?
       @delta
+    end
+    
+    def complex_delta?
+      delta? && @delta.is_a?(Hash) && @delta.has_key?(:field) && @delta.has_key?(:threshold)
+    end
+    
+    def simple_delta?
+      delta? && !complex_delta?      
     end
     
     def adapter

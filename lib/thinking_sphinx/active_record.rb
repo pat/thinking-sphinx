@@ -73,7 +73,7 @@ module ThinkingSphinx
             end
             
             if index.delta?
-              before_save   :toggle_delta
+              before_save   :toggle_delta if index.simple_delta?
               after_commit  :index_delta
             end
             

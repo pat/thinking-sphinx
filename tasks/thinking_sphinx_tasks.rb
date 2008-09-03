@@ -54,6 +54,34 @@ namespace :thinking_sphinx do
     puts cmd
     system cmd
   end
+  
+  desc "Reindex the passed delta"
+  task :index_delta => [:app_env, :configure] do
+    config = ThinkingSphinx::Configuration.new
+    
+    index_name = get_index_name(ENV['MODEL'])
+
+    cmd = "indexer --config '#{config.config_file}'"
+    cmd << " --rotate" if sphinx_running?
+    cmd << " #{index_name}_delta"
+
+    system cmd
+    
+  end
+  
+  desc "Merge the passed indexes delta into the core"
+  task :index_merge => [:app_env, :configure] do
+    config = ThinkingSphinx::Configuration.new
+    
+    index_name = get_index_name(ENV['MODEL'])
+
+    cmd = "indexer --config '#{config.config_file}'"
+    cmd << " --rotate" if sphinx_running?
+    cmd << " --merge #{index_name}_core #{index_name}_delta"
+
+    system cmd
+
+  end
 end
 
 namespace :ts do
@@ -83,4 +111,10 @@ end
 
 def sphinx_running?
   sphinx_pid && `ps -p #{sphinx_pid} | wc -l`.to_i > 1
+end
+
+def get_index_name(str)
+  klass = str.to_s.strip.classify.constantize
+  raise "The class '#{klass}' has no Thinking Sphinx indexes defined" if !klass.indexes || klass.indexes.empty?
+  klass.indexes.first.name    
 end
