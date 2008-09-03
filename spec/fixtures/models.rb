@@ -10,13 +10,13 @@ class Person < ActiveRecord::Base
     indexes team.name, :as => :team_name
     indexes contacts.phone_number, :as => :phone_numbers
     
-    has [first_name, middle_initial, last_name], :as => :name
-    has team.name, :as => :team_name
+    has [first_name, middle_initial, last_name], :as => :name_sort
+    has team.name, :as => :team_name_sort
     
     has [:id, :team_id], :as => :ids
     has team(:id), :as => :team_id
     
-    has contacts.phone_number, :as => :phone_numbers
+    has contacts.phone_number, :as => :phone_number_sort
     has contacts(:id), :as => :contact_ids
     
     has birthday

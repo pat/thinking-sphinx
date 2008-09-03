@@ -248,7 +248,7 @@ describe ThinkingSphinx::Index do
   
   describe "empty? method" do
     before :each do
-      @index = ThinkingSphinx::Index.new(Person)
+      @index = ThinkingSphinx::Index.new(Contact)
       config = ThinkingSphinx::Configuration.new
       
       `mkdir -p #{config.searchd_file_path}`
