@@ -436,9 +436,9 @@ module ThinkingSphinx
         end
         
         lat && lon ? {
-          :latitude_attribute   => lat_attr,
+          :latitude_attribute   => lat_attr.to_s,
           :latitude             => lat,
-          :longitude_attribute  => lon_attr,
+          :longitude_attribute  => lon_attr.to_s,
           :longitude            => lon
         } : nil
       end
