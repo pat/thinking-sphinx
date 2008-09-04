@@ -45,7 +45,7 @@ namespace :thinking_sphinx do
   end
   
   desc "Index data for Sphinx using Thinking Sphinx's settings"
-  task :index => [:app_env, :configure] do
+  task :index => [:check_for_indexer, :app_env, :configure] do
     config = ThinkingSphinx::Configuration.new
     
     FileUtils.mkdir_p config.searchd_file_path
@@ -53,10 +53,12 @@ namespace :thinking_sphinx do
     cmd << " --rotate" if sphinx_running?
     puts cmd
     system cmd
+    
+    check_rotate if sphinx_running?
   end
   
   desc "Reindex the passed delta"
-  task :index_delta => [:app_env, :configure] do
+  task :index_delta => [:check_for_indexer, :app_env, :configure] do
     config = ThinkingSphinx::Configuration.new
     
     index_name = get_index_name(ENV['MODEL'])
@@ -64,23 +66,31 @@ namespace :thinking_sphinx do
     cmd = "indexer --config '#{config.config_file}'"
     cmd << " --rotate" if sphinx_running?
     cmd << " #{index_name}_delta"
-
+    puts cmd
     system cmd
     
+    check_rotate if sphinx_running?
   end
-  
+    
   desc "Merge the passed indexes delta into the core"
-  task :index_merge => [:app_env, :configure] do
+  task :index_merge => [:check_for_indexer, :app_env, :configure] do
     config = ThinkingSphinx::Configuration.new
     
     index_name = get_index_name(ENV['MODEL'])
 
     cmd = "indexer --config '#{config.config_file}'"
     cmd << " --rotate" if sphinx_running?
-    cmd << " --merge #{index_name}_core #{index_name}_delta"
-
+    cmd << " --merge #{index_name}_core #{index_name}_delta --merge-dst-range deleted 0 0"
+    puts cmd
     system cmd
-
+    
+    check_rotate if sphinx_running?
+  end
+  
+  desc "Checks to see if the indexer is already running"
+  task :check_for_indexer do
+    ps_check = `ps aux | grep -v 'grep' | grep indexer`.split(/\n/)
+    raise RuntimeError, "Indexer is already running:\n\n #{ps_check.join('\n')}" if ps_check.size > 0
   end
 end
 
@@ -114,7 +124,24 @@ def sphinx_running?
 end
 
 def get_index_name(str)
+  raise "You must pass a model name!" if str.to_s.strip.blank?
   klass = str.to_s.strip.classify.constantize
   raise "The class '#{klass}' has no Thinking Sphinx indexes defined" if !klass.indexes || klass.indexes.empty?
   klass.indexes.first.name    
+end
+
+def check_rotate
+  sleep(5)
+  config = ThinkingSphinx::Configuration.new
+  
+  failed = Dir[config.searchd_file_path + "/*.new.*"]
+  if failed.any?
+    # puts "warning; indexes failed to rotate! Deleting new indexes"
+    # puts "try 'killall searchd' and then 'rake thinking_sphinx:start'"
+    # failed.each {|f| File.delete f }
+    puts "Problem rotating indexes!"
+    puts "Look in #{config.searchd_file_path} for files with 'new' in them - they shouldn't be there!  You may need to reindex."
+  else
+    puts "The indexes rotated ok"
+  end
 end
