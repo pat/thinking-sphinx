@@ -71,7 +71,8 @@ module ThinkingSphinx
           
           # Build the delta index for the related model. This won't be called
           # if running in the test environment.
-          # 
+          # If ThinkingSphinx.offline_indexing is set to true, then the record will
+          # be removed from the core index but the delta index rotation will not fire.
           def index_delta
             return true unless ThinkingSphinx.updates_enabled? && ThinkingSphinx.deltas_enabled?
             
