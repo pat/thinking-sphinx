@@ -82,7 +82,7 @@ sql_query_info   = #{to_sql_query_info}
 #{attr_sources}
 }
       SOURCE
-      
+
       if delta?
         config += delta_config(index, adapter, charset_type)
       end
@@ -102,13 +102,14 @@ sql_query_info   = #{to_sql_query_info}
       #{"sql_query_pre    = SET SESSION group_concat_max_len = #{@options[:group_concat_max_len]}" if @options[:group_concat_max_len]}
       SOURCE
       
-      if !complex_delta?
+      if simple_delta?
         sql += <<-SOURCE
         sql_query        = #{to_sql(true, :delta => true).gsub(/\n/, ' ')}
         sql_query_range  = #{to_sql_query_range(true, :delta => true)}
         }
         SOURCE
-      else        
+      else     
+        raise "#{@delta[:field]} is not a datetime" unless model.columns_hash[@delta[:field].to_s].type == :datetime   
         sql += <<-SOURCE
         sql_query        = #{to_sql(true, @delta).gsub(/\n/, ' ')}
         sql_query_range  = #{to_sql_query_range(true, @delta)}
@@ -161,10 +162,10 @@ sql_query_info   = #{to_sql_query_info}
       
       where_clause = ""
       if for_delta && self.delta?
-        if !self.complex_delta?
+        if self.simple_delta?
           where_clause << " AND #{@model.quoted_table_name}.#{quote_column('delta')}" +" = #{options[:delta] ? db_boolean(true) : db_boolean(false)}"
         else
-          where_clause << " AND #{@model.quoted_table_name}.#{quote_column(options[:field])} > DATE_SUB(NOW(), INTERVAL #{options[:threshold]} SECOND)"
+          where_clause << " AND #{@model.quoted_table_name}.#{quote_column(@delta[:field])} > DATE_SUB(NOW(), INTERVAL #{@delta[:threshold]} SECOND)"
         end
       end
       unless @conditions.empty?
@@ -222,11 +223,12 @@ GROUP BY #{ (
             "FROM #{@model.quoted_table_name} "
             
       if for_delta && self.delta?
-        if !self.complex_delta?
+        if self.simple_delta?
           sql << "WHERE #{@model.quoted_table_name}.#{quote_column('delta')} " + 
             "= #{options[:delta] ? db_boolean(true) : db_boolean(false)}" 
         else
-          sql << "WHERE #{@model.quoted_table_name}.#{quote_column(options[:field])} > DATE_SUB(NOW(), INTERVAL #{options[:threshold]} SECOND)"
+          sql << "WHERE #{@model.quoted_table_name}.#{quote_column(@delta[:field])} " +
+          "> DATE_SUB(NOW(), INTERVAL #{@delta[:threshold]} SECOND)"
         end
       end
 
