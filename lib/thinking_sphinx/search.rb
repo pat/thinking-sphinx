@@ -17,18 +17,8 @@ module ThinkingSphinx
         
         options = args.extract_options!
         page    = options[:page] ? options[:page].to_i : 1
-        
-        begin
-          pager = WillPaginate::Collection.create(page,
-            client.limit, results[:total_found] || 0) do |collection|
-            collection.replace results[:matches].collect { |match|
-              match[:attributes]["sphinx_internal_id"]
-            }
-            collection.instance_variable_set :@total_entries, results[:total_found]
-          end
-        rescue
-          results[:matches].collect { |match| match[:attributes]["sphinx_internal_id"] }
-        end
+
+        ThinkingSphinx::Collection.ids_from_results(results, page, client.limit, options)
       end
 
       # Searches through the Sphinx indexes for relevant matches. There's
@@ -195,20 +185,7 @@ module ThinkingSphinx
         klass   = options[:class]
         page    = options[:page] ? options[:page].to_i : 1
         
-        # begin
-          # pager = ThinkingSphinx::Collection.new(page, client.limit,
-          #   results[:total] || 0, results[:total_found] || 0)
-          # pager.replace instances_from_results(results[:matches], options, klass)
-          # pager
-          ThinkingSphinx::Collection.create_from_results(results, page, client.limit, options)
-          # pager = WillPaginate::Collection.create(page,
-          #   client.limit, results[:total] || 0) do |collection|
-          #   collection.replace instances_from_results(results[:matches], options, klass)
-          #   collection.instance_variable_set :@total_entries, results[:total_found]
-          # end
-        # rescue StandardError => err
-        #   instances_from_results(results[:matches], options, klass)
-        # end
+        ThinkingSphinx::Collection.create_from_results(results, page, client.limit, options)
       end
 
       def count(*args)
@@ -277,46 +254,6 @@ module ThinkingSphinx
         end
         
         return results, client
-      end
-      
-      def instances_from_results(results, options = {}, klass = nil)
-        if klass.nil?
-          results.collect { |result| instance_from_result result, options }
-        else
-          ids = results.collect { |result| result[:attributes]["sphinx_internal_id"] }
-          instances = ids.length > 0 ? klass.find(
-            :all,
-            :conditions => {klass.primary_key.to_sym => ids},
-            :include    => options[:include],
-            :select     => options[:select]
-          ) : []
-          ids.collect { |obj_id| instances.detect { |obj| obj.id == obj_id } }
-        end
-      end
-      
-      # Either use the provided class to instantiate a result from a model, or
-      # get the result's CRC value and determine the class from that.
-      # 
-      def instance_from_result(result, options)
-        class_from_crc(result[:attributes]["class_crc"]).find(
-          result[:attributes]["sphinx_internal_id"],
-          :include => options[:include], :select => options[:select]
-        )
-      end
-      
-      # Convert a CRC value to the corresponding class.
-      # 
-      def class_from_crc(crc)
-        unless @models_by_crc
-          Configuration.new.load_models
-          
-          @models_by_crc = ThinkingSphinx.indexed_models.inject({}) do |hash, model|
-            hash[model.constantize.to_crc32] = model
-            hash
-          end
-        end
-        
-        @models_by_crc[crc].constantize
       end
       
       # Set all the appropriate settings for the client, using the provided

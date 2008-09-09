@@ -37,4 +37,26 @@ describe ThinkingSphinx::Collection do
       count.should  be_kind_of(Integer)
     end
   end
+  
+  it "should return ids" do
+    results = Person.search_for_ids "Ellie"
+    results.should_not be_empty
+    results.each do |result|
+      result.should be_kind_of(Integer)
+    end
+  end
+  
+  it "should return ids paired with weighting" do
+    results = Person.search_for_ids "Ellie Ford", :match_mode => :any
+    results.should_not be_empty
+    results.each_with_weighting do |result, weight|
+      result.should be_kind_of(Integer)
+      weight.should be_kind_of(Integer)
+    end
+  end
+  
+  it "should sort the objects the same as the result set" do
+    Person.search_for_ids("Ellie", :order => "sphinx_internal_id DESC").should ==
+    Person.search("Ellie", :order => "sphinx_internal_id DESC").collect(&:id)
+  end
 end

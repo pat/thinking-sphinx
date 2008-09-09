@@ -46,127 +46,61 @@ describe ThinkingSphinx::Search do
   
   describe "instance_from_result method" do
     before :each do
-      Person.stub_method(:find => true)
-      ThinkingSphinx::Search.stub_method(:class_from_crc => Person)
-    end
-    
-    after :each do
-      Person.unstub_method(:find)
-      ThinkingSphinx::Search.unstub_method(:class_from_crc)
+      Person.track_methods(:find)
     end
 
     it "should honour the :include option" do
-      ThinkingSphinx::Search.send(
-        :instance_from_result,
-        {
-          :doc => 1, :attributes => {
-            "sphinx_internal_id" => 2, "class_crc" => 123
-          }
-        },
-        {:include => :assoc}
-      )
-
-      Person.should have_received(:find).with(2, :include => :assoc, :select => nil)
+      ellie = ThinkingSphinx::Search.search("Ellie Ford", :include => :contacts).first
+      pending
+      Person.should have_received(:find).with(ellie.id, :include => :contacts, :select => nil)
     end
 
     it "should honour the :select option" do
-      ThinkingSphinx::Search.send(
-        :instance_from_result,
-        {
-          :doc => 1, :attributes => {
-            "sphinx_internal_id" => 2, "class_crc" => 123
-          }
-        },
-        {:select => :columns}
-      )
-
-      Person.should have_received(:find).with(2, :include => nil, :select => :columns)
+      ellie = ThinkingSphinx::Search.search("Ellie Ford", :select => "*").first
+      pending
+      Person.should have_received(:find).with(ellie.id, :include => nil, :select => "*")
     end
 
   end
 
   describe "instances_from_results method" do
     before :each do
-      @person_a = Person.stub_instance
-      @person_b = Person.stub_instance
-      @person_c = Person.stub_instance
-
-      @results = [
-        {:attributes => {"sphinx_internal_id" => @person_a.id}},
-        {:attributes => {"sphinx_internal_id" => @person_b.id}},
-        {:attributes => {"sphinx_internal_id" => @person_c.id}}
-      ]
+      Person.track_methods(:find)
       
-      Person.stub_method(
-        :find => [@person_c, @person_a, @person_b]
-      )
-      ThinkingSphinx::Search.stub_method(:instance_from_result => true)
+      @ellie_ids = Person.search_for_ids "Ellie"
     end
-
-    after :each do
-      Person.unstub_method(:find)
-      ThinkingSphinx::Search.unstub_method(:instance_from_result)
-    end
-
-    it "should pass calls to instance_from_result if no class given" do
-      ThinkingSphinx::Search.send(
-        :instances_from_results, @results
-      )
-
-      ThinkingSphinx::Search.should have_received(:instance_from_result).with(
-        {:attributes => {"sphinx_internal_id" => @person_a.id}}, {}
-      )
-      ThinkingSphinx::Search.should have_received(:instance_from_result).with(
-        {:attributes => {"sphinx_internal_id" => @person_b.id}}, {}
-      )
-      ThinkingSphinx::Search.should have_received(:instance_from_result).with(
-        {:attributes => {"sphinx_internal_id" => @person_c.id}}, {}
-      )
-    end
-
+    
     it "should call a find on all ids for the class" do
-      ThinkingSphinx::Search.send(
-        :instances_from_results, @results, {}, Person
-      )
+      Person.search "Ellie"
       
       Person.should have_received(:find).with(
         :all,
-        :conditions => {:id => [@person_a.id, @person_b.id, @person_c.id]},
+        :conditions => {:id => @ellie_ids},
         :include    => nil,
         :select     => nil
       )
     end
 
     it "should honour the :include option" do
-      ThinkingSphinx::Search.send(
-        :instances_from_results, @results, {:include => :something}, Person
-      )
+      Person.search "Ellie", :include => :contacts
       
       Person.should have_received(:find).with(
         :all,
-        :conditions => {:id => [@person_a.id, @person_b.id, @person_c.id]},
-        :include    => :something,
+        :conditions => {:id => @ellie_ids},
+        :include    => :contacts,
         :select     => nil
       )
     end
 
     it "should honour the :select option" do
-      ThinkingSphinx::Search.send(
-        :instances_from_results, @results, {:select => :fields}, Person
-      )
+      Person.search "Ellie", :select => "*"
       
       Person.should have_received(:find).with(
         :all,
-        :conditions => {:id => [@person_a.id, @person_b.id, @person_c.id]},
+        :conditions => {:id => @ellie_ids},
         :include    => nil,
-        :select     => :fields
+        :select     => "*"
       )
-    end
-
-    it "should sort the objects the same as the result set" do
-      ThinkingSphinx::Search.send(
-        :instances_from_results, @results, {:select => :fields}, Person
-      ).should == [@person_a, @person_b, @person_c]
     end
   end
   

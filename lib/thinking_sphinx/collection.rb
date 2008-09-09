@@ -9,6 +9,17 @@ module ThinkingSphinx
       @total_pages = (entries / @per_page.to_f).ceil
     end
     
+    def self.ids_from_results(results, page, limit, options)
+      collection = self.new(page, limit,
+        results[:total] || 0, results[:total_found] || 0
+      )
+      collection.results = results
+      collection.replace results[:matches].collect { |match|
+        match[:attributes]["sphinx_internal_id"]
+      }
+      return collection
+    end
+    
     def self.create_from_results(results, page, limit, options)
       collection = self.new(page, limit,
         results[:total] || 0, results[:total_found] || 0
@@ -36,6 +47,7 @@ module ThinkingSphinx
     end
     
     def self.instance_from_match(match, options)
+      # puts "ARGS: #{match[:attributes]["sphinx_internal_id"].inspect}, {:include => #{options[:include].inspect}, :select => #{options[:select].inspect}}"
       class_from_crc(match[:attributes]["class_crc"]).find(
         match[:attributes]["sphinx_internal_id"],
         :include => options[:include],

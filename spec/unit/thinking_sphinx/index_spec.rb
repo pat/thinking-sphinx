@@ -274,12 +274,13 @@ describe ThinkingSphinx::Index do
     end
     
     it "should check the delta files if specified" do
-      @index.should be_empty(:delta)
+      delta_path = @file_path.gsub(/_core.spa$/, '_delta.spa')
       
-      `echo 'a' > #{@file_path.gsub(/_core.spa$/, '_delta.spa')}`
+      @index.should be_empty(:delta)
+      `echo 'a' > #{delta_path}`
       @index.should_not be_empty(:delta)
       
-      `rm #{@file_path}` if File.exists?(@file_path.gsub(/_core.spa$/, '_delta.spa'))
+      FileUtils.rm(delta_path)
     end
   end
 end
