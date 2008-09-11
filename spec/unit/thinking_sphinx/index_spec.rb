@@ -188,6 +188,15 @@ describe ThinkingSphinx::Index do
     end
   end
   
+  describe "to_sql method" do
+    it "should include explicit groupings if requested" do
+      @index = ThinkingSphinx::Index.new(Person)
+      
+      @index.groupings << "custom_sql"
+      @index.to_sql.should match(/GROUP BY.+custom_sql/)
+    end
+  end
+  
   describe "to_sql_query_range method" do
     before :each do
       @index = ThinkingSphinx::Index.new(Person)
@@ -281,6 +290,15 @@ describe ThinkingSphinx::Index do
       @index.should_not be_empty(:delta)
       
       FileUtils.rm(delta_path)
+    end
+  end
+  
+  describe "initialize_from_builder method" do
+    it "should copy groupings across from the builder to the index" do
+      @index = ThinkingSphinx::Index.new(Person) do
+        group_by "custom_grouping"
+      end
+      @index.groupings.should include("custom_grouping")
     end
   end
 end

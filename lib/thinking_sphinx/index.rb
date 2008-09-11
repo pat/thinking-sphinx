@@ -9,7 +9,8 @@ module ThinkingSphinx
   # Enjoy.
   # 
   class Index
-    attr_accessor :model, :fields, :attributes, :conditions, :delta, :options
+    attr_accessor :model, :fields, :attributes, :conditions, :groupings,
+      :delta, :options
     
     # Create a new index instance by passing in the model it is tied to, and
     # a block to build it with (optional but recommended). For documentation
@@ -31,6 +32,7 @@ module ThinkingSphinx
       @fields       = []
       @attributes   = []
       @conditions   = []
+      @groupings    = []
       @options      = {}
       @delta        = false
       
@@ -171,7 +173,8 @@ WHERE #{@model.quoted_table_name}.#{quote_column(@model.primary_key)} >= $start
 GROUP BY #{ (
   ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key)}"] + 
   @fields.collect { |field| field.to_group_sql }.compact +
-  @attributes.collect { |attribute| attribute.to_group_sql }.compact
+  @attributes.collect { |attribute| attribute.to_group_sql }.compact +
+  @groupings
 ).join(", ") }
       SQL
       
@@ -271,6 +274,7 @@ GROUP BY #{ (
       @fields     = builder.fields
       @attributes = builder.attributes
       @conditions = builder.conditions
+      @groupings  = builder.groupings
       @delta      = builder.properties[:delta]
       @options    = builder.properties.except(:delta)
     end

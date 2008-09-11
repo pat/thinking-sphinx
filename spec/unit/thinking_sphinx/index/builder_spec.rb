@@ -11,6 +11,7 @@ describe ThinkingSphinx::Index::Builder do
       @builder.fields.should     == []
       @builder.attributes.should == []
       @builder.conditions.should == []
+      @builder.groupings.should  == []
       @builder.properties.should == {}
     end
   end
