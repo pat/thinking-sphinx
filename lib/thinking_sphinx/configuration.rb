@@ -83,7 +83,7 @@ module ThinkingSphinx
     
     def self.environment
       @@environment ||= (
-        defined?(Merb) ? ENV['MERB_ENV'] : ENV['RAILS_ENV']
+        defined?(Merb) ? Merb.environment : ENV['RAILS_ENV']
       ) || "development"
     end
     
