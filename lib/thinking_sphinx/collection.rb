@@ -58,6 +58,9 @@ module ThinkingSphinx
     def self.class_from_crc(crc)
       @@models_by_crc ||= ThinkingSphinx.indexed_models.inject({}) do |hash, model|
         hash[model.constantize.to_crc32] = model
+        model.constantize.subclasses.each { |subclass|
+          hash[subclass.to_crc32] = subclass.name
+        }
         hash
       end
       @@models_by_crc[crc].constantize
