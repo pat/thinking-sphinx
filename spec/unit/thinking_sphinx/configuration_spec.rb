@@ -71,8 +71,8 @@ describe ThinkingSphinx::Configuration do
         :name => "friendship",  :model => Friendship
       )
       
-      Person.stub_method(:indexes => [@person_index_a, @person_index_b])
-      Friendship.stub_method(:indexes => [@friendship_index_a])
+      Person.stub_method(:sphinx_indexes => [@person_index_a, @person_index_b])
+      Friendship.stub_method(:sphinx_indexes => [@friendship_index_a])
       
       FileUtils.mkdir_p "#{@config.app_root}/config"
       FileUtils.touch   "#{@config.app_root}/config/database.yml"
@@ -82,8 +82,8 @@ describe ThinkingSphinx::Configuration do
       ThinkingSphinx.unstub_method :indexed_models
       YAML.unstub_method :load
       
-      Person.unstub_method      :indexes
-      Friendship.unstub_method  :indexes
+      Person.unstub_method      :sphinx_indexes
+      Friendship.unstub_method  :sphinx_indexes
       # 
       # FileUtils.rm_rf "#{@config.app_root}/config"
     end
@@ -346,7 +346,7 @@ describe ThinkingSphinx::Configuration do
     end
     
     it "should set prefix_fields if any fields are flagged explicitly" do
-      @model.indexes.first.stub_methods(
+      @model.sphinx_indexes.first.stub_methods(
         :prefix_fields => [
           ThinkingSphinx::Field.stub_instance(:unique_name => "a"),
           ThinkingSphinx::Field.stub_instance(:unique_name => "b"),
@@ -371,7 +371,7 @@ describe ThinkingSphinx::Configuration do
     end
     
     it "should set infix_fields if any fields are flagged explicitly" do
-      @model.indexes.first.stub_methods(
+      @model.sphinx_indexes.first.stub_methods(
         :prefix_fields => [
           ThinkingSphinx::Field.stub_instance(:unique_name => "a"),
           ThinkingSphinx::Field.stub_instance(:unique_name => "b"),
@@ -473,7 +473,7 @@ describe ThinkingSphinx::Configuration do
         /local = person_delta/
       )
       
-      @model.indexes.first.stub_method(:delta? => true)
+      @model.sphinx_indexes.first.stub_method(:delta? => true)
       @config.send(:distributed_index_for_model, @model).should match(
         /local = person_delta/
       )

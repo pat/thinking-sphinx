@@ -6,7 +6,7 @@ describe 'ThinkingSphinx::ActiveRecord::HasManyAssociation' do
       Friendship.stub_method(:search => true)
       
       @person = Person.find(:first)
-      @index  = Friendship.indexes.first
+      @index  = Friendship.sphinx_indexes.first
     end
     
     it "should raise an error if the required attribute doesn't exist" do
@@ -31,7 +31,7 @@ describe 'ThinkingSphinx::ActiveRecord::HasManyAssociation' do
       Person.stub_method(:search => true)
       
       @person = Person.find(:first)
-      @index  = Person.indexes.first
+      @index  = Person.sphinx_indexes.first
     end
     
     it "should raise an error if the required attribute doesn't exist" do

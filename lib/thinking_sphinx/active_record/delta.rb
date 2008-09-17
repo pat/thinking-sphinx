@@ -80,13 +80,13 @@ module ThinkingSphinx
             client = Riddle::Client.new config.address, config.port
             
             client.update(
-              "#{self.class.indexes.first.name}_core",
+              "#{self.class.sphinx_indexes.first.name}_core",
               ['sphinx_deleted'],
               {self.id => 1}
             ) if self.in_core_index?
             
             configuration = ThinkingSphinx::Configuration.new
-            system "indexer --config #{configuration.config_file} --rotate #{self.class.indexes.first.name}_delta"
+            system "indexer --config #{configuration.config_file} --rotate #{self.class.sphinx_indexes.first.name}_delta"
             
             true
           end

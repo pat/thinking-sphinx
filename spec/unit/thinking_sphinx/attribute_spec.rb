@@ -17,7 +17,7 @@ describe ThinkingSphinx::Attribute do
   
   describe "to_select_sql method with MySQL" do
     before :each do
-      @index = Person.indexes.first
+      @index = Person.sphinx_indexes.first
       @index.link!
     end
     
@@ -52,7 +52,7 @@ describe ThinkingSphinx::Attribute do
   
   describe "to_select_sql method with PostgreSQL" do
     before :each do
-      @index = Person.indexes.first
+      @index = Person.sphinx_indexes.first
       Person.connection.class.stub_method(
         :name => "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
       )

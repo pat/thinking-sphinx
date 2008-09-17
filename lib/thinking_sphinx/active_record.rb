@@ -5,12 +5,12 @@ require 'thinking_sphinx/active_record/has_many_association'
 module ThinkingSphinx
   # Core additions to ActiveRecord models - define_index for creating indexes
   # for models. If you want to interrogate the index objects created for the
-  # model, you can use the class-level accessor :indexes.
+  # model, you can use the class-level accessor :sphinx_indexes.
   #
   module ActiveRecord
     def self.included(base)
       base.class_eval do
-        class_inheritable_array :indexes
+        class_inheritable_array :sphinx_indexes
         class << self
           # Allows creation of indexes for Sphinx. If you don't do this, there
           # isn't much point trying to search (or using this plugin at all,
@@ -64,10 +64,10 @@ module ThinkingSphinx
           def define_index(&block)
             return unless ThinkingSphinx.define_indexes?
             
-            self.indexes ||= []
+            self.sphinx_indexes ||= []
             index = Index.new(self, &block)
             
-            self.indexes << index
+            self.sphinx_indexes << index
             unless ThinkingSphinx.indexed_models.include?(self.name)
               ThinkingSphinx.indexed_models << self.name
             end
@@ -128,17 +128,17 @@ module ThinkingSphinx
       client = Riddle::Client.new config.address, config.port
       
       client.update(
-        "#{self.class.indexes.first.name}_core",
+        "#{self.class.sphinx_indexes.first.name}_core",
         ['sphinx_deleted'],
         {self.id => 1}
       ) if self.in_core_index?
       
       client.update(
-        "#{self.class.indexes.first.name}_delta",
+        "#{self.class.sphinx_indexes.first.name}_delta",
         ['sphinx_deleted'],
         {self.id => 1}
       ) if ThinkingSphinx.deltas_enabled? &&
-        self.class.indexes.any? { |index| index.delta? } &&
+        self.class.sphinx_indexes.any? { |index| index.delta? } &&
         self.delta?
     end
   end

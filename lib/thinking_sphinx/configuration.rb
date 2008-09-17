@@ -130,7 +130,7 @@ searchd
           prefixed_fields = []
           infixed_fields  = []
           
-          model.indexes.select { |index| index.model == model }.each_with_index do |index, i|
+          model.sphinx_indexes.select { |index| index.model == model }.each_with_index do |index, i|
             file.write index.to_config(model, i, database_conf, charset_type, model_index)
             
             create_array_accum if index.adapter == :postgres
@@ -203,7 +203,7 @@ path = #{self.searchd_file_path}/#{ThinkingSphinx::Index.name(model)}_core
 charset_type = #{self.charset_type}
 INDEX
       
-      morphology  = model.indexes.inject(self.morphology) { |morph, index|
+      morphology  = model.sphinx_indexes.inject(self.morphology) { |morph, index|
         index.options[:morphology] || morph
       }
       output += "  morphology     = #{morphology}\n"         unless morphology.blank?
@@ -225,16 +225,16 @@ INDEX
       output += "  html_strip     = 1\n" if self.html_strip
       output += "  html_remove_elements = #{self.html_remove_elements}\n" unless self.html_remove_elements.blank?
 
-      unless model.indexes.collect(&:prefix_fields).flatten.empty?
-        output += "  prefix_fields = #{model.indexes.collect(&:prefix_fields).flatten.map(&:unique_name).join(', ')}\n"
+      unless model.sphinx_indexes.collect(&:prefix_fields).flatten.empty?
+        output += "  prefix_fields = #{model.sphinx_indexes.collect(&:prefix_fields).flatten.map(&:unique_name).join(', ')}\n"
       else
-        output += " prefix_fields = _\n" unless model.indexes.collect(&:infix_fields).flatten.empty?
+        output += " prefix_fields = _\n" unless model.sphinx_indexes.collect(&:infix_fields).flatten.empty?
       end
       
-      unless model.indexes.collect(&:infix_fields).flatten.empty?
-        output += "  infix_fields  = #{model.indexes.collect(&:infix_fields).flatten.map(&:unique_name).join(', ')}\n"
+      unless model.sphinx_indexes.collect(&:infix_fields).flatten.empty?
+        output += "  infix_fields  = #{model.sphinx_indexes.collect(&:infix_fields).flatten.map(&:unique_name).join(', ')}\n"
       else
-        output += " infix_fields = -\n" unless model.indexes.collect(&:prefix_fields).flatten.empty?
+        output += " infix_fields = -\n" unless model.sphinx_indexes.collect(&:prefix_fields).flatten.empty?
       end
       
       output + "}\n"
@@ -252,7 +252,7 @@ index #{ThinkingSphinx::Index.name(model)}_delta : #{ThinkingSphinx::Index.name(
     
     def distributed_index_for_model(model)
       sources = ["local = #{ThinkingSphinx::Index.name(model)}_core"]
-      if model.indexes.any? { |index| index.delta? }
+      if model.sphinx_indexes.any? { |index| index.delta? }
         sources << "local = #{ThinkingSphinx::Index.name(model)}_delta"
       end
       
