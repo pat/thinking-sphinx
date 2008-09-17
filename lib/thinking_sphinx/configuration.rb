@@ -279,7 +279,6 @@ index #{ThinkingSphinx::Index.name(model)}
           );
         SQL
       rescue
-        raise unless $!.to_s =~ /already exists with same argument types/
         ::ActiveRecord::Base.connection.execute "rollback to savepoint ts"
       end
       ::ActiveRecord::Base.connection.execute "release savepoint ts"
