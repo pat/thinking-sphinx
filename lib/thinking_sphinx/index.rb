@@ -349,7 +349,7 @@ GROUP BY #{ (
     
     def add_internal_attributes
       @attributes << Attribute.new(
-        FauxColumn.new(:id),
+        FauxColumn.new(@model.primary_key.to_sym),
         :type => :integer,
         :as   => :sphinx_internal_id
       ) unless @attributes.detect { |attr| attr.alias == :sphinx_internal_id }
