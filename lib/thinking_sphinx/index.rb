@@ -79,7 +79,7 @@ sql_host = #{database_conf[:host] || "localhost"}
 sql_user = #{database_conf[:username] || database_conf[:user]}
 sql_pass = #{(database_conf[:password] || "").gsub('#', '\#')}
 sql_db   = #{database_conf[:database]}
-#{database_conf[:port] && "sql_port = #{database_conf[:port]}"} 
+#{"sql_port = #{database_conf[:port]}" unless database_conf[:port].blank? }
 #{"sql_sock = #{database_conf[:socket]}" unless database_conf[:socket].blank? }
 
 sql_query_pre    = #{charset_type == "utf-8" && adapter == :mysql ? "SET NAMES utf8" : ""}
