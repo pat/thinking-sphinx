@@ -1,3 +1,5 @@
 require 'thinking_sphinx'
 
-ThinkingSphinx::Configuration.new.load_models
+ActionController::Dispatcher.to_prepare :thinking_sphinx do
+  ThinkingSphinx::Configuration.new.load_models
+end
