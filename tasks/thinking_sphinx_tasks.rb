@@ -41,13 +41,19 @@ namespace :thinking_sphinx do
   
   desc "Generate the Sphinx configuration file using Thinking Sphinx's settings"
   task :configure => :app_env do
-    ThinkingSphinx::Configuration.new.build
+    config = ThinkingSphinx::Configuration.new
+    puts "Generating Configuration to #{config.config_file}"
+    config.build
   end
   
   desc "Index data for Sphinx using Thinking Sphinx's settings"
-  task :index => [:app_env, :configure] do
+  task :index => :app_env do
     config = ThinkingSphinx::Configuration.new
-    
+    unless ENV["INDEX_ONLY"] == "true"
+      puts "Generating Configuration to #{config.config_file}"
+      config.build
+    end
+        
     FileUtils.mkdir_p config.searchd_file_path
     cmd = "indexer --config #{config.config_file} --all"
     cmd << " --rotate" if sphinx_running?
