@@ -20,8 +20,8 @@ namespace :thinking_sphinx do
     raise RuntimeError, "searchd is already running." if sphinx_running?
     
     Dir["#{config.searchd_file_path}/*.spl"].each { |file| File.delete(file) }
-    
-    cmd = "searchd --config #{config.config_file}"
+
+    cmd = "#{config.bin_path}searchd --config #{config.config_file}"
     puts cmd
     system cmd
     
@@ -61,7 +61,7 @@ namespace :thinking_sphinx do
     end
         
     FileUtils.mkdir_p config.searchd_file_path
-    cmd = "indexer --config #{config.config_file} --all"
+    cmd = "#{config.bin_path}indexer --config #{config.config_file} --all"
     cmd << " --rotate" if sphinx_running?
     puts cmd
     system cmd

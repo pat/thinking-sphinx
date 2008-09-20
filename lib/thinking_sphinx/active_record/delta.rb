@@ -86,7 +86,7 @@ module ThinkingSphinx
             ) if self.in_core_index?
             
             configuration = ThinkingSphinx::Configuration.new
-            system "indexer --config #{configuration.config_file} --rotate #{self.class.indexes.first.name}_delta"
+            system "#{config.bin_path}indexer --config #{configuration.config_file} --rotate #{self.class.indexes.first.name}_delta"
             
             true
           end

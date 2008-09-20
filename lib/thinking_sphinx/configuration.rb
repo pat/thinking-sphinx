@@ -45,7 +45,7 @@ module ThinkingSphinx
       :pid_file, :searchd_file_path, :address, :port, :enable_star,
       :allow_star, :min_prefix_len, :min_infix_len, :mem_limit, :max_matches,
       :morphology, :charset_type, :charset_table, :ignore_chars, :html_strip,
-      :html_remove_elements, :database_yml_file, :app_root
+      :html_remove_elements, :database_yml_file, :app_root, :bin_path
     
     attr_reader :environment
     
@@ -77,6 +77,7 @@ module ThinkingSphinx
       self.ignore_chars         = nil
       self.html_strip           = false
       self.html_remove_elements = ""
+      self.bin_path             = ""
       
       parse_config
     end
