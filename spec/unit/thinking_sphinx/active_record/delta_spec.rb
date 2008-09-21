@@ -40,7 +40,8 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
       ThinkingSphinx.stub_method(:deltas_enabled? => true)
       
       @person = Person.find(:first)
-      @person.stub_method(:system => true, :in_core_index? => false)
+      Person.stub_method(:system => true)
+      @person.stub_method(:in_core_index? => false)
       
       @client = Riddle::Client.stub_instance(:update => true)
       Riddle::Client.stub_method(:new => @client)
@@ -51,7 +52,7 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
       
       @person.send(:index_delta)
       
-      @person.should_not have_received(:system)
+      Person.should_not have_received(:system)
       @client.should_not have_received(:update)
     end
     
@@ -60,7 +61,7 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
       
       @person.send(:index_delta)
       
-      @person.should_not have_received(:system)
+      Person.should_not have_received(:system)
     end
     
     it "shouldn't index if the environment is 'test'" do
@@ -70,13 +71,13 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
       
       @person.send(:index_delta)
       
-      @person.should_not have_received(:system)
+      Person.should_not have_received(:system)
     end
     
     it "should call indexer for the delta index" do
       @person.send(:index_delta)
       
-      @person.should have_received(:system).with(
+      Person.should have_received(:system).with(
         "#{ThinkingSphinx::Configuration.new.bin_path}indexer --config #{ThinkingSphinx::Configuration.new.config_file} --rotate person_delta"
       )
     end
