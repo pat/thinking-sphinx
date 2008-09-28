@@ -201,6 +201,14 @@ module ThinkingSphinx
         def method_missing(method, *args)
           FauxColumn.new(method, *args)
         end
+        
+        # A method to allow adding fields from associations which have names
+        # that clash with method names in the Builder class (ie: properties,
+        # fields, attributes).
+        # 
+        def __association(assoc)
+          FauxColumn.new(method, *args)
+        end
       end
     end
   end
