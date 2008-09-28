@@ -263,7 +263,7 @@ module ThinkingSphinx
         config = ThinkingSphinx::Configuration.new
         client = Riddle::Client.new config.address, config.port
         klass  = options[:class]
-        index_options = klass ? klass.indexes.last.options : {}
+        index_options = klass ? klass.sphinx_indexes.last.options : {}
         
         [
           :max_matches, :match_mode, :sort_mode, :sort_by, :id_range,
@@ -318,7 +318,7 @@ module ThinkingSphinx
       # and filters.
       # 
       def search_conditions(klass, conditions={})
-        attributes = klass ? klass.indexes.collect { |index|
+        attributes = klass ? klass.sphinx_indexes.collect { |index|
           index.attributes.collect { |attrib| attrib.unique_name }
         }.flatten : []
         
@@ -343,15 +343,15 @@ module ThinkingSphinx
       # there's actually any values.
       # 
       def anchor_conditions(klass, options)
-        attributes = klass ? klass.indexes.collect { |index|
+        attributes = klass ? klass.sphinx_indexes.collect { |index|
           index.attributes.collect { |attrib| attrib.unique_name }
         }.flatten : []
         
-        lat_attr = klass ? klass.indexes.collect { |index|
+        lat_attr = klass ? klass.sphinx_indexes.collect { |index|
           index.options[:latitude_attr]
         }.compact.first : nil
         
-        lon_attr = klass ? klass.indexes.collect { |index|
+        lon_attr = klass ? klass.sphinx_indexes.collect { |index|
           index.options[:longitude_attr]
         }.compact.first : nil
         
@@ -385,7 +385,7 @@ module ThinkingSphinx
       # 
       def set_sort_options!(client, options)
         klass = options[:class]
-        fields = klass ? klass.indexes.collect { |index|
+        fields = klass ? klass.sphinx_indexes.collect { |index|
           index.fields.collect { |field| field.unique_name }
         }.flatten : []
         
