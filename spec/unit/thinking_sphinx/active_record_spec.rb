@@ -106,7 +106,7 @@ describe "ThinkingSphinx::ActiveRecord" do
       
       person = Person.find(:first)
       person.in_core_index?.should == :searching_for_id
-      Person.should have_received(:search_for_id).with(person.id, "person_core")
+      Person.should have_received(:search_for_id).with(person.sphinx_document_id, "person_core")
     end
   end
   
@@ -117,7 +117,7 @@ describe "ThinkingSphinx::ActiveRecord" do
         :port     => 123
       )
       @client = Riddle::Client.stub_instance(:update => true)
-      @person = Person.new
+      @person = Person.find(:first)
       
       ThinkingSphinx::Configuration.stub_method(:new => @configuration)
       Riddle::Client.stub_method(:new => @client)
@@ -137,7 +137,7 @@ describe "ThinkingSphinx::ActiveRecord" do
       @person.toggle_deleted
       
       @client.should have_received(:update).with(
-        "person_core", ["sphinx_deleted"], {@person.id => 1}
+        "person_core", ["sphinx_deleted"], {@person.sphinx_document_id => 1}
       )
     end
     
@@ -147,7 +147,7 @@ describe "ThinkingSphinx::ActiveRecord" do
       @person.toggle_deleted
       
       @client.should_not have_received(:update).with(
-        "person_core", ["sphinx_deleted"], {@person.id => 1}
+        "person_core", ["sphinx_deleted"], {@person.sphinx_document_id => 1}
       )
     end
     
@@ -159,7 +159,7 @@ describe "ThinkingSphinx::ActiveRecord" do
       @person.toggle_deleted
       
       @client.should have_received(:update).with(
-        "person_delta", ["sphinx_deleted"], {@person.id => 1}
+        "person_delta", ["sphinx_deleted"], {@person.sphinx_document_id => 1}
       )
     end
     
@@ -171,7 +171,7 @@ describe "ThinkingSphinx::ActiveRecord" do
       @person.toggle_deleted
       
       @client.should_not have_received(:update).with(
-        "person_delta", ["sphinx_deleted"], {@person.id => 1}
+        "person_delta", ["sphinx_deleted"], {@person.sphinx_document_id => 1}
       )
     end
     
@@ -183,7 +183,7 @@ describe "ThinkingSphinx::ActiveRecord" do
       @person.toggle_deleted
 
       @client.should_not have_received(:update).with(
-        "person_delta", ["sphinx_deleted"], {@person.id => 1}
+        "person_delta", ["sphinx_deleted"], {@person.sphinx_document_id => 1}
       )
     end
 
@@ -192,7 +192,7 @@ describe "ThinkingSphinx::ActiveRecord" do
       @person.toggle_deleted
       
       @client.should_not have_received(:update).with(
-        "person_delta", ["sphinx_deleted"], {@person.id => 1}
+        "person_delta", ["sphinx_deleted"], {@person.sphinx_document_id => 1}
       )
     end
     
@@ -204,7 +204,7 @@ describe "ThinkingSphinx::ActiveRecord" do
       @person.toggle_deleted
       
       @client.should_not have_received(:update).with(
-        "person_delta", ["sphinx_deleted"], {@person.id => 1}
+        "person_delta", ["sphinx_deleted"], {@person.sphinx_document_id => 1}
       )
     end
     
@@ -232,5 +232,13 @@ describe "ThinkingSphinx::ActiveRecord" do
       sql = Child.indexes.last.to_sql.gsub('$start', '0').gsub('$end', '100')
       lambda { Child.connection.execute(sql) }.should_not raise_error(ActiveRecord::StatementInvalid)
     end
+  end
+  
+  it "should return the sphinx document id as expected" do
+    person      = Person.find(:first)
+    model_count = ThinkingSphinx.indexed_models.length
+    offset      = ThinkingSphinx.indexed_models.index("Person")
+    
+    (person.id * model_count).should == person.sphinx_document_id
   end
 end

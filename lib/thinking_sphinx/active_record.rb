@@ -118,7 +118,9 @@ module ThinkingSphinx
     end
     
     def in_core_index?
-      @in_core_index ||= self.class.search_for_id(self.id, "#{self.class.name.downcase}_core")
+      self.class.search_for_id(
+        self.sphinx_document_id, "#{self.class.name.downcase}_core"
+      )
     end
     
     def toggle_deleted
@@ -130,16 +132,21 @@ module ThinkingSphinx
       client.update(
         "#{self.class.indexes.first.name}_core",
         ['sphinx_deleted'],
-        {self.id => 1}
+        {self.sphinx_document_id => 1}
       ) if self.in_core_index?
       
       client.update(
         "#{self.class.indexes.first.name}_delta",
         ['sphinx_deleted'],
-        {self.id => 1}
+        {self.sphinx_document_id => 1}
       ) if ThinkingSphinx.deltas_enabled? &&
         self.class.indexes.any? { |index| index.delta? } &&
         self.delta?
+    end
+    
+    def sphinx_document_id
+      (self.id * ThinkingSphinx.indexed_models.size) +
+        ThinkingSphinx.indexed_models.index(self.class.name)
     end
   end
 end
