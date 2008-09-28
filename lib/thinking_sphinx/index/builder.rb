@@ -180,8 +180,7 @@ module ThinkingSphinx
         # when defining the index, so you don't need to specify them for every
         # geo-related search.
         #
-        #   set_property :latitude_attr => "lt"
-        #   set_property :longitude_attr => "lg"
+        #   set_property :latitude_attr => "lt", :longitude_attr => "lg"
         # 
         # Please don't forget to add a boolean field named 'delta' to your
         # model's database table if enabling the delta index for it.
