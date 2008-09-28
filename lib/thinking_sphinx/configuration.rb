@@ -270,14 +270,27 @@ index #{ThinkingSphinx::Index.name(model)}
       ::ActiveRecord::Base.connection.execute "begin"
       ::ActiveRecord::Base.connection.execute "savepoint ts"
       begin
-        ::ActiveRecord::Base.connection.execute <<-SQL
-          CREATE AGGREGATE array_accum (anyelement)
-          (
-              sfunc = array_append,
-              stype = anyarray,
-              initcond = '{}'
-          );
-        SQL
+        # see http://www.postgresql.org/docs/8.2/interactive/sql-createaggregate.html
+        if ::ActiveRecord::Base.connection.raw_connection.server_version > 80200
+          ::ActiveRecord::Base.connection.execute <<-SQL
+            CREATE AGGREGATE array_accum (anyelement)
+            (
+                sfunc = array_append,
+                stype = anyarray,
+                initcond = '{}'
+            );
+          SQL
+        else
+          ::ActiveRecord::Base.connection.execute <<-SQL
+            CREATE AGGREGATE array_accum
+            (
+                basetype = anyelement,
+                sfunc = array_append,
+                stype = anyarray,
+                initcond = '{}'
+            );
+          SQL
+        end
       rescue
         ::ActiveRecord::Base.connection.execute "rollback to savepoint ts"
       end

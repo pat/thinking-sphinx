@@ -6,6 +6,12 @@ namespace :thinking_sphinx do
     Rake::Task[:merb_env].invoke    if defined?(Merb)
   end
   
+  desc "Stop if running, then start a Sphinx searchd daemon using Thinking Sphinx's settings"
+  task :running_start => :app_env do
+   Rake::Task["thinking_sphinx:stop"].invoke if sphinx_running?
+   Rake::Task["thinking_sphinx:start"].invoke
+  end
+  
   desc "Start a Sphinx searchd daemon using Thinking Sphinx's settings"
   task :start => :app_env do
     config = ThinkingSphinx::Configuration.new
@@ -63,6 +69,8 @@ namespace :thinking_sphinx do
 end
 
 namespace :ts do
+  desc "Stop if running, then start a Sphinx searchd daemon using Thinking Sphinx's settings"
+  task :running_start   => "thinking_sphinx:start"
   desc "Start a Sphinx searchd daemon using Thinking Sphinx's settings"
   task :start   => "thinking_sphinx:start"
   desc "Stop Sphinx using Thinking Sphinx's settings"
