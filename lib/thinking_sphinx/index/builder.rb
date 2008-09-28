@@ -206,8 +206,10 @@ module ThinkingSphinx
         # that clash with method names in the Builder class (ie: properties,
         # fields, attributes).
         # 
-        def __association(assoc)
-          FauxColumn.new(method, *args)
+        # Example: indexes assoc(:properties).column
+        # 
+        def assoc(assoc)
+          FauxColumn.new(method)
         end
       end
     end
