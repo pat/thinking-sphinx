@@ -119,7 +119,8 @@ module ThinkingSphinx
     
     def in_core_index?
       self.class.search_for_id(
-        self.sphinx_document_id, "#{self.class.name.underscore.tr(':/\\', '_')}_core"
+        self.sphinx_document_id,
+        "#{self.class.name.underscore.tr(':/\\', '_')}_core"
       )
     end
     
