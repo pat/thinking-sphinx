@@ -70,7 +70,7 @@ end
 
 namespace :ts do
   desc "Stop if running, then start a Sphinx searchd daemon using Thinking Sphinx's settings"
-  task :running_start   => "thinking_sphinx:start"
+  task :run     => "thinking_sphinx:running_start"
   desc "Start a Sphinx searchd daemon using Thinking Sphinx's settings"
   task :start   => "thinking_sphinx:start"
   desc "Stop Sphinx using Thinking Sphinx's settings"
