@@ -360,6 +360,7 @@ module ThinkingSphinx
         lat_attr ||= :latitude  if attributes.include?(:latitude)
         
         lon_attr = options[:longitude_attr] if options[:longitude_attr]
+        lon_attr ||= :lon       if attributes.include?(:lng)
         lon_attr ||= :lon       if attributes.include?(:lon)
         lon_attr ||= :long      if attributes.include?(:long)
         lon_attr ||= :longitude if attributes.include?(:longitude)
