@@ -82,7 +82,7 @@ module ThinkingSphinx
             client.update(
               "#{self.class.sphinx_indexes.first.name}_core",
               ['sphinx_deleted'],
-              {self.id => 1}
+              {self.sphinx_document_id => 1}
             ) if self.in_core_index?
             
             configuration = ThinkingSphinx::Configuration.new

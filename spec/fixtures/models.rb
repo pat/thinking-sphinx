@@ -55,3 +55,17 @@ class Friendship < ActiveRecord::Base
     has person_id, friend_id
   end
 end
+
+class Alpha < ActiveRecord::Base
+  define_index do
+    indexes :name, :sortable => true
+  end
+end
+
+class Beta < ActiveRecord::Base
+  define_index do
+    indexes :name, :sortable => true
+    
+    set_property :delta => true
+  end
+end

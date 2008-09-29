@@ -239,6 +239,48 @@ describe "ThinkingSphinx::ActiveRecord" do
     model_count = ThinkingSphinx.indexed_models.length
     offset      = ThinkingSphinx.indexed_models.index("Person")
     
-    (person.id * model_count).should == person.sphinx_document_id
+    (person.id * model_count + offset).should == person.sphinx_document_id
+    
+    alpha       = Alpha.find(:first)
+    offset      = ThinkingSphinx.indexed_models.index("Alpha")
+    
+    (alpha.id * model_count + offset).should == alpha.sphinx_document_id
+    
+    beta        = Beta.find(:first)
+    offset      = ThinkingSphinx.indexed_models.index("Beta")
+    
+    (beta.id * model_count + offset).should == beta.sphinx_document_id
+  end
+  
+  it "should remove instances from the core index if they're in it" do
+    Beta.search("three").should_not be_empty
+    
+    beta = Beta.find(:first, :conditions => {:name => "three"})
+    beta.destroy
+    
+    Beta.search("three").should be_empty
+  end
+  
+  it "should remove destroyed new instances from the delta index if they're in it" do
+    beta = Beta.create(:name => "eleven")
+    
+    Beta.search("eleven").should_not be_empty
+    
+    beta.destroy
+    
+    Beta.search("eleven").should be_empty
+  end
+  
+  it "should remove destroyed edited instances from the delta index if they're in it" do
+    beta = Beta.find(:first, :conditions => {:name => "four"})
+    beta.update_attributes(:name => "fourteen")
+    
+    sleep(0.5)
+    
+    Beta.search("fourteen").should_not be_empty
+    
+    beta.destroy
+    
+    Beta.search("fourteen").should be_empty
   end
 end

@@ -164,4 +164,31 @@ describe ThinkingSphinx::Search do
       @results.should be_kind_of(Array)
     end
   end
+  
+  it "should not return results that have been deleted" do
+    Alpha.search("one").should_not be_empty
+    
+    alpha = Alpha.find(:first, :conditions => {:name => "one"})
+    alpha.destroy
+    
+    Alpha.search("one").should be_empty
+  end
+  
+  it "should still return edited results using old data if there's no delta" do
+    Alpha.search("two").should_not be_empty
+    
+    alpha = Alpha.find(:first, :conditions => {:name => "two"})
+    alpha.update_attributes(:name => "twelve")
+    
+    Alpha.search("two").should_not be_empty
+  end
+  
+  it "should not return edited results using old data if there's a delta" do
+    Beta.search("two").should_not be_empty
+    
+    beta = Beta.find(:first, :conditions => {:name => "two"})
+    beta.update_attributes(:name => "twelve")
+    
+    Beta.search("two").should be_empty
+  end
 end
