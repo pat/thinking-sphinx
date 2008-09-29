@@ -29,6 +29,9 @@ Spec::Runner.configure do |config|
     
     sphinx.setup_sphinx
     sphinx.start
+    
+    ThinkingSphinx.updates_enabled = true
+    ThinkingSphinx.deltas_enabled = true
   end
   
   config.after :each do

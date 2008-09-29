@@ -263,6 +263,7 @@ describe "ThinkingSphinx::ActiveRecord" do
   
   it "should remove destroyed new instances from the delta index if they're in it" do
     beta = Beta.create(:name => "eleven")
+    sleep(1) # wait for Sphinx to catch up
     
     Beta.search("eleven").should_not be_empty
     
@@ -274,8 +275,7 @@ describe "ThinkingSphinx::ActiveRecord" do
   it "should remove destroyed edited instances from the delta index if they're in it" do
     beta = Beta.find(:first, :conditions => {:name => "four"})
     beta.update_attributes(:name => "fourteen")
-    
-    sleep(0.5)
+    sleep(1) # wait for Sphinx to catch up
     
     Beta.search("fourteen").should_not be_empty
     

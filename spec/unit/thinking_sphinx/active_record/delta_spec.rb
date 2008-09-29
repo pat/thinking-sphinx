@@ -149,7 +149,7 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
       ThinkingSphinx::Configuration.stub_method(:environment => "spec")
       ThinkingSphinx.stub_method(:deltas_enabled? => true)
       
-      @person = Person.new
+      @person = Person.find(:first)
       @person.stub_method(:system => true, :in_core_index? => false)
       
       @client = Riddle::Client.stub_instance(:update => true)
@@ -175,6 +175,7 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
     
     it "shouldn't index if the environment is 'test'" do
       ThinkingSphinx.unstub_method(:deltas_enabled?)
+      ThinkingSphinx.deltas_enabled = nil
       ThinkingSphinx::Configuration.stub_method(:environment => "test")
       
       @person.send(:index_delta)
