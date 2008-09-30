@@ -141,8 +141,8 @@ module ThinkingSphinx
       # attributes. To search with that point, you can then use one of the
       # following syntax examples:
       # 
-      #   Address.search "Melbourne", :geo => [1.4, -2.217]
-      #   Address.search "Australia", :geo => [-0.55, 3.108],
+      #   Address.search "Melbourne", :geo => [1.4, -2.217], :order => "@geodist asc"
+      #   Address.search "Australia", :geo => [-0.55, 3.108], :order => "@geodist asc"
       #     :latitude_attr => "latit", :longitude_attr => "longit"
       # 
       # The first example applies when your latitude and longitude attributes
@@ -160,9 +160,9 @@ module ThinkingSphinx
       # 
       # Now, geo-location searching really only has an affect if you have a
       # filter, sort or grouping clause related to it - otherwise it's just a
-      # normal search. To make use of the positioning difference, use the
-      # special attribute "@geodist" in any of your filters or sorting or grouping
-      # clauses.
+      # normal search, and _will not_ return a distance value otherwise. To
+      # make use of the positioning difference, use the special attribute
+      # "@geodist" in any of your filters or sorting or grouping clauses.
       # 
       # And don't forget - both the latitude and longitude you use in your
       # search, and the values in your indexes, need to be stored as a float in radians,
@@ -173,6 +173,16 @@ module ThinkingSphinx
       #     has 'RADIANS(lat)', :as => :lat,  :type => :float
       #     # ...
       #   end
+      # 
+      # Once you've got your results set, you can access the distances as
+      # follows:
+      # 
+      # @results.each_with_geodist do |result, distance|
+      #   # ...
+      # end
+      # 
+      # The distance value is returned as a float, representing the distance in
+      # metres.
       # 
       def search(*args)
         results, client = search_results(*args.clone)
