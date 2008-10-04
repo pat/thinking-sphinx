@@ -87,11 +87,11 @@ describe ThinkingSphinx::Configuration do
       # FileUtils.rm_rf "#{@config.app_root}/config"
     end
     
-    # it "should load the models" do
-    #   @config.build
-    #   
-    #   @config.should have_received(:load_models)
-    # end
+    it "should load the models" do
+      @config.build
+      
+      @config.should have_received(:load_models)
+    end
     
     it "should load in the database YAML configuration" do
       @config.build
@@ -489,5 +489,25 @@ describe ThinkingSphinx::Configuration do
   
   describe "create_array_accum method" do
     it "should create the array_accum method on PostgreSQL"
+  end
+  
+  describe "initialisation" do
+    it "should have a default bin_path of nothing" do
+      ThinkingSphinx::Configuration.new.bin_path.should == ""
+    end
+    
+    it "should append a / to bin_path if one is supplied" do
+      @settings = {
+        "development" => {
+          "bin_path" => "path/to/somewhere"
+        }
+      }
+      
+      open("#{RAILS_ROOT}/config/sphinx.yml", "w") do |f|
+        f.write  YAML.dump(@settings)
+      end
+      
+      ThinkingSphinx::Configuration.new.bin_path.should match(/\/$/)
+    end
   end
 end

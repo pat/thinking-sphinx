@@ -80,6 +80,8 @@ module ThinkingSphinx
       self.bin_path             = ""
       
       parse_config
+      
+      self.bin_path += '/' unless self.bin_path.blank?
     end
     
     def self.environment
