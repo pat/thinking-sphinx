@@ -262,6 +262,8 @@ GROUP BY #{ (
     # Also creates a CRC attribute for the model.
     # 
     def initialize_from_builder(&block)
+      return unless ::ActiveRecord::Base.connected?
+      
       builder = Class.new(Builder)
       builder.setup
       
