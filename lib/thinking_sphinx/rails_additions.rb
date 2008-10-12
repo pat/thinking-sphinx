@@ -54,3 +54,15 @@ end
 ActiveRecord::Base.extend(
   ThinkingSphinx::ActiveRecordQuotedName
 ) unless ActiveRecord::Base.respond_to?("quoted_table_name")
+
+module ThinkingSphinx
+  module ActiveRecordStoreFullSTIClass
+    def store_full_sti_class
+      false
+    end
+  end
+end
+
+ActiveRecord::Base.extend(
+  ThinkingSphinx::ActiveRecordStoreFullSTIClass
+) unless ActiveRecord::Base.respond_to?(:store_full_sti_class)
