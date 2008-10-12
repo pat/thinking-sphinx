@@ -18,7 +18,8 @@ module ThinkingSphinx
         # rails documentation. It's not needed though, so it gets undef'd.
         # Hopefully the list of methods that get in the way doesn't get too
         # long.
-        undef_method :parent if respond_to?(:parent)
+        undef_method :parent  if respond_to?(:parent)
+        undef_method :name    if respond_to?(:name)
         
         attr_accessor :fields, :attributes, :properties, :conditions,
           :groupings
