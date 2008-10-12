@@ -1,137 +1,27 @@
 require 'spec/spec_helper'
 
-describe "ThinkingSphinx::ActiveRecord::Delta" do
-  describe "after_commit callback" do
-    before :each do
-      Person.stub_method(:write_inheritable_array => true)
-    end
+# Ensure after_commit plugin is loaded correctly
+Object.subclasses_of(ActiveRecord::ConnectionAdapters::AbstractAdapter).each { |klass|
+  klass.send(:include, AfterCommit::ConnectionAdapters)
+}
 
-    # This spec only passes with ActiveRecord 2.0.2 or earlier.
-    # it "should add callbacks" do
-    #   Person.after_commit :toggle_delta
-    #   
-    #   Person.should have_received(:write_inheritable_array).with(
-    #     :after_commit, [:toggle_delta]
-    #   )
-    # end
+describe "ThinkingSphinx::ActiveRecord::Delta" do
+  it "should call the toggle_delta method after a save" do
+    @beta = Beta.new
+    @beta.stub_method(:toggle_delta => true)
     
-    it "should have an after_commit method by default" do
-      Person.instance_methods.should include("after_commit")
-    end
+    @beta.save
+    
+    @beta.should have_received(:toggle_delta)
   end
   
-  describe "save_with_after_commit_callback method" do
-    before :each do
-      @person = Person.new
-      @person.stub_methods(
-        :save_without_after_commit_callback => true,
-        :callback                           => true
-      )
-    end
+  it "should call the toggle_delta method after a save!" do
+    @beta = Beta.new
+    @beta.stub_method(:toggle_delta => true)
     
-    it "should call the normal save method" do
-      @person.save
-      
-      @person.should have_received(:save_without_after_commit_callback)
-    end
+    @beta.save!
     
-    it "should call the callbacks if the save was successful" do
-      @person.save
-      
-      @person.should have_received(:callback).with(:after_commit)
-    end
-    
-    it "shouldn't call the callbacks if the save failed" do
-      @person.stub_method(:save_without_after_commit_callback => false)
-      
-      @person.save
-      
-      @person.should_not have_received(:callback)
-    end
-    
-    it "should return the normal save's result" do
-      @person.save.should be_true
-      
-      @person.stub_method(:save_without_after_commit_callback => false)
-      
-      @person.save.should be_false
-    end
-  end
-  
-  describe "save_with_after_commit_callback! method" do
-    before :each do
-      @person = Person.new
-      @person.stub_methods(
-        :save_without_after_commit_callback! => true,
-        :callback                            => true
-      )
-    end
-    
-    it "should call the normal save! method" do
-      @person.save!
-      
-      @person.should have_received(:save_without_after_commit_callback!)
-    end
-    
-    it "should call the callbacks if the save! was successful" do
-      @person.save!
-      
-      @person.should have_received(:callback).with(:after_commit)
-    end
-    
-    it "shouldn't call the callbacks if the save! failed" do
-      @person.stub_method(:save_without_after_commit_callback! => false)
-      
-      @person.save!
-      
-      @person.should_not have_received(:callback)
-    end
-    
-    it "should return the normal save's result" do
-      @person.save!.should be_true
-      
-      @person.stub_method(:save_without_after_commit_callback! => false)
-      
-      @person.save!.should be_false
-    end
-  end
-  
-  describe "destroy_with_after_commit_callback method" do
-    before :each do
-      @person = Person.new
-      @person.stub_methods(
-        :destroy_without_after_commit_callback  => true,
-        :callback                               => true
-      )
-    end
-    
-    it "should call the normal destroy method" do
-      @person.destroy
-      
-      @person.should have_received(:destroy_without_after_commit_callback)
-    end
-    
-    it "should call the callbacks if the destroy was successful" do
-      @person.destroy
-      
-      @person.should have_received(:callback).with(:after_commit)
-    end
-    
-    it "shouldn't call the callbacks if the destroy failed" do
-      @person.stub_method(:destroy_without_after_commit_callback => false)
-      
-      @person.destroy
-      
-      @person.should_not have_received(:callback)
-    end
-    
-    it "should return the normal save's result" do
-      @person.destroy.should be_true
-      
-      @person.stub_method(:destroy_without_after_commit_callback => false)
-      
-      @person.destroy.should be_false
-    end
+    @beta.should have_received(:toggle_delta)
   end
   
   describe "toggle_delta method" do

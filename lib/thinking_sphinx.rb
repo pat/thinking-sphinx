@@ -4,6 +4,7 @@ end
 
 require 'active_record'
 require 'riddle'
+require 'after_commit'
 
 require 'thinking_sphinx/active_record'
 require 'thinking_sphinx/association'
