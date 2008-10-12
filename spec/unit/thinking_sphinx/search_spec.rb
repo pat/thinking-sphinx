@@ -2,6 +2,15 @@ require 'spec/spec_helper'
 require 'will_paginate/collection'
 
 describe ThinkingSphinx::Search do
+  before :all do
+    @sphinx.setup_sphinx
+    @sphinx.start
+  end
+  
+  after :all do
+    @sphinx.stop
+  end
+  
   describe "search_for_id method" do
     before :each do
       @client = Riddle::Client.stub_instance(

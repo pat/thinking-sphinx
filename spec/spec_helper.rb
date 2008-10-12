@@ -28,8 +28,7 @@ Spec::Runner.configure do |config|
       FileUtils.mkdir_p "#{Dir.pwd}/#{path}"
     end
     
-    sphinx.setup_sphinx
-    sphinx.start
+    @sphinx = sphinx
     
     ThinkingSphinx.updates_enabled = true
     ThinkingSphinx.deltas_enabled = true
@@ -41,8 +40,6 @@ Spec::Runner.configure do |config|
   end
   
   config.after :all do
-    sphinx.stop
-    
     FileUtils.rm_r "#{Dir.pwd}/tmp" rescue nil
   end
 end

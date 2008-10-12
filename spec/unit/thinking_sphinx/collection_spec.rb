@@ -1,6 +1,15 @@
 require 'spec/spec_helper'
 
 describe ThinkingSphinx::Collection do
+  before :all do
+    @sphinx.setup_sphinx
+    @sphinx.start
+  end
+  
+  after :all do
+    @sphinx.stop
+  end
+  
   it "should return items paired to their attribute values" do
     results = Person.search ""
     results.should_not be_empty

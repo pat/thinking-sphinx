@@ -1,6 +1,15 @@
 require 'spec/spec_helper'
 
 describe "ThinkingSphinx::ActiveRecord" do
+  before :all do
+    @sphinx.setup_sphinx
+    @sphinx.start
+  end
+  
+  after :all do
+    @sphinx.stop
+  end
+  
   describe "define_index method" do
     before :each do
       module TestModule
