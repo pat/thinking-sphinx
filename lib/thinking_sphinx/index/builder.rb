@@ -20,6 +20,8 @@ module ThinkingSphinx
         # long.
         undef_method :parent  if respond_to?(:parent)
         undef_method :name    if respond_to?(:name)
+        undef_method :id      if respond_to?(:id)
+        undef_method :type    if respond_to?(:type)
         
         attr_accessor :fields, :attributes, :properties, :conditions,
           :groupings
