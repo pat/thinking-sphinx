@@ -2,6 +2,7 @@ $:.unshift File.dirname(__FILE__) + '/../lib'
 
 require 'rubygems'
 require 'fileutils'
+require 'ginger'
 require 'not_a_mock'
 require 'will_paginate'
 
