@@ -262,8 +262,6 @@ GROUP BY #{ (
     # Also creates a CRC attribute for the model.
     # 
     def initialize_from_builder(&block)
-      # return unless ::ActiveRecord::Base.connected?
-      
       builder = Class.new(Builder)
       builder.setup
       
@@ -280,6 +278,17 @@ GROUP BY #{ (
       @groupings  = builder.groupings
       @delta      = builder.properties[:delta]
       @options    = builder.properties.except(:delta)
+      
+      # We want to make sure that if the database doesn't exist, then Thinking
+      # Sphinx doesn't mind when running non-TS tasks (like db:create, db:drop
+      # and db:migrate).
+    rescue StandardError => err
+      case err.class.name
+      when "Mysql::Error", "ActiveRecord::StatementInvalid"
+        return
+      else
+        raise err
+      end
     end
     
     # Returns all associations used amongst all the fields and attributes.
