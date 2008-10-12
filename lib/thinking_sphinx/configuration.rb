@@ -136,7 +136,8 @@ searchd
           model.sphinx_indexes.select { |index| index.model == model }.each_with_index do |index, i|
             file.write index.to_config(model, i, database_conf, charset_type, model_index)
             
-            create_array_accum if index.adapter == :postgres
+            index.adapter_object.setup
+            
             sources << "#{ThinkingSphinx::Index.name(model)}_#{i}_core"
             delta_sources << "#{ThinkingSphinx::Index.name(model)}_#{i}_delta" if index.delta?
           end

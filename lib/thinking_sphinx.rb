@@ -16,6 +16,10 @@ require 'thinking_sphinx/index'
 require 'thinking_sphinx/rails_additions'
 require 'thinking_sphinx/search'
 
+require 'thinking_sphinx/adapters/abstract_adapter'
+require 'thinking_sphinx/adapters/mysql_adapter'
+require 'thinking_sphinx/adapters/postgresql_adapter'
+
 ActiveRecord::Base.send(:include, ThinkingSphinx::ActiveRecord)
 
 Merb::Plugins.add_rakefiles(

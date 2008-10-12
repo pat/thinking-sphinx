@@ -46,8 +46,7 @@ describe ThinkingSphinx::Configuration do
         :load_models                  => "",
         :core_index_for_model         => "",
         :delta_index_for_model        => "",
-        :distributed_index_for_model  => "",
-        :create_array_accum           => true
+        :distributed_index_for_model  => ""
       )
       
       ThinkingSphinx.stub_method :indexed_models => ["Person", "Friendship"]
@@ -57,17 +56,21 @@ describe ThinkingSphinx::Configuration do
         }
       })
       
+      @adapter = ThinkingSphinx::MysqlAdapter.stub_instance(
+        :setup => true
+      )
+      
       @person_index_a = ThinkingSphinx::Index.stub_instance(
         :to_config => "",   :adapter => :mysql, :delta? => false,
-        :name => "person",  :model => Person
+        :name => "person",  :model => Person,   :adapter_object => @adapter
       )
       @person_index_b = ThinkingSphinx::Index.stub_instance(
         :to_config => "",   :adapter => :mysql, :delta? => false,
-        :name => "person",  :model => Person
+        :name => "person",  :model => Person,   :adapter_object => @adapter
       )
       @friendship_index_a = ThinkingSphinx::Index.stub_instance(
-        :to_config => "",       :adapter => :mysql, :delta? => false,
-        :name => "friendship",  :model => Friendship
+        :to_config => "",       :adapter => :mysql,   :delta? => false,
+        :name => "friendship",  :model => Friendship, :adapter_object => @adapter
       )
       
       Person.stub_method(:sphinx_indexes => [@person_index_a, @person_index_b])
@@ -147,20 +150,6 @@ describe ThinkingSphinx::Configuration do
       @friendship_index_a.should have_received(:to_config).with(
         Friendship, 0, {:option => "value"}, @config.charset_type, 1
       )
-    end
-    
-    it "should call create_array_accum if any index uses postgres" do
-      @person_index_a.stub_method(:adapter => :postgres)
-      
-      @config.build
-      
-      @config.should have_received(:create_array_accum)
-    end
-    
-    it "should not call create_array_accum if no index uses postgres" do
-      @config.build
-      
-      @config.should_not have_received(:create_array_accum)
     end
     
     it "should call core_index_for_model for each model" do
@@ -486,11 +475,7 @@ describe ThinkingSphinx::Configuration do
       )
     end
   end
-  
-  describe "create_array_accum method" do
-    it "should create the array_accum method on PostgreSQL"
-  end
-  
+    
   describe "initialisation" do
     it "should have a default bin_path of nothing" do
       ThinkingSphinx::Configuration.new.bin_path.should == ""

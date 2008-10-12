@@ -158,6 +158,11 @@ sql_query_range  = #{to_sql_query_range :delta => true}
         where_clause << " AND " << @conditions.join(" AND ")
       end
       
+      internal_groupings = []
+      if @model.column_names.include?(@model.inheritance_column)
+         internal_groupings << "#{@model.quoted_table_name}.#{quote_column(@model.inheritance_column)}"
+      end
+      
       unique_id_expr = "* #{ThinkingSphinx.indexed_models.size} + #{options[:offset] || 0}"
       
       sql = <<-SQL
@@ -175,7 +180,7 @@ GROUP BY #{ (
   ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key)}"] + 
   @fields.collect { |field| field.to_group_sql }.compact +
   @attributes.collect { |attribute| attribute.to_group_sql }.compact +
-  @groupings
+  @groupings + internal_groupings
 ).join(", ") }
       SQL
       
@@ -238,6 +243,10 @@ GROUP BY #{ (
       else
         raise "Invalid Database Adapter: Sphinx only supports MySQL and PostgreSQL"
       end
+    end
+    
+    def adapter_object
+      @adapter_object ||= ThinkingSphinx::AbstractAdapter.detect(@model)
     end
     
     def prefix_fields
@@ -350,10 +359,13 @@ GROUP BY #{ (
     end
     
     def crc_column
-      if adapter == :postgres
-        @model.to_crc32.to_s
-      elsif @model.column_names.include?(@model.inheritance_column)
-        "IFNULL(CRC32(#{@model.quoted_table_name}.#{quote_column(@model.inheritance_column)}), #{@model.to_crc32.to_s})"
+      if @model.column_names.include?(@model.inheritance_column)
+        case adapter
+        when :postgres
+          "COALESCE(crc32(#{@model.quoted_table_name}.#{quote_column(@model.inheritance_column)}), #{@model.to_crc32.to_s})"
+        when :mysql
+          "IFNULL(CRC32(#{@model.quoted_table_name}.#{quote_column(@model.inheritance_column)}), #{@model.to_crc32.to_s})"
+        end
       else
         @model.to_crc32.to_s
       end
