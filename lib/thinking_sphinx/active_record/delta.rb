@@ -28,10 +28,14 @@ module ThinkingSphinx
             #   end
             #
             def suspended_delta(&block)
+              original_setting = ThinkingSphinx.deltas_enabled
               ThinkingSphinx.deltas_enabled = false
-              yield
-              ThinkingSphinx.deltas_enabled = true
-              self.index_delta
+              begin
+                yield
+              ensure
+                ThinkingSphinx.deltas_enabled = original_setting
+                self.index_delta
+              end
             end
 
             # Build the delta index for the related model. This won't be called
