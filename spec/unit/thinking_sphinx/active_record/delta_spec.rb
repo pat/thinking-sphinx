@@ -2,7 +2,7 @@ require 'spec/spec_helper'
 
 describe "ThinkingSphinx::ActiveRecord::Delta" do
   it "should call the toggle_delta method after a save" do
-    @beta = Beta.new
+    @beta = Beta.new(:name => 'beta')
     @beta.stub_method(:toggle_delta => true)
     
     @beta.save
@@ -11,12 +11,50 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
   end
   
   it "should call the toggle_delta method after a save!" do
-    @beta = Beta.new
+    @beta = Beta.new(:name => 'beta')
     @beta.stub_method(:toggle_delta => true)
     
     @beta.save!
     
     @beta.should have_received(:toggle_delta)
+  end
+
+  describe "suspended_delta method" do
+    before :each do
+      ThinkingSphinx.stub_method(:deltas_enabled? => true)
+    end
+
+    it "should execute the argument block with deltas disabled" do
+      ThinkingSphinx.should_receive(:deltas_enabled=).once.with(false)
+      ThinkingSphinx.should_receive(:deltas_enabled=).once.with(true)
+      lambda { Person.suspended_delta { raise 'i was called' } }.should(
+        raise_error(Exception)
+      )
+    end
+
+    it "should restore deltas_enabled to its original setting" do
+      ThinkingSphinx.stub_method(:deltas_enabled? => false)
+      ThinkingSphinx.should_receive(:deltas_enabled=).twice.with(false)
+      Person.suspended_delta { 'no-op' }
+    end
+
+    it "should restore deltas_enabled to its original setting even if there was an exception" do
+      ThinkingSphinx.stub_method(:deltas_enabled? => false)
+      ThinkingSphinx.should_receive(:deltas_enabled=).twice.with(false)
+      lambda { Person.suspended_delta { raise 'bad error' } }.should(
+        raise_error(Exception)
+      )
+    end
+
+    it "should reindex by default after the code block is run" do
+      Person.should_receive(:index_delta)
+      Person.suspended_delta { 'no-op' }
+    end
+    
+    it "should not reindex after the code block if false is passed in" do
+      Person.should_not_receive(:index_delta)
+      Person.suspended_delta(false) { 'no-op' }
+    end
   end
   
   describe "toggle_delta method" do

@@ -27,14 +27,14 @@ module ThinkingSphinx
             #     end
             #   end
             #
-            def suspended_delta(&block)
-              original_setting = ThinkingSphinx.deltas_enabled
+            def suspended_delta(reindex_after = true, &block)
+              original_setting = ThinkingSphinx.deltas_enabled?
               ThinkingSphinx.deltas_enabled = false
               begin
                 yield
               ensure
                 ThinkingSphinx.deltas_enabled = original_setting
-                self.index_delta
+                self.index_delta if reindex_after
               end
             end
 
