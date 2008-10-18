@@ -1,4 +1,5 @@
 require 'erb'
+require 'singleton'
 
 module ThinkingSphinx
   # This class both keeps track of the configuration settings for Sphinx and
@@ -41,11 +42,28 @@ module ThinkingSphinx
   # don't set allow_star to true.
   # 
   class Configuration
+    include Singleton
+    
+    SourceOptions = %w( mysql_connect_flags sql_range_step sql_query_pre
+      sql_query_post sql_ranged_throttle sql_query_post_index )
+    
+    IndexOptions  = %w( charset_table charset_type docinfo enable_star
+      exceptions html_index_attrs html_remove_elements html_strip ignore_chars
+      min_infix_len min_prefix_len min_word_len mlock morphology ngram_chars
+      ngram_len phrase_boundary phrase_boundary_step preopen stopwords
+      wordforms )
+    
+    IndexerOptions = %w( max_iops max_iosize mem_limit )
+    
+    SearchdOptions = %w( read_timeout max_children max_matches seamless_rotate
+      preopen_indexes unlink_old )
+    
     attr_accessor :config_file, :searchd_log_file, :query_log_file,
-      :pid_file, :searchd_file_path, :address, :port, :enable_star,
-      :allow_star, :min_prefix_len, :min_infix_len, :mem_limit, :max_matches,
-      :morphology, :charset_type, :charset_table, :ignore_chars, :html_strip,
-      :html_remove_elements, :database_yml_file, :app_root, :bin_path
+      :pid_file, :searchd_file_path, :address, :port, :allow_star,
+      :database_yml_file, :app_root, :bin_path
+    
+    attr_accessor :source_options, :index_options, :indexer_options,
+      :searchd_options
     
     attr_reader :environment
     
@@ -53,6 +71,10 @@ module ThinkingSphinx
     # and parse it according to the current environment.
     # 
     def initialize(app_root = Dir.pwd)
+      self.reset
+    end
+    
+    def reset
       self.app_root          = RAILS_ROOT if defined?(RAILS_ROOT)
       self.app_root          = Merb.root  if defined?(Merb)
       self.app_root        ||= app_root
@@ -66,22 +88,27 @@ module ThinkingSphinx
       self.address              = "127.0.0.1"
       self.port                 = 3312
       self.allow_star           = false
-      self.enable_star          = false
-      self.min_prefix_len       = nil
-      self.min_infix_len        = nil
-      self.mem_limit            = "64M"
-      self.max_matches          = 1000
-      self.morphology           = "stem_en"
-      self.charset_type         = "utf-8"
-      self.charset_table        = nil
-      self.ignore_chars         = nil
-      self.html_strip           = false
-      self.html_remove_elements = ""
+      # self.enable_star          = false
+      # self.min_prefix_len       = nil
+      # self.min_infix_len        = nil
+      # self.mem_limit            = "64M"
+      # self.max_matches          = 1000
+      # self.morphology           = "stem_en"
+      # self.charset_type         = "utf-8"
+      # self.charset_table        = nil
+      # self.ignore_chars         = nil
+      # self.html_strip           = false
+      # self.html_remove_elements = ""
       self.bin_path             = ""
+      
+      self.source_options  = {}
+      self.index_options   = {}
+      self.indexer_options = {}
+      self.searchd_options = {}
       
       parse_config
       
-      self.bin_path += '/' unless self.bin_path.blank?
+      self
     end
     
     def self.environment
@@ -110,7 +137,7 @@ module ThinkingSphinx
         file.write <<-CONFIG
 indexer
 {
-  mem_limit = #{self.mem_limit}
+#{hash_to_config(self.indexer_options)}
 }
 
 searchd
@@ -119,10 +146,8 @@ searchd
   port = #{self.port}
   log = #{self.searchd_log_file}
   query_log = #{self.query_log_file}
-  read_timeout = 5
-  max_children = 30
   pid_file = #{self.pid_file}
-  max_matches = #{self.max_matches}
+#{hash_to_config(self.searchd_options)}
 }
         CONFIG
         
@@ -134,7 +159,7 @@ searchd
           infixed_fields  = []
           
           model.sphinx_indexes.select { |index| index.model == model }.each_with_index do |index, i|
-            file.write index.to_config(model, i, database_conf, charset_type, model_index)
+            file.write index.to_config(model, i, database_conf, model_index)
             
             index.adapter_object.setup
             
@@ -181,6 +206,31 @@ searchd
       end
     end
     
+    def hash_to_config(hash)
+      hash.collect { |key, value|
+        translated_value = case value
+        when TrueClass
+          "1"
+        when FalseClass
+          "0"
+        when NilClass, ""
+          next
+        else
+          value
+        end
+        "  #{key} = #{translated_value}"
+      }.join("\n")
+    end
+    
+    def self.options_merge(base, extra)
+      base = base.clone
+      extra.each do |key, value|
+        next if value.nil? || value == ""
+        base[key] = value
+      end
+      base
+    end
+    
     private
     
     # Parse the config/sphinx.yml file - if it exists - then use the attribute
@@ -194,7 +244,14 @@ searchd
       
       conf.each do |key,value|
         self.send("#{key}=", value) if self.methods.include?("#{key}=")
+        
+        self.source_options[key.to_sym] = value  if SourceOptions.include?(key.to_s)
+        self.index_options[key.to_sym] = value   if IndexOptions.include?(key.to_s)
+        self.indexer_options[key.to_sym] = value if IndexerOptions.include?(key.to_s)
+        self.searchd_options[key.to_sym] = value if SearchdOptions.include?(key.to_s)
       end unless conf.nil?
+      
+      self.bin_path += '/' unless self.bin_path.blank?
     end
     
     def core_index_for_model(model, sources)
@@ -204,31 +261,18 @@ index #{ThinkingSphinx::Index.name(model)}_core
 {
 #{sources}
 path = #{self.searchd_file_path}/#{ThinkingSphinx::Index.name(model)}_core
-charset_type = #{self.charset_type}
 INDEX
       
-      morphology  = model.sphinx_indexes.inject(self.morphology) { |morph, index|
-        index.options[:morphology] || morph
-      }
-      output += "  morphology     = #{morphology}\n"         unless morphology.blank?
-      output += "  charset_table  = #{self.charset_table}\n" unless self.charset_table.nil?
-      output += "  ignore_chars   = #{self.ignore_chars}\n"  unless self.ignore_chars.nil?
+      unless combined_index_options(model).empty?
+        output += hash_to_config(combined_index_options(model))
+      end
       
       if self.allow_star
         # Ye Olde way of turning on enable_star
         output += "  enable_star    = 1\n"
-        output += "  min_prefix_len = #{self.min_prefix_len}\n"
-      else
-        # New, better way of turning on enable_star - thanks to James Healy
-        output += "  enable_star    = 1\n" if self.enable_star
-        output += "  min_prefix_len = #{self.min_prefix_len}\n" unless self.min_prefix_len.nil?
-        output += "  min_infix_len  = #{self.min_infix_len}\n" unless self.min_infix_len.nil?
+        output += "  min_prefix_len = #{self.combined_index_options[:min_prefix_len]}\n"
       end
       
-
-      output += "  html_strip     = 1\n" if self.html_strip
-      output += "  html_remove_elements = #{self.html_remove_elements}\n" unless self.html_remove_elements.blank?
-
       unless model.sphinx_indexes.collect(&:prefix_fields).flatten.empty?
         output += "  prefix_fields = #{model.sphinx_indexes.collect(&:prefix_fields).flatten.map(&:unique_name).join(', ')}\n"
       else
@@ -265,41 +309,14 @@ index #{ThinkingSphinx::Index.name(model)}
 {
   type = distributed
   #{ sources.join("\n  ") }
-  charset_type = #{self.charset_type}
 }
       INDEX
     end
     
-    def create_array_accum
-      ::ActiveRecord::Base.connection.execute "begin"
-      ::ActiveRecord::Base.connection.execute "savepoint ts"
-      begin
-        # see http://www.postgresql.org/docs/8.2/interactive/sql-createaggregate.html
-        if ::ActiveRecord::Base.connection.raw_connection.server_version > 80200
-          ::ActiveRecord::Base.connection.execute <<-SQL
-            CREATE AGGREGATE array_accum (anyelement)
-            (
-                sfunc = array_append,
-                stype = anyarray,
-                initcond = '{}'
-            );
-          SQL
-        else
-          ::ActiveRecord::Base.connection.execute <<-SQL
-            CREATE AGGREGATE array_accum
-            (
-                basetype = anyelement,
-                sfunc = array_append,
-                stype = anyarray,
-                initcond = '{}'
-            );
-          SQL
-        end
-      rescue
-        ::ActiveRecord::Base.connection.execute "rollback to savepoint ts"
+    def combined_index_options(model)
+      model.sphinx_indexes.inject(self.index_options) do |options, index|
+        self.class.options_merge(options, index.local_index_options)
       end
-      ::ActiveRecord::Base.connection.execute "release savepoint ts"
-      ::ActiveRecord::Base.connection.execute "commit"
     end
   end
 end

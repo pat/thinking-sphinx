@@ -14,7 +14,7 @@ namespace :thinking_sphinx do
   
   desc "Start a Sphinx searchd daemon using Thinking Sphinx's settings"
   task :start => :app_env do
-    config = ThinkingSphinx::Configuration.new
+    config = ThinkingSphinx::Configuration.instance
     
     FileUtils.mkdir_p config.searchd_file_path
     raise RuntimeError, "searchd is already running." if sphinx_running?
@@ -47,14 +47,14 @@ namespace :thinking_sphinx do
   
   desc "Generate the Sphinx configuration file using Thinking Sphinx's settings"
   task :configure => :app_env do
-    config = ThinkingSphinx::Configuration.new
+    config = ThinkingSphinx::Configuration.instance
     puts "Generating Configuration to #{config.config_file}"
     config.build
   end
   
   desc "Index data for Sphinx using Thinking Sphinx's settings"
   task :index => :app_env do
-    config = ThinkingSphinx::Configuration.new
+    config = ThinkingSphinx::Configuration.instance
     unless ENV["INDEX_ONLY"] == "true"
       puts "Generating Configuration to #{config.config_file}"
       config.build
@@ -86,7 +86,7 @@ namespace :ts do
 end
 
 def sphinx_pid
-  config = ThinkingSphinx::Configuration.new
+  config = ThinkingSphinx::Configuration.instance
   
   if File.exists?(config.pid_file)
     `cat #{config.pid_file}`[/\d+/]

@@ -28,7 +28,7 @@ describe ThinkingSphinx::Index do
     end
     
     it "should call link!" do
-      @index.to_config(Person, 0, @database, "utf-8", 0)
+      @index.to_config(Person, 0, @database, 0)
       
       @index.should have_received(:link!)
     end
@@ -36,17 +36,17 @@ describe ThinkingSphinx::Index do
     it "should raise an exception if the adapter isn't mysql or postgres" do
       @index.stub_method(:adapter => :sqlite)
       
-      lambda { @index.to_config(Person, 0, @database, "utf-8", 0) }.should raise_error
+      lambda { @index.to_config(Person, 0, @database, 0) }.should raise_error
     end
     
     it "should set the core source name to {model}_{index}_core" do
-      @index.to_config(Person, 0, @database, "utf-8", 0).should match(
+      @index.to_config(Person, 0, @database, 0).should match(
         /source person_0_core/
       )
     end
     
     it "should include the database config supplied" do
-      conf = @index.to_config(Person, 0, @database, "utf-8", 0)
+      conf = @index.to_config(Person, 0, @database, 0)
       conf.should match(/type\s+= mysql/)
       conf.should match(/sql_host\s+= localhost/)
       conf.should match(/sql_user\s+= username/)
@@ -57,96 +57,99 @@ describe ThinkingSphinx::Index do
     it "should use 'user' if 'username' doesn't exist in database configuration" do
       conf = @index.to_config(Person, 0,
         @database.except(:username).merge(:user => "username"),
-        "utf-8", 0
+        0
       )
       conf.should match(/sql_user\s+= username/)
     end
     
     it "should include the database socket if set" do
-      conf = @index.to_config(Person, 0, @database.merge(:socket => "dbsocket"), "utf-8", 0)
+      conf = @index.to_config(Person, 0, @database.merge(:socket => "dbsocket"), 0)
       conf.should match(/sql_sock\s+= dbsocket/)
     end
     
     it "should not include the database socket if not set" do
-      conf = @index.to_config(Person, 0, @database, "utf-8", 0)
+      conf = @index.to_config(Person, 0, @database, 0)
       conf.should_not match(/sql_sock/)
     end
     
     it "should include the database port if set" do
-      conf = @index.to_config(Person, 0, @database.merge(:port => "dbport"), "utf-8", 0)
+      conf = @index.to_config(Person, 0, @database.merge(:port => "dbport"), 0)
       conf.should match(/sql_port\s+= dbport/)
     end
     
     it "should not include the database socket if not set" do
-      conf = @index.to_config(Person, 0, @database, "utf-8", 0)
+      conf = @index.to_config(Person, 0, @database, 0)
       conf.should_not match(/sql_port/)
     end
     
     it "should have a pre query 'SET NAMES utf8' if using mysql and utf8 charset" do
-      @index.to_config(Person, 0, @database, "utf-8", 0).should match(
+      @index.options[:charset_type] = "utf-8"
+      @index.to_config(Person, 0, @database, 0).should match(
         /sql_query_pre\s+= SET NAMES utf8/
       )
       
       @index.stub_method(:delta? => true)
-      @index.to_config(Person, 0, @database, "utf-8", 0).should match(
+      @index.to_config(Person, 0, @database, 0).should match(
         /source person_0_delta.+sql_query_pre\s+= SET NAMES utf8/m
       )
       
+      @index.options[:charset_type] = "non-utf-8"
       @index.stub_method(:delta? => false)
-      @index.to_config(Person, 0, @database, "non-utf-8", 0).should_not match(
+      @index.to_config(Person, 0, @database, 0).should_not match(
         /SET NAMES utf8/
       )
       
+      @index.options[:charset_type] = "utf-8"
       @index.stub_method(:adapter => :postgres)
-      @index.to_config(Person, 0, @database, "utf-8", 0).should_not match(
+      @index.to_config(Person, 0, @database, 0).should_not match(
         /SET NAMES utf8/
       )
     end
     
     it "should use the pre query from the index" do
-      @index.to_config(Person, 0, @database, "utf-8", 0).should match(
+      @index.to_config(Person, 0, @database, 0).should match(
         /sql_query_pre\s+= sql_query_pre/
       )
     end
     
     it "should not set group_concat_max_len if not specified" do
-      @index.to_config(Person, 0, @database, "utf-8", 0).should_not match(
+      @index.to_config(Person, 0, @database, 0).should_not match(
         /group_concat_max_len/
       )
     end
 
     it "should set group_concat_max_len if specified" do
       @index.options.merge! :group_concat_max_len => 2056
-      @index.to_config(Person, 0, @database, "utf-8", 0).should match(
+      @index.to_config(Person, 0, @database, 0).should match(
         /sql_query_pre\s+= SET SESSION group_concat_max_len = 2056/
       )
       
       @index.stub_method(:delta? => true)
-      @index.to_config(Person, 0, @database, "utf-8", 0).should match(
+      @index.to_config(Person, 0, @database, 0).should match(
         /source person_0_delta.+sql_query_pre\s+= SET SESSION group_concat_max_len = 2056/m
       )
     end
     
     it "should use the main query from the index" do
-      @index.to_config(Person, 0, @database, "utf-8", 0).should match(
+      @index.to_config(Person, 0, @database, 0).should match(
         /sql_query\s+= SQL/
       )
     end
     
     it "should use the range query from the index" do
-      @index.to_config(Person, 0, @database, "utf-8", 0).should match(
+      @index.to_config(Person, 0, @database, 0).should match(
         /sql_query_range\s+= sql_query_range/
       )
     end
 
     it "should use the info query from the index" do
-      @index.to_config(Person, 0, @database, "utf-8", 0).should match(
+      @index.to_config(Person, 0, @database, 0).should match(
         /sql_query_info\s+= sql_query_info/
       )
     end
     
     it "should include the attribute sources" do
-      @index.to_config(Person, 0, @database, "utf-8", 0).should match(
+      @index.to_config(Person, 0, @database, 0).should match(
         /attr a\n\s+attr b/
       )
     end
@@ -154,13 +157,13 @@ describe ThinkingSphinx::Index do
     it "should add a delta index with name {model}_{index}_delta if requested" do
       @index.stub_method(:delta? => true)
       
-      @index.to_config(Person, 0, @database, "utf-8", 0).should match(
+      @index.to_config(Person, 0, @database, 0).should match(
         /source person_0_delta/
       )
     end
     
     it "should not add a delta index unless requested" do
-      @index.to_config(Person, 0, @database, "utf-8", 0).should_not match(
+      @index.to_config(Person, 0, @database, 0).should_not match(
         /source person_0_delta/
       )
     end
@@ -168,7 +171,7 @@ describe ThinkingSphinx::Index do
     it "should have the delta index inherit from the core index" do
       @index.stub_method(:delta? => true)
       
-      @index.to_config(Person, 0, @database, "utf-8", 0).should match(
+      @index.to_config(Person, 0, @database, 0).should match(
         /source person_0_delta : person_0_core/
       )
     end
@@ -176,7 +179,7 @@ describe ThinkingSphinx::Index do
     it "should redefine the main query for the delta index" do
       @index.stub_method(:delta? => true)
       
-      @index.to_config(Person, 0, @database, "utf-8", 0).should match(
+      @index.to_config(Person, 0, @database, 0).should match(
         /source person_0_delta.+sql_query\s+= SQL/m
       )
     end
@@ -184,7 +187,7 @@ describe ThinkingSphinx::Index do
     it "should redefine the range query for the delta index" do
       @index.stub_method(:delta? => true)
       
-      @index.to_config(Person, 0, @database, "utf-8", 0).should match(
+      @index.to_config(Person, 0, @database, 0).should match(
         /source person_0_delta.+sql_query_range\s+= sql_query_range/m
       )
     end
@@ -192,7 +195,7 @@ describe ThinkingSphinx::Index do
     it "should redefine the pre query for the delta index" do
       @index.stub_method(:delta? => true)
       
-      @index.to_config(Person, 0, @database, "utf-8", 0).should match(
+      @index.to_config(Person, 0, @database, 0).should match(
         /source person_0_delta.+sql_query_pre\s+=\s*\n/m
       )
     end
@@ -268,7 +271,7 @@ describe ThinkingSphinx::Index do
   describe "empty? method" do
     before :each do
       @index = ThinkingSphinx::Index.new(Contact)
-      config = ThinkingSphinx::Configuration.new
+      config = ThinkingSphinx::Configuration.instance
       
       `mkdir -p #{config.searchd_file_path}`
       @file_path = "#{config.searchd_file_path}/#{@index.name}_core.spa"

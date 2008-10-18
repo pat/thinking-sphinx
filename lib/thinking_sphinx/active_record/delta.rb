@@ -44,10 +44,10 @@ module ThinkingSphinx
             def index_delta(instance = nil)
               return true unless ThinkingSphinx.updates_enabled? &&
                 ThinkingSphinx.deltas_enabled?
-
-              config = ThinkingSphinx::Configuration.new
+              
+              config = ThinkingSphinx::Configuration.instance
               client = Riddle::Client.new config.address, config.port
-
+              
               client.update(
                 "#{self.sphinx_indexes.first.name}_core",
                 ['sphinx_deleted'],

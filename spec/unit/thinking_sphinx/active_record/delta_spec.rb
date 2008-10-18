@@ -1,10 +1,5 @@
 require 'spec/spec_helper'
 
-# Ensure after_commit plugin is loaded correctly
-Object.subclasses_of(ActiveRecord::ConnectionAdapters::AbstractAdapter).each { |klass|
-  klass.send(:include, AfterCommit::ConnectionAdapters)
-}
-
 describe "ThinkingSphinx::ActiveRecord::Delta" do
   it "should call the toggle_delta method after a save" do
     @beta = Beta.new
@@ -78,7 +73,7 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
       @person.send(:index_delta)
       
       Person.should have_received(:system).with(
-        "#{ThinkingSphinx::Configuration.new.bin_path}indexer --config #{ThinkingSphinx::Configuration.new.config_file} --rotate person_delta"
+        "#{ThinkingSphinx::Configuration.instance.bin_path}indexer --config #{ThinkingSphinx::Configuration.instance.config_file} --rotate person_delta"
       )
     end
     

@@ -32,6 +32,20 @@ Spec::Runner.configure do |config|
     
     ThinkingSphinx.updates_enabled = true
     ThinkingSphinx.deltas_enabled = true
+    
+    ThinkingSphinx::Configuration.instance.reset
+    ThinkingSphinx::Configuration.instance.database_yml_file = "spec/fixtures/sphinx/database.yml"
+    
+    # Ensure after_commit plugin is loaded correctly
+    Object.subclasses_of(ActiveRecord::ConnectionAdapters::AbstractAdapter).each { |klass|
+      unless klass.ancestors.include?(AfterCommit::ConnectionAdapters)
+        klass.send(:include, AfterCommit::ConnectionAdapters)
+      end
+    }
+  end
+  
+  config.before :each do
+    #
   end
   
   config.after :each do

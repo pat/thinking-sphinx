@@ -49,7 +49,7 @@ class SphinxHelper
   end
   
   def setup_sphinx
-    @configuration = ThinkingSphinx::Configuration.new
+    @configuration = ThinkingSphinx::Configuration.instance.reset
     File.open("spec/fixtures/sphinx/database.yml", "w") do |file|
       YAML.dump({@configuration.environment => {
         :adapter  => 'mysql',

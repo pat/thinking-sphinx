@@ -48,11 +48,11 @@ module ThinkingSphinx
     end
     
     def empty?(part = :core)
-      config = ThinkingSphinx::Configuration.new
+      config = ThinkingSphinx::Configuration.instance
       File.size?("#{config.searchd_file_path}/#{self.name}_#{part}.spa").nil?
     end
     
-    def to_config(model, index, database_conf, charset_type, offset)
+    def to_config(model, index, database_conf, offset)
       # Set up associations and joins
       add_internal_attributes
       link!
@@ -82,13 +82,14 @@ sql_db   = #{database_conf[:database]}
 #{"sql_port = #{database_conf[:port]}" unless database_conf[:port].blank? }
 #{"sql_sock = #{database_conf[:socket]}" unless database_conf[:socket].blank? }
 
-sql_query_pre    = #{charset_type == "utf-8" && adapter == :mysql ? "SET NAMES utf8" : ""}
+sql_query_pre    = #{utf8? && adapter == :mysql ? "SET NAMES utf8" : ""}
 #{"sql_query_pre    = SET SESSION group_concat_max_len = #{@options[:group_concat_max_len]}" if @options[:group_concat_max_len]}
 sql_query_pre    = #{to_sql_query_pre}
 sql_query        = #{to_sql(:offset => offset).gsub(/\n/, ' ')}
 sql_query_range  = #{to_sql_query_range}
 sql_query_info   = #{to_sql_query_info(offset)}
 #{attr_sources}
+#{ThinkingSphinx::Configuration.instance.hash_to_config(self.source_options)}
 }
       SOURCE
       
@@ -98,7 +99,7 @@ sql_query_info   = #{to_sql_query_info(offset)}
 source #{self.class.name(model)}_#{index}_delta : #{self.class.name(model)}_#{index}_core
 {
 sql_query_pre    = 
-sql_query_pre    = #{charset_type == "utf-8" && adapter == :mysql ? "SET NAMES utf8" : ""}
+sql_query_pre    = #{utf8? && adapter == :mysql ? "SET NAMES utf8" : ""}
 #{"sql_query_pre    = SET SESSION group_concat_max_len = #{@options[:group_concat_max_len]}" if @options[:group_concat_max_len]}
 sql_query        = #{to_sql(:delta => true, :offset => offset).gsub(/\n/, ' ')}
 sql_query_range  = #{to_sql_query_range :delta => true}
@@ -257,7 +258,36 @@ GROUP BY #{ (
       @fields.select { |field| field.infixes }
     end
     
+    def local_index_options
+      @options.keys.inject({}) do |local_options, key|
+        if ThinkingSphinx::Configuration::IndexOptions.include?(key.to_s)
+          local_options[key.to_sym] = @options[key]
+          local_options
+        end
+      end
+    end
+    
+    def index_options
+      all_index_options = ThinkingSphinx::Configuration.instance.index_options.clone
+      @options.keys.select { |key|
+        ThinkingSphinx::Configuration::IndexOptions.include?(key.to_s)
+      }.each { |key| all_index_options[key.to_sym] = @options[key] }
+      all_index_options
+    end
+    
+    def source_options
+      all_source_options = ThinkingSphinx::Configuration.instance.source_options.clone
+      @options.keys.select { |key|
+        ThinkingSphinx::Configuration::SourceOptions.include?(key.to_s)
+      }.each { |key| all_source_options[key.to_sym] = @options[key] }
+      all_source_options
+    end
+    
     private
+    
+    def utf8?
+      self.index_options[:charset_type] == "utf-8"
+    end
     
     def quote_column(column)
       @model.connection.quote_column_name(column)

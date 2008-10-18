@@ -270,7 +270,7 @@ module ThinkingSphinx
       # options hash.
       # 
       def client_from_options(options = {})
-        config = ThinkingSphinx::Configuration.new
+        config = ThinkingSphinx::Configuration.instance
         client = Riddle::Client.new config.address, config.port
         klass  = options[:class]
         index_options = klass ? klass.sphinx_indexes.last.options : {}

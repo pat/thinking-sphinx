@@ -121,14 +121,14 @@ describe "ThinkingSphinx::ActiveRecord" do
   
   describe "toggle_deleted method" do
     before :each do
-      @configuration = ThinkingSphinx::Configuration.stub_instance(
+      @configuration = ThinkingSphinx::Configuration.instance
+      @configuration.stub_methods(
         :address  => "an address",
         :port     => 123
       )
       @client = Riddle::Client.stub_instance(:update => true)
       @person = Person.find(:first)
       
-      ThinkingSphinx::Configuration.stub_method(:new => @configuration)
       Riddle::Client.stub_method(:new => @client)
       Person.sphinx_indexes.each { |index| index.stub_method(:delta? => false) }
       @person.stub_method(:in_core_index? => true)
@@ -271,7 +271,7 @@ describe "ThinkingSphinx::ActiveRecord" do
   end
   
   it "should remove destroyed new instances from the delta index if they're in it" do
-    beta = Beta.create(:name => "eleven")
+    beta = Beta.create!(:name => "eleven")
     sleep(1) # wait for Sphinx to catch up
     
     Beta.search("eleven").should_not be_empty
