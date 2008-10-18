@@ -277,7 +277,7 @@ INDEX
         output += " infix_fields = -\n" unless model.sphinx_indexes.collect(&:prefix_fields).flatten.empty?
       end
       
-      output + "}\n"
+      output + "\n}\n"
     end
     
     def delta_index_for_model(model, sources)

@@ -44,10 +44,6 @@ Spec::Runner.configure do |config|
     }
   end
   
-  config.before :each do
-    #
-  end
-  
   config.after :each do
     NotAMock::CallRecorder.instance.reset
     NotAMock::Stubber.instance.reset
