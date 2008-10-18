@@ -88,21 +88,13 @@ module ThinkingSphinx
       self.address              = "127.0.0.1"
       self.port                 = 3312
       self.allow_star           = false
-      # self.enable_star          = false
-      # self.min_prefix_len       = nil
-      # self.min_infix_len        = nil
-      # self.mem_limit            = "64M"
-      # self.max_matches          = 1000
-      # self.morphology           = "stem_en"
-      # self.charset_type         = "utf-8"
-      # self.charset_table        = nil
-      # self.ignore_chars         = nil
-      # self.html_strip           = false
-      # self.html_remove_elements = ""
       self.bin_path             = ""
       
       self.source_options  = {}
-      self.index_options   = {}
+      self.index_options   = {
+        :charset_type => "utf-8",
+        :morphology   => "stem_en"
+      }
       self.indexer_options = {}
       self.searchd_options = {}
       
