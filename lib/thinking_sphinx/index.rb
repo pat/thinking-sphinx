@@ -262,8 +262,8 @@ GROUP BY #{ (
       @options.keys.inject({}) do |local_options, key|
         if ThinkingSphinx::Configuration::IndexOptions.include?(key.to_s)
           local_options[key.to_sym] = @options[key]
-          local_options
         end
+        local_options
       end
     end
     
