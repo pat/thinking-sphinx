@@ -133,7 +133,7 @@ module ThinkingSphinx
         # when you would like to index a calculated value. Don't forget to set
         # the type of the attribute though:
         #
-        #   indexes "age < 18", :as => :minor, :type => :boolean
+        #   has "age < 18", :as => :minor, :type => :boolean
         # 
         # If you're creating attributes for latitude and longitude, don't
         # forget that Sphinx expects these values to be in radians.
