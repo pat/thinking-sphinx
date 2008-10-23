@@ -82,6 +82,8 @@ namespace :ts do
   desc "Restart Sphinx"
   task :restart => "thinking_sphinx:restart"
   desc "Generate the Sphinx configuration file using Thinking Sphinx's settings"
+  task :conf    => "thinking_sphinx:configure"
+  desc "Generate the Sphinx configuration file using Thinking Sphinx's settings"
   task :config  => "thinking_sphinx:configure"
 end
 
