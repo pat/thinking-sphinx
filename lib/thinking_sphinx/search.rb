@@ -72,7 +72,7 @@ module ThinkingSphinx
       #
       # If you're searching multiple models, you can set per-index weights:
       #
-      #   ThinkingSphinx::Search.search "pat", :index_weights => { :dance_core => 10 }
+      #   ThinkingSphinx::Search.search "pat", :index_weights => { User => 10 }
       #
       # See http://sphinxsearch.com/doc.html#weighting for further details.
       #
@@ -288,6 +288,16 @@ module ThinkingSphinx
         client = Riddle::Client.new config.address, config.port
         klass  = options[:class]
         index_options = klass ? klass.sphinx_indexes.last.options : {}
+        
+        # Turn :index_weights => { "foo" => 2, User => 1 }
+        # into :index_weights => { "foo" => 2, "user_core" => 1 }
+        if iw = options[:index_weights]
+          options[:index_weights] = iw.inject({}) do |hash, (index,weight)|
+            key = index.is_a?(Class) ? "#{ThinkingSphinx::Index.name(index)}_core" : index
+            hash[key] = weight
+            hash
+          end
+        end
         
         [
           :max_matches, :match_mode, :sort_mode, :sort_by, :id_range,
