@@ -44,7 +44,7 @@ module ThinkingSphinx
       # 
       #   User.search "pat", :include => :posts
       #
-      # == Advanced Searching
+      # == Match Modes
       #
       # Sphinx supports 5 different matching modes. By default Thinking Sphinx
       # uses :all, which unsurprisingly requires all the supplied search terms
@@ -61,6 +61,20 @@ module ThinkingSphinx
       # terms a single phrase instead of individual words. Boolean and extended allow
       # for more complex query syntax, refer to the sphinx documentation for further
       # details.
+      #
+      # == Weighting
+      #
+      # Sphinx has support for weighting, where matches in one field can be considered
+      # more important than in another. Weights are integers, with 1 as the default.
+      # They can be set per-search like this:
+      #
+      #   User.search "pat allan", :field_weights => { :alias => 4, :aka => 2 }
+      #
+      # If you're searching multiple models, you can set per-index weights:
+      #
+      #   ThinkingSphinx::Search.search "pat", :index_weights => { :dance_core => 10 }
+      #
+      # See http://sphinxsearch.com/doc.html#weighting for further details.
       #
       # == Searching by Fields
       # 
