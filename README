@@ -16,15 +16,32 @@ To get the spec suite running, you will need to install the not-a-mock gem if yo
   cd not-a-mock
   rake gem
   gem install pkg/not_a_mock-1.1.0.gem
+  
+Then install the ginger gem. The steps are the same, except that you might need to sudo the gem install:
 
-Then set up your database
+  git clone git://github.com/freelancing-god/ginger.git
+  cd ginger
+  rake gem
+  sudo gem install pkg/ginger-1.1.0.gem
+
+Then set up your database:
 
   cp spec/fixtures/database.yml.default spec/fixtures/database.yml
   mysqladmin -u root create thinking_sphinx
+  
+Make sure you don't have another Sphinx daemon (searchd) running. If you do, quit it with "rake ts:stop"
+in the app root.
 
 You should now have a passing test suite from which to build your patch on.
 
   rake spec
+  
+If you get the message "Failed to start searchd daemon", run the spec with sudo:
+
+  sudo rake spec
+  
+If you quit the spec suite before it's completed, you may be left with data in the test
+database, causing the next run to have failures. Let that run complete and then try again.
 
 == Contributors
 
