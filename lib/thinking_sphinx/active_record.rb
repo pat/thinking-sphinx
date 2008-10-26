@@ -103,6 +103,18 @@ module ThinkingSphinx
           def to_crc32s
             (subclasses << self).collect { |klass| klass.to_crc32 }
           end
+          
+          def source_of_sphinx_index
+            possible_models = self.sphinx_indexes.collect { |index| index.model }
+            return self if possible_models.include?(self)
+
+            parent = self.superclass
+            while !possible_models.include?(parent) && parent != ::ActiveRecord::Base
+              parent = parent.superclass
+            end
+
+            return parent
+          end
         end
       end
       
@@ -120,7 +132,7 @@ module ThinkingSphinx
     def in_core_index?
       self.class.search_for_id(
         self.sphinx_document_id,
-        "#{self.class.name.underscore.tr(':/\\', '_')}_core"
+        "#{self.class.source_of_sphinx_index.name.underscore.tr(':/\\', '_')}_core"
       )
     end
     
@@ -147,7 +159,7 @@ module ThinkingSphinx
     
     def sphinx_document_id
       (self.id * ThinkingSphinx.indexed_models.size) +
-        ThinkingSphinx.indexed_models.index(self.class.name)
+        ThinkingSphinx.indexed_models.index(self.class.source_of_sphinx_index.name)
     end
   end
 end

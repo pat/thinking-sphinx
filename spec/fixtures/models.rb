@@ -71,3 +71,13 @@ class Beta < ActiveRecord::Base
     set_property :delta => true
   end
 end
+
+class Animal < ActiveRecord::Base
+  define_index do
+    indexes name, :sortable => true
+  end
+end
+
+class Cat < Animal
+  #
+end
