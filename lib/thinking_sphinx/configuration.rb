@@ -262,7 +262,7 @@ INDEX
       if self.allow_star
         # Ye Olde way of turning on enable_star
         output += "  enable_star    = 1\n"
-        output += "  min_prefix_len = #{self.combined_index_options[:min_prefix_len]}\n"
+        output += "  min_prefix_len = #{combined_index_options[:min_prefix_len]}\n"
       end
       
       unless model.sphinx_indexes.collect(&:prefix_fields).flatten.empty?
