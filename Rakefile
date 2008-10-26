@@ -56,7 +56,8 @@ spec = Gem::Specification.new do |s|
     "LICENCE",
     "README",
     "tasks/**/*.rb",
-    "tasks/**/*.rake"
+    "tasks/**/*.rake",
+    "vendor/**/*"
   ]
 end
 

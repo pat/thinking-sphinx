@@ -81,7 +81,7 @@ describe ThinkingSphinx::Index do
       conf = @index.to_config(Person, 0, @database, 0)
       conf.should_not match(/sql_port/)
     end
-    
+        
     it "should have a pre query 'SET NAMES utf8' if using mysql and utf8 charset" do
       @index.options[:charset_type] = "utf-8"
       @index.to_config(Person, 0, @database, 0).should match(
