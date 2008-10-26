@@ -508,5 +508,5 @@ describe ThinkingSphinx::Configuration do
       
       config.source_options[option.to_sym] = nil
     end
-  end
+  end  
 end
