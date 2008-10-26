@@ -121,6 +121,8 @@ describe "ThinkingSphinx::ActiveRecord" do
   
   describe "toggle_deleted method" do
     before :each do
+      ThinkingSphinx.stub_method(:sphinx_running? => true)
+      
       @configuration = ThinkingSphinx::Configuration.instance
       @configuration.stub_methods(
         :address  => "an address",
@@ -158,6 +160,15 @@ describe "ThinkingSphinx::ActiveRecord" do
       @client.should_not have_received(:update).with(
         "person_core", ["sphinx_deleted"], {@person.sphinx_document_id => 1}
       )
+    end
+    
+    it "shouldn't attempt to update the deleted flag if sphinx isn't running" do
+      ThinkingSphinx.stub_method(:sphinx_running? => false)
+      
+      @person.toggle_deleted
+      
+      @person.should_not have_received(:in_core_index?)
+      @client.should_not have_received(:update)
     end
     
     it "should update the delta index's deleted flag if delta indexes are enabled and the instance's delta is true" do

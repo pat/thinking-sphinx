@@ -137,7 +137,7 @@ module ThinkingSphinx
     end
     
     def toggle_deleted
-      return unless ThinkingSphinx.updates_enabled?
+      return unless ThinkingSphinx.updates_enabled? && ThinkingSphinx.sphinx_running?
       
       config = ThinkingSphinx::Configuration.instance
       client = Riddle::Client.new config.address, config.port

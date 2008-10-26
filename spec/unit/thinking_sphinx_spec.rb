@@ -126,4 +126,19 @@ describe ThinkingSphinx do
       end
     end
   end
+  
+  it "should detect if sphinx is running" do
+    ThinkingSphinx.sphinx_running?.should be_false
+    
+    @sphinx.setup_sphinx
+    @sphinx.start
+    sleep(1)
+    
+    ThinkingSphinx.sphinx_running?.should be_true
+    
+    @sphinx.stop
+    sleep(1)
+    
+    ThinkingSphinx.sphinx_running?.should be_false
+  end
 end
