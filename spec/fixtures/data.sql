@@ -1018,3 +1018,8 @@ insert into `betas` (name) values ('seven');
 insert into `betas` (name) values ('eight');
 insert into `betas` (name) values ('nine');
 insert into `betas` (name) values ('ten');
+insert into `animals` (name, type) values ('rogue', 'Cat');
+insert into `animals` (name, type) values ('nat', 'Cat');
+insert into `animals` (name, type) values ('molly', 'Cat');
+insert into `animals` (name, type) values ('jasper', 'Cat');
+insert into `animals` (name, type) values ('moggy', 'Cat');

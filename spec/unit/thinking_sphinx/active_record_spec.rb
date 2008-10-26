@@ -270,6 +270,16 @@ describe "ThinkingSphinx::ActiveRecord" do
     Beta.search("three").should be_empty
   end
   
+  it "should remove subclass instances from the core index if they're in it" do
+    Cat.search("moggy").should_not be_empty
+    
+    cat = Cat.find(:first, :conditions => {:name => "moggy"})
+    cat.destroy
+    sleep(1)
+    
+    Cat.search("moggy").should be_empty
+  end
+  
   it "should remove destroyed new instances from the delta index if they're in it" do
     beta = Beta.create!(:name => "eleven")
     sleep(1) # wait for Sphinx to catch up

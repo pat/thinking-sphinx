@@ -43,7 +43,7 @@ class SphinxHelper
     
     File.open("spec/fixtures/data.sql") { |f|
       while line = f.gets
-        ActiveRecord::Base.connection.execute line
+        ActiveRecord::Base.connection.execute line unless line.blank?
       end
     }
   end
