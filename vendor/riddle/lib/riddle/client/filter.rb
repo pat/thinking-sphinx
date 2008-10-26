@@ -33,7 +33,16 @@ module Riddle
           message.append_int self.values.length
           # using to_f is a hack from the php client - to workaround 32bit
           # signed ints on x32 platforms
-          message.append_ints *self.values.collect { |val| val.to_f }
+          message.append_ints *self.values.collect { |val|
+            case val
+            when TrueClass
+              1.0
+            when FalseClass
+              0.0
+            else
+              val.to_f
+            end
+          }
         end
         message.append_int self.exclude? ? 1 : 0
         
