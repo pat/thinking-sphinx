@@ -261,8 +261,9 @@ module ThinkingSphinx
         )
         client.filters   += filters
         client.match_mode = :extended unless query.empty?
-        query             = args.join(" ") + query
-        
+        query             = (args + [query]).join(' ')
+        query.strip!  # Because "" and " " are not equivalent
+                
         set_sort_options! client, options
         
         client.limit  = options[:per_page].to_i if options[:per_page]
@@ -356,7 +357,7 @@ module ThinkingSphinx
           index.attributes.collect { |attrib| attrib.unique_name }
         }.flatten : []
         
-        search_string = ""
+        search_string = []
         filters       = []
         
         conditions.each do |key,val|
@@ -365,11 +366,11 @@ module ThinkingSphinx
               key.to_s, filter_value(val)
             )
           else
-            search_string << "@#{key} #{val} "
+            search_string << "@#{key} #{val}"
           end
         end
         
-        return search_string, filters
+        return search_string.join(' '), filters
       end
       
       # Return the appropriate latitude and longitude values, depending on
