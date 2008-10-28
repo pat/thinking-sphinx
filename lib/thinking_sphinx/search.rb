@@ -364,11 +364,16 @@ module ThinkingSphinx
         index_options = klass ? klass.sphinx_indexes.last.options : {}
         
         # Turn :index_weights => { "foo" => 2, User => 1 }
-        # into :index_weights => { "foo" => 2, "user_core" => 1 }
+        # into :index_weights => { "foo" => 2, "user_core" => 1, "user_delta" => 1 }
         if iw = options[:index_weights]
           options[:index_weights] = iw.inject({}) do |hash, (index,weight)|
-            key = index.is_a?(Class) ? "#{ThinkingSphinx::Index.name(index)}_core" : index
-            hash[key] = weight
+            if index.is_a?(Class)
+              name = ThinkingSphinx::Index.name(index)
+              hash["#{name}_core"]  = weight
+              hash["#{name}_delta"] = weight
+            else
+              hash[index] = weight
+            end
             hash
           end
         end
