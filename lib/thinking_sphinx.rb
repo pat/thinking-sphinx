@@ -40,6 +40,15 @@ module ThinkingSphinx
   class ConnectionError < StandardError
   end
   
+  # A StaleIdsException is thrown by Collection.instances_from_matches if there
+  # are records in Sphinx but not in the database, so the search can be retried.
+  class StaleIdsException < StandardError
+    attr_accessor :ids
+    def initialize(ids)
+      self.ids = ids
+    end
+  end
+  
   # The collection of indexed models. Keep in mind that Rails lazily loads
   # its classes, so this may not actually be populated with _all_ the models
   # that have Sphinx indexes.

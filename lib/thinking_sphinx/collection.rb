@@ -41,6 +41,14 @@ module ThinkingSphinx
         :include    => options[:include],
         :select     => options[:select]
       ) : []
+      
+      # Raise an exception if we find records in Sphinx but not in the DB, so the search method
+      # can retry without them. See ThinkingSphinx::Search.retry_search_on_stale_index.
+      if options[:raise_on_stale] && instances.length < ids.length
+        stale_ids = ids - instances.map {|i| i.id }
+        raise StaleIdsException, stale_ids
+      end
+
       ids.collect { |obj_id|
         instances.detect { |obj| obj.id == obj_id }
       }

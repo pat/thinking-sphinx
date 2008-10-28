@@ -213,18 +213,76 @@ module ThinkingSphinx
       # The distance value is returned as a float, representing the distance in
       # metres.
       # 
+      # == Handling a stale index
+      #
+      # Especially if you don't use delta indexing, you risk having records in the
+      # Sphinx index that are no longer in the database. By default, those will simply
+      # come back as nils:
+      #
+      #   >> pat_user.delete
+      #   >> User.search("pat")
+      #   Sphinx Result: [1,2]
+      #   => [nil, <#User id: 2>]
+      #
+      # (If you search across multiple models, you'll get ActiveRecord::RecordNotFound.)
+      #
+      # You can simply Array#compact these results or handle the nils in some other way, but
+      # Sphinx will still report two results, and the missing records may upset your layout.
+      #
+      # If you pass :retry_stale => true to a single-model search, missing records will
+      # cause Thinking Sphinx to retry the query but excluding those records. Since search
+      # is paginated, the new search could potentially include missing records as well, so by
+      # default Thinking Sphinx will retry three times. Pass :retry_stale => 5 to retry five
+      # times, and so on. If there are still missing ids on the last retry, they are
+      # shown as nils.
+      # 
       def search(*args)
-        results, client = search_results(*args.clone)
+        query = args.clone  # an array
+        options = query.extract_options!
         
-        ::ActiveRecord::Base.logger.error(
-          "Sphinx Error: #{results[:error]}"
-        ) if results[:error]
+        retry_search_on_stale_index(query, options) do
+          results, client = search_results(*(query + [options]))
         
-        options = args.extract_options!
-        klass   = options[:class]
-        page    = options[:page] ? options[:page].to_i : 1
+          ::ActiveRecord::Base.logger.error(
+            "Sphinx Error: #{results[:error]}"
+          ) if results[:error]
         
-        ThinkingSphinx::Collection.create_from_results(results, page, client.limit, options)
+          klass   = options[:class]
+          page    = options[:page] ? options[:page].to_i : 1
+        
+          ThinkingSphinx::Collection.create_from_results(results, page, client.limit, options)
+        end
+      end
+      
+      def retry_search_on_stale_index(query, options, &block)
+        stale_ids = []
+        stale_retries_left = case options[:retry_stale]
+                              when true:       3  # default to three retries
+                              when nil, false: 0  # no retries
+                              else             options[:retry_stale].to_i
+                              end
+        begin
+          # Passing this in an option so Collection.create_from_results can see it.
+          # It should only raise on stale records if there are any retries left.
+          options[:raise_on_stale] = stale_retries_left > 0
+          block.call
+        # If ThinkingSphinx::Collection.create_from_results found records in Sphinx but not
+        # in the DB and the :raise_on_stale option is set, this exception is raised. We retry
+        # a limited number of times, excluding the stale ids from the search.
+        rescue StaleIdsException => e
+          stale_retries_left -= 1
+          stale_ids |= e.ids
+
+          # Pass to the new search in :without_ids
+          options[:without_ids] = Array(options[:without_ids]) | stale_ids
+
+          tries = stale_retries_left
+          ::ActiveRecord::Base.logger.debug("Sphinx Stale Ids (%s %s left): %s" % [
+              tries, (tries==1 ? 'try' : 'tries'), stale_ids.join(', ')
+          ])
+          
+          retry
+        end
       end
 
       def count(*args)
