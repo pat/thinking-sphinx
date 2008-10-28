@@ -201,3 +201,39 @@ describe ThinkingSphinx::Search do
     Beta.search("two").should be_empty
   end
 end
+
+
+# We'll be removing stuff, so best to set up things afresh.
+describe ThinkingSphinx::Search, "handling stale index" do
+  before :all do
+    @sphinx.setup_mysql
+    @sphinx.setup_sphinx
+    @sphinx.start
+  end
+  
+  after :all do
+    @sphinx.stop
+  end
+  
+  it "should work" do
+    Alpha.search().should_not be_empty
+    
+    two   = Alpha.find(:first, :conditions => {:name => "two"})
+    three = Alpha.find(:first, :conditions => {:name => "three"})
+    
+    defaults = { :per_page => 1, :order => 'sphinx_internal_id ASC' }
+    
+    Alpha.delete(1)  # remove without callbacks
+    # If the first record has gone missing, you should get a nil back.
+    Alpha.search(defaults.merge(:retry_stale => false)).should == [nil]
+    # If you retry once, you find the second item which still exists.
+    Alpha.search(defaults.merge(:retry_stale => 1)).should == [two]
+    
+    Alpha.delete(2)  # remove without callbacks
+    # If the second item has gone as well, you get a nil there too.
+    Alpha.search(defaults.merge(:retry_stale => 1)).should == [nil]
+    # But :retry_stale => true (three retries) overcomes that as well.
+    Alpha.search(defaults.merge(:retry_stale => true)).should == [three]
+  end
+
+end
