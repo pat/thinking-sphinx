@@ -117,6 +117,17 @@ module ThinkingSphinx
       # attribute values to exclude. This is done with the :without option:
       #
       #   User.search :without => {:role_id => 1}
+      #
+      # == Excluding by Primary Key
+      #
+      # There is a shortcut to exclude records by their ActiveRecord primary key:
+      #
+      #   User.search :without_ids => 1
+      #
+      # Pass an array or a single value.
+      #
+      # The primary key must be an integer as a negative filter is used. Note
+      # that for multi-model search, an id may occur in more than one model.
       # 
       # == Sorting
       #
@@ -338,6 +349,11 @@ module ThinkingSphinx
         client.filters += options[:without].collect { |attr,val|
           Riddle::Client::Filter.new attr.to_s, filter_value(val), true
         } if options[:without]
+        
+        # exclusive attribute filter on primary key
+        client.filters += Array(options[:without_ids]).collect { |id|
+          Riddle::Client::Filter.new 'sphinx_internal_id', filter_value(id), true
+        } if options[:without_ids]
         
         client
       end
