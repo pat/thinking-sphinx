@@ -12,6 +12,10 @@ module ThinkingSphinx
       # return the ids for the matching objects. See #search for syntax
       # examples.
       #
+      # Note that this only searches the Sphinx index, with no ActiveRecord
+      # queries. Thus, if your index is not in sync with the database, this
+      # method may return ids that no longer exist there.
+      #
       def search_for_ids(*args)
         results, client = search_results(*args.clone)
         
