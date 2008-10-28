@@ -50,7 +50,7 @@ class SphinxHelper
   
   def setup_sphinx
     @configuration = ThinkingSphinx::Configuration.instance.reset
-    File.open("spec/fixtures/database.yml", "w") do |file|
+    File.open("spec/fixtures/sphinx/database.yml", "w") do |file|
       YAML.dump({@configuration.environment => {
         :adapter  => 'mysql',
         :host     => @host,
@@ -61,7 +61,7 @@ class SphinxHelper
     end
     FileUtils.mkdir_p(@configuration.searchd_file_path)
     
-    @configuration.database_yml_file = "spec/fixtures/database.yml"
+    @configuration.database_yml_file = "spec/fixtures/sphinx/database.yml"
     @configuration.build
     
     index
