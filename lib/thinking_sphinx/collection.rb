@@ -2,6 +2,9 @@ module ThinkingSphinx
   class Collection < ::Array
     attr_reader :total_entries, :total_pages, :current_page
     attr_accessor :results
+
+    # Compatibility with older versions of will_paginate
+    alias_method :page_count, :total_pages
     
     def initialize(page, per_page, entries, total_entries)
       @current_page, @per_page, @total_entries = page, per_page, total_entries
