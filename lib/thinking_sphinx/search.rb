@@ -461,14 +461,14 @@ module ThinkingSphinx
         token = custom_token.is_a?(Regexp) ? custom_token : /\w+/u
 
         query.gsub(/("#{token}(.*?#{token})?"|(?![!-])#{token})/u) do
-          pre, match, post = $`, $&, $'
-          is_operator = (pre =~ %r{(\W|^)[@~/]\Z})  # E.g. "@foo", "/2", "~3", but not as part of a token
-          is_quote = (match =~ /\A".*"\Z/)  # E.g. "foo bar", with quotes
-          has_star = pre.ends_with?("*") || post.starts_with?("*")
+          pre, proper, post = $`, $&, $'
+          is_operator = pre.match(%r{(\W|^)[@~/]\Z})  # E.g. "@foo", "/2", "~3", but not as part of a token
+          is_quote    = proper.starts_with?('"') && proper.ends_with?('"')  # E.g. "foo bar", with quotes
+          has_star    = pre.ends_with?("*") || post.starts_with?("*")
           if is_operator || is_quote || has_star
-            match
+            proper
           else
-            "*#{match}*"
+            "*#{proper}*"
           end
         end
       end
