@@ -271,10 +271,9 @@ module ThinkingSphinx
         # a limited number of times, excluding the stale ids from the search.
         rescue StaleIdsException => e
           stale_retries_left -= 1
-          stale_ids |= e.ids
 
-          # Pass to the new search in :without_ids
-          options[:without_ids] = Array(options[:without_ids]) | stale_ids
+          stale_ids |= e.ids  # For logging
+          options[:without_ids] = Array(options[:without_ids]) | e.ids  # Actual exclusion
 
           tries = stale_retries_left
           ::ActiveRecord::Base.logger.debug("Sphinx Stale Ids (%s %s left): %s" % [
