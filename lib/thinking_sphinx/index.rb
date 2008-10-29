@@ -394,7 +394,7 @@ GROUP BY #{ (
         when :postgres
           "COALESCE(crc32(#{@model.quoted_table_name}.#{quote_column(@model.inheritance_column)}), #{@model.to_crc32.to_s})"
         when :mysql
-          "CAST(IFNULL(CRC32(#{@model.quoted_table_name}.#{quote_column(@model.inheritance_column)}), #{@model.to_crc32.to_s}) AS SIGNED)"
+          "CAST(IFNULL(CRC32(#{@model.quoted_table_name}.#{quote_column(@model.inheritance_column)}), #{@model.to_crc32.to_s}) AS UNSIGNED)"
         end
       else
         @model.to_crc32.to_s
