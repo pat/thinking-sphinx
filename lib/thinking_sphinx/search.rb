@@ -458,16 +458,12 @@ module ThinkingSphinx
       def star_query(query, custom_token = nil)
         # TODO: Handle pre-existing asterisks
         # TODO: Turn "foo bar" into "*foo bar*", not "*foo* *bar*"
-
         token = custom_token.is_a?(Regexp) ? custom_token : /\w+/u
-        token = /(?!\b[@!\("-])#{token}/u  # can't start with operator
 
-        # Turn 'a @b "c"~3' into ["", "a", " ", "@b", " \"", "c", "\"", "~3"]
-        parts = query.to_s.split(%r{([@~/]?#{token})}u)
-        # Add stars to the ones matching tokens
-        parts.map do |part|
-          part.match(/\A#{token}\Z/u) ? "*#{part}*" : part
-        end.join('')
+        query.gsub(token) do
+          pre, match, post = $`, $&, $'
+          pre =~ %r{(\W|^)[@~/]$} ? match : "*#{match}*"
+        end
       end
       
       def filter_value(value)

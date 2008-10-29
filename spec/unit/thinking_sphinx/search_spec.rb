@@ -49,7 +49,7 @@ describe ThinkingSphinx::Search do
 
       it "should default to /\w+/ as token" do
         ThinkingSphinx::Search.search "foo@bar.com", :infix => true
-        @client.should have_received(:query).with("*foo*@*bar*.*com*")  # fails: "*foo*@bar.*com*"
+        @client.should have_received(:query).with("*foo*@*bar*.*com*")
       end
 
       it "should honour custom token" do
