@@ -128,7 +128,39 @@ module ThinkingSphinx
       #
       # The primary key must be an integer as a negative filter is used. Note
       # that for multi-model search, an id may occur in more than one model.
-      # 
+      #
+      # == Infix Searching
+      #
+      # By default, Sphinx uses English stemming, e.g. matching "shoes" if you
+      # search for "shoe". It won't find "Melbourne" if you search for
+      # "elbourn", though.
+      #
+      # Enable infix searching by something like this in config/sphinx.yml:
+      #
+      #   development:
+      #     enable_star: 1
+      #     min_infix_length: 2
+      #
+      # Note that this will make indexing take longer.
+      #
+      # With those settings (and after reindexing), wildcard asterisks can be used
+      # in queries:
+      #
+      #   Location.search "*elbourn*"
+      #
+      # To automatically add asterisks around every token (but not operators),
+      # pass the :infix option:
+      #
+      #   Location.search "elbourn -ustrali", :infix => true
+      #
+      # This would become "*elbourn* -*ustrali*". The :infix option only adds the
+      # asterisks. You need to make the config/sphinx.yml changes yourself.
+      #
+      # By default, the tokens are assumed to match the regular expression /\w+/u.
+      # If you've modified the charset_table, pass another regular expression, e.g.
+      #
+      #   User.search("oo@ba", :infix => /[\w@.]+/u)
+      #
       # == Sorting
       #
       # Sphinx can only sort by attributes, so generally you will need to avoid
@@ -326,14 +358,17 @@ module ThinkingSphinx
       # 
       def search_results(*args)
         options = args.extract_options!
+        query   = args.join(' ')
         client  = client_from_options options
         
-        query, filters    = search_conditions(
+        query = star_query(query, options[:infix]) if options[:infix]
+        
+        extra_query, filters = search_conditions(
           options[:class], options[:conditions] || {}
         )
         client.filters   += filters
-        client.match_mode = :extended unless query.empty?
-        query             = (args + [query]).join(' ')
+        client.match_mode = :extended unless extra_query.empty?
+        query             = [query, extra_query].join(' ')
         query.strip!  # Because "" and " " are not equivalent
                 
         set_sort_options! client, options
@@ -418,6 +453,21 @@ module ThinkingSphinx
         } if options[:without_ids]
         
         client
+      end
+      
+      def star_query(query, custom_token = nil)
+        # TODO: Handle pre-existing asterisks
+        # TODO: Turn "foo bar" into "*foo bar*", not "*foo* *bar*"
+
+        token = custom_token.is_a?(Regexp) ? custom_token : /\w+/u
+        token = /(?!\b[@!\("-])#{token}/u  # can't start with operator
+
+        # Turn 'a @b "c"~3' into ["", "a", " ", "@b", " \"", "c", "\"", "~3"]
+        parts = query.to_s.split(%r{([@~/]?#{token})}u)
+        # Add stars to the ones matching tokens
+        parts.map do |part|
+          part.match(/\A#{token}\Z/u) ? "*#{part}*" : part
+        end.join('')
       end
       
       def filter_value(value)

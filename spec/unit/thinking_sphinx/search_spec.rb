@@ -11,6 +11,55 @@ describe ThinkingSphinx::Search do
     @sphinx.stop
   end
   
+  describe "search method" do
+    before :each do
+      @client = Riddle::Client.stub_instance(
+        :filters    => [],
+        :filters=   => true,
+        :id_range=  => true,
+        :sort_mode  => :asc,
+        :limit      => 5,
+        :offset=    => 0,
+        :sort_mode= => true,
+        :query      => {
+          :matches  => [],
+          :total    => 50
+        }
+      )
+      
+      ThinkingSphinx::Search.stub_methods(
+        :client_from_options => @client,
+        :search_conditions   => ["", []]
+      )
+    end
+    
+    describe ":infix option" do
+      
+      it "should not do apply by default" do
+        ThinkingSphinx::Search.search "foo bar"
+        @client.should have_received(:query).with("foo bar")
+      end
+
+      it "should apply when passed, and handle full extended syntax" do
+        input    = %{a b c (d | e) 123 5&6 (f_f g) !h "i j" "k l"~10 "m n"/3 @o p -(q|r)}
+        expected = %{*a* *b* *c* (*d* | *e*) *123* *5*&*6* (*f_f* *g*) !*h* "*i* *j*" "*k* *l*"~10 "*m* *n*"/3 @o *p* -(*q*|*r*)}
+        ThinkingSphinx::Search.search input
+        @client.should have_received(:query).with(input)
+      end
+
+      it "should default to /\w+/ as token" do
+        ThinkingSphinx::Search.search "foo@bar.com", :infix => true
+        @client.should have_received(:query).with("*foo*@*bar*.*com*")  # fails: "*foo*@bar.*com*"
+      end
+
+      it "should honour custom token" do
+        ThinkingSphinx::Search.search "foo@bar.com", :infix => /[\w@.]+/u
+        @client.should have_received(:query).with("*foo@bar.com*")
+      end
+
+    end
+  end
+  
   describe "search_for_id method" do
     before :each do
       @client = Riddle::Client.stub_instance(
