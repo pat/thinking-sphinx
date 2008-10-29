@@ -151,7 +151,7 @@ module ThinkingSphinx
       # To automatically add asterisks around every token (but not operators),
       # pass the :star option:
       #
-      #   Location.search "elbourn -ustrali", :star => true
+      #   Location.search "elbourn -ustrali", :star => true, :match_mode => :boolean
       #
       # This would become "*elbourn* -*ustrali*". The :star option only adds the
       # asterisks. You need to make the config/sphinx.yml changes yourself.
