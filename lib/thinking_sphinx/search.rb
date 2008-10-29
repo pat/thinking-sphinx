@@ -129,7 +129,7 @@ module ThinkingSphinx
       # The primary key must be an integer as a negative filter is used. Note
       # that for multi-model search, an id may occur in more than one model.
       #
-      # == Infix Searching
+      # == Infix (Star) Searching
       #
       # By default, Sphinx uses English stemming, e.g. matching "shoes" if you
       # search for "shoe". It won't find "Melbourne" if you search for
@@ -149,17 +149,19 @@ module ThinkingSphinx
       #   Location.search "*elbourn*"
       #
       # To automatically add asterisks around every token (but not operators),
-      # pass the :infix option:
+      # pass the :star option:
       #
-      #   Location.search "elbourn -ustrali", :infix => true
+      #   Location.search "elbourn -ustrali", :star => true
       #
-      # This would become "*elbourn* -*ustrali*". The :infix option only adds the
+      # This would become "*elbourn* -*ustrali*". The :star option only adds the
       # asterisks. You need to make the config/sphinx.yml changes yourself.
       #
       # By default, the tokens are assumed to match the regular expression /\w+/u.
       # If you've modified the charset_table, pass another regular expression, e.g.
       #
-      #   User.search("oo@ba", :infix => /[\w@.]+/u)
+      #   User.search("oo@bar.c", :star => /[\w@.]+/u)
+      #
+      # to search for "*oo@bar.c*" and not "*oo*@*bar*.*c*".
       #
       # == Sorting
       #
@@ -361,7 +363,7 @@ module ThinkingSphinx
         query   = args.join(' ')
         client  = client_from_options options
         
-        query = star_query(query, options[:infix]) if options[:infix]
+        query = star_query(query, options[:star]) if options[:star]
         
         extra_query, filters = search_conditions(
           options[:class], options[:conditions] || {}

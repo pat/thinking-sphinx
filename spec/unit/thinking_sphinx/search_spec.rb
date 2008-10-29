@@ -33,7 +33,7 @@ describe ThinkingSphinx::Search do
       )
     end
     
-    describe ":infix option" do
+    describe ":star option" do
       
       it "should not apply by default" do
         ThinkingSphinx::Search.search "foo bar"
@@ -43,17 +43,17 @@ describe ThinkingSphinx::Search do
       it "should apply when passed, and handle full extended syntax" do
         input    = %{a b* c (d | e) 123 5&6 (f_f g) !h "i j" "k l"~10 "m n"/3 @o p -(q|r)}
         expected = %{*a* b* *c* (*d* | *e*) *123* *5*&*6* (*f_f* *g*) !*h* "i j" "k l"~10 "m n"/3 @o *p* -(*q*|*r*)}
-        ThinkingSphinx::Search.search input, :infix => true
+        ThinkingSphinx::Search.search input, :star => true
         @client.should have_received(:query).with(expected)
       end
 
       it "should default to /\w+/ as token" do
-        ThinkingSphinx::Search.search "foo@bar.com", :infix => true
+        ThinkingSphinx::Search.search "foo@bar.com", :star => true
         @client.should have_received(:query).with("*foo*@*bar*.*com*")
       end
 
       it "should honour custom token" do
-        ThinkingSphinx::Search.search "foo@bar.com", :infix => /[\w@.]+/u
+        ThinkingSphinx::Search.search "foo@bar.com", :star => /[\w@.]+/u
         @client.should have_received(:query).with("*foo@bar.com*")
       end
 
