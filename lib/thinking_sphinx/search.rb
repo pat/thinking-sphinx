@@ -397,7 +397,7 @@ module ThinkingSphinx
         config = ThinkingSphinx::Configuration.instance
         client = Riddle::Client.new config.address, config.port
         klass  = options[:class]
-        index_options = klass ? klass.sphinx_indexes.last.options : {}
+        index_options = klass ? klass.sphinx_index_options : {}
         
         # Turn :index_weights => { "foo" => 2, User => 1 }
         # into :index_weights => { "foo" => 2, "user_core" => 1, "user_delta" => 1 }
@@ -559,8 +559,10 @@ module ThinkingSphinx
         fields = klass ? klass.sphinx_indexes.collect { |index|
           index.fields.collect { |field| field.unique_name }
         }.flatten : []
-        
-        case order = options[:order]
+        index_options = klass ? klass.sphinx_index_options : {}
+
+        order = options[:order] || index_options[:order]        
+        case order
         when Symbol
           client.sort_mode = :attr_asc if client.sort_mode == :relevance || client.sort_mode.nil?
           if fields.include?(order)
