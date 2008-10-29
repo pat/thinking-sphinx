@@ -53,8 +53,8 @@ describe ThinkingSphinx::Search do
       end
 
       it "should honour custom token" do
-        ThinkingSphinx::Search.search "foo@bar.com", :star => /[\w@.]+/u
-        @client.should have_received(:query).with("*foo@bar.com*")
+        ThinkingSphinx::Search.search "foo@bar.com -foo-bar", :star => /[\w@.-]+/u
+        @client.should have_received(:query).with("*foo@bar.com* -*foo-bar*")
       end
 
     end

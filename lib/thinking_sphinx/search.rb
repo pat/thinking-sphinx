@@ -460,7 +460,7 @@ module ThinkingSphinx
       def star_query(query, custom_token = nil)
         token = custom_token.is_a?(Regexp) ? custom_token : /\w+/u
 
-        query.gsub(/("#{token}(.*?#{token})?"|#{token})/u) do
+        query.gsub(/("#{token}(.*?#{token})?"|(?![!-])#{token})/u) do
           pre, match, post = $`, $&, $'
           is_operator = (pre =~ %r{(\W|^)[@~/]\Z})  # E.g. "@foo", "/2", "~3", but not as part of a token
           is_quote = (match =~ /\A".*"\Z/)  # E.g. "foo bar", with quotes
