@@ -37,12 +37,14 @@ module ThinkingSphinx
         instance_from_match match, options
       } unless klass = options[:class]
       
+      index_options = klass.sphinx_index_options
+      
       ids = matches.collect { |match| match[:attributes]["sphinx_internal_id"] }
       instances = ids.length > 0 ? klass.find(
         :all,
         :conditions => {klass.primary_key.to_sym => ids},
-        :include    => options[:include],
-        :select     => options[:select]
+        :include    => (options[:include] || index_options[:include]),
+        :select     => (options[:select] || index_options[:select])
       ) : []
       
       # Raise an exception if we find records in Sphinx but not in the DB, so the search method
