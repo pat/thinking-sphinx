@@ -245,7 +245,7 @@ module ThinkingSphinx
       # The distance value is returned as a float, representing the distance in
       # metres.
       # 
-      # == Handling a stale index
+      # == Handling a Stale Index
       #
       # Especially if you don't use delta indexing, you risk having records in the
       # Sphinx index that are no longer in the database. By default, those will simply
