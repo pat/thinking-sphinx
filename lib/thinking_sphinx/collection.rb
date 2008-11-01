@@ -60,12 +60,13 @@ module ThinkingSphinx
     end
     
     def self.instance_from_match(match, options)
-      # puts "ARGS: #{match[:attributes]["sphinx_internal_id"].inspect}, {:include => #{options[:include].inspect}, :select => #{options[:select].inspect}}"
       class_from_crc(match[:attributes]["class_crc"]).find(
         match[:attributes]["sphinx_internal_id"],
         :include => options[:include],
         :select  => options[:select]
       )
+    rescue ::ActiveRecord::RecordNotFound
+      nil
     end
     
     def self.class_from_crc(crc)

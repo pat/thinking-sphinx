@@ -159,6 +159,8 @@ module ThinkingSphinx
       ) if ThinkingSphinx.deltas_enabled? &&
         self.class.sphinx_indexes.any? { |index| index.delta? } &&
         self.delta?
+    rescue ::ThinkingSphinx::ConnectionError
+      # nothing
     end
     
     def sphinx_document_id
