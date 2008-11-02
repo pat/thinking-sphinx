@@ -1,6 +1,6 @@
 module ThinkingSphinx
   class Collection < ::Array
-    attr_reader :total_entries, :total_pages, :current_page
+    attr_reader :total_entries, :total_pages, :current_page, :per_page
     attr_accessor :results
 
     # Compatibility with older versions of will_paginate
