@@ -1,3 +1,7 @@
+require 'riddle/client/filter'
+require 'riddle/client/message'
+require 'riddle/client/response'
+
 module Riddle
   class VersionError < StandardError;  end
   class ResponseError < StandardError; end
@@ -110,31 +114,7 @@ module Riddle
       @server = server || "localhost"
       @port   = port   || 3312
       
-      # defaults
-      @offset         = 0
-      @limit          = 20
-      @max_matches    = 1000
-      @match_mode     = :all
-      @sort_mode      = :relevance
-      @sort_by        = ''
-      @weights        = []
-      @id_range       = 0..0
-      @filters        = []
-      @group_by       = ''
-      @group_function = :day
-      @group_clause   = '@group desc'
-      @group_distinct = ''
-      @cut_off        = 0
-      @retry_count    = 0
-      @retry_delay    = 0
-      @anchor         = {}
-      # string keys are index names, integer values are weightings
-      @index_weights  = {}
-      @rank_mode      = :proximity_bm25
-      @max_query_time = 0
-      # string keys are field names, integer values are weightings
-      @field_weights  = {}
-      @timeout        = 0
+      reset
       
       @queue = []
     end
