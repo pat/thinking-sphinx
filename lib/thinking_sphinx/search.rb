@@ -186,6 +186,12 @@ module ThinkingSphinx
       # documentation[http://sphinxsearch.com/doc.html] for that level of
       # detail though.
       #
+      # If desired, you can sort by a column in your model instead of a sphinx
+      # field or attribute. This sort only applies to the current page, so is
+      # most useful when performing a search with a single page of results.
+      #
+      #   User.search("pat", :sql_order => "name")
+      #
       # == Grouping
       # 
       # For this you can use the group_by, group_clause and group_function
