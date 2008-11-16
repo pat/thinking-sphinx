@@ -52,6 +52,106 @@ module ThinkingSphinx
       File.size?("#{config.searchd_file_path}/#{self.name}_#{part}.spa").nil?
     end
     
+    def to_riddle(model, index, offset)
+      add_internal_attributes
+      link!
+    end
+    
+    def riddle_adapter
+      case adapter
+      when :postgres
+        "pgsql"
+      when :mysql
+        "mysql"
+      else
+        raise "Unsupported Database Adapter: Sphinx only supports MySQL and PosgreSQL"
+      end
+    end
+    
+    def set_source_database_settings(source)
+      config = @model.connection.instance_variable_get(:@config)
+      
+      source.sql_host = config[:host]      || "localhost"
+      source.sql_user = config[:username]  || config[:user]
+      source.sql_pass = (config[:password] || "").gsub('#', '\#')
+      source.sql_db   = config[:database]
+      source.sql_port = config[:port]
+      source.sql_sock = config[:socket]
+    end
+    
+    def set_source_attributes(source)
+      attributes.each do |attrib|
+        source.send(attrib.type_to_config) << attrib.config_value
+      end
+    end
+    
+    def set_source_sql(source, offset, delta = false)
+      source.sql_query        = to_sql(:offset => offset, :delta => delta).gsub(/\n/, ' ')
+      source.sql_query_range  = to_sql_query_range(:delta => delta)
+      source.sql_query_info   = to_sql_query_info(offset)
+      
+      source.sql_query_pre += send(delta ? :sql_query_pre_for_core : :sql_query_pre_for_delta)
+      
+      if @options[:group_concat_max_len]
+        source.sql_query_pre << "SET SESSION group_concat_max_len = #{@options[:group_concat_max_len]}"
+      end
+      
+      if utf8? && adapter == :mysql
+        source.sql_query_pre << "SET NAMES utf8"
+      end
+    end
+    
+    def set_source_settings(source)
+      ThinkingSphinx::Configuration.instance.source_options.each do |key, value|
+        source.send("#{key}=".to_sym, value)
+      end
+      
+      @options.each do |key, value|
+        source.send("#{key}=".to_sym, value) if ThinkingSphinx::Configuration::SourceOptions.include?(key.to_s) && !value.nil?
+      end
+    end
+    
+    def sql_query_pre_for_core
+      delta? ? ["UPDATE #{@model.quoted_table_name} SET #{quote_column('delta')} = #{db_boolean(false)}"] : []
+      []
+    end
+    
+    def sql_query_pre_for_delta
+      [""]
+    end
+    
+    def to_riddle_for_core(offset, index)
+      add_internal_attributes
+      link!
+      
+      source = Riddle::Configuration::SQLSource.new(
+        "#{name}_core_#{index}", riddle_adapter
+      )
+      
+      set_source_database_settings  source
+      set_source_attributes         source
+      set_source_sql                source, offset
+      set_source_settings           source
+      
+      source
+    end
+    
+    def to_riddle_for_delta(offset, index)
+      add_internal_attributes
+      link!
+      
+      source = Riddle::Configuration::SQLSource.new(
+        "#{name}_delta_#{index}", riddle_adapter
+      )
+      source.parent = "#{name}_core_#{index}"
+      
+      set_source_database_settings  source
+      set_source_attributes         source
+      set_source_sql                source, offset, true
+      
+      source
+    end
+    
     def to_config(model, index, database_conf, offset)
       # Set up associations and joins
       add_internal_attributes

@@ -39,20 +39,40 @@ module Riddle
         @morphologies.join(", ")
       end
       
+      def morphology=(morphology)
+        @morphologies = nil_split morphology, /,\s?/
+      end
+      
       def stopwords
         @stopword_files.join(" ")
+      end
+      
+      def stopwords=(stopwords)
+        @stopword_files = nil_split stopwords, ' '
       end
       
       def wordforms
         @wordform_files.join(" ")
       end
       
+      def wordforms=(wordforms)
+        @wordform_files = nil_split wordforms, ' '
+      end
+      
       def exceptions
         @exception_files.join(" ")
       end
       
+      def exceptions=(exceptions)
+        @exception_files = nil_split exceptions, ' '
+      end
+      
       def ignore_chars
         @ignore_characters.join(", ")
+      end
+      
+      def ignore_chars=(ignore_chars)
+        @ignore_characters = nil_split ignore_chars, /,\s?/
       end
       
       def prefix_fields
@@ -67,16 +87,28 @@ module Riddle
         @ngram_characters.join(", ")
       end
       
+      def ngram_chars=(ngram_chars)
+        @ngram_characters = nil_split ngram_chars, /,\s?/
+      end
+      
       def phrase_boundary
         @phrase_boundaries.join(", ")
+      end
+      
+      def phrase_boundary=(phrase_boundary)
+        @phrase_boundaries = nil_split phrase_boundary, /,\s?/
       end
       
       def html_remove_elements
         @html_remove_element_tags.join(", ")
       end
       
+      def html_remove_elements=(html_remove_elements)
+        @html_remove_element_tags = nil_split html_remove_elements, /,\s?/
+      end
+      
       def render
-        raise ConfigurationError unless valid?
+        raise ConfigurationError, "#{@name} #{@sources.inspect} #{@path} #{@parent}" unless valid?
         
         inherited_name = "#{name}"
         inherited_name << " : #{parent}" if parent
@@ -90,6 +122,12 @@ module Riddle
       
       def valid?
         (!@name.nil?) && (!( @sources.length == 0 || @path.nil? ) || !@parent.nil?)
+      end
+      
+      private
+      
+      def nil_split(string, pattern)
+        (string || "").split(pattern)
       end
     end
   end

@@ -50,56 +50,41 @@ describe ThinkingSphinx::Configuration do
       )
       
       ThinkingSphinx.stub_method :indexed_models => ["Person", "Friendship"]
-      YAML.stub_method(:load => {
-        :development => {
-          "option" => "value"
-        }
-      })
       
       @adapter = ThinkingSphinx::MysqlAdapter.stub_instance(
         :setup => true
       )
+      source = Riddle::Configuration::Source.stub_instance(
+        :render => "source random { }",
+        :name   => "random"
+      )
       
-      @person_index_a = ThinkingSphinx::Index.stub_instance(
-        :to_config => "",   :adapter => :mysql, :delta? => false,
-        :name => "person",  :model => Person,   :adapter_object => @adapter
-      )
-      @person_index_b = ThinkingSphinx::Index.stub_instance(
-        :to_config => "",   :adapter => :mysql, :delta? => false,
-        :name => "person",  :model => Person,   :adapter_object => @adapter
-      )
-      @friendship_index_a = ThinkingSphinx::Index.stub_instance(
-        :to_config => "",       :adapter => :mysql,   :delta? => false,
-        :name => "friendship",  :model => Friendship, :adapter_object => @adapter
+      index_options = {
+        :to_config            => "",
+        :adapter              => :mysql,
+        :delta?               => false,
+        :options              => {},
+        :name                 => "person",
+        :model                => Person,
+        :adapter_object       => @adapter,
+        :to_riddle_for_core   => source,
+        :to_riddle_for_delta  => source
+      }
+      
+      @person_index_a = ThinkingSphinx::Index.stub_instance index_options
+      @person_index_b = ThinkingSphinx::Index.stub_instance index_options
+      @friendship_index_a = ThinkingSphinx::Index.stub_instance index_options.merge(
+        :name => "friendship", :model => Friendship
       )
       
       Person.stub_method(:sphinx_indexes => [@person_index_a, @person_index_b])
       Friendship.stub_method(:sphinx_indexes => [@friendship_index_a])
-      
-      FileUtils.mkdir_p "#{@config.app_root}/config"
-      FileUtils.touch   "#{@config.app_root}/config/database.yml"
     end
-    
-    after :each do
-      ThinkingSphinx.unstub_method :indexed_models
-      YAML.unstub_method :load
-      
-      Person.unstub_method      :sphinx_indexes
-      Friendship.unstub_method  :sphinx_indexes
-      # 
-      # FileUtils.rm_rf "#{@config.app_root}/config"
-    end
-    
+        
     it "should load the models" do
       @config.build
       
       @config.should have_received(:load_models)
-    end
-    
-    it "should load in the database YAML configuration" do
-      @config.build
-      
-      YAML.should have_received(:load)
     end
     
     it "should use the configuration port" do
@@ -122,54 +107,6 @@ describe ThinkingSphinx::Configuration do
       
       file = open(@config.config_file) { |f| f.read }
       file.should match(/pid_file\s+= #{@config.pid_file}/)
-    end
-    
-    it "should request configuration for each index for each model" do
-      @config.build
-      
-      @person_index_a.should have_received(:to_config).with(
-        Person, 0, {:option => "value"}, 0
-      )
-      @person_index_b.should have_received(:to_config).with(
-        Person, 1, {:option => "value"}, 0
-      )
-      @friendship_index_a.should have_received(:to_config).with(
-        Friendship, 0, {:option => "value"}, 1
-      )
-    end
-    
-    it "should call core_index_for_model for each model" do
-      @config.build
-      
-      @config.should have_received(:core_index_for_model).with(
-        Person, "source = person_0_core\nsource = person_1_core"
-      )
-      @config.should have_received(:core_index_for_model).with(
-        Friendship, "source = friendship_0_core"
-      )
-    end
-    
-    it "should call delta_index_for_model for each model if any index has a delta" do
-      @person_index_b.stub_method(:delta? => true)
-      
-      @config.build
-      
-      @config.should have_received(:delta_index_for_model).with(
-        Person, "source = person_1_delta"
-      )
-    end
-    
-    it "should not call delta_index_for_model for each model if no indexes have deltas" do
-      @config.build
-      
-      @config.should_not have_received(:delta_index_for_model)
-    end
-    
-    it "should call distributed_index_for_model for each model" do
-      @config.build
-      
-      @config.should have_received(:distributed_index_for_model).with(Person)
-      @config.should have_received(:distributed_index_for_model).with(Friendship)
     end
   end
   
@@ -455,32 +392,6 @@ describe ThinkingSphinx::Configuration do
       
       ThinkingSphinx::Configuration.instance.send(:parse_config)
       ThinkingSphinx::Configuration.instance.bin_path.should match(/\/$/)
-    end
-  end
-  
-  it "should insert set searchd options into the configuration file" do
-    config = ThinkingSphinx::Configuration.instance
-    ThinkingSphinx::Configuration::SearchdOptions.each do |option|
-      config.searchd_options[option.to_sym] = "something"
-      config.build
-      
-      file = open(config.config_file) { |f| f.read }
-      file.should match(/#{option}\s+= something/)
-      
-      config.searchd_options[option.to_sym] = nil
-    end
-  end
-  
-  it "should insert set indexer options into the configuration file" do
-    config = ThinkingSphinx::Configuration.instance
-    ThinkingSphinx::Configuration::IndexerOptions.each do |option|
-      config.indexer_options[option.to_sym] = "something"
-      config.build
-      
-      file = open(config.config_file) { |f| f.read }
-      file.should match(/#{option}\s+= something/)
-      
-      config.indexer_options[option.to_sym] = nil
     end
   end
   

@@ -101,23 +101,22 @@ module ThinkingSphinx
       end
     end
     
-    # Generates the appropriate attribute statement for a Sphinx configuration
-    # file, depending on the attribute's type.
-    # 
-    def to_sphinx_clause
-      case type
-      when :multi
-        "sql_attr_multi       = uint #{unique_name} from field"
-      when :datetime
-        "sql_attr_timestamp   = #{unique_name}"
-      when :string
-        "sql_attr_str2ordinal = #{unique_name}"
-      when :float
-        "sql_attr_float       = #{unique_name}"
-      when :boolean
-        "sql_attr_bool        = #{unique_name}"
+    def type_to_config
+      {
+        :multi    => :sql_attr_multi,
+        :datetime => :sql_attr_timestamp,
+        :string   => :sql_attr_str2ordinal,
+        :float    => :sql_attr_float,
+        :boolean  => :sql_attr_bool,
+        :integer  => :sql_attr_uint
+      }[type]
+    end
+    
+    def config_value
+      if type == :multi
+        "uint #{unique_name} from field"
       else
-        "sql_attr_uint        = #{unique_name}"
+        unique_name
       end
     end
     

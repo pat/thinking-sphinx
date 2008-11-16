@@ -119,6 +119,67 @@ module ThinkingSphinx
 
             return parent
           end
+          
+          def set_configuration_options_for_indexes(index)
+            ThinkingSphinx::Configuration.instance.index_options.each do |key, value|
+              index.send("#{key}=".to_sym, value)
+            end
+            
+            self.sphinx_indexes.each do |ts_index|
+              ts_index.options.each do |key, value|
+                index.send("#{key}=".to_sym, value) if ThinkingSphinx::Configuration::IndexOptions.include?(key.to_s) && !value.nil?
+              end
+            end
+          end
+          
+          def to_riddle(offset)
+            indexes = [to_riddle_for_core(offset)]
+            indexes << to_riddle_for_delta(offset) if sphinx_delta?
+            indexes << to_riddle_for_distributed
+          end
+          
+          def to_riddle_for_core(offset)
+            index = Riddle::Configuration::Index.new("#{sphinx_name}_core")
+            index.path = File.join(ThinkingSphinx::Configuration.instance.searchd_file_path, index.name)
+            set_configuration_options_for_indexes index
+            
+            self.sphinx_indexes.select { |ts_index|
+              ts_index.model == self
+            }.each_with_index do |ts_index, i|
+              index.sources << ts_index.to_riddle_for_core(offset, i)
+            end
+            
+            index
+          end
+          
+          def to_riddle_for_delta(offset)
+            index = Riddle::Configuration::Index.new("#{sphinx_name}_delta")
+            index.parent = "#{sphinx_name}_core"
+            index.path = File.join(ThinkingSphinx::Configuration.instance.searchd_file_path, index.name)
+            
+            self.sphinx_indexes.each_with_index do |ts_index, i|
+              index.sources << ts_index.to_riddle_for_delta(offset, i) if ts_index.delta?
+            end
+            
+            index
+          end
+          
+          def to_riddle_for_distributed
+            index = Riddle::Configuration::DistributedIndex.new(sphinx_name)
+            index.local_indexes << "#{sphinx_name}_core"
+            index.local_indexes << "#{sphinx_name}_delta" if sphinx_delta?
+            index
+          end
+          
+          private
+          
+          def sphinx_name
+            self.name.underscore.tr(':/\\', '_')
+          end
+          
+          def sphinx_delta?
+            self.sphinx_indexes.any? { |index| index.delta? }
+          end
         end
       end
       

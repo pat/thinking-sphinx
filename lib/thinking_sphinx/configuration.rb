@@ -52,20 +52,14 @@ module ThinkingSphinx
       min_infix_len min_prefix_len min_word_len mlock morphology ngram_chars
       ngram_len phrase_boundary phrase_boundary_step preopen stopwords
       wordforms )
-    
-    IndexerOptions = %w( max_iops max_iosize mem_limit )
-    
-    SearchdOptions = %w( read_timeout max_children max_matches seamless_rotate
-      preopen_indexes unlink_old )
-    
+        
     attr_accessor :config_file, :searchd_log_file, :query_log_file,
       :pid_file, :searchd_file_path, :address, :port, :allow_star,
       :database_yml_file, :app_root, :bin_path
     
-    attr_accessor :source_options, :index_options, :indexer_options,
-      :searchd_options
+    attr_accessor :source_options, :index_options
     
-    attr_reader :environment
+    attr_reader :environment, :configuration
     
     # Load in the configuration settings - this will look for config/sphinx.yml
     # and parse it according to the current environment.
@@ -79,14 +73,16 @@ module ThinkingSphinx
       self.app_root          = Merb.root  if defined?(Merb)
       self.app_root        ||= app_root
       
+      @configuration = Riddle::Configuration.new
+      @configuration.searchd.address    = "127.0.0.1"
+      @configuration.searchd.port       = 3312
+      @configuration.searchd.pid_file   = "#{self.app_root}/log/searchd.#{environment}.pid"
+      @configuration.searchd.log        = "#{self.app_root}/log/searchd.log"
+      @configuration.searchd.query_log  = "#{self.app_root}/log/searchd.query.log"
+      
       self.database_yml_file    = "#{self.app_root}/config/database.yml"
       self.config_file          = "#{self.app_root}/config/#{environment}.sphinx.conf"
-      self.searchd_log_file     = "#{self.app_root}/log/searchd.log"
-      self.query_log_file       = "#{self.app_root}/log/searchd.query.log"
-      self.pid_file             = "#{self.app_root}/log/searchd.#{environment}.pid"
       self.searchd_file_path    = "#{self.app_root}/db/sphinx/#{environment}"
-      self.address              = "127.0.0.1"
-      self.port                 = 3312
       self.allow_star           = false
       self.bin_path             = ""
       
@@ -95,9 +91,7 @@ module ThinkingSphinx
         :charset_type => "utf-8",
         :morphology   => "stem_en"
       }
-      self.indexer_options = {}
-      self.searchd_options = {}
-      
+            
       parse_config
       
       self
@@ -120,57 +114,15 @@ module ThinkingSphinx
     def build(file_path=nil)
       load_models
       file_path ||= "#{self.config_file}"
-      database_confs = YAML::load(ERB.new(IO.read("#{self.database_yml_file}")).result)
-      database_confs.symbolize_keys!
-      database_conf  = database_confs[environment.to_sym]
-      database_conf.symbolize_keys!
+      
+      @configuration.indexes.clear
+      
+      ThinkingSphinx.indexed_models.each_with_index do |model, model_index|
+        @configuration.indexes.concat model.constantize.to_riddle(model_index)
+      end
       
       open(file_path, "w") do |file|
-        file.write <<-CONFIG
-indexer
-{
-#{hash_to_config(self.indexer_options)}
-}
-
-searchd
-{
-  address = #{self.address}
-  port = #{self.port}
-  log = #{self.searchd_log_file}
-  query_log = #{self.query_log_file}
-  pid_file = #{self.pid_file}
-#{hash_to_config(self.searchd_options)}
-}
-        CONFIG
-        
-        ThinkingSphinx.indexed_models.each_with_index do |model, model_index|
-          model           = model.constantize
-          sources         = []
-          delta_sources   = []
-          prefixed_fields = []
-          infixed_fields  = []
-          
-          model.sphinx_indexes.select { |index| index.model == model }.each_with_index do |index, i|
-            file.write index.to_config(model, i, database_conf, model_index)
-            
-            index.adapter_object.setup
-            
-            sources << "#{ThinkingSphinx::Index.name(model)}_#{i}_core"
-            delta_sources << "#{ThinkingSphinx::Index.name(model)}_#{i}_delta" if index.delta?
-          end
-          
-          next if sources.empty?
-          
-          source_list = sources.collect       { |s| "source = #{s}" }.join("\n")
-          delta_list  = delta_sources.collect { |s| "source = #{s}" }.join("\n")
-          
-          file.write core_index_for_model(model, source_list)
-          unless delta_list.blank?
-            file.write delta_index_for_model(model, delta_list)
-          end
-          
-          file.write distributed_index_for_model(model)
-        end
+        file.write @configuration.render
       end
     end
     
@@ -223,6 +175,46 @@ searchd
       base
     end
     
+    def address
+      @configuration.searchd.address
+    end
+    
+    def address=(address)
+      @configuration.searchd.address = address
+    end
+    
+    def port
+      @configuration.searchd.port
+    end
+    
+    def port=(port)
+      @configuration.searchd.port = port
+    end
+    
+    def pid_file
+      @configuration.searchd.pid_file
+    end
+    
+    def pid_file=(pid_file)
+      @configuration.searchd.pid_file = pid_file
+    end
+    
+    def searchd_log_file
+      @configuration.searchd.log
+    end
+    
+    def searchd_log_file=(file)
+      @configuration.searchd.log = file
+    end
+    
+    def query_log_file
+      @configuration.searchd.query_log
+    end
+    
+    def query_log_file=(file)
+      @configuration.searchd.query_log = file
+    end
+    
     private
     
     # Parse the config/sphinx.yml file - if it exists - then use the attribute
@@ -237,15 +229,24 @@ searchd
       conf.each do |key,value|
         self.send("#{key}=", value) if self.methods.include?("#{key}=")
         
-        self.source_options[key.to_sym] = value  if SourceOptions.include?(key.to_s)
-        self.index_options[key.to_sym] = value   if IndexOptions.include?(key.to_s)
-        self.indexer_options[key.to_sym] = value if IndexerOptions.include?(key.to_s)
-        self.searchd_options[key.to_sym] = value if SearchdOptions.include?(key.to_s)
+        set_sphinx_setting self.source_options, key, value, SourceOptions
+        set_sphinx_setting self.index_options,  key, value, IndexOptions
+        set_sphinx_setting @configuration.searchd, key, value
+        set_sphinx_setting @configuration.indexer, key, value
       end unless conf.nil?
       
       self.bin_path += '/' unless self.bin_path.blank?
     end
     
+    def set_sphinx_setting(object, key, value, allowed = {})
+      if object.is_a?(Hash)
+        object[key.to_sym] = value if allowed.include?(key.to_s)
+      else
+        object.send("#{key}=", value) if object.methods.include?("#{key}")
+        send("#{key}=", value) if self.methods.include?("#{key}")
+      end
+    end
+        
     def core_index_for_model(model, sources)
       output = <<-INDEX
 

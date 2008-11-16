@@ -403,7 +403,7 @@ module ThinkingSphinx
         # per-server max to a smaller value in sphinx.yml, we need to override
         # the Riddle default or else we get search errors like
         # "per-query max_matches=1000 out of bounds (per-server max_matches=200)"
-        if per_server_max_matches = config.searchd_options[:max_matches]
+        if per_server_max_matches = config.configuration.searchd.max_matches
           options[:max_matches] ||= per_server_max_matches
         end
         

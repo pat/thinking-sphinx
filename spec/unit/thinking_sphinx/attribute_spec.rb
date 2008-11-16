@@ -120,49 +120,6 @@ describe ThinkingSphinx::Attribute do
     end
   end
   
-  describe "to_sphinx_clause method" do
-    before :each do
-      @attribute = ThinkingSphinx::Attribute.new [Object.stub_instance(:__stack => [])]
-      @attribute.stub_method(:unique_name => "unique name")
-    end
-    
-    it "should use sql_attr_multi syntax for MVA attributes" do
-      @attribute.stub_method(:type => :multi)
-      @attribute.to_sphinx_clause.should match(/^sql_attr_multi\s+= uint unique name from field$/)
-    end
-    
-    it "should use sql_attr_timestamp syntax for datetime values" do
-      @attribute.stub_method(:type => :datetime)
-      @attribute.to_sphinx_clause.should match(/^sql_attr_timestamp\s+= unique name$/)
-    end
-    
-    it "should use sql_attr_str2ordinal for string values" do
-      @attribute.stub_method(:type => :string)
-      @attribute.to_sphinx_clause.should match(/^sql_attr_str2ordinal\s+= unique name$/)
-    end
-    
-    it "should use sql_attr_float for float values" do
-      @attribute.stub_method(:type => :float)
-      @attribute.to_sphinx_clause.should match(/^sql_attr_float\s+= unique name$/)
-    end
-    
-    it "should use sql_attr_bool for boolean values" do
-      @attribute.stub_method(:type => :boolean)
-      @attribute.to_sphinx_clause.should match(/^sql_attr_bool\s+= unique name$/)
-    end
-    
-    it "should use sql_attr_uint for integer values" do
-      @attribute.stub_method(:type => :integer)
-      @attribute.to_sphinx_clause.should match(/^sql_attr_uint\s+= unique name$/)
-    end
-    
-    it "should assume integer for any other types" do
-      @attribute.stub_method(:type => :unknown)
-      @attribute.to_sphinx_clause.should match(/^sql_attr_uint\s+= unique name$/)
-    end
-    
-  end
-  
   describe "unique_name method" do
     before :each do
       @attribute = ThinkingSphinx::Attribute.new [
