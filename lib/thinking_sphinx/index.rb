@@ -57,69 +57,6 @@ module ThinkingSphinx
       link!
     end
     
-    def riddle_adapter
-      case adapter
-      when :postgres
-        "pgsql"
-      when :mysql
-        "mysql"
-      else
-        raise "Unsupported Database Adapter: Sphinx only supports MySQL and PosgreSQL"
-      end
-    end
-    
-    def set_source_database_settings(source)
-      config = @model.connection.instance_variable_get(:@config)
-      
-      source.sql_host = config[:host]      || "localhost"
-      source.sql_user = config[:username]  || config[:user]
-      source.sql_pass = (config[:password] || "").gsub('#', '\#')
-      source.sql_db   = config[:database]
-      source.sql_port = config[:port]
-      source.sql_sock = config[:socket]
-    end
-    
-    def set_source_attributes(source)
-      attributes.each do |attrib|
-        source.send(attrib.type_to_config) << attrib.config_value
-      end
-    end
-    
-    def set_source_sql(source, offset, delta = false)
-      source.sql_query        = to_sql(:offset => offset, :delta => delta).gsub(/\n/, ' ')
-      source.sql_query_range  = to_sql_query_range(:delta => delta)
-      source.sql_query_info   = to_sql_query_info(offset)
-      
-      source.sql_query_pre += send(delta ? :sql_query_pre_for_core : :sql_query_pre_for_delta)
-      
-      if @options[:group_concat_max_len]
-        source.sql_query_pre << "SET SESSION group_concat_max_len = #{@options[:group_concat_max_len]}"
-      end
-      
-      if utf8? && adapter == :mysql
-        source.sql_query_pre << "SET NAMES utf8"
-      end
-    end
-    
-    def set_source_settings(source)
-      ThinkingSphinx::Configuration.instance.source_options.each do |key, value|
-        source.send("#{key}=".to_sym, value)
-      end
-      
-      @options.each do |key, value|
-        source.send("#{key}=".to_sym, value) if ThinkingSphinx::Configuration::SourceOptions.include?(key.to_s) && !value.nil?
-      end
-    end
-    
-    def sql_query_pre_for_core
-      delta? ? ["UPDATE #{@model.quoted_table_name} SET #{quote_column('delta')} = #{db_boolean(false)}"] : []
-      []
-    end
-    
-    def sql_query_pre_for_delta
-      [""]
-    end
-    
     def to_riddle_for_core(offset, index)
       add_internal_attributes
       link!
@@ -150,64 +87,6 @@ module ThinkingSphinx
       set_source_sql                source, offset, true
       
       source
-    end
-    
-    def to_config(model, index, database_conf, offset)
-      # Set up associations and joins
-      add_internal_attributes
-      link!
-      
-      attr_sources = attributes.collect { |attrib|
-        attrib.to_sphinx_clause
-      }.join("\n  ")
-      
-      db_adapter = case adapter
-      when :postgres
-        "pgsql"
-      when :mysql
-        "mysql"
-      else
-        raise "Unsupported Database Adapter: Sphinx only supports MySQL and PosgreSQL"
-      end
-      
-      config = <<-SOURCE
-
-source #{self.class.name(model)}_#{index}_core
-{
-type     = #{db_adapter}
-sql_host = #{database_conf[:host] || "localhost"}
-sql_user = #{database_conf[:username] || database_conf[:user]}
-sql_pass = #{(database_conf[:password] || "").gsub('#', '\#')}
-sql_db   = #{database_conf[:database]}
-#{"sql_port = #{database_conf[:port]}" unless database_conf[:port].blank? }
-#{"sql_sock = #{database_conf[:socket]}" unless database_conf[:socket].blank? }
-
-sql_query_pre    = #{utf8? && adapter == :mysql ? "SET NAMES utf8" : ""}
-#{"sql_query_pre    = SET SESSION group_concat_max_len = #{@options[:group_concat_max_len]}" if @options[:group_concat_max_len]}
-sql_query_pre    = #{to_sql_query_pre}
-sql_query        = #{to_sql(:offset => offset).gsub(/\n/, ' ')}
-sql_query_range  = #{to_sql_query_range}
-sql_query_info   = #{to_sql_query_info(offset)}
-#{attr_sources}
-#{ThinkingSphinx::Configuration.instance.hash_to_config(self.source_options)}
-}
-      SOURCE
-      
-      if delta?
-        config += <<-SOURCE
-
-source #{self.class.name(model)}_#{index}_delta : #{self.class.name(model)}_#{index}_core
-{
-sql_query_pre    = 
-sql_query_pre    = #{utf8? && adapter == :mysql ? "SET NAMES utf8" : ""}
-#{"sql_query_pre    = SET SESSION group_concat_max_len = #{@options[:group_concat_max_len]}" if @options[:group_concat_max_len]}
-sql_query        = #{to_sql(:delta => true, :offset => offset).gsub(/\n/, ' ')}
-sql_query_range  = #{to_sql_query_range :delta => true}
-}
-        SOURCE
-      end
-      
-      config
     end
     
     # Link all the fields and associations to their corresponding
@@ -345,11 +224,7 @@ GROUP BY #{ (
         raise "Invalid Database Adapter: Sphinx only supports MySQL and PostgreSQL"
       end
     end
-    
-    def adapter_object
-      @adapter_object ||= ThinkingSphinx::AbstractAdapter.detect(@model)
-    end
-    
+        
     def prefix_fields
       @fields.select { |field| field.prefixes }
     end
@@ -357,16 +232,7 @@ GROUP BY #{ (
     def infix_fields
       @fields.select { |field| field.infixes }
     end
-    
-    def local_index_options
-      @options.keys.inject({}) do |local_options, key|
-        if ThinkingSphinx::Configuration::IndexOptions.include?(key.to_s)
-          local_options[key.to_sym] = @options[key]
-        end
-        local_options
-      end
-    end
-    
+        
     def index_options
       all_index_options = ThinkingSphinx::Configuration.instance.index_options.clone
       @options.keys.select { |key|
@@ -527,6 +393,69 @@ GROUP BY #{ (
         :type => :integer,
         :as   => :sphinx_deleted
       ) unless @attributes.detect { |attr| attr.alias == :sphinx_deleted }
+    end
+    
+    def riddle_adapter
+      case adapter
+      when :postgres
+        "pgsql"
+      when :mysql
+        "mysql"
+      else
+        raise "Unsupported Database Adapter: Sphinx only supports MySQL and PosgreSQL"
+      end
+    end
+    
+    def set_source_database_settings(source)
+      config = @model.connection.instance_variable_get(:@config)
+      
+      source.sql_host = config[:host]      || "localhost"
+      source.sql_user = config[:username]  || config[:user]
+      source.sql_pass = (config[:password] || "").gsub('#', '\#')
+      source.sql_db   = config[:database]
+      source.sql_port = config[:port]
+      source.sql_sock = config[:socket]
+    end
+    
+    def set_source_attributes(source)
+      attributes.each do |attrib|
+        source.send(attrib.type_to_config) << attrib.config_value
+      end
+    end
+    
+    def set_source_sql(source, offset, delta = false)
+      source.sql_query        = to_sql(:offset => offset, :delta => delta).gsub(/\n/, ' ')
+      source.sql_query_range  = to_sql_query_range(:delta => delta)
+      source.sql_query_info   = to_sql_query_info(offset)
+      
+      source.sql_query_pre += send(delta ? :sql_query_pre_for_core : :sql_query_pre_for_delta)
+      
+      if @options[:group_concat_max_len]
+        source.sql_query_pre << "SET SESSION group_concat_max_len = #{@options[:group_concat_max_len]}"
+      end
+      
+      if utf8? && adapter == :mysql
+        source.sql_query_pre << "SET NAMES utf8"
+      end
+    end
+    
+    def set_source_settings(source)
+      ThinkingSphinx::Configuration.instance.source_options.each do |key, value|
+        source.send("#{key}=".to_sym, value)
+      end
+      
+      @options.each do |key, value|
+        source.send("#{key}=".to_sym, value) if ThinkingSphinx::Configuration::SourceOptions.include?(key.to_s) && !value.nil?
+      end
+    end
+    
+    def sql_query_pre_for_core
+      delta? ? ["UPDATE #{@model.quoted_table_name} SET #{quote_column('delta')} = #{db_boolean(false)}"] : []
+      []
+    end
+    
+    def sql_query_pre_for_delta
+      [""]
     end
   end
 end
