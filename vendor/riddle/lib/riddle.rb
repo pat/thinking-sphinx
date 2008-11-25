@@ -3,6 +3,7 @@ require 'timeout'
 
 require 'riddle/client'
 require 'riddle/configuration'
+require 'riddle/controller'
 
 module Riddle #:nodoc:
   class ConnectionError < StandardError #:nodoc:
