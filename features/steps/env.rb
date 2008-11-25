@@ -23,6 +23,6 @@ require 'features/fixtures/setup'
 
 at_exit do
   ThinkingSphinx::Configuration.instance.controller.stop
-  # sleep(1) # Ensure Sphinx has shut down completely
-  # FileUtils.rm_r "#{Dir.pwd}/tmp"
+  sleep(1) # Ensure Sphinx has shut down completely
+  FileUtils.rm_r "#{Dir.pwd}/tmp"
 end
