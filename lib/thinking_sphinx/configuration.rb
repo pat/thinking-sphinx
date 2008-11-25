@@ -107,6 +107,10 @@ module ThinkingSphinx
       self.class.environment
     end
     
+    def controller
+      @controller ||= Riddle::Controller.new(@configuration, self.config_file)
+    end
+    
     # Generate the config file for Sphinx by using all the settings defined and
     # looping through all the models with indexes to build the relevant
     # indexer and searchd configuration, and sources and indexes details.
