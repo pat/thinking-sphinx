@@ -120,31 +120,20 @@ module ThinkingSphinx
             return parent
           end
           
-          def set_configuration_options_for_indexes(index)
-            ThinkingSphinx::Configuration.instance.index_options.each do |key, value|
-              index.send("#{key}=".to_sym, value)
-            end
-            
-            self.sphinx_indexes.each do |ts_index|
-              ts_index.options.each do |key, value|
-                index.send("#{key}=".to_sym, value) if ThinkingSphinx::Configuration::IndexOptions.include?(key.to_s) && !value.nil?
-              end
-            end
-          end
-          
-          def set_field_settings_for_indexes(index)
-            field_names = lambda { |field| field.unique_name.to_s }
-            
-            self.sphinx_indexes.each do |ts_index|
-              index.prefix_field_names += ts_index.prefix_fields.collect(&field_names)
-              index.infix_field_names  += ts_index.infix_fields.collect(&field_names)
-            end
-          end
-          
           def to_riddle(offset)
             indexes = [to_riddle_for_core(offset)]
             indexes << to_riddle_for_delta(offset) if sphinx_delta?
             indexes << to_riddle_for_distributed
+          end
+          
+          private
+          
+          def sphinx_name
+            self.name.underscore.tr(':/\\', '_')
+          end
+          
+          def sphinx_delta?
+            self.sphinx_indexes.any? { |index| index.delta? }
           end
           
           def to_riddle_for_core(offset)
@@ -184,14 +173,25 @@ module ThinkingSphinx
             index
           end
           
-          private
-          
-          def sphinx_name
-            self.name.underscore.tr(':/\\', '_')
+          def set_configuration_options_for_indexes(index)
+            ThinkingSphinx::Configuration.instance.index_options.each do |key, value|
+              index.send("#{key}=".to_sym, value)
+            end
+            
+            self.sphinx_indexes.each do |ts_index|
+              ts_index.options.each do |key, value|
+                index.send("#{key}=".to_sym, value) if ThinkingSphinx::Configuration::IndexOptions.include?(key.to_s) && !value.nil?
+              end
+            end
           end
           
-          def sphinx_delta?
-            self.sphinx_indexes.any? { |index| index.delta? }
+          def set_field_settings_for_indexes(index)
+            field_names = lambda { |field| field.unique_name.to_s }
+            
+            self.sphinx_indexes.each do |ts_index|
+              index.prefix_field_names += ts_index.prefix_fields.collect(&field_names)
+              index.infix_field_names  += ts_index.infix_fields.collect(&field_names)
+            end
           end
         end
       end
