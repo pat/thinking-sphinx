@@ -63,7 +63,9 @@ describe ThinkingSphinx::Configuration do
         :model                => Person,
         :adapter_object       => @adapter,
         :to_riddle_for_core   => source,
-        :to_riddle_for_delta  => source
+        :to_riddle_for_delta  => source,
+        :prefix_fields        => [],
+        :infix_fields         => []
       }
       
       @person_index_a = ThinkingSphinx::Index.stub_instance index_options
@@ -196,5 +198,13 @@ describe ThinkingSphinx::Configuration do
       
       config.source_options[option.to_sym] = nil
     end
-  end  
+  end
+  
+  it "should set any explicit prefixed or infixed fields" do
+    file = open(ThinkingSphinx::Configuration.instance.config_file) { |f|
+      f.read
+    }
+    file.should match(/prefix_fields\s+= city/)
+    file.should match(/infix_fields\s+= state/)    
+  end
 end

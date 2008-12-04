@@ -132,6 +132,15 @@ module ThinkingSphinx
             end
           end
           
+          def set_field_settings_for_indexes(index)
+            field_names = lambda { |field| field.unique_name.to_s }
+            
+            self.sphinx_indexes.each do |ts_index|
+              index.prefix_field_names += ts_index.prefix_fields.collect(&field_names)
+              index.infix_field_names  += ts_index.infix_fields.collect(&field_names)
+            end
+          end
+          
           def to_riddle(offset)
             indexes = [to_riddle_for_core(offset)]
             indexes << to_riddle_for_delta(offset) if sphinx_delta?
@@ -140,8 +149,12 @@ module ThinkingSphinx
           
           def to_riddle_for_core(offset)
             index = Riddle::Configuration::Index.new("#{sphinx_name}_core")
-            index.path = File.join(ThinkingSphinx::Configuration.instance.searchd_file_path, index.name)
+            index.path = File.join(
+              ThinkingSphinx::Configuration.instance.searchd_file_path, index.name
+            )
+            
             set_configuration_options_for_indexes index
+            set_field_settings_for_indexes        index
             
             self.sphinx_indexes.select { |ts_index|
               ts_index.model == self
