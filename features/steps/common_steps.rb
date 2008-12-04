@@ -12,18 +12,22 @@ Given /I am searching on (\w+)/ do |model|
 end
 
 When /^I search for (\w+)$/ do |query|
+  @results = nil
   @query = query
 end
 
 When /^I search for (\w+) on (\w+)$/ do |query, field|
+  @results = nil
   @conditions[field.to_sym] = query
 end
 
 When /^I filter by (\w+) on (\w+)$/ do |filter, attribute|
+  @results = nil
   @with[attribute.to_sym] = filter.to_i
 end
 
 When /^I order by (\w+)$/ do |attribute|
+  @results = nil
   @order = attribute.to_sym
 end
 

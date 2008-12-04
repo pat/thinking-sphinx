@@ -13,6 +13,8 @@ $:.unshift File.dirname(__FILE__) + '/../../lib'
 
 require 'lib/thinking_sphinx'
 
+ThinkingSphinx.suppress_delta_output = true
+
 %w( tmp/config tmp/log tmp/db/sphinx/development ).each do |path|
   FileUtils.mkdir_p "#{Dir.pwd}/#{path}"
 end

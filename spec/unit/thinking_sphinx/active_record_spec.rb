@@ -1,15 +1,6 @@
 require 'spec/spec_helper'
 
 describe "ThinkingSphinx::ActiveRecord" do
-  before :all do
-    @sphinx.setup_sphinx
-    @sphinx.start
-  end
-  
-  after :all do
-    @sphinx.stop
-  end
-  
   describe "define_index method" do
     before :each do
       module TestModule
@@ -270,47 +261,5 @@ describe "ThinkingSphinx::ActiveRecord" do
     offset      = ThinkingSphinx.indexed_models.index("Beta")
     
     (beta.id * model_count + offset).should == beta.sphinx_document_id
-  end
-  
-  it "should remove instances from the core index if they're in it" do
-    Beta.search("three").should_not be_empty
-    
-    beta = Beta.find(:first, :conditions => {:name => "three"})
-    beta.destroy
-    
-    Beta.search("three").should be_empty
-  end
-  
-  it "should remove subclass instances from the core index if they're in it" do
-    Cat.search("moggy").should_not be_empty
-    
-    cat = Cat.find(:first, :conditions => {:name => "moggy"})
-    cat.destroy
-    sleep(1)
-    
-    Cat.search("moggy").should be_empty
-  end
-  
-  it "should remove destroyed new instances from the delta index if they're in it" do
-    beta = Beta.create!(:name => "eleven")
-    sleep(1) # wait for Sphinx to catch up
-    
-    Beta.search("eleven").should_not be_empty
-    
-    beta.destroy
-    
-    Beta.search("eleven").should be_empty
-  end
-  
-  it "should remove destroyed edited instances from the delta index if they're in it" do
-    beta = Beta.find(:first, :conditions => {:name => "four"})
-    beta.update_attributes(:name => "fourteen")
-    sleep(1) # wait for Sphinx to catch up
-    
-    Beta.search("fourteen").should_not be_empty
-    
-    beta.destroy
-    
-    Beta.search("fourteen").should be_empty
   end
 end
