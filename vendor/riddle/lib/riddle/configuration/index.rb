@@ -36,7 +36,7 @@ module Riddle
       end
       
       def morphology
-        @morphologies.join(", ")
+        nil_join @morphologies, ", "
       end
       
       def morphology=(morphology)
@@ -44,7 +44,7 @@ module Riddle
       end
       
       def stopwords
-        @stopword_files.join(" ")
+        nil_join @stopword_files, " "
       end
       
       def stopwords=(stopwords)
@@ -52,7 +52,7 @@ module Riddle
       end
       
       def wordforms
-        @wordform_files.join(" ")
+        nil_join @wordform_files, " "
       end
       
       def wordforms=(wordforms)
@@ -60,7 +60,7 @@ module Riddle
       end
       
       def exceptions
-        @exception_files.join(" ")
+        nil_join @exception_files, " "
       end
       
       def exceptions=(exceptions)
@@ -68,7 +68,7 @@ module Riddle
       end
       
       def ignore_chars
-        @ignore_characters.join(", ")
+        nil_join @ignore_characters, ", "
       end
       
       def ignore_chars=(ignore_chars)
@@ -76,15 +76,15 @@ module Riddle
       end
       
       def prefix_fields
-        @prefix_field_names.join(", ")
+        nil_join @prefix_field_names, ", "
       end
       
       def infix_fields
-        @infix_field_names.join(", ")
+        nil_join @infix_field_names, ", "
       end
       
       def ngram_chars
-        @ngram_characters.join(", ")
+        nil_join @ngram_characters, ", "
       end
       
       def ngram_chars=(ngram_chars)
@@ -92,7 +92,7 @@ module Riddle
       end
       
       def phrase_boundary
-        @phrase_boundaries.join(", ")
+        nil_join @phrase_boundaries, ", "
       end
       
       def phrase_boundary=(phrase_boundary)
@@ -100,7 +100,7 @@ module Riddle
       end
       
       def html_remove_elements
-        @html_remove_element_tags.join(", ")
+        nil_join @html_remove_element_tags, ", "
       end
       
       def html_remove_elements=(html_remove_elements)
@@ -128,6 +128,14 @@ module Riddle
       
       def nil_split(string, pattern)
         (string || "").split(pattern)
+      end
+      
+      def nil_join(array, delimiter)
+        if array.length == 0
+          nil
+        else
+          array.join(delimiter)
+        end
       end
     end
   end
