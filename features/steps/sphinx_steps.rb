@@ -5,3 +5,19 @@ end
 When "I wait for Sphinx to catch up" do
   sleep(0.25)
 end
+
+When "I start Sphinx" do
+  ThinkingSphinx::Configuration.instance.controller.start
+end
+
+When "I stop Sphinx" do
+  ThinkingSphinx::Configuration.instance.controller.stop
+end
+
+Then "Sphinx should be running" do
+  ThinkingSphinx.sphinx_running?.should be_true
+end
+
+Then "Sphinx should not be running" do
+  ThinkingSphinx.sphinx_running?.should be_false
+end
