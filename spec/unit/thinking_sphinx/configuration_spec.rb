@@ -207,4 +207,11 @@ describe ThinkingSphinx::Configuration do
     file.should match(/prefix_fields\s+= city/)
     file.should match(/infix_fields\s+= state/)    
   end
+  
+  it "should not have prefix fields in indexes where nothing is set" do
+    file = open(ThinkingSphinx::Configuration.instance.config_file) { |f|
+      f.read
+    }
+    file.should_not match(/index alpha_core\s+\{\s+[^\}]*prefix_fields\s+=[^\}]*\}/m)
+  end
 end
