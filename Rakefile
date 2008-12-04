@@ -8,6 +8,7 @@ end
 require 'rake/rdoctask'
 require 'spec/rake/spectask'
 require 'rake/gempackagetask'
+require 'cucumber/rake/task'
 
 # allow require of spec/spec_helper
 $LOAD_PATH.unshift File.dirname(__FILE__) + '/../'
@@ -28,6 +29,10 @@ desc "Run the specs under spec"
 Spec::Rake::SpecTask.new do |t|
   t.spec_files = FileList['spec/**/*_spec.rb']
   t.spec_opts << "-c"
+end
+
+Cucumber::Rake::Task.new do |t|
+  t.cucumber_opts = "--format pretty"
 end
 
 desc "Generate RCov reports"
