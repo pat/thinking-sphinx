@@ -106,6 +106,16 @@ module ThinkingSphinx
     @@updates_enabled = value
   end
   
+  @@suppress_delta_output = false
+  
+  def self.suppress_delta_output?
+    @@suppress_delta_output
+  end
+  
+  def self.suppress_delta_output=(value)
+    @@suppress_delta_output = value
+  end
+  
   # Checks to see if MySQL will allow simplistic GROUP BY statements. If not,
   # or if not using MySQL, this will return false.
   # 

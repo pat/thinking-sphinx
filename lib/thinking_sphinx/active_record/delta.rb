@@ -54,7 +54,8 @@ module ThinkingSphinx
                 {instance.sphinx_document_id => 1}
               ) if instance && instance.in_core_index?
               
-              system "#{config.bin_path}indexer --config #{config.config_file} --rotate #{self.sphinx_indexes.first.name}_delta"
+              output = `#{config.bin_path}indexer --config #{config.config_file} --rotate #{self.sphinx_indexes.first.name}_delta`
+              puts output unless ThinkingSphinx.suppress_delta_output?
 
               true
             end
