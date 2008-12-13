@@ -284,5 +284,10 @@ describe ThinkingSphinx::Search, "handling stale index" do
     # But :retry_stale => true (three retries) overcomes that as well.
     Alpha.search(defaults.merge(:retry_stale => true)).should == [three]
   end
+end
 
+describe ThinkingSphinx::Search, "playing nice with Search model" do
+  it "should not conflict with models called Search" do
+    lambda { Search.find(:all) }.should_not raise_error
+  end
 end

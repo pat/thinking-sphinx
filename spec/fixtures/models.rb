@@ -81,3 +81,7 @@ end
 class Cat < Animal
   #
 end
+
+class Search < ActiveRecord::Base
+  #
+end
