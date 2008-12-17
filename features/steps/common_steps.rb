@@ -1,11 +1,12 @@
 Before do
+  $queries_executed = []
+  
   @model      = nil
   @method     = :search
   @query      = ""
   @conditions = {}
   @with       = {}
   @without    = {}
-  @order      = nil
   @options    = {}
 end
 
@@ -16,6 +17,11 @@ end
 When /^I am searching for ids$/ do
   @results = nil
   @method = :search_for_ids
+end
+
+When /^I am retrieving the result count$/ do
+  @result = nil
+  @method = @model ? :search_count : :count
 end
 
 When /^I search for (\w+)$/ do |query|
@@ -40,12 +46,12 @@ end
 
 When /^I order by (\w+)$/ do |attribute|
   @results = nil
-  @order = attribute.to_sym
+  @options[:order] = attribute.to_sym
 end
 
 When /^I order by "([^\"]+)"$/ do |str|
   @results = nil
-  @order = str
+  @options[:order] = str
 end
 
 When /^I group results by the (\w+) attribute$/ do |attribute|
@@ -58,6 +64,21 @@ When /^I set match mode to (\w+)$/ do |match_mode|
   @results = nil
   @options[:match_mode] = match_mode.to_sym
 end
+
+When /^I set per page to (\d+)$/ do |per_page|
+  @results = nil
+  @options[:per_page] = per_page.to_i
+end
+
+When /^I set retry stale to (\w+)$/ do |retry_stale|
+  @results = nil
+  @options[:retry_stale] = case retry_stale
+  when "true"  then true
+  when "false" then false
+  else retry_stale.to_i
+  end
+end
+
 
 Then /^the (\w+) of each result should indicate order$/ do |attribute|
   results.inject(nil) do |prev, current|
@@ -84,6 +105,10 @@ Then /^I should get (\d+) results?$/ do |count|
   results.length.should == count.to_i
 end
 
+Then /^I should not get (\d+) results?$/ do |count|
+  results.length.should_not == count.to_i
+end
+
 def results
   @results ||= (@model || ThinkingSphinx::Search).send(
     @method,
@@ -91,8 +116,7 @@ def results
     @options.merge(
       :conditions => @conditions,
       :with       => @with,
-      :without    => @without,
-      :order      => @order
+      :without    => @without
     )
   )
 end

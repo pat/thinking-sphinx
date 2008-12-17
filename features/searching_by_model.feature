@@ -94,3 +94,16 @@ Feature: Searching on a single model
     And I order by "sphinx_internal_id DESC"
     Then searching for ids should match the record ids of the normal search results
   
+  Scenario: Retrieving total result count when total is less than a page
+    Given Sphinx is running
+    And I am searching on people
+    When I search for James
+    And I am retrieving the result count
+    Then I should get a value of 3
+
+  Scenario: Retrieving total result count for more than a page
+    Given Sphinx is running
+    And I am searching on people
+    When I am retrieving the result count
+    Then I should get a value of 1000
+    
