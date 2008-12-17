@@ -1,17 +1,29 @@
 Before do
   @model      = nil
+  @method     = :search
   @query      = ""
   @conditions = {}
   @with       = {}
   @without    = {}
   @order      = nil
+  @options    = {}
 end
 
 Given /I am searching on (\w+)/ do |model|
   @model = model.singularize.camelize.constantize
 end
 
+When /^I am searching for ids$/ do
+  @results = nil
+  @method = :search_for_ids
+end
+
 When /^I search for (\w+)$/ do |query|
+  @results = nil
+  @query = query
+end
+
+When /^I search for "([^\"]+)"$/ do |query|
   @results = nil
   @query = query
 end
@@ -31,6 +43,22 @@ When /^I order by (\w+)$/ do |attribute|
   @order = attribute.to_sym
 end
 
+When /^I order by "([^\"]+)"$/ do |str|
+  @results = nil
+  @order = str
+end
+
+When /^I group results by the (\w+) attribute$/ do |attribute|
+  @results = nil
+  @options[:group_function] = :attr
+  @options[:group_by]       = attribute
+end
+
+When /^I set match mode to (\w+)$/ do |match_mode|
+  @results = nil
+  @options[:match_mode] = match_mode.to_sym
+end
+
 Then /^the (\w+) of each result should indicate order$/ do |attribute|
   results.inject(nil) do |prev, current|
     unless prev.nil?
@@ -41,16 +69,30 @@ Then /^the (\w+) of each result should indicate order$/ do |attribute|
   end
 end
 
+Then /^I can iterate by result and (\w+)$/ do |attribute|
+  iteration = lambda { |result, attr_value|
+    result.should be_kind_of(@model)
+    unless attribute == "group" && attr_value.nil?
+      attr_value.should be_kind_of(Integer) 
+    end
+  }
+  
+  results.send("each_with_#{attribute}", &iteration)
+end
+
 Then /^I should get (\d+) results?$/ do |count|
   results.length.should == count.to_i
 end
 
 def results
-  @results ||= (@model || ThinkingSphinx::Search).search(
+  @results ||= (@model || ThinkingSphinx::Search).send(
+    @method,
     @query,
-    :conditions => @conditions,
-    :with       => @with,
-    :without    => @without,
-    :order      => @order
+    @options.merge(
+      :conditions => @conditions,
+      :with       => @with,
+      :without    => @without,
+      :order      => @order
+    )
   )
 end

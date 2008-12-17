@@ -49,3 +49,48 @@ Feature: Searching on a single model
     Then I should get 20 results
     And the first_name of each result should indicate order
   
+  Scenario: Intepreting Sphinx Internal Identifiers
+    Given Sphinx is running
+    And I am searching on people
+    Then I should get 20 results
+    And each result id should match the corresponding sphinx internal id
+  
+  Scenario: Retrieving weightings
+    Given Sphinx is running
+    And I am searching on people
+    When I search for "Ellie Ford"
+    And I set match mode to any
+    Then I can iterate by result and weighting
+  
+  Scenario: Retrieving group counts
+    Given Sphinx is running
+    And I am searching on people
+    When I group results by the birthday attribute
+    Then I can iterate by result and count
+  
+  Scenario: Retrieving group values
+    Given Sphinx is running
+    And I am searching on people
+    When I group results by the birthday attribute
+    Then I can iterate by result and group
+  
+  Scenario: Retrieving both group values and counts
+    Given Sphinx is running
+    And I am searching on people
+    When I group results by the birthday attribute
+    Then I can iterate by result and group and count
+  
+  Scenario: Searching for ids
+    Given Sphinx is running
+    And I am searching on people
+    When I search for Ellie
+    And I am searching for ids
+    Then I should have an array of integers
+  
+  Scenario: Search results should match Sphinx's order
+    Given Sphinx is running
+    And I am searching on people
+    When I search for Ellie
+    And I order by "sphinx_internal_id DESC"
+    Then searching for ids should match the record ids of the normal search results
+  
