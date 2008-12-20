@@ -242,6 +242,11 @@ module ThinkingSphinx
       end unless conf.nil?
       
       self.bin_path += '/' unless self.bin_path.blank?
+      
+      if self.allow_star
+        self.index_options[:enable_star]    = true
+        self.index_options[:min_prefix_len] = 1
+      end
     end
     
     def set_sphinx_setting(object, key, value, allowed = {})
