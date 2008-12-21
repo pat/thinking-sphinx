@@ -131,13 +131,11 @@ module ThinkingSphinx
   end
   
   def self.sphinx_running?
-    pid_file = ThinkingSphinx::Configuration.instance.pid_file
-    
-    if pid_file && File.exists?(pid_file)
-      pid = `cat #{pid_file}`[/\d+/]
-      `ps -p #{pid} | wc -l`.to_i > 1
-    else
-      false
-    end
+    !!sphinx_pid
+  end
+  
+  def self.sphinx_pid
+    pid_file = ThinkingSphinx::Configuration.instance.pid_file    
+    `cat #{pid_file}`[/\d+/] if File.exists?(pid_file)
   end
 end
