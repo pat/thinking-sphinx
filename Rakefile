@@ -37,7 +37,9 @@ task :features do
 end
 
 task :features do |t|
+  puts   "rake features:mysql"
   system "rake features:mysql"
+  puts   "rake features:postgresql"
   system "rake features:postgresql"
 end
 
@@ -47,7 +49,7 @@ namespace :features do
     t.step_pattern  = [
       "features/support/env",
       "features/support/db/mysql",
-      "features/support/db/activerecord",
+      "features/support/db/active_record",
       "features/support/post_database",
       "features/step_definitions/**.rb"
     ]
@@ -58,7 +60,7 @@ namespace :features do
     t.step_pattern  = [
       "features/support/env",
       "features/support/db/postgresql",
-      "features/support/db/activerecord",
+      "features/support/db/active_record",
       "features/support/post_database",
       "features/step_definitions/**.rb"
     ]
@@ -112,7 +114,7 @@ task :cucumber_defaults do
   default_requires = %w(
     --require features/support/env.rb
     --require features/support/db/mysql.rb
-    --require features/support/db/activerecord.rb
+    --require features/support/db/active_record.rb
   ).join(" ")
   step_definitions = FileList["features/step_definitions/**.rb"].collect { |path|
     "--require #{path}"

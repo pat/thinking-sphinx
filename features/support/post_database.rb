@@ -17,7 +17,10 @@ at_exit do
 end
 
 # Add log file
-ActiveRecord::Base.logger = Logger.new open("tmp/active_record.log", "a")
+ActiveRecord::Base.logger = ActiveSupport::BufferedLogger.new(
+  open("tmp/active_record.log", "a"),
+  ActiveSupport::BufferedLogger::Severity::WARN
+)
 
 # Load Models
 Dir["features/support/models/*.rb"].each do |file|
