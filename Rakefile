@@ -36,19 +36,32 @@ task :features do
   # 
 end
 
-Cucumber::Rake::Task.new do |t|
-  t.cucumber_opts = "--format progress"
-  t.step_pattern  = ["features/support/env", "features/step_definitions/**.rb"]
+task :features do |t|
+  system "rake features:mysql"
+  system "rake features:postgresql"
 end
 
 namespace :features do
   Cucumber::Rake::Task.new(:mysql, "Run feature-set against MySQL") do |t|
-    t.libs         << "features/fixtures/setup_mysql"
     t.cucumber_opts = "--format pretty"
+    t.step_pattern  = [
+      "features/support/env",
+      "features/support/db/mysql",
+      "features/support/db/activerecord",
+      "features/support/post_database",
+      "features/step_definitions/**.rb"
+    ]
   end
   
-  Cucumber::Rake::Task.new(:postgres, "Run feature-set against PostgreSQL") do |t|
+  Cucumber::Rake::Task.new(:postgresql, "Run feature-set against PostgreSQL") do |t|
     t.cucumber_opts = "--format pretty"
+    t.step_pattern  = [
+      "features/support/env",
+      "features/support/db/postgresql",
+      "features/support/db/activerecord",
+      "features/support/post_database",
+      "features/step_definitions/**.rb"
+    ]
   end
 end
 
@@ -96,11 +109,16 @@ end
 
 desc "Build cucumber.yml file"
 task :cucumber_defaults do
+  default_requires = %w(
+    --require features/support/env.rb
+    --require features/support/db/mysql.rb
+    --require features/support/db/activerecord.rb
+  ).join(" ")
   step_definitions = FileList["features/step_definitions/**.rb"].collect { |path|
     "--require #{path}"
   }.join(" ")
   
   File.open('cucumber.yml', 'w') { |f|
-    f.write "default: \"--require features/support/env.rb #{step_definitions}\""
+    f.write "default: \"#{default_requires} #{step_definitions}\""
   }
 end

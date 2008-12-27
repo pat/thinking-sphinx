@@ -121,6 +121,8 @@ module ThinkingSphinx
           end
           
           def to_riddle(offset)
+            ThinkingSphinx::AbstractAdapter.detect(self).setup
+            
             indexes = [to_riddle_for_core(offset)]
             indexes << to_riddle_for_delta(offset) if sphinx_delta?
             indexes << to_riddle_for_distributed
