@@ -1,9 +1,9 @@
 ActiveRecord::Base.connection.create_table :comments, :force => true do |t|
-  t.string  :name,    :null => false
-  t.string  :email
-  t.string  :url
-  t.text    :content
-  t.integer :post_id, :null => false
+  t.column :name,     :string,  :null => false
+  t.column :email,    :string
+  t.column :url,      :string
+  t.column :content,  :text
+  t.column :post_id,  :integer, :null => false
 end
 
 Comment.create(

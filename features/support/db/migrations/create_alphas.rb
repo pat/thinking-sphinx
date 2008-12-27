@@ -1,6 +1,6 @@
 ActiveRecord::Base.connection.create_table :alphas, :force => true do |t|
-  t.string  :name,  :null => false
-  t.integer :value, :null => false
+  t.column :name,  :string,  :null => false
+  t.column :value, :integer, :null => false
 end
 
 Alpha.create :name => "one",    :value =>  1

@@ -29,5 +29,8 @@ Then /^I should not get an error accessing the subject$/ do
 end
 
 Then /^I should get an error accessing the subject$/ do
-  lambda { results.first.subject }.should raise_error(ActiveRecord::MissingAttributeError)
+  error_class = NoMethodError
+  error_class = ActiveRecord::MissingAttributeError if ActiveRecord.constants.include?("MissingAttributeError")
+  
+  lambda { results.first.subject }.should raise_error(error_class)
 end

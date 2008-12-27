@@ -1,7 +1,7 @@
 When /^I destroy gamma (\w+) without callbacks$/ do |name|
   @results = nil
   gamma = Gamma.find_by_name(name)
-  gamma.delete if gamma
+  Gamma.delete(gamma.id) if gamma
 end
 
 Then "I should get a single result of nil" do

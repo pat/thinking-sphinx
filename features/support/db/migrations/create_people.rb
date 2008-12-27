@@ -1,15 +1,15 @@
 ActiveRecord::Base.connection.create_table :people, :force => true do |t|
-  t.string    :first_name
-  t.string    :middle_initial
-  t.string    :last_name
-  t.string    :gender
-  t.string    :street_address
-  t.string    :city
-  t.string    :state
-  t.string    :postcode
-  t.string    :email
-  t.datetime  :birthday
-  t.boolean   :delta, :null => false, :default => false
+  t.column :first_name,     :string
+  t.column :middle_initial, :string
+  t.column :last_name,      :string
+  t.column :gender,         :string
+  t.column :street_address, :string
+  t.column :city,           :string
+  t.column :state,          :string
+  t.column :postcode,       :string
+  t.column :email,          :string
+  t.column :birthday,       :datetime
+  t.column :delta, :boolean, :null => false, :default => false
 end
 
 Person.create :gender => "female", :first_name => "Ellie", :middle_initial => "K", :last_name => "Ford", :street_address => "38 Mills Street", :city => "Eagle Farm Bc", :state => "QLD", :postcode => "4009", :email => "Ellie.K.Ford@mailinator.com", :birthday => "1970/1/23 00:00:00"

@@ -1,6 +1,6 @@
 ActiveRecord::Base.connection.create_table :betas, :force => true do |t|
-  t.string  :name,  :null => false
-  t.boolean :delta, :null => false, :default => false
+  t.column  :name, :string,  :null => false
+  t.column :delta, :boolean, :null => false, :default => false
 end
 
 Beta.create :name => "one"
