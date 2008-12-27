@@ -31,8 +31,25 @@ Spec::Rake::SpecTask.new do |t|
   t.spec_opts << "-c"
 end
 
+desc "Run all feature-set configurations"
+task :features do
+  # 
+end
+
 Cucumber::Rake::Task.new do |t|
-  t.cucumber_opts = "--format pretty"
+  t.cucumber_opts = "--format progress"
+  t.step_pattern  = ["features/support/env", "features/step_definitions/**.rb"]
+end
+
+namespace :features do
+  Cucumber::Rake::Task.new(:mysql, "Run feature-set against MySQL") do |t|
+    t.libs         << "features/fixtures/setup_mysql"
+    t.cucumber_opts = "--format pretty"
+  end
+  
+  Cucumber::Rake::Task.new(:postgres, "Run feature-set against PostgreSQL") do |t|
+    t.cucumber_opts = "--format pretty"
+  end
 end
 
 desc "Generate RCov reports"
@@ -75,4 +92,15 @@ end
 desc "Build gemspec file"
 task :build do
   File.open('thinking-sphinx.gemspec', 'w') { |f| f.write spec.to_ruby }
+end
+
+desc "Build cucumber.yml file"
+task :cucumber_defaults do
+  step_definitions = FileList["features/step_definitions/**.rb"].collect { |path|
+    "--require #{path}"
+  }.join(" ")
+  
+  File.open('cucumber.yml', 'w') { |f|
+    f.write "default: \"--require features/support/env.rb #{step_definitions}\""
+  }
 end
