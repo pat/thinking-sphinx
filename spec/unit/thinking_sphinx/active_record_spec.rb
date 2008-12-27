@@ -99,17 +99,7 @@ describe "ThinkingSphinx::ActiveRecord" do
       Person.to_crc32.should be_a_kind_of(Integer)
     end
   end
-  
-  describe "in_core_index? method" do
-    it "should return the model's corresponding search_for_id value" do
-      Person.stub_method(:search_for_id => :searching_for_id)
-      
-      person = Person.find(:first)
-      person.in_core_index?.should == :searching_for_id
-      Person.should have_received(:search_for_id).with(person.sphinx_document_id, "person_core")
-    end
-  end
-  
+    
   describe "toggle_deleted method" do
     before :each do
       ThinkingSphinx.stub_method(:sphinx_running? => true)

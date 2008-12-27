@@ -28,10 +28,9 @@ Spec::Runner.configure do |config|
       FileUtils.mkdir_p "#{Dir.pwd}/#{path}"
     end
     
-    @sphinx = sphinx
-    
     ThinkingSphinx.updates_enabled = true
     ThinkingSphinx.deltas_enabled = true
+    ThinkingSphinx.suppress_delta_output = true
     
     ThinkingSphinx::Configuration.instance.reset
     ThinkingSphinx::Configuration.instance.database_yml_file = "spec/fixtures/sphinx/database.yml"

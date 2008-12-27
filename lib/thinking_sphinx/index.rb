@@ -46,12 +46,7 @@ module ThinkingSphinx
     def self.name(model)
       model.name.underscore.tr(':/\\', '_')
     end
-    
-    def empty?(part = :core)
-      config = ThinkingSphinx::Configuration.instance
-      File.size?("#{config.searchd_file_path}/#{self.name}_#{part}.spa").nil?
-    end
-    
+        
     def to_riddle(model, index, offset)
       add_internal_attributes
       link!

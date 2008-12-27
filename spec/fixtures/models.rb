@@ -74,16 +74,6 @@ class Beta < ActiveRecord::Base
   end
 end
 
-class Animal < ActiveRecord::Base
-  define_index do
-    indexes name, :sortable => true
-  end
-end
-
-class Cat < Animal
-  #
-end
-
 class Search < ActiveRecord::Base
   #
 end

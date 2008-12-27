@@ -15,73 +15,6 @@ describe ThinkingSphinx::Field do
     end
   end
   
-  describe "to_select_sql method with MySQL" do
-    before :each do
-      @index = Person.sphinx_indexes.first
-      @index.link!
-    end
-    
-    it "should concat with spaces if there are multiple columns" do
-      @index.fields.first.to_select_sql.should match(/CONCAT_WS\(' ', /)
-    end
-    
-    it "should concat with spaces if a column has more than one association" do
-      @index.fields[1].to_select_sql.should match(/CONCAT_WS\(' ', /)
-    end
-    
-    it "should group if any association for any column is a has_many or has_and_belongs_to_many" do
-      @index.fields[2].to_select_sql.should match(/GROUP_CONCAT/)
-    end
-  end
-  
-  describe "to_select_sql method with PostgreSQL" do
-    before :each do
-      @index = Person.sphinx_indexes.first
-      Person.connection.class.stub_method(
-        :name => "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
-      )
-      @index.link!
-    end
-    
-    it "should concat with spaces if there are multiple columns" do
-      @index.fields.first.to_select_sql.should match(/|| ' ' ||/)
-    end
-    
-    it "should concat with spaces if a column has more than one association" do
-      @index.fields[1].to_select_sql.should match(/|| ' ' ||/)
-    end
-    
-    it "should group if any association for any column is a has_many or has_and_belongs_to_many" do
-      @index.fields[2].to_select_sql.should match(/array_to_string\(array_accum\(/)
-    end
-  end
-  
-  describe "to_group_sql method" do
-    before :each do
-      @field = ThinkingSphinx::Field.new([Object.stub_instance(:__stack => [])])
-      @field.stub_methods(:is_many? => false)
-      
-      ThinkingSphinx.stub_method(:use_group_by_shortcut? => false)
-    end
-    
-    it "should return nil if is_many?" do
-      @field.stub_method(:is_many? => true)
-      
-      @field.to_group_sql.should be_nil
-    end
-    
-    it "should return nil if group_by shortcut is allowed" do
-      ThinkingSphinx.stub_method(:use_group_by_shortcut? => true)
-      
-      @field.to_group_sql.should be_nil
-    end
-    
-    it "should return an array if neither is_many? or shortcut allowed" do
-      @field.stub_method(:column_with_prefix => 'hello')
-      @field.to_group_sql.should be_a_kind_of(Array)
-    end
-  end
-  
   describe "unique_name method" do
     before :each do
       @field = ThinkingSphinx::Field.new [
@@ -132,18 +65,6 @@ describe ThinkingSphinx::Field do
         [Object.stub_instance(:__stack => [])], :infixes => true
       )
       @field.infixes.should be_true
-    end
-  end
-  
-  describe "quote_column_name method" do
-    it "should delegate the call to the model's connection" do
-      @field = ThinkingSphinx::Field.new [
-        ThinkingSphinx::Index::FauxColumn.new(:col_name)
-      ]
-      @field.model = Person
-      Person.connection.stub_method(:quote_column_name => "quoted!")
-      
-      @field.send(:quote_column, "blah").should == "quoted!"
     end
   end
   

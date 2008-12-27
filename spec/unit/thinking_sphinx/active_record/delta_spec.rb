@@ -22,6 +22,7 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
   describe "suspended_delta method" do
     before :each do
       ThinkingSphinx.stub_method(:deltas_enabled? => true)
+      Person.stub_method(:` => "")
     end
 
     it "should execute the argument block with deltas disabled" do
@@ -71,10 +72,13 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
     before :each do
       ThinkingSphinx::Configuration.stub_method(:environment => "spec")
       ThinkingSphinx.stub_method(:deltas_enabled? => true)
+      Person.stub_method(:` => "")
       
-      @person = Person.find(:first)
-      Person.stub_method(:system => true)
-      @person.stub_method(:in_core_index? => false)
+      @person = Person.new
+      @person.stub_method(
+        :in_core_index?     => false,
+        :sphinx_document_id => 1
+      )
       
       @client = Riddle::Client.stub_instance(:update => true)
       Riddle::Client.stub_method(:new => @client)
@@ -85,7 +89,7 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
       
       @person.send(:index_delta)
       
-      Person.should_not have_received(:system)
+      Person.should_not have_received(:`)
       @client.should_not have_received(:update)
     end
     
@@ -94,7 +98,7 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
       
       @person.send(:index_delta)
       
-      Person.should_not have_received(:system)
+      Person.should_not have_received(:`)
     end
     
     it "shouldn't index if the environment is 'test'" do
@@ -104,13 +108,13 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
       
       @person.send(:index_delta)
       
-      Person.should_not have_received(:system)
+      Person.should_not have_received(:`)
     end
     
     it "should call indexer for the delta index" do
       @person.send(:index_delta)
       
-      Person.should have_received(:system).with(
+      Person.should have_received(:`).with(
         "#{ThinkingSphinx::Configuration.instance.bin_path}indexer --config #{ThinkingSphinx::Configuration.instance.config_file} --rotate person_delta"
       )
     end

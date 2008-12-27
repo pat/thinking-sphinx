@@ -5,7 +5,7 @@ describe ThinkingSphinx::Configuration do
     before :each do
       ThinkingSphinx::Configuration.send(:class_variable_set, :@@environment, nil)
       
-      ENV["RAILS_ENV"]  = nil
+      ENV["RAILS_ENV"] = nil
     end
     
     it "should use the Merb environment value if set" do
@@ -28,87 +28,6 @@ describe ThinkingSphinx::Configuration do
     it "should default to development" do
       ThinkingSphinx::Configuration.environment.should == "development"
     end
-  end
-  
-  describe "environment instance method" do
-    it "should return the class method" do
-      ThinkingSphinx::Configuration.stub_method(:environment => "spec")
-      ThinkingSphinx::Configuration.instance.environment.should == "spec"
-      ThinkingSphinx::Configuration.should have_received(:environment)
-    end    
-  end
-  
-  describe "build method" do
-    before :each do
-      @config = ThinkingSphinx::Configuration.instance
-      
-      @config.stub_methods(:load_models => true)
-      
-      ThinkingSphinx.stub_method :indexed_models => ["Person", "Friendship"]
-      
-      @adapter = ThinkingSphinx::MysqlAdapter.stub_instance(
-        :setup => true
-      )
-      source = Riddle::Configuration::Source.stub_instance(
-        :render => "source random { }",
-        :name   => "random"
-      )
-      
-      index_options = {
-        :to_config            => "",
-        :adapter              => :mysql,
-        :delta?               => false,
-        :options              => {},
-        :name                 => "person",
-        :model                => Person,
-        :adapter_object       => @adapter,
-        :to_riddle_for_core   => source,
-        :to_riddle_for_delta  => source,
-        :prefix_fields        => [],
-        :infix_fields         => []
-      }
-      
-      @person_index_a = ThinkingSphinx::Index.stub_instance index_options
-      @person_index_b = ThinkingSphinx::Index.stub_instance index_options
-      @friendship_index_a = ThinkingSphinx::Index.stub_instance index_options.merge(
-        :name => "friendship", :model => Friendship
-      )
-      
-      Person.stub_method(:sphinx_indexes => [@person_index_a, @person_index_b])
-      Friendship.stub_method(:sphinx_indexes => [@friendship_index_a])
-    end
-        
-    it "should load the models" do
-      @config.build
-      
-      @config.should have_received(:load_models)
-    end
-    
-    it "should use the configuration port" do
-      @config.build
-      
-      file = open(@config.config_file) { |f| f.read }
-      file.should match(/port\s+= #{@config.port}/)
-    end
-    
-    it "should use the configuration's log file locations" do
-      @config.build
-      
-      file = open(@config.config_file) { |f| f.read }
-      file.should match(/log\s+= #{@config.searchd_log_file}/)
-      file.should match(/query_log\s+= #{@config.query_log_file}/)
-    end
-    
-    it "should use the configuration's pid file location" do
-      @config.build
-      
-      file = open(@config.config_file) { |f| f.read }
-      file.should match(/pid_file\s+= #{@config.pid_file}/)
-    end
-  end
-  
-  describe "load_models method" do
-    it "should have some specs"
   end
   
   describe "parse_config method" do
