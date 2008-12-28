@@ -1,9 +1,11 @@
 # This file exists because Cucumber likes to auto-load all ruby files
 puts <<-MESSAGE
-Cucumber 0.1.12 defaults to loading all ruby files within the features folder
-alphabetically. This is annoying, because some files need to be loaded before
-others (and others perhaps not at all, given missing dependencies). Hence this
-place-holder imaginatively named 'a.rb', to force this message.
+Cucumber 0.1.13 defaults to loading all ruby files within the features folder,
+with something approaching reverse-alphabetical order, and preferring the
+features/support folder over everything else. This is annoying, because some
+files need to be loaded before others (and others perhaps not at all, given
+missing dependencies). Hence this place-holder imaginatively named 'z.rb', to
+force this message.
 
 A work-around is to use cucumber profiles. You will find the default profile in
 cucumber.yml should serve your needs fine, unless you add new step definitions.

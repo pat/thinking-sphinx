@@ -115,7 +115,9 @@ task :cucumber_defaults do
     --require features/support/env.rb
     --require features/support/db/mysql.rb
     --require features/support/db/active_record.rb
+    --require features/support/post_database.rb
   ).join(" ")
+  
   step_definitions = FileList["features/step_definitions/**.rb"].collect { |path|
     "--require #{path}"
   }.join(" ")
