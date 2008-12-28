@@ -484,12 +484,25 @@ module ThinkingSphinx
       def filter_value(value)
         case value
         when Range
-          value.first.is_a?(Time) ? value.first.to_i..value.last.to_i : value
+          value.first.is_a?(Time) ? timestamp(value.first)..timestamp(value.last) : value
         when Array
-          value.collect { |val| val.is_a?(Time) ? val.to_i : val }
+          value.collect { |val| val.is_a?(Time) ? timestamp(val) : val }
         else
           Array(value)
         end
+      end
+      
+      # Returns the integer timestamp for a Time object.
+      # 
+      # If using Rails 2.1+, need to handle timezones to translate them back to
+      # UTC, as that's what datetimes will be stored as by MySQL.
+      # 
+      # in_time_zone is a method that was added for the timezone support in
+      # Rails 2.1, which is why it's used for testing. I'm sure there's better
+      # ways, but this does the job.
+      # 
+      def timestamp(value)
+        value.respond_to?(:in_time_zone) ? value.utc.to_i : value.to_i
       end
       
       # Translate field and attribute conditions to the relevant search string
