@@ -171,7 +171,7 @@ module ThinkingSphinx
           def to_riddle_for_distributed
             index = Riddle::Configuration::DistributedIndex.new(sphinx_name)
             index.local_indexes << "#{sphinx_name}_core"
-            index.local_indexes << "#{sphinx_name}_delta" if sphinx_delta?
+            index.local_indexes.unshift "#{sphinx_name}_delta" if sphinx_delta?
             index
           end
           
