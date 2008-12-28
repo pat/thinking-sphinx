@@ -140,7 +140,9 @@ module ThinkingSphinx
       when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
         "CONCAT_WS('#{separator}', #{clause})"
       when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
-        clause.split(', ').join(" || '#{separator}' || ")
+        clause.split(', ').collect { |attribute|
+          "COALESCE(#{attribute}, '')"
+        }.join(" || ' ' || ")
       else
         clause
       end

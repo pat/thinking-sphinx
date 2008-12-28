@@ -8,12 +8,13 @@ module ThinkingSphinx
       
       private
       
-      def execute(command)
+      def execute(command, output_error = false)
         connection.execute "begin"
         connection.execute "savepoint ts"
         begin
           connection.execute command
-        rescue
+        rescue StandardError => err
+          puts err if output_error
           connection.execute "rollback to savepoint ts"
         end
         connection.execute "release savepoint ts"
@@ -45,7 +46,7 @@ module ThinkingSphinx
       
       def create_crc32_function
         execute "CREATE LANGUAGE 'plpgsql';"
-        execute <<-SQL
+        function = <<-SQL
           CREATE OR REPLACE FUNCTION crc32(word text)
           RETURNS bigint AS $$
             DECLARE tmp bigint;
@@ -75,6 +76,7 @@ module ThinkingSphinx
             END
           $$ IMMUTABLE STRICT LANGUAGE plpgsql;
         SQL
+        execute function, true
       end
     end
   end
