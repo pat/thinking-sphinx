@@ -44,7 +44,7 @@ module ThinkingSphinx
       end
       
       def create_crc32_function
-        # execute "CREATE LANGUAGE 'plpgsql';"
+        execute "CREATE LANGUAGE 'plpgsql';"
         execute <<-SQL
           CREATE OR REPLACE FUNCTION crc32(word text)
           RETURNS bigint AS $$
