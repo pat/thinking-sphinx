@@ -1,8 +1,12 @@
 module ThinkingSphinx
   module Deltas
-    class Jobb < Delayed::Job
+    class Job < Delayed::Job
       def self.enqueue(object, priority = 0)
         super unless duplicates_exist(object)
+      end
+      
+      def self.cancel_thinking_sphinx_jobs
+        delete_all("handler LIKE '--- !ruby/object:ThinkingSphinx::Deltas::%'")
       end
 
       private

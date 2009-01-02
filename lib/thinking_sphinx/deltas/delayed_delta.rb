@@ -8,7 +8,7 @@ module ThinkingSphinx
   module Deltas
     class DelayedDelta < ThinkingSphinx::Deltas::DefaultDelta
       def index(model, instance = nil)
-        ThinkingSphinx::Deltas::Jobb.enqueue(
+        ThinkingSphinx::Deltas::Job.enqueue(
           ThinkingSphinx::Deltas::DeltaJob.new(delta_index_name(model))
         )
         

@@ -1,6 +1,6 @@
 Before do
   $queries_executed = []
-  Delayed::Job.delete_all
+  ThinkingSphinx::Deltas::Job.cancel_thinking_sphinx_jobs
   
   @model      = nil
   @method     = :search
