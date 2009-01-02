@@ -70,7 +70,9 @@ namespace :thinking_sphinx do
   end
   
   desc "Process stored delta index requests"
-  task :delta do
+  task :delta => :app_env do
+    require 'delayed/worker'
+    
     Delayed::Worker.new(
       :min_priority => ENV['MIN_PRIORITY'],
       :max_priority => ENV['MAX_PRIORITY']
