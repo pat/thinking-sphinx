@@ -10,7 +10,7 @@ module ThinkingSphinx
   # 
   class Index
     attr_accessor :model, :fields, :attributes, :conditions, :groupings,
-      :delta, :options
+      :delta_object, :options
     
     # Create a new index instance by passing in the model it is tied to, and
     # a block to build it with (optional but recommended). For documentation
@@ -34,7 +34,7 @@ module ThinkingSphinx
       @conditions   = []
       @groupings    = []
       @options      = {}
-      @delta        = false
+      @delta_object = nil
       
       initialize_from_builder(&block) if block_given?
     end
@@ -127,7 +127,7 @@ module ThinkingSphinx
       
       where_clause = ""
       if self.delta?
-        where_clause << " AND #{@model.quoted_table_name}.#{quote_column('delta')}" +" = #{options[:delta] ? db_boolean(true) : db_boolean(false)}"
+        where_clause << " AND #{@delta_object.clause(@model, options[:delta])}"
       end
       unless @conditions.empty?
         where_clause << " AND " << @conditions.join(" AND ")
@@ -190,23 +190,14 @@ GROUP BY #{ (
       
       sql = "SELECT #{min_statement}, #{max_statement} " +
             "FROM #{@model.quoted_table_name} "
-      sql << "WHERE #{@model.quoted_table_name}.#{quote_column('delta')} " + 
-            "= #{options[:delta] ? db_boolean(true) : db_boolean(false)}" if self.delta?
+      sql << "WHERE #{@delta_object.clause(@model, options[:delta])}" if self.delta?
       sql
-    end
-    
-    # Returns the SQL query to run before a full index - ie: nothing unless the
-    # index has a delta, and then it's an update statement to set delta values
-    # back to 0.
-    #
-    def to_sql_query_pre
-      self.delta? ? "UPDATE #{@model.quoted_table_name} SET #{quote_column('delta')} = #{db_boolean(false)}" : ""
     end
     
     # Flag to indicate whether this index has a corresponding delta index.
     #
     def delta?
-      @delta
+      !@delta_object.nil?
     end
     
     def adapter
@@ -244,14 +235,25 @@ GROUP BY #{ (
       all_source_options
     end
     
+    def quote_column(column)
+      @model.connection.quote_column_name(column)
+    end
+    
+    # Returns the proper boolean value string literal for the
+    # current database adapter.
+    #
+    def db_boolean(val)
+      if adapter == :postgres
+        val ? 'TRUE' : 'FALSE'
+      else
+        val ? '1' : '0'
+      end
+    end
+    
     private
     
     def utf8?
       self.index_options[:charset_type] == "utf-8"
-    end
-    
-    def quote_column(column)
-      @model.connection.quote_column_name(column)
     end
     
     # Does all the magic with the block provided to the base #initialize.
@@ -272,12 +274,12 @@ GROUP BY #{ (
         builder.where("#{@model.quoted_table_name}.#{quote_column(@model.inheritance_column)} = '#{stored_class}'")
       end
 
-      @fields     = builder.fields
-      @attributes = builder.attributes
-      @conditions = builder.conditions
-      @groupings  = builder.groupings
-      @delta      = builder.properties[:delta]
-      @options    = builder.properties.except(:delta)
+      @fields       = builder.fields
+      @attributes   = builder.attributes
+      @conditions   = builder.conditions
+      @groupings    = builder.groupings
+      @delta_object = ThinkingSphinx::Deltas.parse self, builder.properties
+      @options      = builder.properties
       
       # We want to make sure that if the database doesn't exist, then Thinking
       # Sphinx doesn't mind when running non-TS tasks (like db:create, db:drop
@@ -338,17 +340,6 @@ GROUP BY #{ (
       @associations[key] ||= Association.children(@model, key)
     end
 
-    # Returns the proper boolean value string literal for the
-    # current database adapter.
-    #
-    def db_boolean(val)
-      if adapter == :postgres
-        val ? 'TRUE' : 'FALSE'
-      else
-        val ? '1' : '0'
-      end
-    end
-    
     def crc_column
       if @model.column_names.include?(@model.inheritance_column)
         case adapter
@@ -423,7 +414,7 @@ GROUP BY #{ (
       source.sql_query_range  = to_sql_query_range(:delta => delta)
       source.sql_query_info   = to_sql_query_info(offset)
       
-      source.sql_query_pre += send(delta ? :sql_query_pre_for_core : :sql_query_pre_for_delta)
+      source.sql_query_pre += send(!delta ? :sql_query_pre_for_core : :sql_query_pre_for_delta)
       
       if @options[:group_concat_max_len]
         source.sql_query_pre << "SET SESSION group_concat_max_len = #{@options[:group_concat_max_len]}"
@@ -445,8 +436,11 @@ GROUP BY #{ (
     end
     
     def sql_query_pre_for_core
-      delta? ? ["UPDATE #{@model.quoted_table_name} SET #{quote_column('delta')} = #{db_boolean(false)}"] : []
-      []
+      if self.delta?
+        ["UPDATE #{@model.quoted_table_name} SET #{@delta_object.clause(@model, false)}"]
+      else
+        []
+      end
     end
     
     def sql_query_pre_for_delta

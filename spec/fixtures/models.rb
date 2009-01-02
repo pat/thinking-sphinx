@@ -24,6 +24,8 @@ class Person < ActiveRecord::Base
     has birthday
     
     has friendships.person_id, :as => :friendly_ids
+    
+    set_property :delta => true
   end
 end
 

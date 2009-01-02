@@ -15,6 +15,7 @@ require 'thinking_sphinx/field'
 require 'thinking_sphinx/index'
 require 'thinking_sphinx/rails_additions'
 require 'thinking_sphinx/search'
+require 'thinking_sphinx/deltas'
 
 require 'thinking_sphinx/adapters/abstract_adapter'
 require 'thinking_sphinx/adapters/mysql_adapter'
@@ -29,7 +30,7 @@ Merb::Plugins.add_rakefiles(
 module ThinkingSphinx
   module Version #:nodoc:
     Major = 1
-    Minor = 0
+    Minor = 1
     Tiny  = 0
     
     String = [Major, Minor, Tiny].join('.')

@@ -22,7 +22,7 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
   describe "suspended_delta method" do
     before :each do
       ThinkingSphinx.stub_method(:deltas_enabled? => true)
-      Person.stub_method(:` => "")
+      Person.sphinx_indexes.first.delta_object.stub_method(:` => "")
     end
 
     it "should execute the argument block with deltas disabled" do
@@ -72,7 +72,7 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
     before :each do
       ThinkingSphinx::Configuration.stub_method(:environment => "spec")
       ThinkingSphinx.stub_method(:deltas_enabled? => true)
-      Person.stub_method(:` => "")
+      Person.sphinx_indexes.first.delta_object.stub_method(:` => "")
       
       @person = Person.new
       @person.stub_method(
@@ -89,7 +89,7 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
       
       @person.send(:index_delta)
       
-      Person.should_not have_received(:`)
+      Person.sphinx_indexes.first.delta_object.should_not have_received(:`)
       @client.should_not have_received(:update)
     end
     
@@ -98,7 +98,7 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
       
       @person.send(:index_delta)
       
-      Person.should_not have_received(:`)
+      Person.sphinx_indexes.first.delta_object.should_not have_received(:`)
     end
     
     it "shouldn't index if the environment is 'test'" do
@@ -108,13 +108,13 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
       
       @person.send(:index_delta)
       
-      Person.should_not have_received(:`)
+      Person.sphinx_indexes.first.delta_object.should_not have_received(:`)
     end
     
     it "should call indexer for the delta index" do
       @person.send(:index_delta)
       
-      Person.should have_received(:`).with(
+      Person.sphinx_indexes.first.delta_object.should have_received(:`).with(
         "#{ThinkingSphinx::Configuration.instance.bin_path}indexer --config #{ThinkingSphinx::Configuration.instance.config_file} --rotate person_delta"
       )
     end

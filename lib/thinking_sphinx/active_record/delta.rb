@@ -42,22 +42,7 @@ module ThinkingSphinx
             # if running in the test environment.
             #
             def index_delta(instance = nil)
-              return true unless ThinkingSphinx.updates_enabled? &&
-                ThinkingSphinx.deltas_enabled?
-              
-              config = ThinkingSphinx::Configuration.instance
-              client = Riddle::Client.new config.address, config.port
-              
-              client.update(
-                "#{self.sphinx_indexes.first.name}_core",
-                ['sphinx_deleted'],
-                {instance.sphinx_document_id => 1}
-              ) if instance && instance.in_core_index?
-              
-              output = `#{config.bin_path}indexer --config #{config.config_file} --rotate #{self.sphinx_indexes.first.name}_delta`
-              puts output unless ThinkingSphinx.suppress_delta_output?
-
-              true
+              self.sphinx_indexes.first.delta_object.index(self, instance)
             end
           end
           
@@ -65,7 +50,7 @@ module ThinkingSphinx
           
           # Set the delta value for the model to be true.
           def toggle_delta
-            self.delta = true
+            self.class.sphinx_indexes.first.delta_object.toggle(self)
           end
           
           # Build the delta index for the related model. This won't be called
