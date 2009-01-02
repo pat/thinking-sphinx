@@ -4,15 +4,16 @@ ActiveRecord::Base.connection.create_table :delayed_betas, :force => true do |t|
 end
 
 ActiveRecord::Base.connection.create_table :delayed_jobs, :force => true do |t|
-  t.integer  :priority, :default => 0
-  t.integer  :attempts, :default => 0
-  t.text     :handler
-  t.string   :last_error
-  t.datetime :run_at
-  t.datetime :locked_at
-  t.datetime :failed_at
-  t.string   :locked_by
-  t.timestamps
+  t.column :priority, :integer, :default => 0
+  t.column :attempts, :integer, :default => 0
+  t.column :handler, :text
+  t.column :last_error, :string
+  t.column :run_at, :datetime
+  t.column :locked_at, :datetime
+  t.column :failed_at, :datetime
+  t.column :locked_by, :string
+  t.column :created_at, :datetime
+  t.column :updated_at, :datetime
 end
 
 DelayedBeta.create :name => "one"
