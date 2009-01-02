@@ -1,5 +1,6 @@
 Before do
   $queries_executed = []
+  Delayed::Job.delete_all
   
   @model      = nil
   @method     = :search
@@ -10,8 +11,8 @@ Before do
   @options    = {}
 end
 
-Given /I am searching on (\w+)/ do |model|
-  @model = model.singularize.camelize.constantize
+Given /^I am searching on (.+)$/ do |model|
+  @model = model.gsub(/\s/, '_').singularize.camelize.constantize
 end
 
 When /^I am searching for ids$/ do

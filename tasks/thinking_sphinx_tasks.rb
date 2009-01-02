@@ -54,6 +54,8 @@ namespace :thinking_sphinx do
   
   desc "Index data for Sphinx using Thinking Sphinx's settings"
   task :index => :app_env do
+    Delayed::Job.delete_all
+    
     config = ThinkingSphinx::Configuration.instance
     unless ENV["INDEX_ONLY"] == "true"
       puts "Generating Configuration to #{config.config_file}"
@@ -65,6 +67,14 @@ namespace :thinking_sphinx do
     cmd << " --rotate" if sphinx_running?
     puts cmd
     system cmd
+  end
+  
+  desc "Process stored delta index requests"
+  task :delta do
+    Delayed::Worker.new(
+      :min_priority => ENV['MIN_PRIORITY'],
+      :max_priority => ENV['MAX_PRIORITY']
+    ).start
   end
 end
 
@@ -85,6 +95,8 @@ namespace :ts do
   task :conf    => "thinking_sphinx:configure"
   desc "Generate the Sphinx configuration file using Thinking Sphinx's settings"
   task :config  => "thinking_sphinx:configure"
+  desc "Process stored delta index requests"
+  task :delta   => "thinking_sphinx:delta"
 end
 
 def sphinx_pid

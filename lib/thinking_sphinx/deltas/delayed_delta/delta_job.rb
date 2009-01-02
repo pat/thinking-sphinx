@@ -3,8 +3,8 @@ module ThinkingSphinx
     class DeltaJob
       attr_accessor :index
       
-      def initialize(model)
-        @index = delta_index_name model
+      def initialize(index)
+        @index = index
       end
       
       def perform

@@ -1,6 +1,6 @@
 module ThinkingSphinx
   module Deltas
-    class Job < Delayed::Job
+    class Jobb < Delayed::Job
       def self.enqueue(object, priority = 0)
         super unless duplicates_exist(object)
       end
@@ -11,8 +11,7 @@ module ThinkingSphinx
         count(
           :conditions => {
             :handler    => object.to_yaml,
-            :locked_at  => nil,
-            :run_at     => nil
+            :locked_at  => nil
           }
         ) > 0
       end

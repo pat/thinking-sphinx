@@ -71,7 +71,7 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
   describe "index_delta method" do
     before :each do
       ThinkingSphinx::Configuration.stub_method(:environment => "spec")
-      ThinkingSphinx.stub_method(:deltas_enabled? => true)
+      ThinkingSphinx.stub_method(:deltas_enabled? => true, :sphinx_running? => true)
       Person.sphinx_indexes.first.delta_object.stub_method(:` => "")
       
       @person = Person.new

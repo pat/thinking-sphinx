@@ -19,7 +19,7 @@ module ThinkingSphinx
           core_index_name(model),
           ['sphinx_deleted'],
           {instance.sphinx_document_id => [1]}
-        ) if instance && instance.in_core_index?
+        ) if instance && ThinkingSphinx.sphinx_running? && instance.in_core_index?
         
         output = `#{config.bin_path}indexer --config #{config.config_file} --rotate #{delta_index_name model}`
         puts output unless ThinkingSphinx.suppress_delta_output?
@@ -39,11 +39,11 @@ module ThinkingSphinx
       protected
       
       def core_index_name(model)
-        "#{model.sphinx_indexes.first.name}_core"
+        "#{model.source_of_sphinx_index.name.underscore.tr(':/\\', '_')}_core"
       end
       
       def delta_index_name(model)
-        "#{model.sphinx_indexes.first.name}_delta"
+        "#{model.source_of_sphinx_index.name.underscore.tr(':/\\', '_')}_delta"
       end
     end
   end
