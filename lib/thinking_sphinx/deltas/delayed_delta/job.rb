@@ -6,7 +6,9 @@ module ThinkingSphinx
       end
       
       def self.cancel_thinking_sphinx_jobs
-        delete_all("handler LIKE '--- !ruby/object:ThinkingSphinx::Deltas::%'")
+        if connection.tables.include?("delayed_jobs")
+          delete_all("handler LIKE '--- !ruby/object:ThinkingSphinx::Deltas::%'")
+        end
       end
 
       private
