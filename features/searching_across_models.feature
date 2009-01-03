@@ -11,10 +11,10 @@ Feature: Searching across multiple model
   
   Scenario: Confirming existance of a document id in a given index
     Given Sphinx is running
-    When I search for the specific id of 46 in the person_core index
+    When I search for the specific id of 51 in the person_core index
     Then it should exist
   
   Scenario: Unsuccessfully confirming existance of a document id in a given index
     Given Sphinx is running
-    When I search for the specific id of 47 in the person_core index
+    When I search for the specific id of 52 in the person_core index
     Then it should not exist

@@ -69,8 +69,22 @@ namespace :thinking_sphinx do
     system cmd
   end
   
+  namespace :index do
+    task :delta => :app_env do
+      ThinkingSphinx.indexed_models.select { |model|
+        model.constantize.sphinx_indexes.any? { |index| index.delta? }
+      }.each do |model|
+        model.constantize.sphinx_indexes.select { |index|
+          index.delta? && index.delta_object.respond_to?(:delayed_index)
+        }.each { |index|
+          index.delta_object.delayed_index(index.model)
+        }
+      end
+    end
+  end
+  
   desc "Process stored delta index requests"
-  task :delta => :app_env do
+  task :delayed_delta => :app_env do
     require 'delayed/worker'
     
     Delayed::Worker.new(
@@ -98,7 +112,7 @@ namespace :ts do
   desc "Generate the Sphinx configuration file using Thinking Sphinx's settings"
   task :config  => "thinking_sphinx:configure"
   desc "Process stored delta index requests"
-  task :delta   => "thinking_sphinx:delta"
+  task :dd      => "thinking_sphinx:delayed_delta"
 end
 
 def sphinx_pid

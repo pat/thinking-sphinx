@@ -126,7 +126,7 @@ module ThinkingSphinx
       assocs = all_associations
       
       where_clause = ""
-      if self.delta?
+      if self.delta? && !@delta_object.clause(@model, options[:delta]).blank?
         where_clause << " AND #{@delta_object.clause(@model, options[:delta])}"
       end
       unless @conditions.empty?
@@ -190,7 +190,10 @@ GROUP BY #{ (
       
       sql = "SELECT #{min_statement}, #{max_statement} " +
             "FROM #{@model.quoted_table_name} "
-      sql << "WHERE #{@delta_object.clause(@model, options[:delta])}" if self.delta?
+      if self.delta? && !@delta_object.clause(@model, options[:delta]).blank?
+        sql << "WHERE #{@delta_object.clause(@model, options[:delta])}"
+      end
+      
       sql
     end
     
@@ -436,8 +439,8 @@ GROUP BY #{ (
     end
     
     def sql_query_pre_for_core
-      if self.delta?
-        ["UPDATE #{@model.quoted_table_name} SET #{@delta_object.clause(@model, false)}"]
+      if self.delta? && !@delta_object.reset_query(@model).blank?
+        [@delta_object.reset_query(@model)]
       else
         []
       end

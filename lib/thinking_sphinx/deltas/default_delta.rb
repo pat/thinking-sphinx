@@ -5,7 +5,7 @@ module ThinkingSphinx
       
       def initialize(index, options)
         @index  = index
-        @column = options.delete(:column) || :delta
+        @column = options.delete(:delta_column) || :delta
       end
       
       def index(model, instance = nil)
@@ -29,6 +29,10 @@ module ThinkingSphinx
       
       def toggle(instance)
         instance.delta = true
+      end
+      
+      def reset_query(model)
+        "UPDATE #{model.quoted_table_name} SET #{clause(model, false)}"
       end
       
       def clause(model, toggled)
