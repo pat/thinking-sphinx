@@ -30,6 +30,18 @@ Array.send(
 ) unless Array.instance_methods.include?("extract_options!")
 
 module ThinkingSphinx
+  module AbstractQuotedTableName
+    def quote_table_name(name)
+      quote_column_name(name)
+    end
+  end
+end
+
+ActiveRecord::ConnectionAdapters::AbstractAdapter.send(
+  :include, ThinkingSphinx::AbstractQuotedTableName
+) unless ActiveRecord::ConnectionAdapters::AbstractAdapter.instance_methods.include?("quote_table_name")
+
+module ThinkingSphinx
   module MysqlQuotedTableName
     def quote_table_name(name) #:nodoc:
       quote_column_name(name).gsub('.', '`.`')
