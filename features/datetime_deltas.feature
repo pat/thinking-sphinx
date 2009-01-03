@@ -20,7 +20,7 @@ Feature: Datetime Delta Indexing
   Scenario: Delta Index should fire when jobs are run
     Given Sphinx is running
     And I am searching on thetas
-    When I search for one
+    When I search for two
     Then I should get 1 result
   
     When I change the name of theta two to twelve

@@ -18,6 +18,7 @@ module ThinkingSphinx
         config = ThinkingSphinx::Configuration.instance
         
         output = `#{config.bin_path}indexer --config #{config.config_file} --rotate #{delta_index_name model}`
+        output += `#{config.bin_path}indexer --config #{config.config_file} --rotate --merge #{core_index_name model} #{delta_index_name model} --merge-dst-range sphinx_deleted 0 0`
         puts output unless ThinkingSphinx.suppress_delta_output?
         
         true
@@ -34,9 +35,20 @@ module ThinkingSphinx
       def clause(model, toggled)
         if toggled
           "#{model.quoted_table_name}.#{@index.quote_column(@column.to_s)}" +
-          " > DATE_SUB(NOW(), INTERVAL #{@threshold} SECOND)"
+          " > #{time_difference}"
         else
           nil
+        end
+      end
+      
+      def time_difference
+        case @index.adapter
+        when :mysql
+          "DATE_SUB(NOW(), INTERVAL #{@threshold} SECOND)"
+        when :postgres
+          "current_timestamp - interval '#{@threshold} seconds'"
+        else
+          raise "Unknown Database Adapter"
         end
       end
     end
