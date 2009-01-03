@@ -104,6 +104,9 @@ namespace :ts do
   desc "Index data for Sphinx using Thinking Sphinx's settings"
   task :in      => "thinking_sphinx:index"
   desc "Index data for Sphinx using Thinking Sphinx's settings"
+  namespace :in do
+    task :delta => "thinking_sphinx:index:delta"
+  end
   task :index   => "thinking_sphinx:index"
   desc "Restart Sphinx"
   task :restart => "thinking_sphinx:restart"
