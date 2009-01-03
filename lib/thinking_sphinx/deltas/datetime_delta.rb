@@ -11,17 +11,16 @@ module ThinkingSphinx
       
       def index(model, instance = nil)
         # do nothing
+        true
       end
       
       def delayed_index(model)
         config = ThinkingSphinx::Configuration.instance
         
-        output = [
-          reindex(config, model),
-          merge(config, model)
-        ].join("\n")
-        
+        output = `#{config.bin_path}indexer --config #{config.config_file} --rotate #{delta_index_name model}`
         puts output unless ThinkingSphinx.suppress_delta_output?
+        
+        true
       end
             
       def toggle(instance)
@@ -39,16 +38,6 @@ module ThinkingSphinx
         else
           nil
         end
-      end
-      
-      private
-      
-      def reindex(config, model)
-        `#{config.bin_path}indexer --config #{config.config_file} --rotate #{delta_index_name model}`
-      end
-      
-      def merge(config, model)
-        `#{config.bin_path}indexer --config #{config.config_file} --rotate --merge #{core_index_name model} #{delta_index_name model} --merge-dst-range sphinx_deleted 0 0`
       end
     end
   end

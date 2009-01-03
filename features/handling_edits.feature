@@ -38,3 +38,14 @@ Feature: Keeping Sphinx in line with model changes when requested
     
     When I search for eleven
     Then I should get 1 result
+  
+  Scenario: Returning new records if there's a delta
+    Given Sphinx is running
+    And I am searching on betas
+    When I search for fifteen
+    Then I should get 0 results
+    
+    When I create a new beta named fifteen
+    And I wait for Sphinx to catch up
+    And I search for fifteen
+    Then I should get 1 result

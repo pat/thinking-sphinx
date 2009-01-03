@@ -3,6 +3,12 @@ When /^I search for the specific id of (\d+) in the (\w+) index$/ do |id, index|
   @index  = index
 end
 
+When /^I search for the document id of (\w+) (\w+) in the (\w+) index$/ do |model, name, index|
+  model   = model.gsub(/\s/, '_').camelize.constantize
+  @id     = model.find_by_name(name).sphinx_document_id
+  @index  = index
+end
+
 Then "it should exist" do
   ThinkingSphinx::Search.search_for_id(@id, @index).should == true
 end

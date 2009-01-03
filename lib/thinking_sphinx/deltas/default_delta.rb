@@ -48,7 +48,7 @@ module ThinkingSphinx
       
       def delta_index_name(model)
         "#{model.source_of_sphinx_index.name.underscore.tr(':/\\', '_')}_delta"
-      end
+      end      
     end
   end
 end
