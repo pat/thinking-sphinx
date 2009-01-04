@@ -45,6 +45,15 @@ When /^I filter by (\w+) on (\w+)$/ do |filter, attribute|
   @with[attribute.to_sym] = filter.to_i
 end
 
+When /^I filter between ([\d\.]+) and ([\d\.]+) on (\w+)$/ do |first, last, attribute|
+  @results = nil
+  if first[/\./].nil? && last[/\./].nil?
+    @with[attribute.to_sym] = first.to_i..last.to_i
+  else
+    @with[attribute.to_sym] = first.to_f..last.to_f
+  end
+end
+
 When /^I order by (\w+)$/ do |attribute|
   @results = nil
   @options[:order] = attribute.to_sym

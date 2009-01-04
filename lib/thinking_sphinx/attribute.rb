@@ -263,11 +263,7 @@ module ThinkingSphinx
       when @associations.values.flatten.length > 1
         :string
       else
-        klass = @associations.values.flatten.first ? 
-          @associations.values.flatten.first.reflection.klass : @model
-        klass.columns.detect { |col|
-          @columns.collect { |c| c.__name.to_s }.include? col.name
-        }.type
+        translated_type_from_database
       end
     end
     
@@ -280,6 +276,32 @@ module ThinkingSphinx
           !column.nil? && column.type == :integer
         }
       }
+    end
+    
+    def type_from_database
+      klass = @associations.values.flatten.first ? 
+        @associations.values.flatten.first.reflection.klass : @model
+      
+      klass.columns.detect { |col|
+        @columns.collect { |c| c.__name.to_s }.include? col.name
+      }.type
+    end
+    
+    def translated_type_from_database
+      case type_from_db = type_from_database
+      when :datetime, :string, :float, :boolean, :integer
+        type_from_db
+      when :decimal
+        :float
+      else
+        raise <<-MESSAGE
+
+Cannot automatically map column type #{type_from_db} to an equivalent Sphinx
+type (integer, float, boolean, datetime, string as ordinal). You could try to
+explicitly convert the column's value in your define_index block:
+  has "CAST(column AS INT)", :type => :integer, :as => :column
+        MESSAGE
+      end
     end
   end
 end
