@@ -55,7 +55,7 @@ module ThinkingSphinx
         
     attr_accessor :config_file, :searchd_log_file, :query_log_file,
       :pid_file, :searchd_file_path, :address, :port, :allow_star,
-      :database_yml_file, :app_root, :bin_path
+      :database_yml_file, :app_root, :bin_path, :model_directories
     
     attr_accessor :source_options, :index_options
     
@@ -85,6 +85,7 @@ module ThinkingSphinx
       self.searchd_file_path    = "#{self.app_root}/db/sphinx/#{environment}"
       self.allow_star           = false
       self.bin_path             = ""
+      self.model_directories    = ["#{app_root}/app/models/"]
       
       self.source_options  = {}
       self.index_options   = {
@@ -135,21 +136,22 @@ module ThinkingSphinx
     # messy dependencies issues).
     # 
     def load_models
-      base = "#{app_root}/app/models/"
-      Dir["#{base}**/*.rb"].each do |file|
-        model_name = file.gsub(/^#{base}([\w_\/\\]+)\.rb/, '\1')
+      self.model_directories.each do |base|
+        Dir["#{base}**/*.rb"].each do |file|
+          model_name = file.gsub(/^#{base}([\w_\/\\]+)\.rb/, '\1')
         
-        next if model_name.nil?
-        next if ::ActiveRecord::Base.send(:subclasses).detect { |model|
-          model.name == model_name
-        }
+          next if model_name.nil?
+          next if ::ActiveRecord::Base.send(:subclasses).detect { |model|
+            model.name == model_name
+          }
         
-        begin
-          model_name.camelize.constantize
-        rescue LoadError
-          model_name.gsub!(/.*[\/\\]/, '').nil? ? next : retry
-        rescue NameError
-          next
+          begin
+            model_name.camelize.constantize
+          rescue LoadError
+            model_name.gsub!(/.*[\/\\]/, '').nil? ? next : retry
+          rescue NameError
+            next
+          end
         end
       end
     end
