@@ -175,7 +175,7 @@ module ThinkingSphinx
       when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
         "UNIX_TIMESTAMP(#{clause})"
       when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
-        clause # Rails' datetimes are timestamps in PostgreSQL
+        "cast(extract(epoch from #{clause}) as int)"
       else
         clause
       end
@@ -293,6 +293,8 @@ module ThinkingSphinx
         type_from_db
       when :decimal
         :float
+      when :timestamp, :date
+        :datetime
       else
         raise <<-MESSAGE
 

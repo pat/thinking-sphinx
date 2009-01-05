@@ -54,6 +54,11 @@ When /^I filter between ([\d\.]+) and ([\d\.]+) on (\w+)$/ do |first, last, attr
   end
 end
 
+When /^I filter between (\d+) and (\d+) days ago on (\w+)$/ do |last, first, attribute|
+  @results = nil
+  @with[attribute.to_sym] = first.to_i.days.ago..last.to_i.days.ago
+end
+
 When /^I order by (\w+)$/ do |attribute|
   @results = nil
   @options[:order] = attribute.to_sym
