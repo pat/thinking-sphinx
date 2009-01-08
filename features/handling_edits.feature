@@ -49,3 +49,19 @@ Feature: Keeping Sphinx in line with model changes when requested
     And I wait for Sphinx to catch up
     And I search for fifteen
     Then I should get 1 result
+  
+  Scenario: Avoiding delta updates if there hasn't been changes
+    Given Sphinx is running
+    And I am searching on betas
+    When I search for five
+    Then I should get 1 result
+    
+    When I change the name of beta five to five
+    And I wait for Sphinx to catch up
+    And I search for five
+    Then I should get 1 result
+    
+    When I search for the document id of beta five in the beta_core index
+    Then it should exist if using Rails 2.1 or newer
+    When I search for the document id of beta five in the beta_delta index
+    Then it should not exist if using Rails 2.1 or newer

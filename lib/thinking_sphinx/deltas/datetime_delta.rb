@@ -29,6 +29,10 @@ module ThinkingSphinx
         # do nothing
       end
       
+      def toggled(instance)
+        instance.send(@column) > @threshold.ago
+      end
+      
       def reset_query(model)
         nil
       end

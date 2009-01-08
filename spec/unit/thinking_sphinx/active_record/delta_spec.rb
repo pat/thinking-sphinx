@@ -72,7 +72,7 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
     before :each do
       ThinkingSphinx::Configuration.stub_method(:environment => "spec")
       ThinkingSphinx.stub_method(:deltas_enabled? => true, :sphinx_running? => true)
-      Person.sphinx_indexes.first.delta_object.stub_method(:` => "")
+      Person.delta_object.stub_methods(:` => "", :toggled => true)
       
       @person = Person.new
       @person.stub_method(

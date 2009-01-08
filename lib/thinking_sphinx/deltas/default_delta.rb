@@ -31,8 +31,13 @@ module ThinkingSphinx
         instance.delta = true
       end
       
+      def toggled(instance)
+        instance.delta
+      end
+      
       def reset_query(model)
-        "UPDATE #{model.quoted_table_name} SET #{clause(model, false)}"
+        "UPDATE #{model.quoted_table_name} SET " +
+        "#{@index.quote_column(@column.to_s)} = #{@index.db_boolean(false)}"
       end
       
       def clause(model, toggled)

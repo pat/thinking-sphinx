@@ -42,7 +42,11 @@ module ThinkingSphinx
             # if running in the test environment.
             #
             def index_delta(instance = nil)
-              self.sphinx_indexes.first.delta_object.index(self, instance)
+              delta_object.index(self, instance)
+            end
+            
+            def delta_object
+              self.sphinx_indexes.first.delta_object
             end
           end
           
@@ -50,14 +54,18 @@ module ThinkingSphinx
           
           # Set the delta value for the model to be true.
           def toggle_delta
-            self.class.sphinx_indexes.first.delta_object.toggle(self)
+            self.class.delta_object.toggle(self) if should_toggle_delta?
           end
           
           # Build the delta index for the related model. This won't be called
           # if running in the test environment.
           # 
           def index_delta
-            self.class.index_delta(self)
+            self.class.index_delta(self) if self.class.delta_object.toggled(self)
+          end
+          
+          def should_toggle_delta?
+            !self.respond_to?(:changed?) || self.changed? || self.new_record?
           end
         end
       end

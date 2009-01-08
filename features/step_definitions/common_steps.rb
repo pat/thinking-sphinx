@@ -94,7 +94,6 @@ When /^I set retry stale to (\w+)$/ do |retry_stale|
   end
 end
 
-
 Then /^the (\w+) of each result should indicate order$/ do |attribute|
   results.inject(nil) do |prev, current|
     unless prev.nil?

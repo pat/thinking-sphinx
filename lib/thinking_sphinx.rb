@@ -31,7 +31,7 @@ module ThinkingSphinx
   module Version #:nodoc:
     Major = 1
     Minor = 1
-    Tiny  = 1
+    Tiny  = 2
     
     String = [Major, Minor, Tiny].join('.')
   end
