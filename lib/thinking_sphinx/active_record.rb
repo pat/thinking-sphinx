@@ -94,14 +94,7 @@ module ThinkingSphinx
           # you in some other way, awesome.
           # 
           def to_crc32
-            result = 0xFFFFFFFF
-            self.name.each_byte do |byte|
-              result ^= byte
-              8.times do
-                result = (result >> 1) ^ (0xEDB88320 * (result & 1))
-              end
-            end
-            result ^ 0xFFFFFFFF
+            self.name.to_crc32
           end
           
           def to_crc32s

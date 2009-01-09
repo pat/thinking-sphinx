@@ -6,6 +6,7 @@ require 'active_record'
 require 'riddle'
 require 'after_commit'
 
+require 'thinking_sphinx/core/string'
 require 'thinking_sphinx/active_record'
 require 'thinking_sphinx/association'
 require 'thinking_sphinx/attribute'
