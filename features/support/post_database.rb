@@ -20,7 +20,7 @@ ActiveRecord::Base.logger = Logger.new open("tmp/active_record.log", "a")
 ThinkingSphinx.deltas_enabled = false
 
 # Load Models
-Dir["features/support/models/*.rb"].each do |file|
+Dir["features/support/models/*.rb"].sort.each do |file|
   require file.gsub(/\.rb$/, '')
 end
 
