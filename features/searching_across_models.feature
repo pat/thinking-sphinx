@@ -18,3 +18,8 @@ Feature: Searching across multiple model
     Given Sphinx is running
     When I search for the specific id of 52 in the person_core index
     Then it should not exist
+  
+  Scenario: Retrieving results from multiple models
+    Given Sphinx is running
+    When I search for ten
+    Then I should get 5 results

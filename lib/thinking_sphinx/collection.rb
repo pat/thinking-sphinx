@@ -34,38 +34,53 @@ module ThinkingSphinx
     
     def self.instances_from_matches(matches, options = {})
       if klass = options[:class]
-        index_options = klass.sphinx_index_options
-
-        ids = matches.collect { |match| match[:attributes]["sphinx_internal_id"] }
-        instances = ids.length > 0 ? klass.find(
-          :all,
-          :conditions => {klass.primary_key.to_sym => ids},
-          :include    => (options[:include] || index_options[:include]),
-          :select     => (options[:select] || index_options[:select])
-        ) : []
-
-        # Raise an exception if we find records in Sphinx but not in the DB, so the search method
-        # can retry without them. See ThinkingSphinx::Search.retry_search_on_stale_index.
-        if options[:raise_on_stale] && instances.length < ids.length
-          stale_ids = ids - instances.map {|i| i.id }
-          raise StaleIdsException, stale_ids
-        end
-
-        ids.collect { |obj_id|
-          instances.detect { |obj| obj.id == obj_id }
-        }
+        instances_from_class klass, matches, options
       else
-        # Group results by class and call #find(:all) once for each group
-        # to reduce the number of #find's in multi-model searches
-        groups = matches.group_by { |match| match[:attributes]["class_crc"] }
-        groups.each do |crc, group|
-          group.replace(instances_from_matches(group, options.update(:class => class_from_crc(crc))))
-        end
-        
-        matches.collect do |match|
-          groups.detect { |crc, group| crc == match[:attributes]["class_crc"] }[1].
-            detect { |obj| obj.id == match[:attributes]["sphinx_internal_id"] }
-        end
+        instances_from_classes matches, options
+      end
+    end
+    
+    def self.instances_from_class(klass, matches, options = {})
+      index_options = klass.sphinx_index_options
+
+      ids = matches.collect { |match| match[:attributes]["sphinx_internal_id"] }
+      instances = ids.length > 0 ? klass.find(
+        :all,
+        :conditions => {klass.primary_key.to_sym => ids},
+        :include    => (options[:include] || index_options[:include]),
+        :select     => (options[:select]  || index_options[:select])
+      ) : []
+
+      # Raise an exception if we find records in Sphinx but not in the DB, so
+      # the search method can retry without them. See 
+      # ThinkingSphinx::Search.retry_search_on_stale_index.
+      if options[:raise_on_stale] && instances.length < ids.length
+        stale_ids = ids - instances.map {|i| i.id }
+        raise StaleIdsException, stale_ids
+      end
+
+      ids.collect { |obj_id|
+        instances.detect { |obj| obj.id == obj_id }
+      }
+    end
+    
+    # Group results by class and call #find(:all) once for each group to reduce
+    # the number of #find's in multi-model searches.
+    # 
+    def self.instances_from_classes(matches, options = {})
+      groups = matches.group_by { |match| match[:attributes]["class_crc"] }
+      groups.each do |crc, group|
+        group.replace(
+          instances_from_class(class_from_crc(crc), group, options)
+        )
+      end
+      
+      matches.collect do |match|
+        groups.detect { |crc, group|
+          crc == match[:attributes]["class_crc"]
+        }[1].detect { |obj|
+          obj.id == match[:attributes]["sphinx_internal_id"]
+        }
       end
     end
     
