@@ -75,10 +75,10 @@ module ThinkingSphinx
         column_with_prefix(column)
       }.join(', ')
       
-      clause = concatenate(clause) if concat_ws?
-      clause = group_concatenate(clause) if is_many?
+      clause = adapter.concatenate(clause) if concat_ws?
+      clause = adapter.group_concatenate(clause) if is_many?
       
-      "#{cast_to_string clause } AS #{quote_column(unique_name)}"
+      "#{adapter.cast_to_string clause } AS #{quote_column(unique_name)}"
     end
     
     # Get the part of the GROUP BY clause related to this field - if one is
@@ -112,39 +112,8 @@ module ThinkingSphinx
     
     private
     
-    def concatenate(clause)
-      case @model.connection.class.name
-      when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
-        "CONCAT_WS(' ', #{clause})"
-      when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
-        clause.split(', ').collect { |field|
-          "COALESCE(#{field}, '')"
-        }.join(" || ' ' || ")
-      else
-        clause
-      end
-    end
-    
-    def group_concatenate(clause)
-      case @model.connection.class.name
-      when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
-        "GROUP_CONCAT(#{clause} SEPARATOR ' ')"
-      when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
-        "array_to_string(array_accum(#{clause}), ' ')"
-      else
-        clause
-      end
-    end
-    
-    def cast_to_string(clause)
-      case @model.connection.class.name
-      when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
-        "CAST(#{clause} AS CHAR)"
-      when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
-        clause
-      else
-        clause
-      end
+    def adapter
+      @adapter ||= @model.sphinx_database_adapter
     end
     
     def quote_column(column)

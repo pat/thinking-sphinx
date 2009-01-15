@@ -76,10 +76,10 @@ module ThinkingSphinx
       
       separator = all_ints? ? ',' : ' '
       
-      clause = concatenate(clause, separator)       if concat_ws?
-      clause = group_concatenate(clause, separator) if is_many?
-      clause = cast_to_datetime(clause)             if type == :datetime
-      clause = convert_nulls(clause)                if type == :string
+      clause = adapter.concatenate(clause, separator)       if concat_ws?
+      clause = adapter.group_concatenate(clause, separator) if is_many?
+      clause = adapter.cast_to_datetime(clause)             if type == :datetime
+      clause = adapter.convert_nulls(clause)                if type == :string
       
       "#{clause} AS #{quote_column(unique_name)}"
     end
@@ -135,61 +135,8 @@ module ThinkingSphinx
     
     private
     
-    def concatenate(clause, separator = ' ')
-      case @model.connection.class.name
-      when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
-        "CONCAT_WS('#{separator}', #{clause})"
-      when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
-        clause.split(', ').collect { |attribute|
-          "COALESCE(#{attribute}, '')"
-        }.join(" || ' ' || ")
-      else
-        clause
-      end
-    end
-    
-    def group_concatenate(clause, separator = ' ')
-      case @model.connection.class.name
-      when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
-        "GROUP_CONCAT(#{clause} SEPARATOR '#{separator}')"
-      when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
-        "array_to_string(array_accum(#{clause}), '#{separator}')"
-      else
-        clause
-      end
-    end
-    
-    def cast_to_string(clause)
-      case @model.connection.class.name
-      when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
-        "CAST(#{clause} AS CHAR)"
-      when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
-        clause
-      else
-        clause
-      end
-    end
-    
-    def cast_to_datetime(clause)
-      case @model.connection.class.name
-      when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
-        "UNIX_TIMESTAMP(#{clause})"
-      when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
-        "cast(extract(epoch from #{clause}) as int)"
-      else
-        clause
-      end
-    end
-    
-    def convert_nulls(clause)
-      case @model.connection.class.name
-      when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
-        "IFNULL(#{clause}, '')"
-      when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
-        "COALESCE(#{clause}, '')"
-      else
-        clause
-      end
+    def adapter
+      @adapter ||= @model.sphinx_database_adapter
     end
     
     def quote_column(column)

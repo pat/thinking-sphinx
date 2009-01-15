@@ -114,11 +114,16 @@ module ThinkingSphinx
           end
           
           def to_riddle(offset)
-            ThinkingSphinx::AbstractAdapter.detect(self).setup
+            sphinx_database_adapter.setup
             
             indexes = [to_riddle_for_core(offset)]
             indexes << to_riddle_for_delta(offset) if sphinx_delta?
             indexes << to_riddle_for_distributed
+          end
+          
+          def sphinx_database_adapter
+            @sphinx_database_adapter ||=
+              ThinkingSphinx::AbstractAdapter.detect(self)
           end
           
           private
