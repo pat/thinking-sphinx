@@ -101,3 +101,4 @@ Since I first released this library, there's been quite a few people who have su
 * Dmitrij Smalko
 * Aleksey Yeschenko
 * Lachie Cox
+* Lourens Naude
