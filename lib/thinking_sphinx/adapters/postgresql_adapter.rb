@@ -5,6 +5,10 @@ module ThinkingSphinx
       create_crc32_function
     end
     
+    def sphinx_identifier
+      "pgsql"
+    end
+    
     def concatenate(clause, separator = ' ')
       clause.split(', ').collect { |field|
         "COALESCE(#{field}, '')"
@@ -23,8 +27,30 @@ module ThinkingSphinx
       "cast(extract(epoch from #{clause}) as int)"
     end
     
-    def convert_nulls(clause)
-      "COALESCE(#{clause}, '')"
+    def cast_to_unsigned(clause)
+      clause
+    end
+    
+    def convert_nulls(clause, default = '')
+      default = "'#{default}'" if default.is_a?(String)
+      
+      "COALESCE(#{clause}, #{default})"
+    end
+    
+    def boolean(value)
+      value ? 'TRUE' : 'FALSE'
+    end
+    
+    def crc(clause)
+      "crc32(#{clause})"
+    end
+    
+    def utf8_query_pre
+      nil
+    end
+    
+    def time_difference(diff)
+      "current_timestamp - interval '#{diff} seconds'"
     end
     
     private

@@ -57,7 +57,7 @@ module ThinkingSphinx
       link!
       
       source = Riddle::Configuration::SQLSource.new(
-        "#{name}_core_#{index}", riddle_adapter
+        "#{name}_core_#{index}", adapter.sphinx_identifier
       )
       
       set_source_database_settings  source
@@ -73,7 +73,7 @@ module ThinkingSphinx
       link!
       
       source = Riddle::Configuration::SQLSource.new(
-        "#{name}_delta_#{index}", riddle_adapter
+        "#{name}_delta_#{index}", adapter.sphinx_identifier
       )
       source.parent = "#{name}_core_#{index}"
       
@@ -179,14 +179,12 @@ GROUP BY #{ (
     # so pass in :delta => true to get the delta version of the SQL.
     # 
     def to_sql_query_range(options={})
-      min_statement = "MIN(#{quote_column(@model.primary_key)})"
-      max_statement = "MAX(#{quote_column(@model.primary_key)})"
-      
-      # Fix to handle Sphinx PostgreSQL bug (it doesn't like NULLs or 0's)
-      if adapter == :postgres
-        min_statement = "COALESCE(#{min_statement}, 1)"
-        max_statement = "COALESCE(#{max_statement}, 1)"
-      end
+      min_statement = adapter.convert_nulls(
+        "MIN(#{quote_column(@model.primary_key)})", 1
+      )
+      max_statement = adapter.convert_nulls(
+        "MAX(#{quote_column(@model.primary_key)})", 1
+      )
       
       sql = "SELECT #{min_statement}, #{max_statement} " +
             "FROM #{@model.quoted_table_name} "
@@ -204,14 +202,7 @@ GROUP BY #{ (
     end
     
     def adapter
-      @adapter ||= case @model.connection.class.name
-      when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
-        :mysql
-      when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
-        :postgres
-      else
-        raise "Invalid Database Adapter: Sphinx only supports MySQL and PostgreSQL"
-      end
+      @adapter ||= @model.sphinx_database_adapter
     end
         
     def prefix_fields
@@ -240,17 +231,6 @@ GROUP BY #{ (
     
     def quote_column(column)
       @model.connection.quote_column_name(column)
-    end
-    
-    # Returns the proper boolean value string literal for the
-    # current database adapter.
-    #
-    def db_boolean(val)
-      if adapter == :postgres
-        val ? 'TRUE' : 'FALSE'
-      else
-        val ? '1' : '0'
-      end
     end
     
     private
@@ -345,12 +325,10 @@ GROUP BY #{ (
 
     def crc_column
       if @model.column_names.include?(@model.inheritance_column)
-        case adapter
-        when :postgres
-          "COALESCE(crc32(#{@model.quoted_table_name}.#{quote_column(@model.inheritance_column)}), #{@model.to_crc32.to_s})"
-        when :mysql
-          "CAST(IFNULL(CRC32(#{@model.quoted_table_name}.#{quote_column(@model.inheritance_column)}), #{@model.to_crc32.to_s}) AS UNSIGNED)"
-        end
+        adapter.cast_to_unsigned(adapter.convert_nulls(
+          adapter.crc(adapter.quote_with_table(@model.inheritance_column)),
+          @model.to_crc32
+        ))
       else
         @model.to_crc32.to_s
       end
@@ -383,18 +361,7 @@ GROUP BY #{ (
         :as   => :sphinx_deleted
       ) unless @attributes.detect { |attr| attr.alias == :sphinx_deleted }
     end
-    
-    def riddle_adapter
-      case adapter
-      when :postgres
-        "pgsql"
-      when :mysql
-        "mysql"
-      else
-        raise "Unsupported Database Adapter: Sphinx only supports MySQL and PosgreSQL"
-      end
-    end
-    
+        
     def set_source_database_settings(source)
       config = @model.connection.instance_variable_get(:@config)
       
@@ -423,9 +390,7 @@ GROUP BY #{ (
         source.sql_query_pre << "SET SESSION group_concat_max_len = #{@options[:group_concat_max_len]}"
       end
       
-      if utf8? && adapter == :mysql
-        source.sql_query_pre << "SET NAMES utf8"
-      end
+      source.sql_query_pre += [adapter.utf8_query_pre].compact if utf8?
     end
     
     def set_source_settings(source)

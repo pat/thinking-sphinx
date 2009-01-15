@@ -37,12 +37,12 @@ module ThinkingSphinx
       
       def reset_query(model)
         "UPDATE #{model.quoted_table_name} SET " +
-        "#{@index.quote_column(@column.to_s)} = #{@index.db_boolean(false)}"
+        "#{@index.quote_column(@column.to_s)} = #{adapter.boolean(false)}"
       end
       
       def clause(model, toggled)
         "#{model.quoted_table_name}.#{@index.quote_column(@column.to_s)}" +
-        " = #{@index.db_boolean(toggled)}"
+        " = #{adapter.boolean(toggled)}"
       end
       
       protected
@@ -53,7 +53,13 @@ module ThinkingSphinx
       
       def delta_index_name(model)
         "#{model.source_of_sphinx_index.name.underscore.tr(':/\\', '_')}_delta"
-      end      
+      end  
+      
+      private
+      
+      def adapter
+        @adapter = @index.model.sphinx_database_adapter
+      end
     end
   end
 end
