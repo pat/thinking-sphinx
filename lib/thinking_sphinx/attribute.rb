@@ -150,16 +150,7 @@ module ThinkingSphinx
     def concat_ws?
       multiple_associations? || @columns.length > 1
     end
-    
-    # Checks the association tree for each column - if they're all the same,
-    # returns false.
-    # 
-    def multiple_sources?
-      first = associations[@columns.first]
-      
-      !@columns.all? { |col| associations[col] == first }
-    end
-    
+        
     # Checks whether any column requires multiple associations (which only
     # happens for polymorphic situations).
     # 

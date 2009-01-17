@@ -1,12 +1,12 @@
 require 'spec/spec_helper'
 
 describe ThinkingSphinx::Index do
-  describe "to_sql method" do
+  describe "generated sql_query" do
     it "should include explicit groupings if requested" do
       @index = ThinkingSphinx::Index.new(Person)
       
       @index.groupings << "custom_sql"
-      @index.to_sql.should match(/GROUP BY.+custom_sql/)
+      @index.to_riddle_for_core(0, 0).sql_query.should match(/GROUP BY.+custom_sql/)
     end
   end
   

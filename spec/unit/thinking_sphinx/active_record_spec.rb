@@ -230,7 +230,8 @@ describe "ThinkingSphinx::ActiveRecord" do
 
     it "should allow associations to other STI models" do
       Child.sphinx_indexes.last.link!
-      sql = Child.sphinx_indexes.last.to_sql.gsub('$start', '0').gsub('$end', '100')
+      sql = Child.sphinx_indexes.last.to_riddle_for_core(0, 0).sql_query
+      sql.gsub!('$start', '0').gsub!('$end', '100')
       lambda { Child.connection.execute(sql) }.should_not raise_error(ActiveRecord::StatementInvalid)
     end
   end

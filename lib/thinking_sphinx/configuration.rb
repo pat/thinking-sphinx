@@ -156,31 +156,6 @@ module ThinkingSphinx
       end
     end
     
-    def hash_to_config(hash)
-      hash.collect { |key, value|
-        translated_value = case value
-        when TrueClass
-          "1"
-        when FalseClass
-          "0"
-        when NilClass, ""
-          next
-        else
-          value
-        end
-        "  #{key} = #{translated_value}"
-      }.join("\n")
-    end
-    
-    def self.options_merge(base, extra)
-      base = base.clone
-      extra.each do |key, value|
-        next if value.nil? || value == ""
-        base[key] = value
-      end
-      base
-    end
-    
     def address
       @configuration.searchd.address
     end

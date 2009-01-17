@@ -46,11 +46,6 @@ module ThinkingSphinx
     def self.name(model)
       model.name.underscore.tr(':/\\', '_')
     end
-        
-    def to_riddle(model, index, offset)
-      add_internal_attributes
-      link!
-    end
     
     def to_riddle_for_core(offset, index)
       add_internal_attributes
@@ -111,90 +106,6 @@ module ThinkingSphinx
       }
     end
     
-    # Generates the big SQL statement to get the data back for all the fields
-    # and attributes, using all the relevant association joins. If you want
-    # the version filtered for delta values, send through :delta => true in the
-    # options. Won't do much though if the index isn't set up to support a
-    # delta sibling.
-    # 
-    # Examples:
-    # 
-    #   index.to_sql
-    #   index.to_sql(:delta => true)
-    #
-    def to_sql(options={})
-      assocs = all_associations
-      
-      where_clause = ""
-      if self.delta? && !@delta_object.clause(@model, options[:delta]).blank?
-        where_clause << " AND #{@delta_object.clause(@model, options[:delta])}"
-      end
-      unless @conditions.empty?
-        where_clause << " AND " << @conditions.join(" AND ")
-      end
-      
-      internal_groupings = []
-      if @model.column_names.include?(@model.inheritance_column)
-         internal_groupings << "#{@model.quoted_table_name}.#{quote_column(@model.inheritance_column)}"
-      end
-      
-      unique_id_expr = "* #{ThinkingSphinx.indexed_models.size} + #{options[:offset] || 0}"
-      
-      sql = <<-SQL
-SELECT #{ (
-  ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key)} #{unique_id_expr} AS #{quote_column(@model.primary_key)} "] + 
-  @fields.collect { |field| field.to_select_sql } +
-  @attributes.collect { |attribute| attribute.to_select_sql }
-).join(", ") }
-FROM #{ @model.table_name }
-  #{ assocs.collect { |assoc| assoc.to_sql }.join(' ') }
-WHERE #{@model.quoted_table_name}.#{quote_column(@model.primary_key)} >= $start
-  AND #{@model.quoted_table_name}.#{quote_column(@model.primary_key)} <= $end
-  #{ where_clause }
-GROUP BY #{ (
-  ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key)}"] + 
-  @fields.collect { |field| field.to_group_sql }.compact +
-  @attributes.collect { |attribute| attribute.to_group_sql }.compact +
-  @groupings + internal_groupings
-).join(", ") }
-      SQL
-      
-      if @model.connection.class.name == "ActiveRecord::ConnectionAdapters::MysqlAdapter"
-        sql += " ORDER BY NULL"
-      end
-      
-      sql
-    end
-    
-    # Simple helper method for the query info SQL - which is a statement that
-    # returns the single row for a corresponding id.
-    # 
-    def to_sql_query_info(offset)
-      "SELECT * FROM #{@model.quoted_table_name} WHERE " +
-      " #{quote_column(@model.primary_key)} = (($id - #{offset}) / #{ThinkingSphinx.indexed_models.size})"
-    end
-    
-    # Simple helper method for the query range SQL - which is a statement that
-    # returns minimum and maximum id values. These can be filtered by delta -
-    # so pass in :delta => true to get the delta version of the SQL.
-    # 
-    def to_sql_query_range(options={})
-      min_statement = adapter.convert_nulls(
-        "MIN(#{quote_column(@model.primary_key)})", 1
-      )
-      max_statement = adapter.convert_nulls(
-        "MAX(#{quote_column(@model.primary_key)})", 1
-      )
-      
-      sql = "SELECT #{min_statement}, #{max_statement} " +
-            "FROM #{@model.quoted_table_name} "
-      if self.delta? && !@delta_object.clause(@model, options[:delta]).blank?
-        sql << "WHERE #{@delta_object.clause(@model, options[:delta])}"
-      end
-      
-      sql
-    end
-    
     # Flag to indicate whether this index has a corresponding delta index.
     #
     def delta?
@@ -220,15 +131,7 @@ GROUP BY #{ (
       }.each { |key| all_index_options[key.to_sym] = @options[key] }
       all_index_options
     end
-    
-    def source_options
-      all_source_options = ThinkingSphinx::Configuration.instance.source_options.clone
-      @options.keys.select { |key|
-        ThinkingSphinx::Configuration::SourceOptions.include?(key.to_s)
-      }.each { |key| all_source_options[key.to_sym] = @options[key] }
-      all_source_options
-    end
-    
+        
     def quote_column(column)
       @model.connection.quote_column_name(column)
     end
@@ -413,6 +316,90 @@ GROUP BY #{ (
     
     def sql_query_pre_for_delta
       [""]
+    end
+    
+    # Generates the big SQL statement to get the data back for all the fields
+    # and attributes, using all the relevant association joins. If you want
+    # the version filtered for delta values, send through :delta => true in the
+    # options. Won't do much though if the index isn't set up to support a
+    # delta sibling.
+    # 
+    # Examples:
+    # 
+    #   index.to_sql
+    #   index.to_sql(:delta => true)
+    #
+    def to_sql(options={})
+      assocs = all_associations
+      
+      where_clause = ""
+      if self.delta? && !@delta_object.clause(@model, options[:delta]).blank?
+        where_clause << " AND #{@delta_object.clause(@model, options[:delta])}"
+      end
+      unless @conditions.empty?
+        where_clause << " AND " << @conditions.join(" AND ")
+      end
+      
+      internal_groupings = []
+      if @model.column_names.include?(@model.inheritance_column)
+         internal_groupings << "#{@model.quoted_table_name}.#{quote_column(@model.inheritance_column)}"
+      end
+      
+      unique_id_expr = "* #{ThinkingSphinx.indexed_models.size} + #{options[:offset] || 0}"
+      
+      sql = <<-SQL
+SELECT #{ (
+  ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key)} #{unique_id_expr} AS #{quote_column(@model.primary_key)} "] + 
+  @fields.collect { |field| field.to_select_sql } +
+  @attributes.collect { |attribute| attribute.to_select_sql }
+).join(", ") }
+FROM #{ @model.table_name }
+  #{ assocs.collect { |assoc| assoc.to_sql }.join(' ') }
+WHERE #{@model.quoted_table_name}.#{quote_column(@model.primary_key)} >= $start
+  AND #{@model.quoted_table_name}.#{quote_column(@model.primary_key)} <= $end
+  #{ where_clause }
+GROUP BY #{ (
+  ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key)}"] + 
+  @fields.collect { |field| field.to_group_sql }.compact +
+  @attributes.collect { |attribute| attribute.to_group_sql }.compact +
+  @groupings + internal_groupings
+).join(", ") }
+      SQL
+      
+      if @model.connection.class.name == "ActiveRecord::ConnectionAdapters::MysqlAdapter"
+        sql += " ORDER BY NULL"
+      end
+      
+      sql
+    end
+    
+    # Simple helper method for the query info SQL - which is a statement that
+    # returns the single row for a corresponding id.
+    # 
+    def to_sql_query_info(offset)
+      "SELECT * FROM #{@model.quoted_table_name} WHERE " +
+      " #{quote_column(@model.primary_key)} = (($id - #{offset}) / #{ThinkingSphinx.indexed_models.size})"
+    end
+    
+    # Simple helper method for the query range SQL - which is a statement that
+    # returns minimum and maximum id values. These can be filtered by delta -
+    # so pass in :delta => true to get the delta version of the SQL.
+    # 
+    def to_sql_query_range(options={})
+      min_statement = adapter.convert_nulls(
+        "MIN(#{quote_column(@model.primary_key)})", 1
+      )
+      max_statement = adapter.convert_nulls(
+        "MAX(#{quote_column(@model.primary_key)})", 1
+      )
+      
+      sql = "SELECT #{min_statement}, #{max_statement} " +
+            "FROM #{@model.quoted_table_name} "
+      if self.delta? && !@delta_object.clause(@model, options[:delta]).blank?
+        sql << "WHERE #{@delta_object.clause(@model, options[:delta])}"
+      end
+      
+      sql
     end
   end
 end
