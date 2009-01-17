@@ -152,7 +152,7 @@ module ThinkingSphinx
     def to_facet
       return nil unless @faceted
       
-      ThinkingSphinx::Facet.new(unique_name, @columns, self)
+      ThinkingSphinx::Facet.new(self)
     end
     
     private

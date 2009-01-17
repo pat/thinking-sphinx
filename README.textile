@@ -103,3 +103,4 @@ Since I first released this library, there's been quite a few people who have su
 * Lachie Cox
 * Lourens Naude
 * Tom Davies
+* Dan Pickett

@@ -130,5 +130,13 @@ module ThinkingSphinx
         yield self[index], match[:weight]
       end
     end
+    
+    def inject_with_groupby_and_count(initial = nil, &block)
+      index = -1
+      results[:matches].inject(initial) do |memo, match|
+        index += 1
+        yield memo, self[index], match[:attributes]["@groupby"], match[:attributes]["@count"]
+      end
+    end
   end
 end

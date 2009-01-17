@@ -21,7 +21,7 @@ module ThinkingSphinx
         
         options = args.extract_options!
         page    = options[:page] ? options[:page].to_i : 1
-
+        
         ThinkingSphinx::Collection.ids_from_results(results, page, client.limit, options)
       end
 
@@ -353,18 +353,13 @@ module ThinkingSphinx
       end
       
       def facets(*args)
-        options = args.extract_options!.merge! :group_function => :attr
+        hash    = ThinkingSphinx::FacetCollection.new args
+        options = args.extract_options!.clone.merge! :group_function => :attr
         
-        options[:class].sphinx_facets.inject({}) do |hash, facet|
-          facet_result = {}
+        options[:class].sphinx_facets.inject(hash) do |hash, facet|
           options[:group_by] = facet.attribute_name
           
-          results = search *(args + [options])
-          results.each_with_groupby_and_count do |result, group, count|
-            facet_result[facet.value(result, group)] = count
-          end
-          hash[facet.name] = facet_result
-          
+          hash.add_from_results facet, search(*(args + [options]))
           hash
         end
       end

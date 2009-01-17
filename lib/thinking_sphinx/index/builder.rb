@@ -147,6 +147,15 @@ module ThinkingSphinx
         end
         alias_method :attribute, :has
         
+        def facet(*args)
+          options = args.extract_options!
+          options[:facet] = true
+          
+          args.each do |columns|
+            attributes << Attribute.new(FauxColumn.coerce(columns), options)
+          end
+        end
+        
         # Use this method to add some manual SQL conditions for your index
         # request. You can pass in as many strings as you like, they'll get
         # joined together with ANDs later on.

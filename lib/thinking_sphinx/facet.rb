@@ -1,11 +1,17 @@
 module ThinkingSphinx
   class Facet
-    attr_reader :name, :column, :reference
+    attr_reader :reference
     
-    def initialize(name, columns, reference)
-      @name = name
-      @columns = columns
+    def initialize(reference)
       @reference = reference
+      
+      if reference.columns.length != 1
+        raise "Can't translate Facets on multiple-column field or attribute"
+      end
+    end
+    
+    def name
+      reference.unique_name
     end
     
     def attribute_name
@@ -32,18 +38,21 @@ module ThinkingSphinx
       end
     end
     
+    def to_s
+      name
+    end
+    
     private
     
     def translate(object, attribute_value)
-      if @columns.length > 1
-        raise "Can't translate Facets on multiple-column field or attribute"
-      end
-      
-      column  = @columns.first
       column.__stack.each { |method|
         object = object.send(method)
       }
       object.send(column.__name)
+    end
+    
+    def column
+      @reference.columns.first
     end
   end
 end
