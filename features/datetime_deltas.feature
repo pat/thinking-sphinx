@@ -51,5 +51,5 @@ Feature: Datetime Delta Indexing
     And I search for thirteen
     Then I should get 1 result
     
-    When I search for the specific id of 107 in the theta_core index
+    When I search for the document id of theta thirteen in the theta_core index
     Then it should exist

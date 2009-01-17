@@ -32,10 +32,10 @@ Then "it should not exist if using Rails 2.1 or newer" do
 end
 
 Then /^I can iterate by result and group and count$/ do
-  results.each_with_group_and_count do |result, group, count|
+  results.each_with_groupby_and_count do |result, group, count|
     result.should be_kind_of(@model)
     count.should  be_kind_of(Integer)
-    group.should  be_kind_of(Integer) unless group.nil?
+    group.should  be_kind_of(Integer)
   end
 end
 

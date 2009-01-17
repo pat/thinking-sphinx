@@ -42,6 +42,13 @@ module ThinkingSphinx
               args << options
               ThinkingSphinx::Search.search_for_id(*args)
             end
+            
+            def facets(*args)
+              options = args.extract_options!
+              options[:class] = self
+              args << options
+              ThinkingSphinx::Search.facets(*args)
+            end
           end
         end
       end

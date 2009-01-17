@@ -167,6 +167,14 @@ module ThinkingSphinx
       @delta_object = ThinkingSphinx::Deltas.parse self, builder.properties
       @options      = builder.properties
       
+      @model.sphinx_facets ||= []
+      @fields.select { |field| field.faceted }.each { |field|
+        @model.sphinx_facets << field.to_facet
+      }
+      @attributes.select { |attrib| attrib.faceted }.each { |attrib|
+        @model.sphinx_facets << attrib.to_facet
+      }
+      
       # We want to make sure that if the database doesn't exist, then Thinking
       # Sphinx doesn't mind when running non-TS tasks (like db:create, db:drop
       # and db:migrate). It's a bit hacky, but I can't think of a better way.

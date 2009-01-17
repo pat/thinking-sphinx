@@ -9,7 +9,7 @@ module ThinkingSphinx
   # associations. Which can get messy. Use Index.link!, it really helps.
   # 
   class Attribute
-    attr_accessor :alias, :columns, :associations, :model
+    attr_accessor :alias, :columns, :associations, :model, :faceted
     
     # To create a new attribute, you'll need to pass in either a single Column
     # or an array of them, and some (optional) options.
@@ -59,8 +59,9 @@ module ThinkingSphinx
       
       raise "Cannot define a field with no columns. Maybe you are trying to index a field with a reserved name (id, name). You can fix this error by using a symbol rather than a bare name (:id instead of id)." if @columns.empty? || @columns.any? { |column| !column.respond_to?(:__stack) }
       
-      @alias        = options[:as]
-      @type         = options[:type]
+      @alias    = options[:as]
+      @type     = options[:type]
+      @faceted  = options[:facet]
     end
     
     # Get the part of the SELECT clause related to this attribute. Don't forget
@@ -133,6 +134,27 @@ module ThinkingSphinx
       end
     end
     
+    # Returns the type of the column. If that's not already set, it returns
+    # :multi if there's the possibility of more than one value, :string if
+    # there's more than one association, otherwise it figures out what the
+    # actual column's datatype is and returns that.
+    def type
+      @type ||= case
+      when is_many?
+        :multi
+      when @associations.values.flatten.length > 1
+        :string
+      else
+        translated_type_from_database
+      end
+    end
+    
+    def to_facet
+      return nil unless @faceted
+      
+      ThinkingSphinx::Facet.new(unique_name, @columns, self)
+    end
+    
     private
     
     def adapter
@@ -188,21 +210,6 @@ module ThinkingSphinx
     # column references.
     def is_string?
       columns.all? { |col| col.is_string? }
-    end
-    
-    # Returns the type of the column. If that's not already set, it returns
-    # :multi if there's the possibility of more than one value, :string if
-    # there's more than one association, otherwise it figures out what the
-    # actual column's datatype is and returns that.
-    def type
-      @type ||= case
-      when is_many?
-        :multi
-      when @associations.values.flatten.length > 1
-        :string
-      else
-        translated_type_from_database
-      end
     end
     
     def all_ints?

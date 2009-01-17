@@ -352,6 +352,23 @@ module ThinkingSphinx
         end
       end
       
+      def facets(*args)
+        options = args.extract_options!.merge! :group_function => :attr
+        
+        options[:class].sphinx_facets.inject({}) do |hash, facet|
+          facet_result = {}
+          options[:group_by] = facet.attribute_name
+          
+          results = search *(args + [options])
+          results.each_with_groupby_and_count do |result, group, count|
+            facet_result[facet.value(result, group)] = count
+          end
+          hash[facet.name] = facet_result
+          
+          hash
+        end
+      end
+      
       private
       
       # This method handles the common search functionality, and returns both

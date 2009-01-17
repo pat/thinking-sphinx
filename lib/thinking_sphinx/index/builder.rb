@@ -89,13 +89,13 @@ module ThinkingSphinx
           args.each do |columns|
             fields << Field.new(FauxColumn.coerce(columns), options)
             
-            if fields.last.sortable
+            if fields.last.sortable || fields.last.faceted
               attributes << Attribute.new(
                 fields.last.columns.collect { |col| col.clone },
                 options.merge(
                   :type => :string,
                   :as => fields.last.unique_name.to_s.concat("_sort").to_sym
-                )
+                ).except(:facet)
               )
             end
           end

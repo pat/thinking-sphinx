@@ -10,7 +10,7 @@ module ThinkingSphinx
   module ActiveRecord
     def self.included(base)
       base.class_eval do
-        class_inheritable_array :sphinx_indexes
+        class_inheritable_array :sphinx_indexes, :sphinx_facets
         class << self
           # Allows creation of indexes for Sphinx. If you don't do this, there
           # isn't much point trying to search (or using this plugin at all,

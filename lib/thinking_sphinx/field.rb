@@ -8,7 +8,8 @@ module ThinkingSphinx
   # associations. Which can get messy. Use Index.link!, it really helps.
   # 
   class Field
-    attr_accessor :alias, :columns, :sortable, :associations, :model, :infixes, :prefixes
+    attr_accessor :alias, :columns, :sortable, :associations, :model, :infixes,
+      :prefixes, :faceted
     
     # To create a new field, you'll need to pass in either a single Column
     # or an array of them, and some (optional) options. The columns are
@@ -58,10 +59,11 @@ module ThinkingSphinx
 
       raise "Cannot define a field with no columns. Maybe you are trying to index a field with a reserved name (id, name). You can fix this error by using a symbol rather than a bare name (:id instead of id)." if @columns.empty? || @columns.any? { |column| !column.respond_to?(:__stack) }
       
-      @alias        = options[:as]
-      @sortable     = options[:sortable] || false
-      @infixes      = options[:infixes]  || false
-      @prefixes     = options[:prefixes] || false
+      @alias    = options[:as]
+      @sortable = options[:sortable] || false
+      @infixes  = options[:infixes]  || false
+      @prefixes = options[:prefixes] || false
+      @faceted  = options[:facet]    || false
     end
     
     # Get the part of the SELECT clause related to this field. Don't forget
@@ -108,6 +110,12 @@ module ThinkingSphinx
       else
         @alias
       end
+    end
+    
+    def to_facet
+      return nil unless @faceted
+      
+      ThinkingSphinx::Facet.new(unique_name, @columns, self)
     end
     
     private

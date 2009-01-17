@@ -113,9 +113,9 @@ module ThinkingSphinx
       each_with_attribute method.to_s.gsub(/^each_with_/, ''), &block
     end
     
-    def each_with_group_and_count(&block)
+    def each_with_groupby_and_count(&block)
       results[:matches].each_with_index do |match, index|
-        yield self[index], match[:attributes]["@group"], match[:attributes]["@count"]
+        yield self[index], match[:attributes]["@groupby"], match[:attributes]["@count"]
       end
     end
     
