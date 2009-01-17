@@ -25,14 +25,14 @@ require 'thinking_sphinx/adapters/postgresql_adapter'
 ActiveRecord::Base.send(:include, ThinkingSphinx::ActiveRecord)
 
 Merb::Plugins.add_rakefiles(
-  File.join(File.dirname(__FILE__), "..", "tasks", "thinking_sphinx_tasks")
+  File.join(File.dirname(__FILE__), "thinking_sphinx", "tasks")
 ) if defined?(Merb)
 
 module ThinkingSphinx
   module Version #:nodoc:
     Major = 1
     Minor = 1
-    Tiny  = 2
+    Tiny  = 3
     
     String = [Major, Minor, Tiny].join('.')
   end
