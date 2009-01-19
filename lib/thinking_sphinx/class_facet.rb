@@ -9,11 +9,12 @@ module ThinkingSphinx
     end
     
     def value(object, attribute_value)
-      ThinkingSphinx.indexed_models.each do |i|
-        return i if i.to_crc32 == attribute_value
-      end
-      
-      raise "Unknown class crc"
+      object.class.name
+      # ThinkingSphinx.indexed_models.each do |i|
+      #   return i if i.to_crc32 == attribute_value
+      # end
+      # 
+      # raise "Unknown class crc"
     end
   end
 end

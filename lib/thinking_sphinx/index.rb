@@ -264,6 +264,19 @@ module ThinkingSphinx
         @model.sphinx_facets << ThinkingSphinx::ClassFacet.new(@attributes.last)
       end
       
+      if @model.column_names.include?(@model.inheritance_column)
+        class_col = FauxColumn.new(
+          adapter.convert_nulls(adapter.quote_with_table(@model.inheritance_column), @model.to_s)
+        )
+      else
+        class_col = FauxColumn.new("'#{@model.to_s}'")
+      end
+      
+      @attributes << Attribute.new(class_col,
+        :type => :string,
+        :as   => :class
+      )
+      
       @attributes << Attribute.new(
         FauxColumn.new("'" + (@model.send(:subclasses).collect { |klass|
           klass.to_crc32.to_s
