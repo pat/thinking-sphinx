@@ -1,4 +1,4 @@
-module ThinkingSphinx
+module ThinkingSphinx  
   # Once you've got those indexes in and built, this is the stuff that
   # matters - how to search! This class provides a generic search
   # interface - which you can use to search all your indexed models at once.
@@ -375,12 +375,16 @@ module ThinkingSphinx
         options[:class].sphinx_facets.inject(hash) do |hash, facet|
           options[:group_by] = facet.attribute_name
           
-          hash.add_from_results facet, search(*(args + [options]))
+          if facet.name != :class || options[:include_class_facets]
+            hash.add_from_results facet, search(*(args + [options]))
+          end
+          
           hash
         end
       end
       
       private
+      
       
       # This method handles the common search functionality, and returns both
       # the result hash and the client. Not super elegant, but it'll do for

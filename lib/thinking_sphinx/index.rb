@@ -253,11 +253,16 @@ module ThinkingSphinx
         :as   => :sphinx_internal_id
       ) unless @attributes.detect { |attr| attr.alias == :sphinx_internal_id }
       
-      @attributes << Attribute.new(
-        FauxColumn.new(crc_column),
-        :type => :integer,
-        :as   => :class_crc
-      ) unless @attributes.detect { |attr| attr.alias == :class_crc }
+      unless @attributes.detect { |attr| attr.alias == :class_crc }
+        @attributes << Attribute.new(
+          FauxColumn.new(crc_column),
+          :type => :integer,
+          :as   => :class_crc,
+          :facet => true
+        ) 
+      
+        @model.sphinx_facets << ThinkingSphinx::ClassFacet.new(@attributes.last)
+      end
       
       @attributes << Attribute.new(
         FauxColumn.new("'" + (@model.send(:subclasses).collect { |klass|

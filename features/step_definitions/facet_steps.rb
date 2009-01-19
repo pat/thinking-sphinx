@@ -1,5 +1,11 @@
-When "I am requesting facet results" do
+When "I am requesting facet results$" do
   @method = :facets
+end
+
+When "I am requesting facet results with classes included" do
+  @method = :facets
+  @options = {}
+  @options[:include_class_facets] = true
 end
 
 When /^I drill down where (\w+) is (\w+)$/ do |facet, value|
