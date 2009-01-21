@@ -13,6 +13,8 @@ module ThinkingSphinx
       case model.connection.class.name
       when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
         ThinkingSphinx::MysqlAdapter.new model
+      when "ActiveRecord::ConnectionAdapters::MysqlplusAdapter"
+        ThinkingSphinx::MysqlAdapter.new model
       when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
         ThinkingSphinx::PostgreSQLAdapter.new model
       else
