@@ -20,12 +20,17 @@ module Riddle
           if send(setting) == ""
             conf = "  #{setting} = "
           else
-            conf = Array(send(setting)).collect { |set|
+            conf = setting_to_array(setting).collect { |set|
               "  #{setting} = #{set}"  
             }
           end
           conf.length == 0 ? nil : conf
         }.flatten.compact
+      end
+      
+      def setting_to_array(setting)
+        value = send(setting)
+        value.is_a?(Array) ? value : [value]
       end
     end
   end
