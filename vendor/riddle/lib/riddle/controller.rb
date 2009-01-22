@@ -14,7 +14,7 @@ module Riddle
     def start
       return if running?
 
-      cmd = "searchd --config #{@path}"
+      cmd = "searchd --pidfile --config #{@path}"
       `#{cmd}`    
 
       sleep(1)

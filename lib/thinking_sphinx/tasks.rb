@@ -21,7 +21,7 @@ namespace :thinking_sphinx do
     
     Dir["#{config.searchd_file_path}/*.spl"].each { |file| File.delete(file) }
 
-    cmd = "#{config.bin_path}searchd --config #{config.config_file}"
+    cmd = "#{config.bin_path}searchd --pidfile --config #{config.config_file}"
     puts cmd
     system cmd
     
