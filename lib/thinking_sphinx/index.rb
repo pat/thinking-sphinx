@@ -277,7 +277,7 @@ module ThinkingSphinx
       config = @model.connection.instance_variable_get(:@config)
       
       source.sql_host = config[:host]           || "localhost"
-      source.sql_user = config[:username]       || config[:user]
+      source.sql_user = config[:username]       || config[:user] || ""
       source.sql_pass = (config[:password].to_s || "").gsub('#', '\#')
       source.sql_db   = config[:database]
       source.sql_port = config[:port]
