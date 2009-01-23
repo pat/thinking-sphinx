@@ -4,5 +4,6 @@ class Person < ActiveRecord::Base
     
     has [first_name, middle_initial, last_name], :as => :name_sort
     has birthday
+    has gender, :facet => true
   end
 end

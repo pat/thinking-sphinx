@@ -372,15 +372,34 @@ module ThinkingSphinx
         hash    = ThinkingSphinx::FacetCollection.new args
         options = args.extract_options!.clone.merge! :group_function => :attr
         
-        options[:class].sphinx_facets.inject(hash) do |hash, facet|
-          options[:group_by] = facet.attribute_name
-          
-          if facet.name != :class || options[:include_class_facets]
-            hash.add_from_results facet, search(*(args + [options]))
+        klasses = options[:classes] || [options[:class]]
+        klasses = [] if options[:class].nil?
+        
+        #no classes specified so get classes from resultset
+        if klasses.empty?
+          options[:group_by] = "class_crc"
+          results = search(*(args + [options]))
+
+          hash[:class] = {}
+          results.each_with_groupby_and_count do |result, group, count|
+            hash[:class][result.class.name] = count
+            klasses << result.class
           end
-          
-          hash
         end
+        
+        klasses.each do |klass|
+          klass.sphinx_facets.inject(hash) do |hash, facet|
+            if facet.name != :class || options[:include_class_facets]
+              hash.add_from_results facet, 
+                search(*(args + 
+                  [options.merge(:group_by => facet.attribute_name)]))
+            end
+
+            hash
+          end
+        end
+        
+        hash
       end
       
       private

@@ -32,3 +32,12 @@ Feature: Search and browse models by their defined facets
     Then I should have valid facet results
     And I should have 5 facets
     And I should have the facet Class
+  
+  Scenario: Requesting facets across multiple models
+    Given Sphinx is running
+    When I am requesting facet results with classes included
+    Then I should have valid facet results
+    And I should have 6 facets
+    And I should have the facet Class
+    And I should have the facet Gender
+    And I should have the facet Country
