@@ -48,7 +48,7 @@ database, causing the next run to have failures. Let that run complete and then 
 Since I first released this library, there's been quite a few people who have submitted patches, to my immense gratitude. Others have suggested syntax changes and general improvements. So my thanks to the following people:
 
 - Joost Hietbrink
-- Jonathon Conway
+- Jonathan Conway
 - Gregory Mirzayantz
 - Tung Nguyen
 - Sean Cribbs
