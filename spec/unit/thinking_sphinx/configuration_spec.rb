@@ -71,7 +71,16 @@ describe ThinkingSphinx::Configuration do
       FileUtils.rm "#{RAILS_ROOT}/config/sphinx.yml"
     end
   end
-    
+
+  describe "block configuration" do
+    it "should let the user set-up a custom app_root" do
+      ThinkingSphinx::Configuration.configure do |config|
+        config.app_root = "/here/somewhere"
+      end
+      ThinkingSphinx::Configuration.instance.app_root.should == "/here/somewhere"
+    end
+  end
+  
   describe "initialisation" do
     it "should have a default bin_path of nothing" do
       ThinkingSphinx::Configuration.instance.bin_path.should == ""

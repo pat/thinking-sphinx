@@ -71,10 +71,19 @@ module ThinkingSphinx
       self.reset
     end
     
-    def reset
-      self.app_root          = RAILS_ROOT if defined?(RAILS_ROOT)
-      self.app_root          = Merb.root  if defined?(Merb)
-      self.app_root        ||= app_root
+    def self.configure(&block)
+      yield instance
+      instance.reset(instance.app_root)
+    end
+    
+    def reset(custom_app_root=nil)
+      if custom_app_root
+        self.app_root = custom_app_root
+      else
+        self.app_root          = RAILS_ROOT if defined?(RAILS_ROOT)
+        self.app_root          = Merb.root  if defined?(Merb)
+        self.app_root        ||= app_root
+      end
       
       @configuration = Riddle::Configuration.new
       @configuration.searchd.address    = "127.0.0.1"
