@@ -456,7 +456,7 @@ module Riddle
         header = socket.recv(8)
         status, version, length = header.unpack('n2N')
         
-        while response.length < length
+        while response.length < (length || 0)
           part = socket.recv(length - response.length)
           response << part if part
         end
