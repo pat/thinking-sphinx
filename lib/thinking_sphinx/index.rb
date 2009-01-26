@@ -159,21 +159,22 @@ module ThinkingSphinx
         stored_class = @model.store_full_sti_class ? @model.name : @model.name.demodulize
         builder.where("#{@model.quoted_table_name}.#{quote_column(@model.inheritance_column)} = '#{stored_class}'")
       end
-
-      @fields       = builder.fields
-      @attributes   = builder.attributes
+      
+      set_model = Proc.new { |item| item.model = @model }
+      
+      @fields       = builder.fields &set_model
+      @attributes   = builder.attributes.each &set_model
       @conditions   = builder.conditions
       @groupings    = builder.groupings
       @delta_object = ThinkingSphinx::Deltas.parse self, builder.properties
       @options      = builder.properties
       
+      is_faceted = Proc.new { |item| item.faceted }
+      add_facet  = Proc.new { |item| @model.sphinx_facets << item.to_facet }
+      
       @model.sphinx_facets ||= []
-      @fields.select { |field| field.faceted }.each { |field|
-        @model.sphinx_facets << field.to_facet
-      }
-      @attributes.select { |attrib| attrib.faceted }.each { |attrib|
-        @model.sphinx_facets << attrib.to_facet
-      }
+      @fields.select(    &is_faceted).each &add_facet
+      @attributes.select(&is_faceted).each &add_facet
       
       # We want to make sure that if the database doesn't exist, then Thinking
       # Sphinx doesn't mind when running non-TS tasks (like db:create, db:drop
