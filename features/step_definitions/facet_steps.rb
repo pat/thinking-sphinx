@@ -36,7 +36,6 @@ Then /^I should have the facet ([\w_]+)$/ do |name|
   @facet = name.downcase.to_sym
 end
 
-require "ruby-debug"
 Then /^it should have a "([\w\s_]+)" key with (\d+) hits$/ do |key, hit_count|
   verify_presence_of(key)
   results[@facet][@item].should eql(hit_count.to_i)
