@@ -9,8 +9,8 @@ module ThinkingSphinx
     end
     
     def add_from_results(facet, results)
-      self[facet.name]              = {}
-      @attribute_values[facet.name] = {}
+      self[facet.name]          ||= {}
+      @attribute_values[facet.name] ||= {}
       @facets << facet
       
       results.each_with_groupby_and_count { |result, group, count|

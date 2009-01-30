@@ -387,6 +387,17 @@ module ThinkingSphinx
           end
         end
         
+        #remove polymorphic classes and replace them with a parent class
+        klasses = klasses.inject([]) do |array, klass|
+          if klass.superclass.name == "ActiveRecord::Base"
+            array << klass            
+          else
+            array << klass.superclass unless array.include?(klass.superclass)
+          end
+          
+          array
+        end
+        
         klasses.each do |klass|
           klass.sphinx_facets.inject(hash) do |hash, facet|
             if facet.name != :class || options[:include_class_facets]
