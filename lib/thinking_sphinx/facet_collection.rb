@@ -9,16 +9,16 @@ module ThinkingSphinx
     end
     
     def add_from_results(facet, results)
-      self[facet.name]              ||= {}
+      self[facet.name]              = {}
       @attribute_values[facet.name] = {}
       @facets << facet
       
       results.each_with_groupby_and_count { |result, group, count|
         facet_value = facet.value(result, group)
         
-        self[facet.name][facet_value]              ||= 0
-        self[facet.name][facet_value]                = count
-        @attribute_values[facet.name][facet_value] ||= group
+        self[facet.name][facet_value]              = 0
+        self[facet.name][facet_value]              = count
+        @attribute_values[facet.name][facet_value] = group
       }
     end
     
