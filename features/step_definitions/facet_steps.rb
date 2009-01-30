@@ -31,6 +31,22 @@ Then /^I should have (\d+) facets?$/ do |count|
   results.keys.length.should == count.to_i
 end
 
-Then /^I should have the facet (\w+)$/ do |name|
+Then /^I should have the facet ([\w_]+)$/ do |name|
   results[name.downcase.to_sym].should be_kind_of(Hash)
+  @facet = name.downcase.to_sym
+end
+
+require "ruby-debug"
+Then /^it should have a "([\w\s_]+)" key with (\d+) hits$/ do |key, hit_count|
+  verify_presence_of(key)
+  results[@facet][@item].should eql(hit_count.to_i)
+end
+
+Then /^it should have a "(\w+)" key$/ do |key|
+  verify_presence_of(key)
+end
+
+def verify_presence_of(key)
+  @item = key
+  results[@facet].keys.include?(@item).should be_true
 end

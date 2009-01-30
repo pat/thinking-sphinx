@@ -17,7 +17,7 @@ module ThinkingSphinx
         facet_value = facet.value(result, group)
         
         self[facet.name][facet_value]              ||= 0
-        self[facet.name][facet_value]               += count
+        self[facet.name][facet_value]                = count
         @attribute_values[facet.name][facet_value] ||= group
       }
     end
