@@ -385,6 +385,8 @@ module ThinkingSphinx
             hash[:class][result.class.name] = count
             klasses << result.class
           end
+          
+          options[:include_class_facets] = false
         end
         
         #remove polymorphic classes and replace them with a parent class
@@ -402,7 +404,7 @@ module ThinkingSphinx
           klass.sphinx_facets.inject(hash) do |hash, facet|
             if facet.name != :class || options[:include_class_facets]
               hash.add_from_results facet, 
-                search(*(args + 
+                klass.search(*(args + 
                   [options.merge(:group_by => facet.attribute_name)]))
             end
 
