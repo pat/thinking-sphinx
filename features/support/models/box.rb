@@ -3,5 +3,6 @@ class Box < ActiveRecord::Base
     indexes width, :as => :width_field
     
     has width, length, depth
+    has [width, length, depth], :as => :dimensions
   end
 end

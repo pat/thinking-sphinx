@@ -8,6 +8,7 @@ Before do
   @conditions = {}
   @with       = {}
   @without    = {}
+  @with_all   = {}
   @options    = {}
 end
 
@@ -40,9 +41,25 @@ When /^I search for (\w+) on (\w+)$/ do |query, field|
   @conditions[field.to_sym] = query
 end
 
+When /^I clear existing filters$/ do
+  @with     = {}
+  @without  = {}
+  @with_all = {}
+end
+
 When /^I filter by (\w+) on (\w+)$/ do |filter, attribute|
   @results = nil
   @with[attribute.to_sym] = filter.to_i
+end
+
+When /^I filter by (\d+) and (\d+) on (\w+)$/ do |value_one, value_two, attribute|
+  @results = nil
+  @with[attribute.to_sym] = [value_one.to_i, value_two.to_i]
+end
+
+When /^I filter by both (\d+) and (\d+) on (\w+)$/ do |value_one, value_two, attribute|
+  @results = nil
+  @with_all[attribute.to_sym] = [value_one.to_i, value_two.to_i]
 end
 
 When /^I filter between ([\d\.]+) and ([\d\.]+) on (\w+)$/ do |first, last, attribute|
@@ -130,7 +147,8 @@ def results
     @options.merge(
       :conditions => @conditions,
       :with       => @with,
-      :without    => @without
+      :without    => @without,
+      :with_all   => @with_all
     )
   )
 end

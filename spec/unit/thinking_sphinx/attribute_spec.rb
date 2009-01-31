@@ -157,7 +157,7 @@ describe ThinkingSphinx::Attribute do
     end
     
     it "should return :string if there's more than one association" do
-      @attribute.associations = {:a => :assoc, :b => :assoc}
+      @attribute.associations = {:a => [:assoc], :b => [:assoc]}
       @attribute.send(:type).should == :string
     end
     

@@ -469,6 +469,13 @@ module ThinkingSphinx
           Riddle::Client::Filter.new attr.to_s, filter_value(val), true
         } if options[:without]
         
+        # every-match attribute filters
+        client.filters += options[:with_all].collect { |attr,vals|
+          Array(vals).collect { |val|
+            Riddle::Client::Filter.new attr.to_s, filter_value(val)
+          }
+        }.flatten if options[:with_all]
+        
         # exclusive attribute filter on primary key
         client.filters += Array(options[:without_ids]).collect { |id|
           Riddle::Client::Filter.new 'sphinx_internal_id', filter_value(id), true

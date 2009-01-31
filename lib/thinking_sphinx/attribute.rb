@@ -140,7 +140,7 @@ module ThinkingSphinx
     # actual column's datatype is and returns that.
     def type
       @type ||= case
-      when is_many?
+      when is_many?, is_many_ints?
         :multi
       when @associations.values.flatten.length > 1
         :string
@@ -204,6 +204,10 @@ module ThinkingSphinx
     # 
     def is_many?
       associations.values.flatten.any? { |assoc| assoc.is_many? }
+    end
+    
+    def is_many_ints?
+      concat_ws? && all_ints?
     end
     
     # Returns true if any of the columns are string values, instead of database
