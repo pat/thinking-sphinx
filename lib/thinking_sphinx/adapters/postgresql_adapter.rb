@@ -69,7 +69,7 @@ module ThinkingSphinx
     end
     
     def create_array_accum_function
-      if connection.raw_connection.server_version > 80200
+      if connection.raw_connection.respond_to?(:server_version) && connection.raw_connection.server_version > 80200
         execute <<-SQL
           CREATE AGGREGATE array_accum (anyelement)
           (
