@@ -71,24 +71,42 @@ module AfterCommit
         # after_commit callback can be made from the ConnectionAdapters when
         # the commit for the transaction has finally succeeded. 
         def after_commit_callback
-          @calling_after_commit ||= false
-          return if @calling_after_commit
-          
-          @calling_after_commit = true
-          callback(:after_commit)
-          @calling_after_commit = false
+          call_after_commit_callback :after_commit
         end
         
         def after_commit_on_create_callback
-          callback(:after_commit_on_create)
+          call_after_commit_callback :after_commit_on_create
         end
         
         def after_commit_on_update_callback
-          callback(:after_commit_on_update)
+          call_after_commit_callback :after_commit_on_update
         end
         
         def after_commit_on_destroy_callback
-          callback(:after_commit_on_destroy)
+          call_after_commit_callback :after_commit_on_destroy
+        end
+        
+        private
+        
+        def call_after_commit_callback(call)
+          if can_call_after_commit call
+            callback call
+            clear_after_commit_call call
+          end
+        end
+        
+        def can_call_after_commit(call)
+          @calls ||= {}
+          @calls[call] ||= false
+          if @calls[call]
+            return false
+          else
+            @calls[call] = true
+          end
+        end
+        
+        def clear_after_commit_call(call)
+          @calls[call] = false
         end
       end
     end
