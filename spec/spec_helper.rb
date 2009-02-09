@@ -3,10 +3,12 @@ $:.unshift File.dirname(__FILE__) + '/../lib'
 require 'rubygems'
 require 'fileutils'
 require 'ginger'
+
+require 'lib/thinking_sphinx'
+
 require 'not_a_mock'
 require 'will_paginate'
 
-require 'lib/thinking_sphinx'
 require 'spec/sphinx_helper'
 
 ActiveRecord::Base.logger = Logger.new(StringIO.new)

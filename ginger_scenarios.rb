@@ -20,5 +20,9 @@ Ginger.configure do |config|
   ar_2_2_0[/^active_?support$/] = "2.2.0"
   ar_2_2_0[/^active_?record$/] = "2.2.0"
   
-  config.scenarios << ar_1_2_6 << ar_2_0_4 << ar_2_1_2 << ar_2_2_0
+  ar_2_3_0 = Ginger::Scenario.new
+  ar_2_3_0[/^active_?support$/] = "2.3.0"
+  ar_2_3_0[/^active_?record$/] = "2.3.0"
+  
+  config.scenarios << ar_1_2_6 << ar_2_0_4 << ar_2_1_2 << ar_2_2_0 << ar_2_3_0
 end
