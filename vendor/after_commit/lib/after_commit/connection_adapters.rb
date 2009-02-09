@@ -7,7 +7,7 @@ module AfterCommit
         # override it so that after this happens, any records that were saved
         # or destroyed within this transaction now get their after_commit
         # callback fired.
-        def commit_db_transaction_with_callback          
+        def commit_db_transaction_with_callback
           commit_db_transaction_without_callback
           trigger_after_commit_callbacks
           trigger_after_commit_on_create_callbacks

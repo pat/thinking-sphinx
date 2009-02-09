@@ -71,7 +71,12 @@ module AfterCommit
         # after_commit callback can be made from the ConnectionAdapters when
         # the commit for the transaction has finally succeeded. 
         def after_commit_callback
+          @calling_after_commit ||= false
+          return if @calling_after_commit
+          
+          @calling_after_commit = true
           callback(:after_commit)
+          @calling_after_commit = false
         end
         
         def after_commit_on_create_callback
