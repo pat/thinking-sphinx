@@ -105,3 +105,4 @@ Since I first released this library, there's been quite a few people who have su
 * Tom Davies
 * Dan Pickett
 * Alex Caudill
+* Jim Benton
