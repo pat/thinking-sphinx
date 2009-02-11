@@ -21,6 +21,16 @@ Feature: Searching on a single model
     When I search for James on first_name
     And I search for Chamberlain on last_name
     Then I should get 1 result
+
+  Scenario: Searching on association content
+	  Given Sphinx is running
+	  And I am searching on posts
+	
+	  When I search for "Waffles"
+	  Then I should get 1 result
+
+	  When I search for "Turtle"
+	  Then I should get 1 result
   
   Scenario: Searching with a filter
     Given Sphinx is running
