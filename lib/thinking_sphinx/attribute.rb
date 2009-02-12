@@ -192,7 +192,11 @@ module ThinkingSphinx
           if association.has_column?(col.__name)
             if association.reflection && association.reflection.options[:through]
               association_table = association.join.aliased_join_table_name
-              primary_key = association.reflection.source_reflection.options[:foreign_key]
+              if association.reflection.source_reflection.options[:foreign_key]
+                primary_key = association.reflection.source_reflection.options[:foreign_key]
+              else
+                primary_key = association.reflection.source_reflection.primary_key_name
+              end
             else
               association_table = association.join.aliased_table_name
               primary_key = col.__name

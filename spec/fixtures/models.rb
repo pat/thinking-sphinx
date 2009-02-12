@@ -7,6 +7,8 @@ class Person < ActiveRecord::Base
   
   has_many :tags
   
+  has_many :football_teams, :through => :tags
+  
   define_index do
     indexes [first_name, middle_initial, last_name], :as => :name
     indexes team.name, :as => :team_name
@@ -47,10 +49,11 @@ end
 
 class Tag < ActiveRecord::Base
   belongs_to :person
+  belongs_to :football_team
 end
 
 class FootballTeam < ActiveRecord::Base
-  #
+  has_many :tags
 end
 
 class CricketTeam < ActiveRecord::Base

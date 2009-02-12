@@ -85,6 +85,36 @@ describe ThinkingSphinx::Index do
   describe "multi-value attribute as ranged-query with has-many-through association" do
     before :each do
       @index = ThinkingSphinx::Index.new(Person) do
+        has football_teams(:id), :as => :football_teams_ids, :source => :ranged_query
+      end
+      @index.link!
+      
+      @sql = @index.to_riddle_for_core(0, 0).sql_query
+    end
+    
+    it "should not include attribute in select-clause sql_query" do
+      @sql.should_not match(/football_teams_ids/)
+      @sql.should_not match(/GROUP_CONCAT\(`tags`.`football_team_id`/)
+    end
+    
+    it "should not join with association table" do
+      @sql.should_not match(/LEFT OUTER JOIN `tags`/)
+    end
+    
+    it "should include sql_attr_multi as ranged-query" do
+      attribute = @index.send(:attributes).first
+      attribute.send(:type_to_config).to_s.should == "sql_attr_multi"
+      
+      declaration, query, range_query = attribute.send(:config_value).split('; ')
+      declaration.should == "uint football_teams_ids from ranged-query"
+      query.should       == "SELECT `tags`.`person_id` #{ThinkingSphinx.unique_id_expression} AS `id`, `tags`.`football_team_id` AS `football_teams_ids` FROM `tags` WHERE `tags`.`person_id` >= $start AND `tags`.`person_id` <= $end"
+      range_query.should == "SELECT MIN(`tags`.`person_id`), MAX(`tags`.`person_id`) FROM `tags`"
+    end
+  end
+  
+  describe "multi-value attribute as ranged-query with has-many-through association and foreign_key" do
+    before :each do
+      @index = ThinkingSphinx::Index.new(Person) do
         has friends(:id), :as => :friend_ids, :source => :ranged_query
       end
       @index.link!
