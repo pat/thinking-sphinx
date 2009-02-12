@@ -106,3 +106,4 @@ Since I first released this library, there's been quite a few people who have su
 * Dan Pickett
 * Alex Caudill
 * Jim Benton
+* John Aughey
