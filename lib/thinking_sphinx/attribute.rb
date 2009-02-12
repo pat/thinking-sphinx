@@ -9,14 +9,15 @@ module ThinkingSphinx
   # associations. Which can get messy. Use Index.link!, it really helps.
   # 
   class Attribute
-    attr_accessor :alias, :columns, :associations, :model, :faceted
+    attr_accessor :alias, :columns, :associations, :model, :faceted, :source
     
     # To create a new attribute, you'll need to pass in either a single Column
     # or an array of them, and some (optional) options.
     #
     # Valid options are:
-    # - :as   => :alias_name 
-    # - :type => :attribute_type
+    # - :as     => :alias_name
+    # - :type   => :attribute_type
+    # - :source => :field, :query, :ranged_query
     #
     # Alias is only required in three circumstances: when there's
     # another attribute or field with the same name, when the column name is
@@ -28,6 +29,13 @@ module ThinkingSphinx
     # can't be figured out by the column - ie: when not actually using a
     # database column as your source.
     # 
+    # Source is only used for multi-value attributes (MVA). By default this will
+    # use a left-join and a group_concat to obtain the values. For better performance
+    # during indexing it can be beneficial to let Sphinx use a separate query to retrieve
+    # all document,value-pairs.
+    # Either :query or :ranged_query will enable this feature, where :ranged_query will cause
+    # the query to be executed incremental.
+    #
     # Example usage:
     #
     #   Attribute.new(
@@ -37,6 +45,12 @@ module ThinkingSphinx
     #   Attribute.new(
     #     Column.new(:posts, :id),
     #     :as => :post_ids
+    #   )
+    #
+    #   Attribute.new(
+    #     Column.new(:posts, :id),
+    #     :as => :post_ids,
+    #     :source => :ranged_query
     #   )
     #
     #   Attribute.new(
@@ -62,6 +76,7 @@ module ThinkingSphinx
       @alias    = options[:as]
       @type     = options[:type]
       @faceted  = options[:facet]
+      @source   = options[:source]
     end
     
     # Get the part of the SELECT clause related to this attribute. Don't forget
@@ -71,6 +86,8 @@ module ThinkingSphinx
     # datetimes to timestamps, as needed.
     # 
     def to_select_sql
+      return nil unless include_as_association?
+      
       clause = @columns.collect { |column|
         column_with_prefix(column)
       }.join(', ')
@@ -113,9 +130,19 @@ module ThinkingSphinx
       }[type]
     end
     
-    def config_value
+    def include_as_association?
+      ! (type == :multi && (source == :query || source == :ranged_query))
+    end
+    
+    # Returns the configuration value that should be used for
+    # the attribute.
+    # Special case is the multi-valued attribute that needs some
+    # extra configuration. 
+    # 
+    def config_value(offset = nil)
       if type == :multi
-        "uint #{unique_name} from field"
+        multi_config = include_as_association? ? "field" : source_value(offset)
+        "uint #{unique_name} from #{multi_config}"
       else
         unique_name
       end
@@ -156,6 +183,34 @@ module ThinkingSphinx
     end
     
     private
+    
+    def source_value(offset)
+      query = range_query = query_clause = nil
+      
+      columns.each do |col|
+        associations[col].each do |association|
+          if association.has_column?(col.__name)
+            association_table = @model.connection.quote_table_name(association.join.aliased_table_name)
+            foreign_key       = "#{association_table}.#{quote_column(association.reflection.primary_key_name)} #{ThinkingSphinx.unique_id_expression(offset)} AS `id`"
+            prefixed_column   = column_with_prefix(col)
+            
+            query        = "SELECT #{foreign_key}, #{prefixed_column} AS #{quote_column(unique_name)} FROM #{association_table}"
+            query_clause = "WHERE #{prefixed_column} >= $start AND #{prefixed_column} <= $end"
+            range_query  = "SELECT MIN(#{prefixed_column}), MAX(#{prefixed_column}) FROM #{association_table}"
+          end
+        end
+      end
+      
+      if query && range_query && query_clause
+        if source == :ranged_query
+          "ranged-query; #{query} #{query_clause}; #{range_query}"
+        else
+          "query; #{query}"
+        end
+      else
+        raise "Could not determine SQL for MVA"
+      end
+    end
     
     def adapter
       @adapter ||= @model.sphinx_database_adapter

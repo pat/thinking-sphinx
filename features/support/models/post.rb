@@ -7,5 +7,7 @@ class Post < ActiveRecord::Base
     indexes content
     indexes tags.text, :as => :tags
     indexes comments.content, :as => :comments
+
+    has comments(:id), :as => :comment_ids, :source => :ranged_query
   end
 end

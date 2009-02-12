@@ -56,7 +56,7 @@ module ThinkingSphinx
       )
       
       set_source_database_settings  source
-      set_source_attributes         source
+      set_source_attributes         source, offset
       set_source_sql                source, offset
       set_source_settings           source
       
@@ -73,7 +73,7 @@ module ThinkingSphinx
       source.parent = "#{name}_core_#{index}"
       
       set_source_database_settings  source
-      set_source_attributes         source
+      set_source_attributes         source, offset
       set_source_sql                source, offset, true
       
       source
@@ -200,8 +200,8 @@ module ThinkingSphinx
         }.flatten +
         # attribute associations
         @attributes.collect { |attrib|
-          attrib.associations.values
-        }.flatten
+          attrib.associations.values if attrib.include_as_association?
+        }.compact.flatten
       ).uniq.collect { |assoc|
         # get ancestors as well as column-level associations
         assoc.ancestors
@@ -285,9 +285,9 @@ module ThinkingSphinx
       source.sql_sock = config[:socket]
     end
     
-    def set_source_attributes(source)
+    def set_source_attributes(source, offset = nil)
       attributes.each do |attrib|
-        source.send(attrib.type_to_config) << attrib.config_value
+        source.send(attrib.type_to_config) << attrib.config_value(offset)
       end
     end
     
@@ -354,14 +354,14 @@ module ThinkingSphinx
          internal_groupings << "#{@model.quoted_table_name}.#{quote_column(@model.inheritance_column)}"
       end
       
-      unique_id_expr = "* #{ThinkingSphinx.indexed_models.size} + #{options[:offset] || 0}"
+      unique_id_expr = ThinkingSphinx.unique_id_expression(options[:offset])
       
       sql = <<-SQL
 SELECT #{ (
   ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key)} #{unique_id_expr} AS #{quote_column(@model.primary_key)} "] + 
   @fields.collect { |field| field.to_select_sql } +
   @attributes.collect { |attribute| attribute.to_select_sql }
-).join(", ") }
+).compact.join(", ") }
 FROM #{ @model.table_name }
   #{ assocs.collect { |assoc| assoc.to_sql }.join(' ') }
 WHERE #{@model.quoted_table_name}.#{quote_column(@model.primary_key)} >= $start

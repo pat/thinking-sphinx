@@ -5,6 +5,8 @@ class Person < ActiveRecord::Base
   has_many :friendships
   has_many :friends, :through => :friendships
   
+  has_many :tags
+  
   define_index do
     indexes [first_name, middle_initial, last_name], :as => :name
     indexes team.name, :as => :team_name
@@ -40,6 +42,10 @@ class Child < Person
 end
 
 class Contact < ActiveRecord::Base
+  belongs_to :person
+end
+
+class Tag < ActiveRecord::Base
   belongs_to :person
 end
 

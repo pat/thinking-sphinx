@@ -60,6 +60,10 @@ module ThinkingSphinx
     @@indexed_models ||= []
   end
   
+  def self.unique_id_expression(offset = nil)
+    "* #{ThinkingSphinx.indexed_models.size} + #{offset || 0}"
+  end
+  
   # Check if index definition is disabled.
   # 
   def self.define_indexes?

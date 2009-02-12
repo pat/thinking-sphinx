@@ -51,4 +51,34 @@ describe ThinkingSphinx::Index do
       @index.infix_fields.should_not include(@field_b)
     end
   end
+  
+  describe "multi-value attribute as ranged-query" do
+    before :each do 
+      @index = ThinkingSphinx::Index.new(Person) do
+        has tags(:id), :as => :tag_ids, :source => :ranged_query
+      end
+      @index.link!
+      
+      @sql = @index.to_riddle_for_core(0, 0).sql_query
+    end
+    
+    it "should not include attribute in select-clause sql_query" do
+      @sql.should_not match(/tag_ids/)
+      @sql.should_not match(/GROUP_CONCAT\(`tags`.`id`/)
+    end
+    
+    it "should not join with association table" do
+      @sql.should_not match(/LEFT OUTER JOIN `tags`/)
+    end
+    
+    it "should include sql_attr_multi as ranged-query" do
+      attribute = @index.send(:attributes).first
+      attribute.send(:type_to_config).to_s.should == "sql_attr_multi"
+      
+      declaration, query, range_query = attribute.send(:config_value).split('; ')
+      declaration.should == "uint tag_ids from ranged-query"
+      query.should       == "SELECT `tags`.`person_id` #{ThinkingSphinx.unique_id_expression} AS `id`, `tags`.`id` AS `tag_ids` FROM `tags` WHERE `tags`.`id` >= $start AND `tags`.`id` <= $end"
+      range_query.should == "SELECT MIN(`tags`.`id`), MAX(`tags`.`id`) FROM `tags`"
+    end
+  end
 end
