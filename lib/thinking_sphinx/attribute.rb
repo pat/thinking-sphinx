@@ -190,13 +190,23 @@ module ThinkingSphinx
       columns.each do |col|
         associations[col].each do |association|
           if association.has_column?(col.__name)
-            association_table = @model.connection.quote_table_name(association.join.aliased_table_name)
-            foreign_key       = "#{association_table}.#{quote_column(association.reflection.primary_key_name)} #{ThinkingSphinx.unique_id_expression(offset)} AS `id`"
-            prefixed_column   = column_with_prefix(col)
+            if association.reflection && association.reflection.options[:through]
+              association_table = association.join.aliased_join_table_name
+              primary_key = association.reflection.source_reflection.options[:foreign_key]
+            else
+              association_table = association.join.aliased_table_name
+              primary_key = col.__name
+            end
             
-            query        = "SELECT #{foreign_key}, #{prefixed_column} AS #{quote_column(unique_name)} FROM #{association_table}"
-            query_clause = "WHERE #{prefixed_column} >= $start AND #{prefixed_column} <= $end"
-            range_query  = "SELECT MIN(#{prefixed_column}), MAX(#{prefixed_column}) FROM #{association_table}"
+            association_table = quote_table_name(association_table)
+            
+            primary_key  = "#{association_table}.#{quote_column(primary_key)}"
+            foreign_key  = "#{association_table}.#{quote_column(association.reflection.primary_key_name)}"
+            foreign_key_with_id = "#{foreign_key} #{ThinkingSphinx.unique_id_expression(offset)} AS `id`"
+            
+            query        = "SELECT #{foreign_key_with_id}, #{primary_key} AS #{quote_column(unique_name)} FROM #{association_table}"
+            query_clause = "WHERE #{foreign_key} >= $start AND #{foreign_key} <= $end"
+            range_query  = "SELECT MIN(#{foreign_key}), MAX(#{foreign_key}) FROM #{association_table}"
           end
         end
       end
@@ -218,6 +228,10 @@ module ThinkingSphinx
     
     def quote_column(column)
       @model.connection.quote_column_name(column)
+    end
+    
+    def quote_table_name(table_name)
+      @model.connection.quote_table_name(table_name)
     end
     
     # Indication of whether the columns should be concatenated with a space
@@ -247,7 +261,7 @@ module ThinkingSphinx
       else
         associations[column].collect { |assoc|
           assoc.has_column?(column.__name) ?
-          "#{@model.connection.quote_table_name(assoc.join.aliased_table_name)}" + 
+          "#{quote_table_name(assoc.join.aliased_table_name)}" + 
           ".#{quote_column(column.__name)}" :
           nil
         }.compact.join(', ')
