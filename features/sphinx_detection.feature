@@ -14,3 +14,8 @@ Feature: Checking whether Sphinx is running or not
     When I start Sphinx
     And I wait for Sphinx to catch up
     Then Sphinx should be running
+    
+    Given Sphinx is running
+    When I kill the Sphinx process
+    And I wait for Sphinx to catch up
+    Then Sphinx should not be running

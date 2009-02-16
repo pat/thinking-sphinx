@@ -2,6 +2,10 @@ Given "Sphinx is running" do
   ThinkingSphinx::Configuration.instance.controller.should be_running
 end
 
+When "I kill the Sphinx process" do
+  Process.kill(9, ThinkingSphinx.sphinx_pid.to_i)
+end
+
 When "I wait for Sphinx to catch up" do
   sleep(0.25)
 end

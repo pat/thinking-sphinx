@@ -134,11 +134,20 @@ module ThinkingSphinx
   end
   
   def self.sphinx_running?
-    !!sphinx_pid
+    !!sphinx_pid && pid_active?(sphinx_pid)
   end
   
   def self.sphinx_pid
     pid_file = ThinkingSphinx::Configuration.instance.pid_file    
     `cat #{pid_file}`[/\d+/] if File.exists?(pid_file)
+  end
+  
+  def self.pid_active?(pid)
+    begin
+      Process.getpgid(pid.to_i)
+      true
+    rescue Exception => e
+      false
+    end
   end
 end
