@@ -1,4 +1,4 @@
-module ThinkingSphinx  
+module ThinkingSphinx
   # Once you've got those indexes in and built, this is the stuff that
   # matters - how to search! This class provides a generic search
   # interface - which you can use to search all your indexed models at once.
@@ -368,14 +368,18 @@ module ThinkingSphinx
         end
       end
       
+      # Model.facets *args
+      # ThinkingSphinx::Search.facets *args
+      # ThinkingSphinx::Search.facets *args, :all_attributes  => true
+      # ThinkingSphinx::Search.facets *args, :class_facet     => false
+      # 
       def facets(*args)
         hash    = ThinkingSphinx::FacetCollection.new args
         options = args.extract_options!.clone.merge! :group_function => :attr
         
-        klasses = options[:classes] || [options[:class]]
-        klasses = [] if options[:class].nil?
+        klasses = (options[:classes] || [options[:class]]).compact
         
-        #no classes specified so get classes from resultset
+        # No classes specified so get classes from resultset
         if klasses.empty?
           options[:group_by] = "class_crc"
           results = search(*(args + [options]))
@@ -389,7 +393,7 @@ module ThinkingSphinx
           options[:include_class_facets] = false
         end
         
-        #remove polymorphic classes and replace them with a parent class
+        # Remove polymorphic classes and replace them with a parent class
         klasses = klasses.inject([]) do |array, klass|
           if klass.superclass.name == "ActiveRecord::Base"
             array << klass            
@@ -415,8 +419,48 @@ module ThinkingSphinx
         hash
       end
       
+      def facets_for_model(klass, args, options)
+        hash    = ThinkingSphinx::FacetCollection.new args + [options]
+        options = options.clone.merge! :group_function => :attr
+        
+        klass.sphinx_facets.inject(hash) do |hash, facet|
+          options[:group_by] = facet.attribute_name
+          hash.add_from_results facet, search(*(args + [options]))
+          hash
+        end
+      end
+      
+      def facets_for_all_models(args, options)
+        hash    = ThinkingSphinx::FacetCollection.new args + [options]
+        options = options.clone.merge! :group_function => :attr
+        
+        classes = ThinkingSphinx.indexed_models.collect { |model|
+          model.constantize
+        }
+        facet_names_common_to_all_classes(classes).inject(hash) do |hash, name|
+          options[:group_by] = attribute_name
+          hash.add_from_results facet, search(*(args + [options]))
+          hash
+        end
+      end
+      
       private
       
+      def facet_names_for_all_classes(classes)
+        classes.collect { |klass|
+          klass.sphinx_facets.collect { |facet| facet.attribute_name }
+        }.flatten.uniq
+      end
+      
+      def facet_names_common_to_all_classes(classes)
+        facet_names_for_all_classes.select { |name|
+          classes.all? { |klass|
+            klass.sphinx_facets.detect { |facet|
+              facet.attribute_name == attribute_name
+            }
+          }
+        }
+      end
       
       # This method handles the common search functionality, and returns both
       # the result hash and the client. Not super elegant, but it'll do for

@@ -42,7 +42,7 @@ module ThinkingSphinx
       name
     end
     
-    protected
+    private
     
     def translate(object, attribute_value)
       column.__stack.each { |method|

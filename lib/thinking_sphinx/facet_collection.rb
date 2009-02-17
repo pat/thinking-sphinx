@@ -9,7 +9,9 @@ module ThinkingSphinx
     end
     
     def add_from_results(facet, results)
-      self[facet.name]          ||= {}
+      facet = facet_from_object(results.first, facet) if facet.is_a?(String)
+      
+      self[facet.name]              ||= {}
       @attribute_values[facet.name] ||= {}
       @facets << facet
       
@@ -40,6 +42,10 @@ module ThinkingSphinx
     
     def facet_for_key(key)
       @facets.detect { |facet| facet.name == key }
+    end
+    
+    def facet_from_object(object, name)
+      object.sphinx_facets.detect { |facet| facet.attribute_name == name }
     end
   end
 end
