@@ -224,8 +224,8 @@ module ThinkingSphinx
         # 
         # Example: indexes assoc(:properties).column
         # 
-        def assoc(assoc)
-          FauxColumn.new(method)
+        def assoc(assoc, *args)
+          FauxColumn.new(assoc, *args)
         end
       end
     end
