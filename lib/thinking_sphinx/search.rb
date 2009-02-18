@@ -213,6 +213,33 @@ module ThinkingSphinx
       # you read all the relevant
       # documentation[http://sphinxsearch.com/doc.html#clustering] first.
       # 
+      # Grouping is done via three parameters within the options hash
+      # * <tt>:group_function</tt> determines the way grouping is done
+      # * <tt>:group_by</tt> determines the field which is used for grouping
+      # * <tt>:group_clause</tt> determines the sorting order 
+      #
+      # === group_function
+      #  
+      # Valid values for :group_function are
+      # * <tt>:day</tt>, <tt>:week</tt>, <tt>:month</tt>, <tt>:year</tt> => Group is done by the respective timeframes. 
+      # * <tt>:attr</tt>, <tt>:attrpair</tt> => Grouping is done by the specified attributes(s)
+      # 
+      # === group_by
+      #
+      # This parameter denotes the field by which grouping is done. Note that the
+      # specified field must be a sphinx attribute or index.
+      #
+      # === group_clause
+      #
+      # This determines the sorting order of the groups. In a grouping search,
+      # the matches within a group will sorted by the <tt>:sort_mode</tt> and <tt>:order</tt> parameters.
+      # The group matches themselves however, will be sorted by <tt>:group_clause</tt>. 
+      # 
+      # The syntax for this is the same as an order parameter in extended sort mode.
+      # Namely, you can specify an SQL-like sort expression with up to 5 attributes 
+      # (including internal attributes), eg: "@relevance DESC, price ASC, @id DESC"
+      # 
+      #
       # Yes this section will be expanded, but this is a start.
       #
       # == Geo/Location Searching
