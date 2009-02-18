@@ -221,8 +221,8 @@ module ThinkingSphinx
       # === group_function
       #  
       # Valid values for :group_function are
-      # * <tt>:day</tt>, <tt>:week</tt>, <tt>:month</tt>, <tt>:year</tt> => Group is done by the respective timeframes. 
-      # * <tt>:attr</tt>, <tt>:attrpair</tt> => Grouping is done by the specified attributes(s)
+      # * <tt>:day</tt>, <tt>:week</tt>, <tt>:month</tt>, <tt>:year</tt> - Grouping is done by the respective timeframes. 
+      # * <tt>:attr</tt>, <tt>:attrpair</tt> - Grouping is done by the specified attributes(s)
       # 
       # === group_by
       #
@@ -238,9 +238,41 @@ module ThinkingSphinx
       # The syntax for this is the same as an order parameter in extended sort mode.
       # Namely, you can specify an SQL-like sort expression with up to 5 attributes 
       # (including internal attributes), eg: "@relevance DESC, price ASC, @id DESC"
-      # 
       #
-      # Yes this section will be expanded, but this is a start.
+      # === Grouping by timestamp
+      # 
+      # Timestamp grouping groups off items by the day, week, month or year of the
+      # attribute given. In order to do this you need to define a timestamp attribute,
+      # which pretty much looks like the standard defintion for any attribute.
+      #
+      #   define_index do
+      #     #
+      #     # All your other stuff
+      #     #
+      #     has :created_at
+      #   end
+      #
+      # When you need to fire off your search, it'll go something to the tune of
+      #   
+      #   Fruit.search "apricot", :group_function => :day, :group_by => 'created_at'
+      #
+      # The <tt>@groupby</tt> special attribute will contain the date for that group.
+      # Depending on the <tt>:group_function</tt> parameter, the date format will be
+      #
+      # * <tt>:day</tt> - YYYYMMDD
+      # * <tt>:week</tt> - YYYYNNN (NNN is the first day of the week in question, 
+      #   counting from the start of the year )
+      # * <tt>:month</tt> - YYYYMM
+      # * <tt>:year</tt> - YYYY
+      #
+      #
+      # === Grouping by attribute
+      #
+      # The syntax is the same as grouping by timestamp, except for the fact that the 
+      # <tt>:group_function</tt> parameter is changed
+      #
+      #   Fruit.search "apricot", :group_function => :attr, :group_by => 'size'
+      # 
       #
       # == Geo/Location Searching
       #
