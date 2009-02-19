@@ -389,6 +389,7 @@ module ThinkingSphinx
         
         client.limit  = options[:per_page].to_i if options[:per_page]
         page          = options[:page] ? options[:page].to_i : 1
+        page          = 1 if page <= 0
         client.offset = (page - 1) * client.limit
 
         begin
