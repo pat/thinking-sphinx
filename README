@@ -10,6 +10,8 @@ Keep in mind that while Thinking Sphinx works for ActiveRecord with Merb, it doe
 
 Fork on GitHub and after you've committed tested patches, send a pull request.
 
+To quickly see if your system is ready to run the thinking sphinx specs, run the contribute.rb script found in the project root directory. Use the following instructions to install any missing requirements.
+
 To get the spec suite running, you will need to install the not-a-mock gem if you don't already have it:
 
   git clone git://github.com/freelancing-god/not-a-mock.git
