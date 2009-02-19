@@ -27,7 +27,7 @@ module ThinkingSphinx
       return translate(object, attribute_value) if @reference.is_a?(Field)
       
       case @reference.type
-      when :string, :multi
+      when :string
         translate(object, attribute_value)
       when :datetime
         Time.at(attribute_value)
