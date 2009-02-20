@@ -461,10 +461,10 @@ module ThinkingSphinx
         page          = options[:page] ? options[:page].to_i : 1
         page          = 1 if page <= 0
         client.offset = (page - 1) * client.limit
-
+        
         begin
           log "Sphinx: #{query}"
-          results = client.query query
+          results = client.query(query, '*', options[:comment] || '')
           log "Sphinx Result:"
           log results[:matches].collect { |m|
             m[:attributes]["sphinx_internal_id"]
