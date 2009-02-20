@@ -200,7 +200,17 @@ module ThinkingSphinx
         # 
         # Please don't forget to add a boolean field named 'delta' to your
         # model's database table if enabling the delta index for it.
+        # Valid options for the delta property are:
         # 
+        # true
+        # false
+        # :default
+        # :delayed
+        # :datetime
+        # 
+        # You can also extend ThinkingSphinx::Deltas::DefaultDelta to implement 
+        # your own handling for delta indexing.
+        
         def set_property(*args)
           options = args.extract_options!
           if options.empty?
