@@ -17,4 +17,4 @@ Feature: Searching across multiple model
   Scenario: Retrieving results from multiple models
     Given Sphinx is running
     When I search for ten
-    Then I should get 5 results
+    Then I should get 6 results
