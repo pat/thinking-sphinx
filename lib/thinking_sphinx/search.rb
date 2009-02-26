@@ -305,8 +305,10 @@ module ThinkingSphinx
       def retry_search_on_stale_index(query, options, &block)
         stale_ids = []
         stale_retries_left = case options[:retry_stale]
-                              when true:       3  # default to three retries
-                              when nil, false: 0  # no retries
+                              when true
+                                3  # default to three retries
+                              when nil, false
+                                0  # no retries
                               else             options[:retry_stale].to_i
                               end
         begin
