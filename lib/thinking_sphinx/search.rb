@@ -94,16 +94,24 @@ module ThinkingSphinx
       # == Searching by Attributes
       #
       # Also known as filters, you can limit your searches to documents that
-      # have specific values for their attributes. There are two ways to do
-      # this. The first is one that works in all scenarios - using the :with
-      # option.
+      # have specific values for their attributes. There are three ways to do
+      # this. The first two techniques work in all scenarios - using the :with
+      # or :with_all options.
       #
-      #   ThinkingSphinx::Search.search :with => {:parent_id => 10}
+      #   ThinkingSphinx::Search.search :with => {:tag_ids => 10}
+      #   ThinkingSphinx::Search.search :with => {:tag_ids => [10,12]}
+      #   ThinkingSphinx::Search.search :with_all => {:tag_ids => [10,12]}
       #
-      # The second is only viable if you're searching with a specific model
-      # (not multi-model searching). With a single model, Thinking Sphinx
-      # can figure out what attributes and fields are available, so you can
-      # put it all in the :conditions hash, and it will sort it out.
+      # The first :with search will match records with a tag_id attribute of 10.
+      # The second :with will match records with a tag_id attribute of 10 OR 12.
+      # If you need to find records that are tagged with ids 10 AND 12, you
+      # will need to use the :with_all search parameter. This is particuarly
+      # useful in conjunction with Multi Value Attributes (MVAs).
+      #
+      # The third filtering technique is only viable if you're searching with a
+      # specific model (not multi-model searching). With a single model,
+      # Thinking Sphinx can figure out what attributes and fields are available,
+      # so you can put it all in the :conditions hash, and it will sort it out.
       # 
       #   Node.search :conditions => {:parent_id => 10}
       # 
