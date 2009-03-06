@@ -207,11 +207,20 @@ module ThinkingSphinx
       )
     end
     
+    def in_index?(suffix)
+      self.class.search_for_id self.sphinx_document_id, sphinx_index_name(suffix)
+    end
+    
     def in_core_index?
-      self.class.search_for_id(
-        self.sphinx_document_id,
-        "#{self.class.source_of_sphinx_index.name.underscore.tr(':/\\', '_')}_core"
-      )
+      in_index? "core"
+    end
+    
+    def in_delta_index?
+      in_index? "delta"
+    end
+    
+    def in_both_indexes?
+      in_core_index? && in_delta_index?
     end
     
     def toggle_deleted
@@ -240,6 +249,12 @@ module ThinkingSphinx
     def sphinx_document_id
       (self.id * ThinkingSphinx.indexed_models.size) +
         ThinkingSphinx.indexed_models.index(self.class.source_of_sphinx_index.name)
+    end
+    
+    private
+    
+    def sphinx_index_name(suffix)
+      "#{self.class.source_of_sphinx_index.name.underscore.tr(':/\\', '_')}_#{suffix}"
     end
   end
 end

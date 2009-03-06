@@ -11,18 +11,19 @@ module ThinkingSphinx
       def index(model, instance = nil)
         return true unless ThinkingSphinx.updates_enabled? &&
           ThinkingSphinx.deltas_enabled?
+        return true if instance && !toggled(instance)
         
         config = ThinkingSphinx::Configuration.instance
         client = Riddle::Client.new config.address, config.port
+        
+        output = `#{config.bin_path}indexer --config #{config.config_file} --rotate #{delta_index_name model}`
+        puts(output) unless ThinkingSphinx.suppress_delta_output?
         
         client.update(
           core_index_name(model),
           ['sphinx_deleted'],
           {instance.sphinx_document_id => [1]}
-        ) if instance && ThinkingSphinx.sphinx_running? && instance.in_core_index?
-        
-        output = `#{config.bin_path}indexer --config #{config.config_file} --rotate #{delta_index_name model}`
-        puts output unless ThinkingSphinx.suppress_delta_output?
+        ) if instance && ThinkingSphinx.sphinx_running? && instance.in_both_indexes?
         
         true
       end

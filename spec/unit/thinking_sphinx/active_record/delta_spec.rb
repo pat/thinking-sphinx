@@ -76,7 +76,7 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
       
       @person = Person.new
       @person.stub_method(
-        :in_core_index?     => false,
+        :in_both_indexes?     => false,
         :sphinx_document_id => 1
       )
       
@@ -126,7 +126,7 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
     end
     
     it "should update the deleted attribute if in the core index" do
-      @person.stub_method(:in_core_index? => true)
+      @person.stub_method(:in_both_indexes? => true)
       
       @person.send(:index_delta)
       
