@@ -89,6 +89,7 @@ CREATE TABLE `tags` (
   `id` int(11) NOT NULL auto_increment,
   `person_id` int(11) NOT NULL,
   `football_team_id` int(11) NOT NULL,
+  `cricket_team_id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

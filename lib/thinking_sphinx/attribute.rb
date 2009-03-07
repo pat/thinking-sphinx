@@ -77,6 +77,8 @@ module ThinkingSphinx
       @type     = options[:type]
       @faceted  = options[:facet]
       @source   = options[:source]
+      
+      @type   ||= :multi unless @source.nil?
     end
     
     # Get the part of the SELECT clause related to this attribute. Don't forget
@@ -186,7 +188,9 @@ module ThinkingSphinx
     private
     
     def source_value(offset)
-      if source == :ranged_query
+      if is_string?
+        "#{source.to_s.dasherize}; #{columns.first.__name}"
+      elsif source == :ranged_query
         "ranged-query; #{query offset} #{query_clause}; #{range_query}"
       else
         "query; #{query offset}"
@@ -206,13 +210,14 @@ FROM #{quote_table_name assoc.table}
     end
     
     def query_clause
-      assoc = association_for_mva
-      "WHERE #{foreign_key_for_mva assoc} >= $start AND #{foreign_key_for_mva assoc} <= $end"
+      foreign_key = foreign_key_for_mva association_for_mva
+      "WHERE #{foreign_key} >= $start AND #{foreign_key} <= $end"
     end
     
     def range_query
-      assoc = association_for_mva
-      "SELECT MIN(#{foreign_key_for_mva assoc}), MAX(#{foreign_key_for_mva assoc}) FROM #{quote_table_name assoc.table}"
+      assoc       = association_for_mva
+      foreign_key = foreign_key_for_mva assoc
+      "SELECT MIN(#{foreign_key}), MAX(#{foreign_key assoc}) FROM #{quote_table_name assoc.table}"
     end
     
     def primary_key_for_mva(assoc)

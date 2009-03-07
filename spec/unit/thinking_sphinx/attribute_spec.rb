@@ -209,4 +209,19 @@ describe ThinkingSphinx::Attribute do
       attribute.send(:all_ints?).should be_false
     end
   end
+  
+  describe "with custom queries" do
+    before :each do
+      index = CricketTeam.sphinx_indexes.first
+      @statement = index.to_riddle_for_core(0, 0).sql_attr_multi.first
+    end
+    
+    it "should track the query type accordingly" do
+      @statement.should match(/uint tags from query/)
+    end
+    
+    it "should include the SQL statement" do
+      @statement.should match(/SELECT cricket_team_id, id FROM tags/)
+    end
+  end
 end
