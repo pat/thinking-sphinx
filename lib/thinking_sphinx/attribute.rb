@@ -206,7 +206,7 @@ module ThinkingSphinx
             
             primary_key  = "#{association_table}.#{quote_column(primary_key)}"
             foreign_key  = "#{association_table}.#{quote_column(association.reflection.primary_key_name)}"
-            foreign_key_with_id = "#{foreign_key} #{ThinkingSphinx.unique_id_expression(offset)} AS `id`"
+            foreign_key_with_id = "#{foreign_key} #{ThinkingSphinx.unique_id_expression(offset)} AS #{quote_column('id')}"
             
             query        = "SELECT #{foreign_key_with_id}, #{primary_key} AS #{quote_column(unique_name)} FROM #{association_table}"
             query_clause = "WHERE #{foreign_key} >= $start AND #{foreign_key} <= $end"
