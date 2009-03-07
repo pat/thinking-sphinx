@@ -217,7 +217,7 @@ FROM #{quote_table_name assoc.table}
     def range_query
       assoc       = association_for_mva
       foreign_key = foreign_key_for_mva assoc
-      "SELECT MIN(#{foreign_key}), MAX(#{foreign_key assoc}) FROM #{quote_table_name assoc.table}"
+      "SELECT MIN(#{foreign_key}), MAX(#{foreign_key}) FROM #{quote_table_name assoc.table}"
     end
     
     def primary_key_for_mva(assoc)
