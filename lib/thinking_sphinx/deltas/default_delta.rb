@@ -15,8 +15,9 @@ module ThinkingSphinx
         
         config = ThinkingSphinx::Configuration.instance
         client = Riddle::Client.new config.address, config.port
+        rotate = ThinkingSphinx.sphinx_running? ? "--rotate" : ""
         
-        output = `#{config.bin_path}indexer --config #{config.config_file} --rotate #{delta_index_name model}`
+        output = `#{config.bin_path}indexer --config #{config.config_file} #{rotate} #{delta_index_name model}`
         puts(output) unless ThinkingSphinx.suppress_delta_output?
         
         client.update(

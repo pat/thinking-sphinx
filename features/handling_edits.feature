@@ -65,3 +65,12 @@ Feature: Keeping Sphinx in line with model changes when requested
     Then it should exist if using Rails 2.1 or newer
     When I search for the document id of beta five in the beta_delta index
     Then it should not exist if using Rails 2.1 or newer
+  
+  Scenario: Handling edits with a delta when Sphinx isn't running
+    Given Sphinx is running
+    And I am searching on betas
+    When I stop Sphinx
+    And I change the name of beta six to sixteen
+    And I start Sphinx
+    And I search for sixteen
+    Then I should get 1 result
