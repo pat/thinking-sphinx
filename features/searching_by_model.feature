@@ -63,7 +63,7 @@ Feature: Searching on a single model
     And I filter by both 1 and 2 on comment_ids
     Then I should get 1 results
     When I clear existing filters
-    And I filter by 3 on comment_ids
+    And I filter by 10 on comment_ids
     Then I should get 0 results
   
   Scenario: Searching with ordering by attribute
