@@ -141,7 +141,8 @@ module ThinkingSphinx
     # 
     def config_value(offset = nil)
       if type == :multi
-        multi_config = include_as_association? ? "field" : source_value(offset)
+        multi_config = include_as_association? ? "field" :
+          source_value(offset).gsub(/\n\s*/, " ")
         "uint #{unique_name} from #{multi_config}"
       else
         unique_name
@@ -185,49 +186,57 @@ module ThinkingSphinx
     private
     
     def source_value(offset)
-      query = range_query = query_clause = nil
-      
-      columns.each do |col|
-        associations[col].each do |association|
-          if association.has_column?(col.__name)
-            if association.reflection && association.reflection.options[:through]
-              association_table = association.join.aliased_join_table_name
-              if association.reflection.source_reflection.options[:foreign_key]
-                primary_key = association.reflection.source_reflection.options[:foreign_key]
-              else
-                primary_key = association.reflection.source_reflection.primary_key_name
-              end
-            else
-              association_table = association.join.aliased_table_name
-              primary_key = col.__name
-            end
-            
-            association_table = quote_table_name(association_table)
-            
-            primary_key  = "#{association_table}.#{quote_column(primary_key)}"
-            foreign_key  = "#{association_table}.#{quote_column(association.reflection.primary_key_name)}"
-            foreign_key_with_id = "#{foreign_key} #{ThinkingSphinx.unique_id_expression(offset)} AS #{quote_column('id')}"
-            
-            query        = "SELECT #{foreign_key_with_id}, #{primary_key} AS #{quote_column(unique_name)} FROM #{association_table}"
-            query_clause = "WHERE #{foreign_key} >= $start AND #{foreign_key} <= $end"
-            range_query  = "SELECT MIN(#{foreign_key}), MAX(#{foreign_key}) FROM #{association_table}"
-          end
-        end
-      end
-      
-      if query && range_query && query_clause
-        if source == :ranged_query
-          "ranged-query; #{query} #{query_clause}; #{range_query}"
-        else
-          "query; #{query}"
-        end
+      if source == :ranged_query
+        "ranged-query; #{query offset} #{query_clause}; #{range_query}"
       else
-        raise "Could not determine SQL for MVA"
+        "query; #{query offset}"
       end
+    end
+    
+    def query(offset)
+      assoc = association_for_mva
+      raise "Could not determine SQL for MVA" if assoc.nil?
+      
+      <<-SQL
+SELECT #{foreign_key_for_mva assoc}
+  #{ThinkingSphinx.unique_id_expression(offset)} AS #{quote_column('id')},
+  #{primary_key_for_mva(assoc)} AS #{quote_column(unique_name)}
+FROM #{quote_table_name assoc.table}
+      SQL
+    end
+    
+    def query_clause
+      assoc = association_for_mva
+      "WHERE #{foreign_key_for_mva assoc} >= $start AND #{foreign_key_for_mva assoc} <= $end"
+    end
+    
+    def range_query
+      assoc = association_for_mva
+      "SELECT MIN(#{foreign_key_for_mva assoc}), MAX(#{foreign_key_for_mva assoc}) FROM #{quote_table_name assoc.table}"
+    end
+    
+    def primary_key_for_mva(assoc)
+      quote_with_table(
+        assoc.table, assoc.primary_key_from_reflection || columns.first.__name
+      )
+    end
+    
+    def foreign_key_for_mva(assoc)
+      quote_with_table assoc.table, assoc.reflection.primary_key_name
+    end
+    
+    def association_for_mva
+      @association_for_mva ||= associations[columns.first].detect { |assoc|
+        assoc.has_column?(columns.first.__name)
+      }
     end
     
     def adapter
       @adapter ||= @model.sphinx_database_adapter
+    end
+    
+    def quote_with_table(table, column)
+      "#{quote_table_name(table)}.#{quote_column(column)}"
     end
     
     def quote_column(column)
