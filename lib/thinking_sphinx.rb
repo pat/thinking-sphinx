@@ -147,6 +147,8 @@ module ThinkingSphinx
   end
   
   def self.pid_active?(pid)
+    return true if RUBY_PLATFORM =~ /mswin/
+    
     begin
       Process.getpgid(pid.to_i)
       true
