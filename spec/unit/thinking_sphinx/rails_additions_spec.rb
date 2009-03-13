@@ -69,9 +69,8 @@ end
 describe ThinkingSphinx::MysqlQuotedTableName do
   describe "quote_table_name method" do
     it 'calls quote_column_name' do
-      pending "Needs NotAMock"
-      adapter = ActiveRecord::ConnectionAdapters::MysqlAdapter.new
-      adapter.should_receive(:quote_column_name).with('messages')
+      adapter = ActiveRecord::Base.connection
+      adapter.should_receive(:quote_column_name).with('messages').and_return('`message`')
       adapter.quote_table_name('messages')
     end
   end
