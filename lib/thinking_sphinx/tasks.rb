@@ -8,8 +8,8 @@ namespace :thinking_sphinx do
   
   desc "Stop if running, then start a Sphinx searchd daemon using Thinking Sphinx's settings"
   task :running_start => :app_env do
-   Rake::Task["thinking_sphinx:stop"].invoke if sphinx_running?
-   Rake::Task["thinking_sphinx:start"].invoke
+    Rake::Task["thinking_sphinx:stop"].invoke if sphinx_running?
+    Rake::Task["thinking_sphinx:start"].invoke
   end
   
   desc "Start a Sphinx searchd daemon using Thinking Sphinx's settings"
@@ -39,7 +39,7 @@ namespace :thinking_sphinx do
     raise RuntimeError, "searchd is not running." unless sphinx_running?
     config = ThinkingSphinx::Configuration.instance
     pid    = sphinx_pid
-    system "searchd --stop --config #{config.config_file}"
+    system "#{config.bin_path}searchd --stop --config #{config.config_file}"
     puts "Stopped search daemon (pid #{pid})."
   end
   
