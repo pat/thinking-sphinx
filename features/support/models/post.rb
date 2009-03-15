@@ -1,6 +1,7 @@
 class Post < ActiveRecord::Base
   has_many :comments, :dependent => :destroy
-  has_many :tags, :dependent => :destroy
+  has_many :taggings, :as => :taggable
+  has_many :tags, :through => :taggings
   belongs_to :category
   
   define_index do

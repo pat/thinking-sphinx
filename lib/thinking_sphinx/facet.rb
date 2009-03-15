@@ -15,12 +15,12 @@ module ThinkingSphinx
     end
     
     def attribute_name
-      @attribute_name ||= case @reference
-      when Attribute
-        @reference.unique_name.to_s
-      when Field
-        @reference.unique_name.to_s + "_sort"
-      end
+      # @attribute_name ||= case @reference
+      # when Attribute
+      #   @reference.unique_name.to_s
+      # when Field
+      @attribute_name ||= @reference.unique_name.to_s + "_facet"
+      # end
     end
     
     def value(object, attribute_value)

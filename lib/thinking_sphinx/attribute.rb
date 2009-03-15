@@ -77,8 +77,10 @@ module ThinkingSphinx
       @type     = options[:type]
       @faceted  = options[:facet]
       @source   = options[:source]
+      @crc      = options[:crc]
       
-      @type   ||= :multi unless @source.nil?
+      @type   ||= :multi    unless @source.nil?
+      @type     = :integer  if @type == :string && @crc
     end
     
     # Get the part of the SELECT clause related to this attribute. Don't forget
@@ -100,6 +102,7 @@ module ThinkingSphinx
       clause = adapter.group_concatenate(clause, separator) if is_many?
       clause = adapter.cast_to_datetime(clause)             if type == :datetime
       clause = adapter.convert_nulls(clause)                if type == :string
+      clause = adapter.crc(clause)                          if @crc
       
       "#{clause} AS #{quote_column(unique_name)}"
     end
@@ -168,14 +171,24 @@ module ThinkingSphinx
     # :multi if there's the possibility of more than one value, :string if
     # there's more than one association, otherwise it figures out what the
     # actual column's datatype is and returns that.
+    # 
     def type
-      @type ||= case
-      when is_many?, is_many_ints?
-        :multi
-      when @associations.values.flatten.length > 1
-        :string
-      else
-        translated_type_from_database
+      @type ||= begin
+        base_type = case
+        when is_many?, is_many_ints?
+          :multi
+        when @associations.values.flatten.length > 1
+          :string
+        else
+          translated_type_from_database
+        end
+        
+        if base_type == :string && @crc
+          :integer
+        else
+          @crc = false
+          base_type
+        end
       end
     end
     

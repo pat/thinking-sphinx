@@ -87,22 +87,16 @@ module ThinkingSphinx
         def indexes(*args)
           options = args.extract_options!
           args.each do |columns|
-            fields << Field.new(FauxColumn.coerce(columns), options)
+            field = Field.new(FauxColumn.coerce(columns), options)
+            fields << field
             
-            if fields.last.sortable || fields.last.faceted
-              attributes << Attribute.new(
-                fields.last.columns.collect { |col| col.clone },
-                options.merge(
-                  :type => :string,
-                  :as => fields.last.unique_name.to_s.concat("_sort").to_sym
-                ).except(:facet)
-              )
-            end
+            add_sort_attribute field, options   if field.sortable
+            add_facet_attribute field, options  if field.faceted
           end
         end
         alias_method :field,    :indexes
         alias_method :includes, :indexes
-        
+                
         # This is the method to add attributes to your index (hence why it is
         # aliased as 'attribute'). The syntax is the same as #indexes, so use
         # that as starting point, but keep in mind the following points.
@@ -142,7 +136,10 @@ module ThinkingSphinx
         def has(*args)
           options = args.extract_options!
           args.each do |columns|
-            attributes << Attribute.new(FauxColumn.coerce(columns), options)
+            attribute = Attribute.new(FauxColumn.coerce(columns), options)
+            attributes << attribute
+            
+            add_facet_attribute attribute, options if attribute.faceted
           end
         end
         alias_method :attribute, :has
@@ -152,7 +149,10 @@ module ThinkingSphinx
           options[:facet] = true
           
           args.each do |columns|
-            attributes << Attribute.new(FauxColumn.coerce(columns), options)
+            attribute = Attribute.new(FauxColumn.coerce(columns), options)
+            attributes << attribute
+            
+            add_facet_attribute attribute, options
           end
         end
         
@@ -236,6 +236,27 @@ module ThinkingSphinx
         # 
         def assoc(assoc, *args)
           FauxColumn.new(assoc, *args)
+        end
+        
+        private
+        
+        def add_sort_attribute(field, options)
+          add_internal_attribute field, options, "_sort"
+        end
+        
+        def add_facet_attribute(resource, options)
+          add_internal_attribute resource, options, "_facet", true
+        end
+        
+        def add_internal_attribute(resource, options, suffix, crc = false)
+          @attributes << Attribute.new(
+            resource.columns.collect { |col| col.clone },
+            options.merge(
+              :type => resource.is_a?(Field) ? :string : nil,
+              :as   => resource.unique_name.to_s.concat(suffix).to_sym,
+              :crc  => crc
+            ).except(:facet)
+          )
         end
       end
     end
