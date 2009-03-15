@@ -41,3 +41,6 @@ Feature: Search and browse models by their defined facets
     When I am requesting facet results
     And I drill down where tag_ids includes the id of tag Australia
     Then I should get 11 results
+    When I am requesting facet results
+    And I drill down where tag_ids includes the id of tags Melbourne or Sydney
+    Then I should get 5 results

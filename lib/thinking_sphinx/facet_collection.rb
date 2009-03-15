@@ -31,7 +31,7 @@ module ThinkingSphinx
       
       hash.each do |key, value|
         attrib = facet_for_key(key).attribute_name
-        options[:with][attrib] = @attribute_values[key][value]
+        options[:with][attrib] = underlying_value key, value
       end
       
       arguments << options
@@ -39,6 +39,15 @@ module ThinkingSphinx
     end
     
     private
+    
+    def underlying_value(key, value)
+      case value
+      when Array
+        value.collect { |item| underlying_value(key, item) }
+      else
+        @attribute_values[key][value]
+      end
+    end
     
     def facet_for_key(key)
       @facets.detect { |facet| facet.name == key }

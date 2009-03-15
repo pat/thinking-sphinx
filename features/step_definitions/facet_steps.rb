@@ -1,5 +1,6 @@
 When "I am requesting facet results$" do
-  @method = :facets
+  @results = nil
+  @method  = :facets
 end
 
 When "I want classes included" do
@@ -31,6 +32,12 @@ end
 When /^I drill down where ([\w_]+) includes the id of tag (\w+)$/ do |facet, text|
   tag = Tag.find_by_text(text)
   @results = results.for(facet.downcase.to_sym => tag.id)
+end
+
+When /^I drill down where ([\w_]+) includes the id of tags (\w+) or (\w+)$/ do |facet, text_one, text_two|
+  tag_one = Tag.find_by_text(text_one)
+  tag_two = Tag.find_by_text(text_two)
+  @results = results.for(facet.downcase.to_sym => [tag_one.id, tag_two.id])
 end
 
 Then "I should have valid facet results" do
