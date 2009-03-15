@@ -7,6 +7,11 @@ module ThinkingSphinx
   # called from a model.
   # 
   class Search
+    GlobalFacetOptions = {
+      :all_attributes => false,
+      :class_facet    => true
+    }
+    
     class << self
       # Searches for results that match the parameters provided. Will only
       # return the ids for the matching objects. See #search for syntax
@@ -374,93 +379,16 @@ module ThinkingSphinx
       # ThinkingSphinx::Search.facets *args, :class_facet     => false
       # 
       def facets(*args)
-        hash    = ThinkingSphinx::FacetCollection.new args
-        options = args.extract_options!.clone.merge! :group_function => :attr
+        options = args.extract_options!
         
-        klasses = (options[:classes] || [options[:class]]).compact
-        
-        # No classes specified so get classes from resultset
-        if klasses.empty?
-          options[:group_by] = "class_crc"
-          results = search(*(args + [options]))
-
-          hash[:class] = {}
-          results.each_with_groupby_and_count do |result, group, count|
-            hash[:class][result.class.name] = count
-            klasses << result.class
-          end
-          
-          options[:include_class_facets] = false
-        end
-        
-        # Remove polymorphic classes and replace them with a parent class
-        klasses = klasses.inject([]) do |array, klass|
-          if klass.superclass.name == "ActiveRecord::Base"
-            array << klass            
-          else
-            array << klass.superclass unless array.include?(klass.superclass)
-          end
-          
-          array
-        end
-        
-        klasses.each do |klass|
-          klass.sphinx_facets.inject(hash) do |hash, facet|
-            if facet.name != :class || options[:include_class_facets]
-              hash.add_from_results facet, 
-                klass.search(*(args + 
-                  [options.merge(:group_by => facet.attribute_name)]))
-            end
-
-            hash
-          end
-        end
-        
-        hash
-      end
-      
-      def facets_for_model(klass, args, options)
-        hash    = ThinkingSphinx::FacetCollection.new args + [options]
-        options = options.clone.merge! :group_function => :attr
-        
-        klass.sphinx_facets.inject(hash) do |hash, facet|
-          options[:group_by] = facet.attribute_name
-          hash.add_from_results facet, search(*(args + [options]))
-          hash
-        end
-      end
-      
-      def facets_for_all_models(args, options)
-        hash    = ThinkingSphinx::FacetCollection.new args + [options]
-        options = options.clone.merge! :group_function => :attr
-        
-        classes = ThinkingSphinx.indexed_models.collect { |model|
-          model.constantize
-        }
-        facet_names_common_to_all_classes(classes).inject(hash) do |hash, name|
-          options[:group_by] = attribute_name
-          hash.add_from_results facet, search(*(args + [options]))
-          hash
+        if options[:class]
+          facets_for_model options[:class], args, options
+        else
+          facets_for_all_models args, options
         end
       end
       
       private
-      
-      def facet_names_for_all_classes(classes)
-        classes.collect { |klass|
-          klass.sphinx_facets.collect { |facet| facet.attribute_name }
-        }.flatten.uniq
-      end
-      
-      def facet_names_common_to_all_classes(classes)
-        facet_names_for_all_classes.select { |name|
-          classes.all? { |klass|
-            klass.sphinx_facets.detect { |facet|
-              facet.attribute_name == attribute_name
-            }
-          }
-        }
-      end
       
       # This method handles the common search functionality, and returns both
       # the result hash and the client. Not super elegant, but it'll do for
@@ -729,6 +657,64 @@ module ThinkingSphinx
         }
         
         string
+      end
+      
+      def facets_for_model(klass, args, options)
+        hash    = ThinkingSphinx::FacetCollection.new args + [options]
+        options = options.clone.merge! :group_function => :attr
+        
+        klass.sphinx_facets.inject(hash) do |hash, facet|
+          unless facet.name == :class && !options[:class_facet]
+            options[:group_by] = facet.attribute_name
+            hash.add_from_results facet, search(*(args + [options]))
+          end
+          
+          hash
+        end
+      end
+      
+      def facets_for_all_models(args, options)
+        options = GlobalFacetOptions.merge(options)
+        hash    = ThinkingSphinx::FacetCollection.new args + [options]
+        options = options.merge! :group_function => :attr
+        
+        facet_names(options).inject(hash) do |hash, name|
+          options[:group_by] = name
+          hash.add_from_results name, search(*(args + [options]))
+          hash
+        end
+      end
+      
+      def facet_classes(options)
+        options[:classes] || ThinkingSphinx.indexed_models.collect { |model|
+          model.constantize
+        }
+      end
+      
+      def facet_names(options)
+        classes = facet_classes(options)
+        names   = options[:all_attributes] ?
+          facet_names_for_all_classes(classes) :
+          facet_names_common_to_all_classes(classes)
+        
+        names.delete "class_crc" unless options[:class_facet]
+        names
+      end
+      
+      def facet_names_for_all_classes(classes)
+        classes.collect { |klass|
+          klass.sphinx_facets.collect { |facet| facet.attribute_name }
+        }.flatten.uniq
+      end
+      
+      def facet_names_common_to_all_classes(classes)
+        facet_names_for_all_classes(classes).select { |name|
+          classes.all? { |klass|
+            klass.sphinx_facets.detect { |facet|
+              facet.attribute_name == name
+            }
+          }
+        }
       end
     end
   end

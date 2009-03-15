@@ -29,7 +29,8 @@ Feature: Search and browse models by their defined facets
   Scenario: Requesting facets with classes included
     Given Sphinx is running
     And I am searching on developers
-    When I am requesting facet results with classes included
+    When I am requesting facet results
+    And I want classes included
     Then I should have valid facet results
     And I should have 6 facets
     And I should have the facet Class

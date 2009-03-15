@@ -2,10 +2,16 @@ When "I am requesting facet results$" do
   @method = :facets
 end
 
-When "I am requesting facet results with classes included" do
-  @method = :facets
-  @options = {}
-  @options[:include_class_facets] = true
+When "I want classes included" do
+  @options[:class_facet] = true
+end
+
+When "I don't want classes included" do
+  @options[:class_facet] = false
+end
+
+When "I want all possible attributes" do
+  @options[:all_attributes] = true
 end
 
 When /^I drill down where (\w+) is (\w+)$/ do |facet, value|
@@ -37,16 +43,23 @@ Then /^I should have (\d+) facets?$/ do |count|
 end
 
 Then /^I should have the facet ([\w_\s]+)$/ do |name|
-  results[name.gsub(/\s/, '').underscore.to_sym].should be_kind_of(Hash)
+  results[facet_name(name)].should be_kind_of(Hash)
+end
+
+Then /^I should not have the facet ([\w_\s]+)$/ do |name|
+  results.keys.should_not include(facet_name(name))
 end
 
 Then /^the ([\w_\s]+) facet should have a "([\w\s_]+)" key with (\d+) hits$/ do |name, key, hit_count|
-  facet_name = name.gsub(/\s/, '').underscore.to_sym
+  facet_name = facet_name name
   results[facet_name].keys.should include(key)
   results[facet_name][key].should eql(hit_count.to_i)
 end
 
 Then /^the ([\w_\s]+) facet should have a "(\w+)" key$/ do |name, key|
-  facet_name = name.gsub(/\s/, '').underscore.to_sym
-  results[facet_name].keys.should include(key)
+  results[facet_name(name)].keys.should include(key)
+end
+
+def facet_name(string)
+  string.gsub(/\s/, '').underscore.to_sym
 end
