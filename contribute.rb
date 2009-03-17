@@ -139,7 +139,7 @@ EO_CREATE_DATABASE_FAILED
       puts
       
       return true
-    rescue Mysql::Error
+    rescue defined?(JRUBY_VERSION) ? Java::JavaSql::SQLException : Mysql::Error
       colour_puts "<red>failed</red>"
       
       puts MYSQL_FAILED
@@ -187,9 +187,13 @@ EO_CREATE_DATABASE_FAILED
     specs / 'fixtures' / 'database.yml'
   end
   
+  def mysql_adapter
+    defined?(JRUBY_VERSION) ? 'jdbcmysql' : 'mysql'
+  end
+
   def connect_to_db
     config = YAML.load_file(db_yml)
-    config.update(:adapter => 'mysql', :database => 'test')
+    config.update(:adapter => mysql_adapter, :database => 'test')
     config.symbolize_keys!
 
     ActiveRecord::Base.establish_connection(config)
@@ -303,7 +307,7 @@ end
 
 module Dependencies
   class Mysql < ContributeHelper::Gem
-    name 'mysql'
+    name(defined?(JRUBY_VERSION) ? 'jdbc-mysql' : 'mysql')
   end
   
   class AR < ContributeHelper::Gem
