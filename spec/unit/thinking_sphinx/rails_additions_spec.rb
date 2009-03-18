@@ -53,7 +53,7 @@ end
 describe ThinkingSphinx::AbstractQuotedTableName do
   describe 'quote_table_name method' do
     it 'calls quote_column_name' do
-      adapter = ActiveRecord::ConnectionAdapters::AbstractAdapter.new('mysql')
+      adapter = ActiveRecord::ConnectionAdapters::AbstractAdapter.new(defined?(JRUBY_VERSION) ? 'jdbcmysql' : 'mysql')
       adapter.should_receive(:quote_column_name).with('messages')
       adapter.quote_table_name('messages')
     end
@@ -68,16 +68,16 @@ end
 
 describe ThinkingSphinx::MysqlQuotedTableName do
   describe "quote_table_name method" do
-    it 'calls quote_column_name' do
+    it 'correctly quotes' do
       adapter = ActiveRecord::Base.connection
-      adapter.should_receive(:quote_column_name).with('messages').and_return('`message`')
-      adapter.quote_table_name('messages')
+      adapter.quote_table_name('thinking_sphinx.messages').should == "`thinking_sphinx`.`messages`"
     end
   end
   
   describe "extends ActiveRecord::ConnectionAdapters::MysqlAdapter" do
     it 'with quote_table_name' do
-      ActiveRecord::ConnectionAdapters::MysqlAdapter.instance_methods.include?("quote_table_name").should be_true
+      adapter = defined?(JRUBY_VERSION) ? :JdbcAdapter : :MysqlAdapter
+      ActiveRecord::ConnectionAdapters.const_get(adapter).instance_methods.include?("quote_table_name").should be_true
     end
   end  
 end

@@ -53,13 +53,15 @@ describe ThinkingSphinx do
   
   describe "use_group_by_shortcut? method" do
     before :each do
-      unless ::ActiveRecord::ConnectionAdapters.const_defined?(:MysqlAdapter)
+      adapter = defined?(JRUBY_VERSION) ? :JdbcAdapter : :MysqlAdapter
+      unless ::ActiveRecord::ConnectionAdapters.const_defined?(adapter)
         pending "No MySQL"
         return
       end
       
-      @connection = ::ActiveRecord::ConnectionAdapters::MysqlAdapter.stub_instance(
-        :select_all => true
+      @connection = ::ActiveRecord::ConnectionAdapters.const_get(adapter).stub_instance(
+        :select_all => true,
+        :config => {:adapter => defined?(JRUBY_VERSION) ? 'jdbcmysql' : 'mysql'}
       )
       ::ActiveRecord::Base.stub_method(
         :connection => @connection
@@ -103,12 +105,14 @@ describe ThinkingSphinx do
     
     describe "if not using MySQL" do
       before :each do
-        unless ::ActiveRecord::ConnectionAdapters.const_defined?(:PostgreSQLAdapter)
+        adapter = defined?(JRUBY_VERSION) ? :JdbcAdapter : :PostgreSQLAdapter
+        unless ::ActiveRecord::ConnectionAdapters.const_defined?(adapter)
           pending "No PostgreSQL"
           return
         end
-        @connection = ::ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.stub_instance(
-          :select_all => true
+        @connection = ::ActiveRecord::ConnectionAdapters.const_get(adapter).stub_instance(
+          :select_all => true,
+          :config => {:adapter => defined?(JRUBY_VERSION) ? 'jdbcpostgresql' : 'postgresql'}
         )
         ::ActiveRecord::Base.stub_method(
           :connection => @connection

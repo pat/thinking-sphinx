@@ -1,4 +1,3 @@
 require 'active_record'
-require 'active_record/connection_adapters/mysql_adapter'
-
-Database = 'mysql'
+Database = defined?(JRUBY_VERSION) ? 'jdbcmysql' : 'mysql'
+require "active_record/connection_adapters/#{Database}_adapter"

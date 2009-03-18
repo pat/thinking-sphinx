@@ -129,10 +129,10 @@ module ThinkingSphinx
   # or if not using MySQL, this will return false.
   # 
   def self.use_group_by_shortcut?
-    ::ActiveRecord::ConnectionAdapters.constants.include?("MysqlAdapter") &&
-    ::ActiveRecord::Base.connection.is_a?(
-      ::ActiveRecord::ConnectionAdapters::MysqlAdapter
-    ) &&
+    !!(::ActiveRecord::ConnectionAdapters.constants.include?("MysqlAdapter") &&
+     ::ActiveRecord::Base.connection.is_a?(::ActiveRecord::ConnectionAdapters::MysqlAdapter) ||
+     defined?(JRUBY_VERSION) &&
+     ::ActiveRecord::Base.connection.config[:adapter] == "jdbcmysql") &&
     ::ActiveRecord::Base.connection.select_all(
       "SELECT @@global.sql_mode, @@session.sql_mode;"
     ).all? { |key,value| value.nil? || value[/ONLY_FULL_GROUP_BY/].nil? }

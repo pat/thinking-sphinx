@@ -181,7 +181,7 @@ module ThinkingSphinx
       # and db:migrate). It's a bit hacky, but I can't think of a better way.
     rescue StandardError => err
       case err.class.name
-      when "Mysql::Error", "ActiveRecord::StatementInvalid"
+      when "Mysql::Error", "Java::JavaSql::SQLException", "ActiveRecord::StatementInvalid"
         return
       else
         raise err
@@ -387,7 +387,7 @@ GROUP BY #{ (
 ).join(", ") }
       SQL
       
-      if @model.connection.class.name == "ActiveRecord::ConnectionAdapters::MysqlAdapter"
+      if @model.connection.class.name == "ActiveRecord::ConnectionAdapters::MysqlAdapter" or @model.respond_to?(:jdbcmysql_connection)
         sql += " ORDER BY NULL"
       end
       

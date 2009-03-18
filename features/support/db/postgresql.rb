@@ -1,4 +1,3 @@
 require 'active_record'
-require 'active_record/connection_adapters/postgresql_adapter'
-
-Database = 'postgresql'
+Database = defined?(JRUBY_VERSION) ? 'jdbcpostgresql' : 'postgresql'
+require "active_record/connection_adapters/#{Database}_adapter"
