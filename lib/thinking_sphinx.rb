@@ -159,8 +159,8 @@ module ThinkingSphinx
     return true if microsoft?
     
     begin
-      Process.getpgid(pid.to_i)
-      true
+      # In JRuby this returns -1 if the process doesn't exist
+      Process.getpgid(pid.to_i) != -1
     rescue Exception => e
       false
     end
