@@ -85,7 +85,8 @@ module ThinkingSphinx
       self.searchd_file_path    = "#{self.app_root}/db/sphinx/#{environment}"
       self.allow_star           = false
       self.bin_path             = ""
-      self.model_directories    = ["#{app_root}/app/models/"] + Dir.glob("#{app_root}/vendor/plugins/*/app/models/")
+      self.model_directories    = ["#{app_root}/app/models/"] +
+        Dir.glob("#{app_root}/vendor/plugins/*/app/models/")
       
       self.source_options  = {}
       self.index_options   = {
