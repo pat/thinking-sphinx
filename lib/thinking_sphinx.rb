@@ -143,12 +143,20 @@ module ThinkingSphinx
   end
   
   def self.sphinx_pid
-    pid_file = ThinkingSphinx::Configuration.instance.pid_file    
-    `cat #{pid_file}`[/\d+/] if File.exists?(pid_file)
+    pid_file    = ThinkingSphinx::Configuration.instance.pid_file
+    cat_command = 'cat'
+    return nil unless File.exists?(pid_file)
+    
+    if microsoft?
+      pid_file.gsub!('/', '\\')
+      cat_command = 'type'
+    end
+    
+    `#{cat_command} #{pid_file}`[/\d+/]
   end
   
   def self.pid_active?(pid)
-    return true if RUBY_PLATFORM =~ /mswin/
+    return true if microsoft?
     
     begin
       Process.getpgid(pid.to_i)
@@ -156,5 +164,9 @@ module ThinkingSphinx
     rescue Exception => e
       false
     end
+  end
+  
+  def self.microsoft?
+    RUBY_PLATFORM =~ /mswin/
   end
 end
