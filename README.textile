@@ -115,3 +115,4 @@ Since I first released this library, there's been quite a few people who have su
 * Menno van der Sman
 * Bill Harding
 * Isaac Feliu
+* Andrei Bocan
