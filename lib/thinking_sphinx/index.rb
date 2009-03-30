@@ -239,7 +239,8 @@ module ThinkingSphinx
       if @model.column_names.include?(@model.inheritance_column)
         adapter.cast_to_unsigned(adapter.convert_nulls(
           adapter.crc(adapter.quote_with_table(@model.inheritance_column)),
-          @model.to_crc32
+          @model.to_crc32,
+          true
         ))
       else
         @model.to_crc32.to_s

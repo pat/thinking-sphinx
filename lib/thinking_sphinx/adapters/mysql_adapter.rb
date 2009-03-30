@@ -28,8 +28,9 @@ module ThinkingSphinx
       "CAST(#{clause} AS UNSIGNED)"
     end
     
-    def convert_nulls(clause, default = '')
+    def convert_nulls(clause, default = '', blank = false)
       default = "'#{default}'" if default.is_a?(String)
+      clause = "NULLIF(#{clause},'')" if blank
       
       "IFNULL(#{clause}, #{default})"
     end
