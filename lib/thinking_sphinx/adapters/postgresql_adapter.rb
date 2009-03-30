@@ -31,9 +31,8 @@ module ThinkingSphinx
       clause
     end
     
-    def convert_nulls(clause, default = '', blank = false)
+    def convert_nulls(clause, default = '')
       default = "'#{default}'" if default.is_a?(String)
-      clause = "NULLIF(#{clause},'')" if blank
       
       "COALESCE(#{clause}, #{default})"
     end
@@ -42,7 +41,8 @@ module ThinkingSphinx
       value ? 'TRUE' : 'FALSE'
     end
     
-    def crc(clause)
+    def crc(clause, blank_to_null = false)
+      clause = "NULLIF(#{clause},'')" if blank_to_null
       "crc32(#{clause})"
     end
     

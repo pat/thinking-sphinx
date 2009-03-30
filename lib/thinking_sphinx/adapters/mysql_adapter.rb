@@ -28,9 +28,8 @@ module ThinkingSphinx
       "CAST(#{clause} AS UNSIGNED)"
     end
     
-    def convert_nulls(clause, default = '', blank = false)
+    def convert_nulls(clause, default = '')
       default = "'#{default}'" if default.is_a?(String)
-      clause = "NULLIF(#{clause},'')" if blank
       
       "IFNULL(#{clause}, #{default})"
     end
@@ -39,7 +38,8 @@ module ThinkingSphinx
       value ? 1 : 0
     end
     
-    def crc(clause)
+    def crc(clause, blank_to_null = false)
+      clause = "NULLIF(#{clause},'')" if blank_to_null
       "CRC32(#{clause})"
     end
     
