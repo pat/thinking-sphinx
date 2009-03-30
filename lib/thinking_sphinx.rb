@@ -129,13 +129,11 @@ module ThinkingSphinx
   # or if not using MySQL, this will return false.
   # 
   def self.use_group_by_shortcut?
-    !!(::ActiveRecord::ConnectionAdapters.constants.include?("MysqlAdapter") &&
-     ::ActiveRecord::Base.connection.is_a?(::ActiveRecord::ConnectionAdapters::MysqlAdapter) ||
-     defined?(JRUBY_VERSION) &&
-     ::ActiveRecord::Base.connection.config[:adapter] == "jdbcmysql") &&
-    ::ActiveRecord::Base.connection.select_all(
-      "SELECT @@global.sql_mode, @@session.sql_mode;"
-    ).all? { |key,value| value.nil? || value[/ONLY_FULL_GROUP_BY/].nil? }
+    !!(
+      mysql? && ::ActiveRecord::Base.connection.select_all(
+        "SELECT @@global.sql_mode, @@session.sql_mode;"
+      ).all? { |key,value| value.nil? || value[/ONLY_FULL_GROUP_BY/].nil? }
+    )
   end
   
   def self.sphinx_running?
@@ -168,5 +166,15 @@ module ThinkingSphinx
   
   def self.microsoft?
     RUBY_PLATFORM =~ /mswin/
+  end
+  
+  def self.jruby?
+    defined?(JRUBY_VERSION)
+  end
+  
+  def self.mysql?
+    ::ActiveRecord::Base.connection.class.name.demodulize == "MysqlAdapter" || (
+      jruby? && ::ActiveRecord::Base.connection.config[:adapter] == "jdbcmysql"
+    )
   end
 end

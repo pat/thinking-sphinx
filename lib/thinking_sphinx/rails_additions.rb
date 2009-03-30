@@ -50,8 +50,12 @@ module ThinkingSphinx
 end
 
 if ActiveRecord::ConnectionAdapters.constants.include?("MysqlAdapter") or ActiveRecord::Base.respond_to?(:jdbcmysql_connection)
-  adapter = ActiveRecord::ConnectionAdapters.const_get(defined?(JRUBY_VERSION) ? :JdbcAdapter : :MysqlAdapter)
-  adapter.send(:include, ThinkingSphinx::MysqlQuotedTableName) unless adapter.instance_methods.include?("quote_table_name")
+  adapter = ActiveRecord::ConnectionAdapters.const_get(
+    defined?(JRUBY_VERSION) ? :JdbcAdapter : :MysqlAdapter
+  )
+  unless adapter.instance_methods.include?("quote_table_name")
+    adapter.send(:include, ThinkingSphinx::MysqlQuotedTableName)
+  end
 end
 
 module ThinkingSphinx

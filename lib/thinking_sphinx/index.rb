@@ -387,10 +387,7 @@ GROUP BY #{ (
 ).join(", ") }
       SQL
       
-      if @model.connection.class.name == "ActiveRecord::ConnectionAdapters::MysqlAdapter" or @model.respond_to?(:jdbcmysql_connection)
-        sql += " ORDER BY NULL"
-      end
-      
+      sql += " ORDER BY NULL" if adapter.sphinx_identifier == "mysql"
       sql
     end
     

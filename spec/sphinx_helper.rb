@@ -1,18 +1,10 @@
 require 'active_record'
-if defined?(JRUBY_VERSION)
-  require 'active_record/connection_adapters/jdbcmysql_adapter'
-  begin
-    require 'active_record/connection_adapters/jdbcpostgresql_adapter'
-  rescue LoadError
-    # No postgres?  no prob...
-  end
-else
-  require 'active_record/connection_adapters/mysql_adapter'
-  begin
-    require 'active_record/connection_adapters/postgresql_adapter'
-  rescue LoadError
-    # No postgres?  no prob...
-  end
+prefix = defined?(JRUBY_VERSION) ? "jdbc" : ""
+require "active_record/connection_adapters/#{prefix}mysql_adapter"
+begin
+  require "active_record/connection_adapters/#{prefix}postgresql_adapter"
+rescue LoadError
+  # No postgres?  no prob...
 end
 require 'yaml'
 
