@@ -16,6 +16,10 @@ Given /^I am searching on (.+)$/ do |model|
   @model = model.gsub(/\s/, '_').singularize.camelize.constantize
 end
 
+Given /^updates are (\w+)$/ do |action|
+  ThinkingSphinx.updates_enabled = (action == "enabled")
+end
+
 When /^I am searching for ids$/ do
   @results = nil
   @method = :search_for_ids

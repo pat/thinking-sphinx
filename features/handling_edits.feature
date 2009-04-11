@@ -74,3 +74,19 @@ Feature: Keeping Sphinx in line with model changes when requested
     And I start Sphinx
     And I search for sixteen
     Then I should get 1 result
+  
+  Scenario: Handling edits when updates are disabled
+    Given Sphinx is running
+    And updates are disabled
+    And I am searching on betas
+    
+    When I search for seven
+    Then I should get 1 result
+    
+    When I change the name of beta seven to seventeen
+    And I wait for Sphinx to catch up
+    And I search for seven
+    Then I should get 1 result
+    
+    When I search for seventeen
+    Then I should get 0 results
