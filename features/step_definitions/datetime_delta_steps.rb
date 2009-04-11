@@ -9,3 +9,7 @@ end
 When /^I create a new theta named (\w+)$/ do |name|
   Theta.create(:name => name)
 end
+
+When /^I delete the theta named (\w+)$/ do |name|
+  Theta.find_by_name(name).destroy
+end

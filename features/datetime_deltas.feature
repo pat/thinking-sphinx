@@ -53,3 +53,14 @@ Feature: Datetime Delta Indexing
     
     When I search for the document id of theta thirteen in the theta_core index
     Then it should exist
+  
+  Scenario: Deleting records
+    Given Sphinx is running
+    And I am searching on thetas
+    When I search for three
+    Then I should get 1 result
+    
+    When I delete the theta named three
+    And I wait for Sphinx to catch up
+    And I search for three
+    Then I should get 0 results

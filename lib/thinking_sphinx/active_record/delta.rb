@@ -50,6 +50,10 @@ module ThinkingSphinx
             end
           end
           
+          def toggled_delta?
+            self.class.delta_object.toggled(self)
+          end
+          
           private
           
           # Set the delta value for the model to be true.
