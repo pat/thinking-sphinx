@@ -6,6 +6,6 @@ When /^I create a new beta named (\w+)$/ do |name|
   Beta.create(:name => name)
 end
 
-When /^I change the name of beta (\w+) to (\w+)$/ do |current, replacement|
-  Beta.find_by_name(current).update_attributes(:name => replacement)
+When /^I change the (\w+) of beta (\w+) to (\w+)$/ do |column, name, replacement|
+  Beta.find_by_name(name).update_attributes(column.to_sym => replacement)
 end

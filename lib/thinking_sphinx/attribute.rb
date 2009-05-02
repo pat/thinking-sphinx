@@ -157,6 +157,17 @@ module ThinkingSphinx
       end
     end
     
+    def updatable?
+      [:integer, :datetime, :boolean].include?(type) && !is_string?
+    end
+    
+    def live_value(instance)
+      object = instance
+      column = @columns.first
+      column.__stack.each { |method| object = object.send(method) }
+      object.send(column.__name)
+    end
+    
     private
     
     def source_value(offset)

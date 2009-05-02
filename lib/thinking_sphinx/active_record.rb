@@ -1,3 +1,4 @@
+require 'thinking_sphinx/active_record/attribute_updates'
 require 'thinking_sphinx/active_record/delta'
 require 'thinking_sphinx/active_record/search'
 require 'thinking_sphinx/active_record/has_many_association'
@@ -78,6 +79,8 @@ module ThinkingSphinx
             end
             
             after_destroy :toggle_deleted
+            
+            include ThinkingSphinx::ActiveRecord::AttributeUpdates
             
             index
           end

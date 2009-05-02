@@ -49,6 +49,15 @@ module ThinkingSphinx
       end
     end
     
+    def changed?(instance)
+      return true if is_string? || @columns.any? { |col| !col.__stack.empty? }
+      
+      !@columns.all? { |col|
+        instance.respond_to?("#{col.__name.to_s}_changed?") &&
+        !instance.send("#{col.__name.to_s}_changed?")
+      }
+    end
+    
     private
     
     # Could there be more than one value related to the parent record? If so,
