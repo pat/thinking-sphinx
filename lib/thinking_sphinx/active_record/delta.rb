@@ -69,16 +69,14 @@ module ThinkingSphinx
           end
           
           def should_toggle_delta?
-            indexed_data_changed?        || self.new_record? ||
-            !self.respond_to?(:changed?) || self.changed?
+            self.new_record? || indexed_data_changed?
           end
           
           def indexed_data_changed?
             sphinx_indexes.any? { |index|
               index.fields.any? { |field| field.changed?(self) } ||
               index.attributes.any? { |attrib|
-                puts "Attribute #{attrib.unique_name}: changed => #{attrib.changed?(self)}, updatable: #{attrib.updatable?}"
-                attrib.changed?(self) && !attrib.updatable?
+                attrib.public? && attrib.changed?(self) && !attrib.updatable?
               }
             }
           end

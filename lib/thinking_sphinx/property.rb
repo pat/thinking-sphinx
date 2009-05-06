@@ -58,6 +58,14 @@ module ThinkingSphinx
       }
     end
     
+    def admin?
+      admin
+    end
+    
+    def public?
+      !admin
+    end
+    
     private
     
     # Could there be more than one value related to the parent record? If so,
