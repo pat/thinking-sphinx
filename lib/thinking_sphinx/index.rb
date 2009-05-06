@@ -262,7 +262,8 @@ module ThinkingSphinx
         FauxColumn.new(contents),
         :type   => type,
         :as     => name,
-        :facet  => facet
+        :facet  => facet,
+        :admin  => true
       )
     end
     
