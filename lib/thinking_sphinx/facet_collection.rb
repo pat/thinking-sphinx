@@ -5,22 +5,26 @@ module ThinkingSphinx
     def initialize(arguments)
       @arguments        = arguments.clone
       @attribute_values = {}
-      @facets           = []
+      @facet_names           = []
     end
     
     def add_from_results(facet, results)
+      name = ThinkingSphinx::Facet.name_for(facet)
+
+      self[name]              ||= {}
+      @attribute_values[name] ||= {}
+      @facet_names << name
+
+      return if results.empty?
+
       facet = facet_from_object(results.first, facet) if facet.is_a?(String)
-      
-      self[facet.name]              ||= {}
-      @attribute_values[facet.name] ||= {}
-      @facets << facet
       
       results.each_with_groupby_and_count { |result, group, count|
         facet_value = facet.value(result, group)
         
-        self[facet.name][facet_value]              ||= 0
-        self[facet.name][facet_value]              += count
-        @attribute_values[facet.name][facet_value]  = group
+        self[name][facet_value]             ||= 0
+        self[name][facet_value]              += count
+        @attribute_values[name][facet_value]  = group
       }
     end
     
@@ -30,7 +34,7 @@ module ThinkingSphinx
       options[:with] ||= {}
       
       hash.each do |key, value|
-        attrib = facet_for_key(key).attribute_name
+        attrib = ThinkingSphinx::Facet.attribute_name_for(key)
         options[:with][attrib] = underlying_value key, value
       end
       
@@ -49,9 +53,6 @@ module ThinkingSphinx
       end
     end
     
-    def facet_for_key(key)
-      @facets.detect { |facet| facet.name == key }
-    end
     
     def facet_from_object(object, name)
       object.sphinx_facets.detect { |facet| facet.attribute_name == name }

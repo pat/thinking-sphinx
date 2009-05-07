@@ -13,8 +13,8 @@ class Person < ActiveRecord::Base
     indexes [first_name, middle_initial, last_name], :as => :name
     indexes team.name, :as => :team_name
     indexes contacts.phone_number, :as => :phone_numbers
-    indexes city,   :prefixes => true
-    indexes state,  :infixes  => true
+    indexes city,   :prefixes => true, :facet => true
+    indexes state,  :infixes  => true, :facet => true
     
     has [first_name, middle_initial, last_name], :as => :name_sort
     has team.name, :as => :team_name_sort

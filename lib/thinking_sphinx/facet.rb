@@ -9,9 +9,22 @@ module ThinkingSphinx
         raise "Can't translate Facets on multiple-column field or attribute"
       end
     end
+
+    def self.name_for(facet)
+      case facet
+      when Facet
+        facet.name
+      when String, Symbol
+        facet.to_s.gsub(/_facet$/,'').to_sym
+      end
+    end
     
     def name
       reference.unique_name
+    end
+
+    def self.attribute_name_for(name)
+      name.to_s + '_facet'
     end
     
     def attribute_name
