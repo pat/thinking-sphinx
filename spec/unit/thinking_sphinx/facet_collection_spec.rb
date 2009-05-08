@@ -10,11 +10,7 @@ describe ThinkingSphinx::FacetCollection do
     return @results if defined? @results
     @result = Person.find(:first)
     @results = [@result]
-    class << @results
-      def each_with_groupby_and_count
-        yield first, first.city.to_crc32, 1
-      end
-    end
+    @results.stub!(:each_with_groupby_and_count).and_yield(@result, @result.city.to_crc32, 1)
     @results
   end
 
@@ -55,15 +51,14 @@ describe ThinkingSphinx::FacetCollection do
   describe "#for" do
     before do
       @facet_collection.add_from_results('city_facet', mock_results)
-      ThinkingSphinx::Search.stub_method(:search => [@result])
     end
 
     it "should return the search results for the attribute and key pair" do
-      @facet_collection.for(:city => 2)
-      ThinkingSphinx::Search.should have_received(:search) do |arguments|
-        arguments.last[:with].should have_key('city_facet')
-        arguments.last[:with]['city_facet'].should == 2
+      ThinkingSphinx::Search.should_receive(:search) do |options|
+        options[:with].should have_key('city_facet')
+        options[:with]['city_facet'].should == @result.city.to_crc32
       end
+      @facet_collection.for(:city => 2)
     end
   end
 end
