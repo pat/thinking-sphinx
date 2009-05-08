@@ -17,9 +17,12 @@ describe ThinkingSphinx::Facet do
       ThinkingSphinx::Facet.name_for(facet).should == :attribute
     end
 
-    it "should cycle properly" do
+    it "should return 'class' for special case name 'class_crc'" do
+      ThinkingSphinx::Facet.name_for(:class_crc).should == :class
+    end
+
+    it "should cycle" do
       ThinkingSphinx::Facet.name_for(ThinkingSphinx::Facet.attribute_name_for(:attribute)).should == :attribute
-      ThinkingSphinx::Facet.attribute_name_for(ThinkingSphinx::Facet.name_for('attribute_facet')).should == 'attribute_facet'
     end
   end
 
@@ -30,6 +33,14 @@ describe ThinkingSphinx::Facet do
 
     it "should append '_facet' to provided symbol and return a string" do
       ThinkingSphinx::Facet.attribute_name_for(:attribute).should == 'attribute_facet'
+    end
+
+    it "should return 'class_crc' for special case attribute 'class'" do
+      ThinkingSphinx::Facet.attribute_name_for(:class).should == 'class_crc'
+    end
+
+    it "should cycle" do
+      ThinkingSphinx::Facet.attribute_name_for(ThinkingSphinx::Facet.name_for('attribute_facet')).should == 'attribute_facet'
     end
   end
 end

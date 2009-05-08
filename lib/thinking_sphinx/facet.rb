@@ -15,7 +15,7 @@ module ThinkingSphinx
       when Facet
         facet.name
       when String, Symbol
-        facet.to_s.gsub(/_facet$/,'').to_sym
+        facet.to_s.gsub(/(_facet|_crc)$/,'').to_sym
       end
     end
     
@@ -24,7 +24,7 @@ module ThinkingSphinx
     end
 
     def self.attribute_name_for(name)
-      name.to_s + '_facet'
+      name.to_s == 'class' ? 'class_crc' : "#{name}_facet"
     end
     
     def attribute_name
