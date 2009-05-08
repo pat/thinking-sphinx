@@ -120,3 +120,4 @@ Since I first released this library, there's been quite a few people who have su
 * Peter Wagenet
 * Max Lapshin
 * Martin Emde
+* David Wennergren

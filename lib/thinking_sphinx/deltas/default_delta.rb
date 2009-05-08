@@ -39,7 +39,8 @@ module ThinkingSphinx
       
       def reset_query(model)
         "UPDATE #{model.quoted_table_name} SET " +
-        "#{@index.quote_column(@column.to_s)} = #{adapter.boolean(false)}"
+        "#{@index.quote_column(@column.to_s)} = #{adapter.boolean(false)} " +
+        "WHERE #{@index.quote_column(@column.to_s)} = #{adapter.boolean(true)}"
       end
       
       def clause(model, toggled)
