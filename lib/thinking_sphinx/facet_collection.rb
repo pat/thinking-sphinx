@@ -22,7 +22,7 @@ module ThinkingSphinx
       results.each_with_groupby_and_count { |result, group, count|
         facet_value = facet.value(result, group)
         
-        self[name][facet_value]             ||= 0
+        self[name][facet_value]              ||= 0
         self[name][facet_value]              += count
         @attribute_values[name][facet_value]  = group
       }
@@ -52,7 +52,6 @@ module ThinkingSphinx
         @attribute_values[key][value]
       end
     end
-    
     
     def facet_from_object(object, name)
       object.sphinx_facets.detect { |facet| facet.attribute_name == name }

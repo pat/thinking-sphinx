@@ -720,11 +720,11 @@ module ThinkingSphinx
       
       def facets_for_model(klass, args, options)
         hash    = ThinkingSphinx::FacetCollection.new args + [options]
-        options = options.clone.merge! :group_function => :attr
+        options = options.clone.merge! facet_query_options
         
         klass.sphinx_facets.inject(hash) do |hash, facet|
           unless facet.name == :class && !options[:class_facet]
-            options[:group_by] = facet.attribute_name
+            options[:group_by]    = facet.attribute_name
             hash.add_from_results facet, search(*(args + [options]))
           end
           
@@ -735,13 +735,24 @@ module ThinkingSphinx
       def facets_for_all_models(args, options)
         options = GlobalFacetOptions.merge(options)
         hash    = ThinkingSphinx::FacetCollection.new args + [options]
-        options = options.merge! :group_function => :attr
+        options = options.merge! facet_query_options
         
         facet_names(options).inject(hash) do |hash, name|
           options[:group_by] = name
           hash.add_from_results name, search(*(args + [options]))
           hash
         end
+      end
+      
+      def facet_query_options
+        config = ThinkingSphinx::Configuration.instance
+        max    = config.configuration.searchd.max_matches || 1000
+        
+        {
+          :group_function => :attr,
+          :limit          => max,
+          :max_matches    => max
+        }
       end
       
       def facet_classes(options)

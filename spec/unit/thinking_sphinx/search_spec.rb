@@ -50,6 +50,50 @@ describe ThinkingSphinx::Search do
 
     end
   end
+  
+  describe "facets method" do
+    before :each do
+      @results = [Person.find(:first)]
+      @results.stub!(:each_with_groupby_and_count).
+        and_yield(@results.first, @results.first.city.to_crc32, 1)
+      ThinkingSphinx::Search.stub!(:search => @results)
+      
+      @config = ThinkingSphinx::Configuration.instance
+      @config.configuration.searchd.max_matches = 10_000
+    end
+    
+    it "should use the system-set max_matches for limit on facet calls" do
+      ThinkingSphinx::Search.should_receive(:search) do |options|
+        options[:max_matches].should  == 10_000
+        options[:limit].should        == 10_000
+      end
+      
+      ThinkingSphinx::Search.facets :all_attributes => true
+    end
+    
+    it "should use the default max-matches if there is no explicit setting" do
+      @config.configuration.searchd.max_matches = nil
+      ThinkingSphinx::Search.should_receive(:search) do |options|
+        options[:max_matches].should  == 1000
+        options[:limit].should        == 1000
+      end
+      
+      ThinkingSphinx::Search.facets :all_attributes => true
+    end
+    
+    it "should ignore user-provided max_matches and limit on facet calls" do
+      ThinkingSphinx::Search.should_receive(:search) do |options|
+        options[:max_matches].should  == 10_000
+        options[:limit].should        == 10_000
+      end
+      
+      ThinkingSphinx::Search.facets(
+        :all_attributes => true,
+        :max_matches    => 500,
+        :limit          => 200
+      )
+    end
+  end
 end
 
 describe ThinkingSphinx::Search, "playing nice with Search model" do
