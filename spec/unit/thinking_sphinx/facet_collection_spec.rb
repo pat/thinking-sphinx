@@ -58,7 +58,7 @@ describe ThinkingSphinx::FacetCollection do
         options[:with].should have_key('city_facet')
         options[:with]['city_facet'].should == @result.city.to_crc32
       end
-      @facet_collection.for(:city => 2)
+      @facet_collection.for(:city => @result.city)
     end
   end
 end
