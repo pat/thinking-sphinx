@@ -37,6 +37,8 @@ module ThinkingSphinx
       @delta_object = nil
       
       initialize_from_builder(&block) if block_given?
+      
+      add_internal_attributes_and_facets
     end
     
     def name
@@ -48,7 +50,6 @@ module ThinkingSphinx
     end
     
     def to_riddle_for_core(offset, index)
-      add_internal_attributes_and_facets
       link!
       
       source = Riddle::Configuration::SQLSource.new(
@@ -64,7 +65,6 @@ module ThinkingSphinx
     end
     
     def to_riddle_for_delta(offset, index)
-      add_internal_attributes_and_facets
       link!
       
       source = Riddle::Configuration::SQLSource.new(
