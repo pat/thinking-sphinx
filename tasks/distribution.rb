@@ -29,7 +29,7 @@ spec = Gem::Specification.new do |s|
   s.files             = FileList[
     "lib/**/*.rb",
     "LICENCE",
-    "README",
+    "README.textile",
     "tasks/**/*.rb",
     "tasks/**/*.rake",
     "vendor/**/*"
