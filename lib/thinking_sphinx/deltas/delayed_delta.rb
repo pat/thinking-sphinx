@@ -9,13 +9,15 @@ module ThinkingSphinx
     class DelayedDelta < ThinkingSphinx::Deltas::DefaultDelta
       def index(model, instance = nil)
         ThinkingSphinx::Deltas::Job.enqueue(
-          ThinkingSphinx::Deltas::DeltaJob.new(delta_index_name(model))
+          ThinkingSphinx::Deltas::DeltaJob.new(delta_index_name(model)),
+          ThinkingSphinx::Configuration.instance.delayed_job_priority
         )
         
         Delayed::Job.enqueue(
           ThinkingSphinx::Deltas::FlagAsDeletedJob.new(
             core_index_name(model), instance.sphinx_document_id
-          )
+          ),
+          ThinkingSphinx::Configuration.instance.delayed_job_priority
         ) if instance
         
         true

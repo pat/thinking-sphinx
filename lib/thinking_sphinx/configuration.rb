@@ -31,8 +31,10 @@ module ThinkingSphinx
   # fashion to database.yml - using the following keys: config_file,
   # searchd_log_file, query_log_file, pid_file, searchd_file_path, port,
   # allow_star, enable_star, min_prefix_len, min_infix_len, mem_limit,
-  # max_matches, # morphology, charset_type, charset_table, ignore_chars,
-  # html_strip, # html_remove_elements. I think you've got the idea.
+  # max_matches, morphology, charset_type, charset_table, ignore_chars,
+  # html_strip, html_remove_elements, delayed_job_priority.
+  #
+  # I think you've got the idea.
   # 
   # Each setting in the YAML file is optional - so only put in the ones you
   # want to change.
@@ -55,7 +57,8 @@ module ThinkingSphinx
         
     attr_accessor :config_file, :searchd_log_file, :query_log_file,
       :pid_file, :searchd_file_path, :address, :port, :allow_star,
-      :database_yml_file, :app_root, :bin_path, :model_directories
+      :database_yml_file, :app_root, :bin_path, :model_directories,
+      :delayed_job_priority
     
     attr_accessor :source_options, :index_options
     
@@ -87,6 +90,7 @@ module ThinkingSphinx
       self.bin_path             = ""
       self.model_directories    = ["#{app_root}/app/models/"] +
         Dir.glob("#{app_root}/vendor/plugins/*/app/models/")
+      self.delayed_job_priority = 0
       
       self.source_options  = {}
       self.index_options   = {
