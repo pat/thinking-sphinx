@@ -21,3 +21,9 @@ Feature: Search and browse across models by their defined facets
     And I don't want classes included
     Then I should have 7 facets
     And I should not have the facet Class
+  
+  Scenario: Requesting facets common to all indexed models
+    Given Sphinx is running
+    When I am requesting facet results
+    Then I should have the facet Class
+    And I should have 1 facet
