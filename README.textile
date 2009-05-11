@@ -122,3 +122,5 @@ Since I first released this library, there's been quite a few people who have su
 * Martin Emde
 * David Wennergren
 * Mark Lane
+* Eric Lindvall
+* Lawrence Pit
