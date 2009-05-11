@@ -46,6 +46,7 @@ module ThinkingSphinx
       ids = matches.collect { |match| match[:attributes]["sphinx_internal_id"] }
       instances = ids.length > 0 ? klass.find(
         :all,
+        :joins      => options[:joins]
         :conditions => {klass.primary_key.to_sym => ids},
         :include    => (options[:include] || index_options[:include]),
         :select     => (options[:select]  || index_options[:select]),
