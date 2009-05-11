@@ -66,7 +66,7 @@ module ThinkingSphinx
             return unless ThinkingSphinx.define_indexes?
             
             self.sphinx_indexes ||= []
-            index = Index.new(self, &block)
+            index = ThinkingSphinx::Index::Builder.generate(self, &block)
             
             self.sphinx_indexes << index
             unless ThinkingSphinx.indexed_models.include?(self.name)
@@ -151,7 +151,9 @@ module ThinkingSphinx
             self.sphinx_indexes.select { |ts_index|
               ts_index.model == self
             }.each_with_index do |ts_index, i|
-              index.sources << ts_index.to_riddle_for_core(offset, i)
+              index.sources += ts_index.sources.collect { |source|
+                source.to_riddle_for_core(offset, i)
+              }
             end
             
             index
@@ -163,7 +165,9 @@ module ThinkingSphinx
             index.path = File.join(ThinkingSphinx::Configuration.instance.searchd_file_path, index.name)
             
             self.sphinx_indexes.each_with_index do |ts_index, i|
-              index.sources << ts_index.to_riddle_for_delta(offset, i) if ts_index.delta?
+              index.sources += ts_index.sources.collect { |source|
+                source.to_riddle_for_delta(offset, i)
+              } if ts_index.delta?
             end
             
             index

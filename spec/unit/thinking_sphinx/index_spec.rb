@@ -1,15 +1,6 @@
 require 'spec/spec_helper'
 
 describe ThinkingSphinx::Index do
-  describe "generated sql_query" do
-    it "should include explicit groupings if requested" do
-      @index = ThinkingSphinx::Index.new(Person)
-      
-      @index.groupings << "custom_sql"
-      @index.to_riddle_for_core(0, 0).sql_query.should match(/GROUP BY.+custom_sql/)
-    end
-  end
-  
   describe "prefix_fields method" do
     before :each do
       @index = ThinkingSphinx::Index.new(Person)
@@ -18,7 +9,7 @@ describe ThinkingSphinx::Index do
       @field_b = ThinkingSphinx::Field.stub_instance(:prefixes => false)
       @field_c = ThinkingSphinx::Field.stub_instance(:prefixes => true)
       
-      @index.fields = [@field_a, @field_b, @field_c]
+      @index.stub_method(:fields => [@field_a, @field_b, @field_c])
     end
     
     it "should return fields that are flagged as prefixed" do
@@ -39,7 +30,7 @@ describe ThinkingSphinx::Index do
       @field_b = ThinkingSphinx::Field.stub_instance(:infixes => false)
       @field_c = ThinkingSphinx::Field.stub_instance(:infixes => true)
       
-      @index.fields = [@field_a, @field_b, @field_c]
+      @index.stub_method(:fields => [@field_a, @field_b, @field_c])
     end
     
     it "should return fields that are flagged as infixed" do
@@ -54,12 +45,12 @@ describe ThinkingSphinx::Index do
   
   describe "multi-value attribute as ranged-query with has-many association" do
     before :each do 
-      @index = ThinkingSphinx::Index.new(Person) do
+      @index = ThinkingSphinx::Index::Builder.generate(Person) do
+        indexes first_name
         has tags(:id), :as => :tag_ids, :source => :ranged_query
       end
-      @index.link!
       
-      @sql = @index.to_riddle_for_core(0, 0).sql_query
+      @sql = @index.sources.first.to_riddle_for_core(0, 0).sql_query
     end
     
     it "should not include attribute in select-clause sql_query" do
@@ -84,12 +75,12 @@ describe ThinkingSphinx::Index do
   
   describe "multi-value attribute as ranged-query with has-many-through association" do
     before :each do
-      @index = ThinkingSphinx::Index.new(Person) do
+      @index = ThinkingSphinx::Index::Builder.generate(Person) do
+        indexes first_name
         has football_teams(:id), :as => :football_teams_ids, :source => :ranged_query
       end
-      @index.link!
       
-      @sql = @index.to_riddle_for_core(0, 0).sql_query
+      @sql = @index.sources.first.to_riddle_for_core(0, 0).sql_query
     end
     
     it "should not include attribute in select-clause sql_query" do
@@ -114,12 +105,12 @@ describe ThinkingSphinx::Index do
   
   describe "multi-value attribute as ranged-query with has-many-through association and foreign_key" do
     before :each do
-      @index = ThinkingSphinx::Index.new(Person) do
+      @index = ThinkingSphinx::Index::Builder.generate(Person) do
+        indexes first_name
         has friends(:id), :as => :friend_ids, :source => :ranged_query
       end
-      @index.link!
       
-      @sql = @index.to_riddle_for_core(0, 0).sql_query
+      @sql = @index.sources.first.to_riddle_for_core(0, 0).sql_query
     end
     
     it "should not include attribute in select-clause sql_query" do

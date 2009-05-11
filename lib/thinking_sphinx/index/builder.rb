@@ -13,11 +13,149 @@ module ThinkingSphinx
     # out each method's documentation for better ideas of usage.
     # 
     class Builder
+      instance_methods.grep(/^[^_]/).each { |method|
+        next if method == "instance_eval"
+        define_method(method) {
+          caller.grep(/irb.completion/).empty? ? method_missing(method) : super
+        }
+      }
+      
+      def self.generate(model, &block)
+        index  = ThinkingSphinx::Index.new(model)
+        model.sphinx_facets ||= []
+        
+        Builder.new(index, &block) if block_given?
+        
+        index.delta_object = ThinkingSphinx::Deltas.parse index
+        index
+      end
+      
+      def initialize(index, &block)
+        @index  = index
+        @source = ThinkingSphinx::Source.new(@index)
+        @index.sources << @source
+        @explicit_source = false
+        
+        self.instance_eval &block
+        
+        if @index.sources.any? { |source|
+          source.fields.length == 0
+        }
+          raise "At least one field is necessary for an index"
+        end
+      end
+      
+      def define_source(&block)
+        if @explicit_source
+          @source = ThinkingSphinx::Source.new(@index)
+          @index.sources << @source
+        else
+          @explicit_source = true
+        end
+        
+        self.instance_eval &block
+      end
+      
+      def indexes(*args)
+        options = args.extract_options!
+        args.each do |columns|
+          field = Field.new(FauxColumn.coerce(columns), options)
+          field.model = @index.model
+          @source.fields << field
+          
+          add_sort_attribute  field, options   if field.sortable
+          add_facet_attribute field, options   if field.faceted
+        end
+      end
+      
+      def has(*args)
+        options = args.extract_options!
+        args.each do |columns|
+          attribute = Attribute.new(FauxColumn.coerce(columns), options)
+          attribute.model = @index.model
+          @source.attributes << attribute
+          
+          add_facet_attribute attribute, options if attribute.faceted
+        end
+      end
+      
+      def facet(*args)
+        options = args.extract_options!
+        options[:facet] = true
+        
+        args.each do |columns|
+          attribute = Attribute.new(FauxColumn.coerce(columns), options)
+          attribute.model = @index.model
+          @source.attributes << attribute
+          
+          add_facet_attribute attribute, options
+        end
+      end
+      
+      def where(*args)
+        @source.conditions += args
+      end
+      
+      def group_by(*args)
+        @source.groupings += args
+      end
+      
+      def set_property(*args)
+        options = args.extract_options!
+        options.each do |key, value|
+          set_single_property key, value
+        end
+        
+        set_single_property args[0], args[1] if args.length == 2
+      end
+      alias_method :set_properties, :set_property
+      
+      def method_missing(method, *args)
+        FauxColumn.new(method, *args)
+      end
+      
+      def assoc(assoc, *args)
+        FauxColumn.new(assoc, *args)
+      end
+      
+      private
+      
+      def set_single_property(key, value)
+        source_options = ThinkingSphinx::Configuration::SourceOptions
+        if source_options.include?(key.to_s)
+          @source.options.merge! key => value
+        else
+          @index.local_options.merge!  key => value
+        end
+      end
+      
+      def add_sort_attribute(field, options)
+        add_internal_attribute field, options, "_sort"
+      end
+      
+      def add_facet_attribute(property, options)
+        add_internal_attribute property, options, "_facet", true
+        @index.model.sphinx_facets << property.to_facet
+      end
+      
+      def add_internal_attribute(property, options, suffix, crc = false)
+        @source.attributes << Attribute.new(
+          property.columns.collect { |col| col.clone },
+          options.merge(
+            :type => property.is_a?(Field) ? :string : nil,
+            :as   => property.unique_name.to_s.concat(suffix).to_sym,
+            :crc  => crc
+          ).except(:facet)
+        )
+        
+        @source.attributes.last.model = @index.model
+      end
+      
       class << self
-        # No idea where this is coming from - haven't found it in any ruby or
-        # rails documentation. It's not needed though, so it gets undef'd.
         # Hopefully the list of methods that get in the way doesn't get too
-        # long.
+        # long. No idea where 'parent' is coming from - haven't found it in any
+        # ruby or rails documentation. It's not needed though, so it gets
+        # undef'd too.
         HiddenMethods = [:parent, :name, :id, :type].each { |method|
           define_method(method) {
             caller.grep(/irb.completion/).empty? ? method_missing(method) : super

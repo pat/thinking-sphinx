@@ -14,7 +14,7 @@ describe "ThinkingSphinx::ActiveRecord" do
       )
       
       @index = ThinkingSphinx::Index.stub_instance(:delta? => false)
-      ThinkingSphinx::Index.stub_method(:new => @index)
+      ThinkingSphinx::Index::Builder.stub_method(:generate => @index)
     end
     
     after :each do
@@ -24,17 +24,17 @@ describe "ThinkingSphinx::ActiveRecord" do
       ThinkingSphinx.indexed_models.delete "TestModule::TestModel"
     end
     
-    it "should return nil and do nothing if indexes are disabled" do
+    it "should do nothing if indexes are disabled" do
       ThinkingSphinx.stub_method(:define_indexes? => false)
       
-      TestModule::TestModel.define_index {}.should be_nil
+      TestModule::TestModel.define_index {}
       ThinkingSphinx::Index.should_not have_received(:new)
       
       ThinkingSphinx.unstub_method(:define_indexes?)
     end
     
     it "should add a new index to the model" do
-      TestModule::TestModel.define_index do; end
+      TestModule::TestModel.define_index {}
       
       TestModule::TestModel.sphinx_indexes.length.should == 1
     end
@@ -144,7 +144,7 @@ describe "ThinkingSphinx::ActiveRecord" do
     end
 
     it "should return the parent if model inherits an index" do
-      Parent.source_of_sphinx_index.should == Person
+      Admin::Person.source_of_sphinx_index.should == Person
     end
   end
   
@@ -289,10 +289,12 @@ describe "ThinkingSphinx::ActiveRecord" do
     end
 
     it "should allow associations to other STI models" do
-      Child.sphinx_indexes.last.link!
-      sql = Child.sphinx_indexes.last.to_riddle_for_core(0, 0).sql_query
+      source = Child.sphinx_indexes.last.sources.first
+      sql = source.to_riddle_for_core(0, 0).sql_query
       sql.gsub!('$start', '0').gsub!('$end', '100')
-      lambda { Child.connection.execute(sql) }.should_not raise_error(ActiveRecord::StatementInvalid)
+      lambda {
+        Child.connection.execute(sql)
+      }.should_not raise_error(ActiveRecord::StatementInvalid)
     end
   end
   

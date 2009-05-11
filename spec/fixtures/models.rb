@@ -36,6 +36,11 @@ end
 class Parent < Person
 end
 
+module Admin
+  class Person < ::Person
+  end
+end
+
 class Child < Person
   belongs_to :parent
   define_index do
@@ -69,6 +74,7 @@ class Friendship < ActiveRecord::Base
   belongs_to :friend, :class_name => "Person", :foreign_key => :friend_id
   
   define_index do
+    indexes "'something'", :as => :something
     has person_id, friend_id
   end
 end

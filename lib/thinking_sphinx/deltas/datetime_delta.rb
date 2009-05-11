@@ -39,7 +39,7 @@ module ThinkingSphinx
       
       def clause(model, toggled)
         if toggled
-          "#{model.quoted_table_name}.#{@index.quote_column(@column.to_s)}" +
+          "#{model.quoted_table_name}.#{model.connection.quote_column_name(@column.to_s)}" +
           " > #{adapter.time_difference(@threshold)}"
         else
           nil
