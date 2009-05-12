@@ -252,7 +252,7 @@ module ThinkingSphinx
           @attributes << Attribute.new(
             resource.columns.collect { |col| col.clone },
             options.merge(
-              :type => resource.is_a?(Field) ? :string : nil,
+              :type => resource.is_a?(Field) ? :string : options[:type],
               :as   => resource.unique_name.to_s.concat(suffix).to_sym,
               :crc  => crc
             ).except(:facet)
