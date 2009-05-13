@@ -28,7 +28,7 @@ ActiveRecord::Base.reset_subclasses
 ActiveRecord::Base.clear_reloadable_connections!
 
 # Wait for ActiveRecord to catch up.
-sleep 1
+sleep 2
 
 # Set up database tables and records
 Dir["features/support/db/migrations/*.rb"].each do |file|

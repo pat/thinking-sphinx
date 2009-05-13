@@ -20,13 +20,7 @@ namespace :features do
   def add_task(name, description)
     Cucumber::Rake::Task.new(name, description) do |t|
       t.cucumber_opts = "--format pretty"
-      t.step_pattern  = [
-        "features/support/env",
-        "features/support/db/#{name}",
-        "features/support/db/active_record",
-        "features/support/post_database",
-        "features/step_definitions/**.rb"
-      ]
+      t.profile = name
     end
   end
   
@@ -46,13 +40,7 @@ namespace :rcov do
   def add_task(name, description)
     Cucumber::Rake::Task.new(name, description) do |t|
       t.cucumber_opts = "--format pretty"
-      t.step_pattern  = [
-        "features/support/env",
-        "features/support/db/#{name}",
-        "features/support/db/active_record",
-        "features/support/post_database",
-        "features/step_definitions/**.rb"
-      ]
+      t.profile = name
       t.rcov = true
       t.rcov_opts = [
         '--exclude', 'spec',
@@ -80,7 +68,11 @@ task :cucumber_defaults do
     "--require #{path}"
   }.join(" ")
   
+  features = FileList["features/*.feature"].join(" ")
+  
   File.open('cucumber.yml', 'w') { |f|
-    f.write "default: \"#{default_requires} #{step_definitions}\""
+    f.write "default: \"#{default_requires} #{step_definitions}\"\n\n"
+    f.write "mysql: \"#{default_requires} #{step_definitions} #{features}\"\n\n"
+    f.write "postgresql: \"#{default_requires.gsub(/mysql/, 'postgresql')} #{step_definitions} #{features}\""
   }
 end
