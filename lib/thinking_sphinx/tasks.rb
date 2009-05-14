@@ -30,7 +30,7 @@ namespace :thinking_sphinx do
     if sphinx_running?
       puts "Started successfully (pid #{sphinx_pid})."
     else
-      puts "Failed to start searchd daemon. Check #{config.searchd_log_file}."
+      puts "Failed to start searchd daemon. Check #{config.searchd_log_file}"
     end
   end
   
