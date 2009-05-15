@@ -16,6 +16,9 @@ module ThinkingSphinx
       when FalseClass, nil
         nil
       else
+        if delta_option.is_a?(String)
+          delta_option = Kernel.const_get(delta_option)
+        end
         if delta_option.ancestors.include?(ThinkingSphinx::Deltas::DefaultDelta)
           delta_option.new index, index.local_options
         else
