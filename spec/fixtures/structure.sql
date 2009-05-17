@@ -63,6 +63,8 @@ DROP TABLE IF EXISTS `alphas`;
 CREATE TABLE `alphas` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(50) NOT NULL,
+  `value` int(11),
+  `cost` decimal(10,6),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

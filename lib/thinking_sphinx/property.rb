@@ -2,15 +2,23 @@ module ThinkingSphinx
   class Property
     attr_accessor :alias, :columns, :associations, :model, :faceted, :admin
     
-    def initialize(columns, options = {})
+    def initialize(source, columns, options = {})
+      @source       = source
+      @model        = source.model
       @columns      = Array(columns)
       @associations = {}
 
-      raise "Cannot define a field with no columns. Maybe you are trying to index a field with a reserved name (id, name). You can fix this error by using a symbol rather than a bare name (:id instead of id)." if @columns.empty? || @columns.any? { |column| !column.respond_to?(:__stack) }
+      raise "Cannot define a field or attribute in #{source.model.name} with no columns. Maybe you are trying to index a field with a reserved name (id, name). You can fix this error by using a symbol rather than a bare name (:id instead of id)." if @columns.empty? || @columns.any? { |column| !column.respond_to?(:__stack) }
       
       @alias    = options[:as]
       @faceted  = options[:facet]
       @admin    = options[:admin]
+      
+      @columns.each { |col|
+        @associations[col] = association_stack(col.__stack.clone).each { |assoc|
+          assoc.join_to(source.base)
+        }
+      }
     end
     
     # Returns the unique name of the attribute - which is either the alias of
@@ -128,6 +136,25 @@ module ThinkingSphinx
           nil
         }.compact.join(', ')
       end
+    end
+    
+    # Gets a stack of associations for a specific path.
+    # 
+    def association_stack(path, parent = nil)
+      assocs = []
+      
+      if parent.nil?
+        assocs = @source.association(path.shift)
+      else
+        assocs = parent.children(path.shift)
+      end
+      
+      until path.empty?
+        point  = path.shift
+        assocs = assocs.collect { |assoc| assoc.children(point) }.flatten
+      end
+      
+      assocs
     end
   end
 end

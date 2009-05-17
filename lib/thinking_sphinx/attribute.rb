@@ -9,7 +9,7 @@ module ThinkingSphinx
   # associations. Which can get messy. Use Index.link!, it really helps.
   # 
   class Attribute < ThinkingSphinx::Property
-    attr_accessor :source
+    attr_accessor :query_source
     
     # To create a new attribute, you'll need to pass in either a single Column
     # or an array of them, and some (optional) options.
@@ -67,15 +67,17 @@ module ThinkingSphinx
     # If you're creating attributes for latitude and longitude, don't forget
     # that Sphinx expects these values to be in radians.
     #  
-    def initialize(columns, options = {})
+    def initialize(source, columns, options = {})
       super
       
-      @type     = options[:type]
-      @source   = options[:source]
-      @crc      = options[:crc]
+      @type           = options[:type]
+      @query_source   = options[:source]
+      @crc            = options[:crc]
       
-      @type   ||= :multi    unless @source.nil?
-      @type     = :integer  if @type == :string && @crc
+      @type         ||= :multi    unless @query_source.nil?
+      @type           = :integer  if @type == :string && @crc
+      
+      source.attributes << self
     end
     
     # Get the part of the SELECT clause related to this attribute. Don't forget
@@ -88,16 +90,16 @@ module ThinkingSphinx
       return nil unless include_as_association?
       
       clause = @columns.collect { |column|
-        column_with_prefix(column)
+        part = column_with_prefix(column)
+        type == :string ? adapter.convert_nulls(part) : part
       }.join(', ')
       
-      separator = all_ints? ? ',' : ' '
+      separator = all_ints? || @crc ? ',' : ' '
       
+      clause = adapter.cast_to_datetime(clause)             if type == :datetime
+      clause = adapter.crc(clause)                          if @crc
       clause = adapter.concatenate(clause, separator)       if concat_ws?
       clause = adapter.group_concatenate(clause, separator) if is_many?
-      clause = adapter.cast_to_datetime(clause)             if type == :datetime
-      clause = adapter.convert_nulls(clause)                if type == :string
-      clause = adapter.crc(clause)                          if @crc
       
       "#{clause} AS #{quote_column(unique_name)}"
     end
@@ -114,7 +116,7 @@ module ThinkingSphinx
     end
     
     def include_as_association?
-      ! (type == :multi && (source == :query || source == :ranged_query))
+      ! (type == :multi && (query_source == :query || query_source == :ranged_query))
     end
     
     # Returns the configuration value that should be used for
@@ -168,12 +170,23 @@ module ThinkingSphinx
       object.send(column.__name)
     end
     
+    def all_ints?
+      @columns.all? { |col|
+        klasses = @associations[col].empty? ? [@model] :
+          @associations[col].collect { |assoc| assoc.reflection.klass }
+        klasses.all? { |klass|
+          column = klass.columns.detect { |column| column.name == col.__name.to_s }
+          !column.nil? && column.type == :integer
+        }
+      }
+    end
+    
     private
     
     def source_value(offset)
       if is_string?
-        "#{source.to_s.dasherize}; #{columns.first.__name}"
-      elsif source == :ranged_query
+        "#{query_source.to_s.dasherize}; #{columns.first.__name}"
+      elsif query_source == :ranged_query
         "ranged-query; #{query offset} #{query_clause}; #{range_query}"
       else
         "query; #{query offset}"
@@ -223,17 +236,6 @@ FROM #{quote_table_name assoc.table}
       concat_ws? && all_ints?
     end
         
-    def all_ints?
-      @columns.all? { |col|
-        klasses = @associations[col].empty? ? [@model] :
-          @associations[col].collect { |assoc| assoc.reflection.klass }
-        klasses.all? { |klass|
-          column = klass.columns.detect { |column| column.name == col.__name.to_s }
-          !column.nil? && column.type == :integer
-        }
-      }
-    end
-    
     def type_from_database
       klass = @associations.values.flatten.first ? 
         @associations.values.flatten.first.reflection.klass : @model

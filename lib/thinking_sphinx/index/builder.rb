@@ -59,9 +59,7 @@ module ThinkingSphinx
       def indexes(*args)
         options = args.extract_options!
         args.each do |columns|
-          field = Field.new(FauxColumn.coerce(columns), options)
-          field.model = @index.model
-          @source.fields << field
+          field = Field.new(@source, FauxColumn.coerce(columns), options)
           
           add_sort_attribute  field, options   if field.sortable
           add_facet_attribute field, options   if field.faceted
@@ -71,9 +69,7 @@ module ThinkingSphinx
       def has(*args)
         options = args.extract_options!
         args.each do |columns|
-          attribute = Attribute.new(FauxColumn.coerce(columns), options)
-          attribute.model = @index.model
-          @source.attributes << attribute
+          attribute = Attribute.new(@source, FauxColumn.coerce(columns), options)
           
           add_facet_attribute attribute, options if attribute.faceted
         end
@@ -84,9 +80,7 @@ module ThinkingSphinx
         options[:facet] = true
         
         args.each do |columns|
-          attribute = Attribute.new(FauxColumn.coerce(columns), options)
-          attribute.model = @index.model
-          @source.attributes << attribute
+          attribute = Attribute.new(@source, FauxColumn.coerce(columns), options)
           
           add_facet_attribute attribute, options
         end
@@ -139,16 +133,24 @@ module ThinkingSphinx
       end
       
       def add_internal_attribute(property, options, suffix, crc = false)
-        @source.attributes << Attribute.new(
+        # type = case
+        # when property.is_a?(Field)
+        #   :string
+        # when crc
+        #   :integer
+        # else
+        #   options[:type]
+        # end
+        return unless ThinkingSphinx::Facet.translate?(property)
+        
+        Attribute.new(@source,
           property.columns.collect { |col| col.clone },
           options.merge(
-            :type => property.is_a?(Field) ? :string : nil,
+            :type => property.is_a?(Field) ? :string : options[:type],
             :as   => property.unique_name.to_s.concat(suffix).to_sym,
             :crc  => crc
           ).except(:facet)
         )
-        
-        @source.attributes.last.model = @index.model
       end
       
       class << self

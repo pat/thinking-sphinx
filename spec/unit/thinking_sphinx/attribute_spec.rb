@@ -1,23 +1,28 @@
 require 'spec/spec_helper'
 
 describe ThinkingSphinx::Attribute do
+  before :each do
+    @index  = ThinkingSphinx::Index.new(Person)
+    @source = ThinkingSphinx::Source.new(@index)
+  end
+  
   describe '#initialize' do
     it 'raises if no columns are provided so that configuration errors are easier to track down' do
       lambda {
-        ThinkingSphinx::Attribute.new([])
+        ThinkingSphinx::Attribute.new(@source, [])
       }.should raise_error(RuntimeError)
     end
 
     it 'raises if an element of the columns param is an integer - as happens when you use id instead of :id - so that configuration errors are easier to track down' do
       lambda {
-        ThinkingSphinx::Attribute.new([1234])
+        ThinkingSphinx::Attribute.new(@source, [1234])
       }.should raise_error(RuntimeError)
     end
   end
   
   describe "unique_name method" do
     before :each do
-      @attribute = ThinkingSphinx::Attribute.new [
+      @attribute = ThinkingSphinx::Attribute.new @source, [
         Object.stub_instance(:__stack => [], :__name => "col_name")
       ]
     end
@@ -42,7 +47,7 @@ describe ThinkingSphinx::Attribute do
   
   describe "column_with_prefix method" do
     before :each do
-      @attribute = ThinkingSphinx::Attribute.new [
+      @attribute = ThinkingSphinx::Attribute.new @source, [
         ThinkingSphinx::Index::FauxColumn.new(:col_name)
       ]
       @attribute.columns.each { |col| @attribute.associations[col] = [] }
@@ -88,7 +93,7 @@ describe ThinkingSphinx::Attribute do
       @assoc_c = Object.stub_instance(:is_many? => true)
       
       @attribute = ThinkingSphinx::Attribute.new(
-        [ThinkingSphinx::Index::FauxColumn.new(:col_name)]
+        @source, [ThinkingSphinx::Index::FauxColumn.new(:col_name)]
       )
       @attribute.associations = {
         :a => @assoc_a, :b => @assoc_b, :c => @assoc_c
@@ -122,7 +127,7 @@ describe ThinkingSphinx::Attribute do
       @col_c = ThinkingSphinx::Index::FauxColumn.new("c")
 
       @attribute = ThinkingSphinx::Attribute.new(
-        [@col_a, @col_b, @col_c]
+        @source, [@col_a, @col_b, @col_c]
       )
     end
     
@@ -146,7 +151,7 @@ describe ThinkingSphinx::Attribute do
   describe "type method" do
     before :each do
       @column = ThinkingSphinx::Index::FauxColumn.new(:col_name)
-      @attribute = ThinkingSphinx::Attribute.new([@column])
+      @attribute = ThinkingSphinx::Attribute.new(@source, [@column])
       @attribute.model = Person
       @attribute.stub_method(:is_many? => false)
     end
@@ -177,7 +182,7 @@ describe ThinkingSphinx::Attribute do
   
   describe "all_ints? method" do
     it "should return true if all columns are integers" do
-      attribute = ThinkingSphinx::Attribute.new(
+      attribute = ThinkingSphinx::Attribute.new(@source,
         [ ThinkingSphinx::Index::FauxColumn.new(:id),
           ThinkingSphinx::Index::FauxColumn.new(:team_id) ]
       )
@@ -188,7 +193,7 @@ describe ThinkingSphinx::Attribute do
     end
     
     it "should return false if only some columns are integers" do
-      attribute = ThinkingSphinx::Attribute.new(
+      attribute = ThinkingSphinx::Attribute.new(@source,
         [ ThinkingSphinx::Index::FauxColumn.new(:id),
           ThinkingSphinx::Index::FauxColumn.new(:first_name) ]
       )
@@ -199,7 +204,7 @@ describe ThinkingSphinx::Attribute do
     end
     
     it "should return false if no columns are integers" do
-      attribute = ThinkingSphinx::Attribute.new(
+      attribute = ThinkingSphinx::Attribute.new(@source,
         [ ThinkingSphinx::Index::FauxColumn.new(:first_name),
           ThinkingSphinx::Index::FauxColumn.new(:last_name) ]
       )
@@ -213,7 +218,7 @@ describe ThinkingSphinx::Attribute do
   describe "with custom queries" do
     before :each do
       index = CricketTeam.sphinx_indexes.first
-      @statement = index.sources.first.to_riddle_for_core(0, 0).sql_attr_multi.first
+      @statement = index.sources.first.to_riddle_for_core(0, 0).sql_attr_multi.last
     end
     
     it "should track the query type accordingly" do

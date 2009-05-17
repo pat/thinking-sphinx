@@ -31,10 +31,10 @@ describe ThinkingSphinx::Index::Builder do
       @source.fields[1].unique_name.should == :last_name
     end
     
-    it "should have two attributes" do
-      @source.attributes.length.should == 2
-      @source.attributes[0].unique_name.should == :birthday
-      @source.attributes[1].unique_name.should == :internal_id
+    it "should have two attributes alongside the four internal ones" do
+      @source.attributes.length.should == 6
+      @source.attributes[4].unique_name.should == :birthday
+      @source.attributes[5].unique_name.should == :internal_id
     end
     
     it "should have one condition" do
@@ -66,17 +66,17 @@ describe ThinkingSphinx::Index::Builder do
       @source.fields.length.should == 1
     end
     
-    it "should have one attribute" do
-      @source.attributes.length.should == 1
+    it "should have one attribute alongside the four internal ones" do
+      @source.attributes.length.should == 5
     end
     
     it "should set the attribute name to have the _sort suffix" do
-      @source.attributes.first.unique_name.should == :first_name_sort
+      @source.attributes.last.unique_name.should == :first_name_sort
     end
     
     it "should set the attribute column to be the same as the field" do
-      @source.attributes.first.columns.length.should == 1
-      @source.attributes.first.columns.first.__name.should == :first_name
+      @source.attributes.last.columns.length.should == 1
+      @source.attributes.last.columns.first.__name.should == :first_name
     end
   end
   
@@ -97,21 +97,44 @@ describe ThinkingSphinx::Index::Builder do
       @source.fields.length.should == 1
     end
     
-    it "should have one attribute" do
-      @source.attributes.length.should == 1
+    it "should have one attribute alongside the four internal ones" do
+      @source.attributes.length.should == 5
     end
     
     it "should set the attribute name to have the _facet suffix" do
-      @source.attributes.first.unique_name.should == :first_name_facet
+      @source.attributes.last.unique_name.should == :first_name_facet
+    end
+    
+    it "should set the attribute type to integer" do
+      @source.attributes.last.type.should == :integer
     end
     
     it "should set the attribute column to be the same as the field" do
-      @source.attributes.first.columns.length.should == 1
-      @source.attributes.first.columns.first.__name.should == :first_name
+      @source.attributes.last.columns.length.should == 1
+      @source.attributes.last.columns.first.__name.should == :first_name
     end
   end
   
-  describe "faceted attribute" do
+  describe "faceted integer attribute" do
+    before :each do
+      @index = ThinkingSphinx::Index::Builder.generate(Alpha) do
+        indexes :name
+        has value, :facet => true
+      end
+      
+      @source = @index.sources.first
+    end
+    
+    after :each do
+      Alpha.sphinx_facets.delete_at(-1)
+    end
+    
+    it "should have just one attribute alongside the four internal ones" do
+      @source.attributes.length.should == 5
+    end
+  end
+  
+  describe "faceted timestamp attribute" do
     before :each do
       @index = ThinkingSphinx::Index::Builder.generate(Person) do
         indexes first_name
@@ -125,17 +148,78 @@ describe ThinkingSphinx::Index::Builder do
       Person.sphinx_facets.delete_at(-1)
     end
     
-    it "should have two attributes" do
-      @source.attributes.length.should == 2
+    it "should have just one attribute alongside the four internal ones" do
+      @source.attributes.length.should == 5
+    end
+  end
+  
+  describe "faceted boolean attribute" do
+    before :each do
+      @index = ThinkingSphinx::Index::Builder.generate(Beta) do
+        indexes :name
+        has delta, :facet => true
+      end
+      
+      @source = @index.sources.first
+    end
+    
+    after :each do
+      Beta.sphinx_facets.delete_at(-1)
+    end
+    
+    it "should have just one attribute alongside the four internal ones" do
+      @source.attributes.length.should == 5
+    end
+  end
+  
+  describe "faceted float attribute" do
+    before :each do
+      @index = ThinkingSphinx::Index::Builder.generate(Alpha) do
+        indexes :name
+        has cost, :facet => true
+      end
+      
+      @source = @index.sources.first
+    end
+    
+    after :each do
+      Alpha.sphinx_facets.delete_at(-1)
+    end
+    
+    it "should have just one attribute alongside the four internal ones" do
+      @source.attributes.length.should == 5
+    end
+  end
+  
+  describe "faceted string attribute" do
+    before :each do
+      @index = ThinkingSphinx::Index::Builder.generate(Person) do
+        indexes first_name
+        has last_name, :facet => true
+      end
+      
+      @source = @index.sources.first
+    end
+    
+    after :each do
+      Person.sphinx_facets.delete_at(-1)
+    end
+    
+    it "should have two attributes alongside the four internal ones" do
+      @source.attributes.length.should == 6
     end
     
     it "should set the facet attribute name to have the _facet suffix" do
-      @source.attributes.last.unique_name.should == :birthday_facet
+      @source.attributes.last.unique_name.should == :last_name_facet
+    end
+    
+    it "should set the attribute type to integer" do
+      @source.attributes.last.type.should == :integer
     end
     
     it "should set the attribute column to be the same as the field" do
       @source.attributes.last.columns.length.should == 1
-      @source.attributes.last.columns.first.__name.should == :birthday
+      @source.attributes.last.columns.first.__name.should == :last_name
     end
   end
   
@@ -181,10 +265,10 @@ describe ThinkingSphinx::Index::Builder do
       @source.fields[1].unique_name.should == :last_name
     end
     
-    it "should have two attributes" do
-      @source.attributes.length.should == 2
-      @source.attributes[0].unique_name.should == :birthday
-      @source.attributes[1].unique_name.should == :internal_id
+    it "should have two attributes alongside the four internal ones" do
+      @source.attributes.length.should == 6
+      @source.attributes[4].unique_name.should == :birthday
+      @source.attributes[5].unique_name.should == :internal_id
     end
   end
   
@@ -217,13 +301,13 @@ describe ThinkingSphinx::Index::Builder do
       end
     end
     
-    it "should have two attributes" do
-      @index.attributes.length.should == 2
+    it "should have two attributes alongside the eight internal ones" do
+      @index.attributes.length.should == 10
     end
     
-    it "should have one attribute in each source" do
+    it "should have one attribute in each source alongside the four internal ones" do
       @index.sources.each do |source|
-        source.attributes.length.should == 1
+        source.attributes.length.should == 5
       end
     end
   end

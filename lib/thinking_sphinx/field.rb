@@ -52,12 +52,14 @@ module ThinkingSphinx
     #     :as => :posts, :prefixes => true
     #   )
     # 
-    def initialize(columns, options = {})
+    def initialize(source, columns, options = {})
       super
       
       @sortable = options[:sortable] || false
       @infixes  = options[:infixes]  || false
       @prefixes = options[:prefixes] || false
+      
+      source.fields << self
     end
     
     # Get the part of the SELECT clause related to this field. Don't forget

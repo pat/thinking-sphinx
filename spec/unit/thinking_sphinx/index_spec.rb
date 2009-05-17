@@ -63,8 +63,8 @@ describe ThinkingSphinx::Index do
     end
     
     it "should include sql_attr_multi as ranged-query" do
-      attribute = @index.send(:attributes).first
-      attribute.send(:type_to_config).to_s.should == "sql_attr_multi"
+      attribute = @index.attributes.detect { |attrib| attrib.unique_name == :tag_ids }
+      attribute.type_to_config.should == :sql_attr_multi
       
       declaration, query, range_query = attribute.send(:config_value).split('; ')
       declaration.should == "uint tag_ids from ranged-query"
@@ -93,8 +93,10 @@ describe ThinkingSphinx::Index do
     end
     
     it "should include sql_attr_multi as ranged-query" do
-      attribute = @index.send(:attributes).first
-      attribute.send(:type_to_config).to_s.should == "sql_attr_multi"
+      attribute = @index.attributes.detect { |attrib|
+        attrib.unique_name == :football_teams_ids
+      }
+      attribute.type_to_config.should == :sql_attr_multi
       
       declaration, query, range_query = attribute.send(:config_value).split('; ')
       declaration.should == "uint football_teams_ids from ranged-query"
@@ -123,8 +125,10 @@ describe ThinkingSphinx::Index do
     end
     
     it "should include sql_attr_multi as ranged-query" do
-      attribute = @index.send(:attributes).first
-      attribute.send(:type_to_config).to_s.should == "sql_attr_multi"
+      attribute = @index.attributes.detect { |attrib|
+        attrib.unique_name == :friend_ids
+      }
+      attribute.type_to_config.should == :sql_attr_multi
       
       declaration, query, range_query = attribute.send(:config_value).split('; ')
       declaration.should == "uint friend_ids from ranged-query"

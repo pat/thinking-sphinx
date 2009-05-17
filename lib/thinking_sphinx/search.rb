@@ -772,9 +772,16 @@ module ThinkingSphinx
       end
       
       def facet_names_for_all_classes(classes)
-        classes.collect { |klass|
-          klass.sphinx_facets.collect { |facet| facet.attribute_name }
-        }.flatten.uniq
+        all_facets = classes.collect { |klass| klass.sphinx_facets }.flatten
+        
+        all_facets.group_by { |facet|
+          facet.name
+        }.collect { |name, facets|
+          if facets.collect { |facet| facet.type }.uniq.length > 1
+            raise "Facet #{name} exists in more than one model with different types"
+          end
+          facets.first.attribute_name
+        }
       end
       
       def facet_names_common_to_all_classes(classes)

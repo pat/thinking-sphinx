@@ -1,11 +1,11 @@
 module ThinkingSphinx
   class Facet
-    attr_reader :reference
+    attr_reader :property
     
-    def initialize(reference)
-      @reference = reference
+    def initialize(property)
+      @property = property
       
-      if reference.columns.length != 1
+      if property.columns.length != 1
         raise "Can't translate Facets on multiple-column field or attribute"
       end
     end
@@ -19,29 +19,62 @@ module ThinkingSphinx
       end
     end
     
-    def name
-      reference.unique_name
-    end
-
     def self.attribute_name_for(name)
       name.to_s == 'class' ? 'class_crc' : "#{name}_facet"
     end
     
+    def self.attribute_name_from_value(name, value)
+      case value
+      when String
+        attribute_name_for(name)
+      when Array
+        if value.all? { |val| val.is_a?(Integer) }
+          name
+        else
+          attribute_name_for(name)
+        end
+      else
+        name
+      end
+    end
+    
+    def self.translate?(property)
+      return true if property.is_a?(Field)
+      
+      case property.type
+      when :string
+        true
+      when :integer, :boolean, :datetime, :float
+        false
+      when :multi
+        !property.all_ints?
+      end
+    end
+    
+    def name
+      property.unique_name
+    end
+    
     def attribute_name
-      # @attribute_name ||= case @reference
-      # when Attribute
-      #   @reference.unique_name.to_s
-      # when Field
-      @attribute_name ||= @reference.unique_name.to_s + "_facet"
-      # end
+      if translate?
+        Facet.attribute_name_for(@property.unique_name)
+      else
+        @property.unique_name.to_s
+      end
+    end
+    
+    def translate?
+      Facet.translate?(@property)
+    end
+    
+    def type
+      @property.is_a?(Field) ? :string : @property.type
     end
     
     def value(object, attribute_value)
-      return translate(object, attribute_value) if @reference.is_a?(Field)
+      return translate(object, attribute_value) if translate?
       
-      case @reference.type
-      when :string
-        translate(object, attribute_value)
+      case @property.type
       when :datetime
         Time.at(attribute_value)
       when :boolean
@@ -61,11 +94,15 @@ module ThinkingSphinx
       column.__stack.each { |method|
         object = object.send(method)
       }
-      object.send(column.__name)
+      if object.is_a?(Array)
+        object.collect { |item| item.send(column.__name) }
+      else
+        object.send(column.__name)
+      end
     end
     
     def column
-      @reference.columns.first
+      @property.columns.first
     end
   end
 end

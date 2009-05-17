@@ -53,10 +53,17 @@ describe ThinkingSphinx::Search do
   
   describe "facets method" do
     before :each do
-      @results = [Person.find(:first)]
-      @results.stub!(:each_with_groupby_and_count).
-        and_yield(@results.first, @results.first.city.to_crc32, 1)
-      ThinkingSphinx::Search.stub!(:search => @results)
+      @person = Person.find(:first)
+      
+      @city_results = [@person]
+      @city_results.stub!(:each_with_groupby_and_count).
+        and_yield(@person, @person.city.to_crc32, 1)
+      
+      @birthday_results = [@person]
+      @birthday_results.stub!(:each_with_groupby_and_count).
+        and_yield(@person, @person.birthday.to_i, 1)
+      
+      ThinkingSphinx::Search.stub!(:search).and_return(@city_results, @birthday_results)
       
       @config = ThinkingSphinx::Configuration.instance
       @config.configuration.searchd.max_matches = 10_000
@@ -92,6 +99,26 @@ describe ThinkingSphinx::Search do
         :max_matches    => 500,
         :limit          => 200
       )
+    end
+    
+    describe "conflicting facets" do
+      before :each do
+        @index = ThinkingSphinx::Index::Builder.generate(Alpha) do
+          indexes :name
+          has :value, :as => :city, :facet => true
+        end
+      end
+      
+      after :each do
+        Alpha.sphinx_facets.delete_at(-1)
+        Alpha.sphinx_indexes.delete_at(-1)
+      end
+      
+      it "should raise an error if searching with facets of same name but different type" do
+        lambda {
+          ThinkingSphinx::Search.facets :all_attributes => true
+        }.should raise_error
+      end
     end
   end
 end

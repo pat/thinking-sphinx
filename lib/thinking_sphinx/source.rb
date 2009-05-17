@@ -2,22 +2,28 @@ module ThinkingSphinx
   class Source
     attr_accessor :model, :fields, :attributes, :conditions, :groupings,
       :options
+    attr_reader :base
     
     def initialize(index, options = {})
-      @index      = index
-      @model      = index.model
-      @fields     = []
-      @attributes = []
-      @conditions = []
-      @groupings  = []
-      @options    = options
-      
+      @index        = index
+      @model        = index.model
+      @fields       = []
+      @attributes   = []
+      @conditions   = []
+      @groupings    = []
+      @options      = options
       @associations = {}
+      
+      @base = ::ActiveRecord::Associations::ClassMethods::JoinDependency.new(
+        @model, [], nil
+      )
       
       unless @model.descends_from_active_record?
         stored_class = @model.store_full_sti_class ? @model.name : @model.name.demodulize
         @conditions << "#{@model.quoted_table_name}.#{quote_column(@model.inheritance_column)} = '#{stored_class}'"
       end
+      
+      add_internal_attributes_and_facets
     end
     
     def name
@@ -25,7 +31,6 @@ module ThinkingSphinx
     end
     
     def to_riddle_for_core(offset, index)
-      link!
       source = Riddle::Configuration::SQLSource.new(
         "#{name}_core_#{index}", adapter.sphinx_identifier
       )
@@ -39,7 +44,6 @@ module ThinkingSphinx
     end
     
     def to_riddle_for_delta(offset, index)
-      link!
       source = Riddle::Configuration::SQLSource.new(
         "#{name}_delta_#{index}", adapter.sphinx_identifier
       )
@@ -54,6 +58,12 @@ module ThinkingSphinx
     
     def delta?
       !@index.delta_object.nil?
+    end
+    
+    # Gets the association stack for a specific key.
+    # 
+    def association(key)
+      @associations[key] ||= Association.children(@model, key)
     end
     
     private
@@ -105,31 +115,6 @@ module ThinkingSphinx
           source.send("#{key}=".to_sym, value)
         end
       end
-    end
-    
-    # Gets the association stack for a specific key.
-    # 
-    def association(key)
-      @associations[key] ||= Association.children(@model, key)
-    end
-    
-    # Gets a stack of associations for a specific path.
-    # 
-    def associations(path, parent = nil)
-      assocs = []
-      
-      if parent.nil?
-        assocs = association(path.shift)
-      else
-        assocs = parent.children(path.shift)
-      end
-      
-      until path.empty?
-        point  = path.shift
-        assocs = assocs.collect { |assoc| assoc.children(point) }.flatten
-      end
-      
-      assocs
     end
     
     # Returns all associations used amongst all the fields and attributes.
@@ -263,32 +248,57 @@ GROUP BY #{ sql_group_clause }
     def quote_column(column)
       @model.connection.quote_column_name(column)
     end
+        
+    def crc_column
+      if @model.column_names.include?(@model.inheritance_column)
+        adapter.cast_to_unsigned(adapter.convert_nulls(
+          adapter.crc(adapter.quote_with_table(@model.inheritance_column), true),
+          @model.to_crc32
+        ))
+      else
+        @model.to_crc32.to_s
+      end
+    end
     
-    # Link all the fields and associations to their corresponding
-    # associations and joins. This _must_ be called before interrogating
-    # the index's fields and associations for anything that may reference
-    # their SQL structure.
-    # 
-    def link!
-      base = ::ActiveRecord::Associations::ClassMethods::JoinDependency.new(
-        @model, [], nil
+    def add_internal_attributes_and_facets
+      add_internal_attribute :sphinx_internal_id, :integer, @model.primary_key.to_sym
+      add_internal_attribute :class_crc,          :integer, crc_column, true
+      add_internal_attribute :subclass_crcs,      :multi,   subclasses_to_s
+      add_internal_attribute :sphinx_deleted,     :integer, "0"
+      
+      add_internal_facet :class_crc
+    end
+    
+    def add_internal_attribute(name, type, contents, facet = false)
+      return unless attribute_by_alias(name).nil?
+      
+      Attribute.new(self,
+        ThinkingSphinx::Index::FauxColumn.new(contents),
+        :type   => type,
+        :as     => name,
+        :facet  => facet,
+        :admin  => true
       )
+    end
+    
+    def add_internal_facet(name)
+      return unless facet_by_alias(name).nil?
       
-      @fields.each { |field|
-        field.model ||= @model
-        field.columns.each { |col|
-          field.associations[col] = associations(col.__stack.clone)
-          field.associations[col].each { |assoc| assoc.join_to(base) }
-        }
-      }
-      
-      @attributes.each { |attribute|
-        attribute.model ||= @model
-        attribute.columns.each { |col|
-          attribute.associations[col] = associations(col.__stack.clone)
-          attribute.associations[col].each { |assoc| assoc.join_to(base) }
-        }
-      }
+      @model.sphinx_facets << ClassFacet.new(attribute_by_alias(name))
+    end
+    
+    def attribute_by_alias(attr_alias)
+      @attributes.detect { |attrib| attrib.alias == attr_alias }
+    end
+    
+    def facet_by_alias(name)
+      @model.sphinx_facets.detect { |facet| facet.name == name }
+    end
+    
+    def subclasses_to_s
+      "'" + (@model.send(:subclasses).collect { |klass|
+        klass.to_crc32.to_s
+      } << @model.to_crc32.to_s).join(",") + "'"
     end
   end
 end

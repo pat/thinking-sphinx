@@ -21,28 +21,22 @@ describe ThinkingSphinx::Source do
       config = ThinkingSphinx::Configuration.instance
       config.source_options[:sql_ranged_throttle] = 100
       
-      @source.fields += [
-        ThinkingSphinx::Field.new(
-          ThinkingSphinx::Index::FauxColumn.new(:first_name)
-        ),
-        ThinkingSphinx::Field.new(
-          ThinkingSphinx::Index::FauxColumn.new(:last_name)
-        )
-      ]
-      @source.fields.each { |field| field.model = @source.model }
+      ThinkingSphinx::Field.new(
+        @source, ThinkingSphinx::Index::FauxColumn.new(:first_name)
+      )
+      ThinkingSphinx::Field.new(
+        @source, ThinkingSphinx::Index::FauxColumn.new(:last_name)
+      )
       
-      @source.attributes += [
-        ThinkingSphinx::Attribute.new(
-          ThinkingSphinx::Index::FauxColumn.new(:id), :as => :internal_id
-        ),
-        ThinkingSphinx::Attribute.new(
-          ThinkingSphinx::Index::FauxColumn.new(:birthday)
-        ),
-        ThinkingSphinx::Attribute.new(
-          ThinkingSphinx::Index::FauxColumn.new(:tags, :id), :as => :tag_ids
-        )
-      ]
-      @source.attributes.each { |attrib| attrib.model = @source.model }
+      ThinkingSphinx::Attribute.new(
+        @source, ThinkingSphinx::Index::FauxColumn.new(:id), :as => :internal_id
+      )
+      ThinkingSphinx::Attribute.new(
+        @source, ThinkingSphinx::Index::FauxColumn.new(:birthday)
+      )
+      ThinkingSphinx::Attribute.new(
+        @source, ThinkingSphinx::Index::FauxColumn.new(:tags, :id), :as => :tag_ids
+      )
       
       @source.conditions << "`birthday` <= NOW()"
       @source.groupings  << "`first_name`"
@@ -73,8 +67,9 @@ describe ThinkingSphinx::Source do
     end
     
     it "should assign attributes" do
-      @riddle.sql_attr_uint.length.should == 1
-      @riddle.sql_attr_uint.first.should == :internal_id
+      # 3 internal attributes plus the one requested
+      @riddle.sql_attr_uint.length.should == 4
+      @riddle.sql_attr_uint.last.should == :internal_id
       
       @riddle.sql_attr_timestamp.length.should == 1
       @riddle.sql_attr_timestamp.first.should == :birthday
