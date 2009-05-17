@@ -15,14 +15,3 @@ ActiveRecord::Base.connection.create_table :delayed_jobs, :force => true do |t|
   t.column :created_at, :datetime
   t.column :updated_at, :datetime
 end
-
-DelayedBeta.create :name => "one"
-DelayedBeta.create :name => "two"
-DelayedBeta.create :name => "three"
-DelayedBeta.create :name => "four"
-DelayedBeta.create :name => "five"
-DelayedBeta.create :name => "six"
-DelayedBeta.create :name => "seven"
-DelayedBeta.create :name => "eight"
-DelayedBeta.create :name => "nine"
-DelayedBeta.create :name => "ten"

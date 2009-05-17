@@ -17,21 +17,20 @@ end
 # Add log file
 ActiveRecord::Base.logger = Logger.new open("tmp/active_record.log", "a")
 
-ThinkingSphinx.deltas_enabled = false
+# Set up database tables
+Dir["features/support/db/migrations/*.rb"].each do |file|
+  require file.gsub(/\.rb$/, '')
+end
 
 # Load Models
 Dir["features/support/models/*.rb"].sort.each do |file|
   require file.gsub(/\.rb$/, '')
 end
 
-ActiveRecord::Base.reset_subclasses
-ActiveRecord::Base.clear_reloadable_connections!
+ThinkingSphinx.deltas_enabled = false
 
-# Wait for ActiveRecord to catch up.
-sleep 2
-
-# Set up database tables and records
-Dir["features/support/db/migrations/*.rb"].each do |file|
+# Load Fixtures
+Dir["features/support/db/fixtures/*.rb"].each do |file|
   require file.gsub(/\.rb$/, '')
 end
 
