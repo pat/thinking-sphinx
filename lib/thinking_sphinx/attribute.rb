@@ -256,9 +256,10 @@ FROM #{quote_table_name assoc.table}
       else
         raise <<-MESSAGE
 
-Cannot automatically map column type #{type_from_db} to an equivalent Sphinx
-type (integer, float, boolean, datetime, string as ordinal). You could try to
-explicitly convert the column's value in your define_index block:
+Cannot automatically map attribute #{unique_name} in #{@model.name} to an
+equivalent Sphinx type (integer, float, boolean, datetime, string as ordinal).
+You could try to explicitly convert the column's value in your define_index
+block:
   has "CAST(column AS INT)", :type => :integer, :as => :column
         MESSAGE
       end
