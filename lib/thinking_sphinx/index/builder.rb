@@ -14,7 +14,7 @@ module ThinkingSphinx
     # 
     class Builder
       instance_methods.grep(/^[^_]/).each { |method|
-        next if method == "instance_eval"
+        next if method.to_s == "instance_eval"
         define_method(method) {
           caller.grep(/irb.completion/).empty? ? method_missing(method) : super
         }
