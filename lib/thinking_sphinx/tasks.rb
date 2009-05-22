@@ -6,6 +6,11 @@ namespace :thinking_sphinx do
     Rake::Task[:merb_env].invoke    if defined?(Merb)
   end
   
+  desc "Output the current Thinking Sphinx version"
+  task :version => :app_env do
+    puts "Thinking Sphinx v" + ThinkingSphinx::Version::String
+  end
+  
   desc "Stop if running, then start a Sphinx searchd daemon using Thinking Sphinx's settings"
   task :running_start => :app_env do
     Rake::Task["thinking_sphinx:stop"].invoke if sphinx_running?
@@ -96,6 +101,8 @@ namespace :thinking_sphinx do
 end
 
 namespace :ts do
+  desc "Output the current Thinking Sphinx version"
+  task :version => "thinking_sphinx:version"
   desc "Stop if running, then start a Sphinx searchd daemon using Thinking Sphinx's settings"
   task :run     => "thinking_sphinx:running_start"
   desc "Start a Sphinx searchd daemon using Thinking Sphinx's settings"
