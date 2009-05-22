@@ -92,6 +92,22 @@ describe "ThinkingSphinx::ActiveRecord" do
     it "should return the new index" do
       TestModule::TestModel.define_index.should == @index
     end
+    
+    it "should die quietly if there is a database error" do
+      ThinkingSphinx::Index::Builder.stub_method_to_raise(:generate => Mysql::Error)
+      
+      lambda {
+        TestModule::TestModel.define_index
+      }.should_not raise_error
+    end
+    
+    it "should die noisily if there is a non-database error" do
+      ThinkingSphinx::Index::Builder.stub_method_to_raise(:generate => StandardError)
+      
+      lambda {
+        TestModule::TestModel.define_index
+      }.should raise_error
+    end
   end
 
   describe "index methods" do

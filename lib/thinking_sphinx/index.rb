@@ -30,19 +30,6 @@ module ThinkingSphinx
       @sources      = []
       @options      = {}
       @delta_object = nil
-      
-      # add_internal_attributes_and_facets
-      
-      # We want to make sure that if the database doesn't exist, then Thinking
-      # Sphinx doesn't mind when running non-TS tasks (like db:create, db:drop
-      # and db:migrate). It's a bit hacky, but I can't think of a better way.
-    rescue StandardError => err
-      case err.class.name
-      when "Mysql::Error", "Java::JavaSql::SQLException", "ActiveRecord::StatementInvalid"
-        return
-      else
-        raise err
-      end
     end
     
     def fields
