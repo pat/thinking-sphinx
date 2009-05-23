@@ -3,28 +3,27 @@ require 'will_paginate/collection'
 
 describe ThinkingSphinx::Search do
   describe "search method" do
-    before :each do
-      @client = Riddle::Client.stub_instance(
-        :filters    => [],
-        :filters=   => true,
-        :id_range=  => true,
-        :sort_mode  => :asc,
-        :limit      => 5,
-        :offset=    => 0,
-        :sort_mode= => true,
-        :query      => {
-          :matches  => [],
-          :total    => 50
-        }
-      )
-      
-      ThinkingSphinx::Search.stub_methods(
-        :client_from_options => @client,
-        :search_conditions   => ["", []]
-      )
-    end
-    
     describe ":star option" do
+      before :each do
+        @client = Riddle::Client.stub_instance(
+          :filters    => [],
+          :filters=   => true,
+          :id_range=  => true,
+          :sort_mode  => :asc,
+          :limit      => 5,
+          :offset=    => 0,
+          :sort_mode= => true,
+          :query      => {
+            :matches  => [],
+            :total    => 50
+          }
+        )
+
+        ThinkingSphinx::Search.stub_methods(
+          :client_from_options => @client,
+          :search_conditions   => ["", []]
+        )
+      end
       
       it "should not apply by default" do
         ThinkingSphinx::Search.search "foo bar"
@@ -47,7 +46,44 @@ describe ThinkingSphinx::Search do
         ThinkingSphinx::Search.search "foo@bar.com -foo-bar", :star => /[\w@.-]+/u
         @client.should have_received(:query).with("*foo@bar.com* -*foo-bar*")
       end
-
+    end
+    
+    describe "sort modes" do
+      before :each do
+        @client = Riddle::Client.new
+        @client.stub_method(:query => {:matches => []})
+        Riddle::Client.stub_method(:new => @client)
+      end
+      
+      it "should use :relevance as a default" do
+        ThinkingSphinx::Search.search "foo"
+        @client.sort_mode.should == :relevance
+      end
+      
+      it "should use :attr_asc if a symbol is supplied to :order" do
+        ThinkingSphinx::Search.search "foo", :order => :created_at
+        @client.sort_mode.should == :attr_asc
+      end
+      
+      it "should use :attr_desc if a symbol is supplied and :desc is the mode" do
+        ThinkingSphinx::Search.search "foo", :order => :created_at, :sort_mode => :desc
+        @client.sort_mode.should == :attr_desc
+      end
+      
+      it "should use :extended if a string is supplied to :order" do
+        ThinkingSphinx::Search.search "foo", :order => "created_at ASC"
+        @client.sort_mode.should == :extended
+      end
+      
+      it "should use :expr if explicitly requested with a string supplied to :order" do
+        ThinkingSphinx::Search.search "foo", :order => "created_at ASC", :sort_mode => :expr
+        @client.sort_mode.should == :expr
+      end
+      
+      it "should use :attr_desc if explicitly requested with a string supplied to :order" do
+        ThinkingSphinx::Search.search "foo", :order => "created_at", :sort_mode => :desc
+        @client.sort_mode.should == :attr_desc
+      end
     end
   end
   

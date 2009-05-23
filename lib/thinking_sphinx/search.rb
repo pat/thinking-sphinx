@@ -684,7 +684,7 @@ module ThinkingSphinx
             client.sort_by = order.to_s
           end
         when String
-          client.sort_mode = :extended
+          client.sort_mode = :extended unless options[:sort_mode]
           client.sort_by   = sorted_fields_to_attributes(order, fields)
         else
           # do nothing

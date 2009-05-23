@@ -125,3 +125,5 @@ Since I first released this library, there's been quite a few people who have su
 * Eric Lindvall
 * Lawrence Pit
 * Mike Bailey
+* Bill Leeper
+* Michael Reinsch
