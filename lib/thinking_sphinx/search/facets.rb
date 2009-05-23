@@ -22,7 +22,12 @@ module ThinkingSphinx
         hash    = ThinkingSphinx::FacetCollection.new args + [options]
         options = options.clone.merge! facet_query_options
         
-        klass.sphinx_facets.inject(hash) do |hash, facet|
+        facets  = klass.sphinx_facets
+        facets  = Array(options.delete(:facets)).collect { |name|
+          klass.sphinx_facets.detect { |facet| facet.name.to_s == name.to_s }
+        }.compact if options[:facets]
+        
+        facets.inject(hash) do |hash, facet|
           unless facet.name == :class && !options[:class_facet]
             options[:group_by]    = facet.attribute_name
             hash.add_from_results facet, search(*(args + [options]))

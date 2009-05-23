@@ -99,13 +99,13 @@ describe ThinkingSphinx::Search do
       @birthday_results.stub!(:each_with_groupby_and_count).
         and_yield(@person, @person.birthday.to_i, 1)
       
-      ThinkingSphinx::Search.stub!(:search).and_return(@city_results, @birthday_results)
-      
       @config = ThinkingSphinx::Configuration.instance
       @config.configuration.searchd.max_matches = 10_000
     end
     
     it "should use the system-set max_matches for limit on facet calls" do
+      ThinkingSphinx::Search.stub!(:search).and_return(@city_results, @birthday_results)
+      
       ThinkingSphinx::Search.should_receive(:search) do |options|
         options[:max_matches].should  == 10_000
         options[:limit].should        == 10_000
@@ -115,6 +115,8 @@ describe ThinkingSphinx::Search do
     end
     
     it "should use the default max-matches if there is no explicit setting" do
+      ThinkingSphinx::Search.stub!(:search).and_return(@city_results, @birthday_results)
+      
       @config.configuration.searchd.max_matches = nil
       ThinkingSphinx::Search.should_receive(:search) do |options|
         options[:max_matches].should  == 1000
@@ -125,6 +127,8 @@ describe ThinkingSphinx::Search do
     end
     
     it "should ignore user-provided max_matches and limit on facet calls" do
+      ThinkingSphinx::Search.stub!(:search).and_return(@city_results, @birthday_results)
+      
       ThinkingSphinx::Search.should_receive(:search) do |options|
         options[:max_matches].should  == 10_000
         options[:limit].should        == 10_000
@@ -134,6 +138,15 @@ describe ThinkingSphinx::Search do
         :all_attributes => true,
         :max_matches    => 500,
         :limit          => 200
+      )
+    end
+    
+    it "should use explicit facet list if one is provided" do
+      ThinkingSphinx::Search.should_receive(:search).once.and_return(@city_results)
+      
+      ThinkingSphinx::Search.facets(
+        :facets => ['city'],
+        :class  => Person
       )
     end
     

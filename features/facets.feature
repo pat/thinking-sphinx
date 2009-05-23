@@ -12,6 +12,20 @@ Feature: Search and browse models by their defined facets
     And I should have the facet City
     And I should have the facet Tag Ids
   
+  Scenario: Requesting specific facets
+    Given Sphinx is running
+    And I am searching on developers
+    When I am requesting facet results
+    And I am requesting just the facet State
+    Then I should have valid facet results
+    And I should have 1 facet
+    And I should have the facet State
+    When I am requesting just the facets State and Age
+    Then I should have valid facet results
+    And I should have 2 facet
+    And I should have the facet State
+    And I should have the facet Age
+  
   Scenario: Requesting facet results
     Given Sphinx is running
     And I am searching on developers
