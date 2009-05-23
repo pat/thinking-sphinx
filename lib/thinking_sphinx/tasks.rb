@@ -75,6 +75,13 @@ namespace :thinking_sphinx do
     system cmd
   end
   
+  desc "Stop Sphinx (if it's running), rebuild the indexes, and start Sphinx"
+  task :rebuild => :app_env do
+    Rake::Task["thinking_sphinx:stop"].invoke if sphinx_running?
+    Rake::Task["thinking_sphinx:index"].invoke
+    Rake::Task["thinking_sphinx:start"].invoke
+  end
+  
   namespace :index do
     task :delta => :app_env do
       ThinkingSphinx.indexed_models.select { |model|
@@ -122,6 +129,8 @@ namespace :ts do
   task :conf    => "thinking_sphinx:configure"
   desc "Generate the Sphinx configuration file using Thinking Sphinx's settings"
   task :config  => "thinking_sphinx:configure"
+  desc "Stop Sphinx (if it's running), rebuild the indexes, and start Sphinx"
+  task :rebuild => "thinking_sphinx:rebuild"
   desc "Process stored delta index requests"
   task :dd      => "thinking_sphinx:delayed_delta"
 end
