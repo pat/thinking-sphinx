@@ -318,12 +318,16 @@ describe ThinkingSphinx::Index::Builder do
         indexes first_name
         
         set_property :charset_type => "utf16"
+        set_property :group_concat_max_len => 1024
       end
     end
     
-    it "should store the setting for the index" do
-      @index.local_options.length.should == 1
+    it "should store the index setting for the index" do
       @index.local_options[:charset_type].should == "utf16"
+    end
+    
+    it "should store non-Sphinx settings for the index" do
+      @index.local_options[:group_concat_max_len].should == 1024
     end
   end
   

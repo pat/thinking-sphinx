@@ -102,8 +102,8 @@ module ThinkingSphinx
       
       source.sql_query_pre += send(!delta ? :sql_query_pre_for_core : :sql_query_pre_for_delta)
       
-      if @options[:group_concat_max_len]
-        source.sql_query_pre << "SET SESSION group_concat_max_len = #{@options[:group_concat_max_len]}"
+      if @index.local_options[:group_concat_max_len]
+        source.sql_query_pre << "SET SESSION group_concat_max_len = #{@index.local_options[:group_concat_max_len]}"
       end
       
       source.sql_query_pre += [adapter.utf8_query_pre].compact if utf8?

@@ -41,6 +41,8 @@ describe ThinkingSphinx::Source do
       @source.conditions << "`birthday` <= NOW()"
       @source.groupings  << "`first_name`"
       
+      @index.local_options[:group_concat_max_len] = 1024
+      
       @riddle = @source.to_riddle_for_core(1, 0)
     end
     
@@ -148,8 +150,15 @@ describe ThinkingSphinx::Source do
       end
       
       it "should default to just the UTF8 statement" do
-        @queries.length.should == 1
-        @queries.first.should == "SET NAMES utf8"
+        @queries.detect { |query|
+          query == "SET NAMES utf8"
+        }.should_not be_nil
+      end
+      
+      it "should set the group_concat_max_len session value for MySQL if requested" do
+        @queries.detect { |query|
+          query == "SET SESSION group_concat_max_len = 1024"
+        }.should_not be_nil
       end
     end
   end
