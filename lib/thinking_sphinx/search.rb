@@ -358,10 +358,8 @@ module ThinkingSphinx
         
         retry_search_on_stale_index(query, options) do
           results, client = search_results(*(query + [options]))
-        
-          ::ActiveRecord::Base.logger.error(
-            "Sphinx Error: #{results[:error]}"
-          ) if results[:error]
+          
+          log "Sphinx Error: #{results[:error]}", :error if results[:error]
         
           klass   = options[:class]
           page    = options[:page] ? options[:page].to_i : 1
@@ -394,9 +392,9 @@ module ThinkingSphinx
           options[:without_ids] = Array(options[:without_ids]) | e.ids  # Actual exclusion
 
           tries = stale_retries_left
-          ::ActiveRecord::Base.logger.debug("Sphinx Stale Ids (%s %s left): %s" % [
-              tries, (tries==1 ? 'try' : 'tries'), stale_ids.join(', ')
-          ])
+          log "Sphinx Stale Ids (%s %s left): %s" % [
+            tries, (tries==1 ? 'try' : 'tries'), stale_ids.join(', ')
+          ]
           
           retry
         end
@@ -465,9 +463,12 @@ module ThinkingSphinx
         client.offset = (page - 1) * client.limit
 
         begin
-          ::ActiveRecord::Base.logger.debug "Sphinx: #{query}"
+          log "Sphinx: #{query}"
           results = client.query query
-          ::ActiveRecord::Base.logger.debug "Sphinx Result: #{results[:matches].collect{|m| m[:attributes]["sphinx_internal_id"]}.inspect}"
+          log "Sphinx Result:"
+          log results[:matches].collect { |m|
+            m[:attributes]["sphinx_internal_id"]
+          }.inspect
         rescue Errno::ECONNREFUSED => err
           raise ThinkingSphinx::ConnectionError, "Connection to Sphinx Daemon (searchd) failed."
         end
@@ -705,6 +706,11 @@ module ThinkingSphinx
         }
         
         string
+      end
+      
+      def log(message, method = :debug)
+        return if ::ActiveRecord::Base.logger.nil?
+        ::ActiveRecord::Base.logger.send method, message
       end
     end
   end
