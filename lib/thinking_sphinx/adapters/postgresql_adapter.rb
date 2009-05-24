@@ -11,7 +11,12 @@ module ThinkingSphinx
     
     def concatenate(clause, separator = ' ')
       clause.split(', ').collect { |field|
-        field[/COALESCE/] ? field : "COALESCE(CAST(#{field} as varchar), '')"
+        case field
+        when /COALESCE/, "'')"
+          field
+        else
+          "COALESCE(CAST(#{field} as varchar), '')"
+        end
       }.join(" || '#{separator}' || ")
     end
     

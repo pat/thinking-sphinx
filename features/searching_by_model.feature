@@ -44,6 +44,12 @@ Feature: Searching on a single model
     When I filter by 2 on width
     And I filter by 2 on length
     Then I should get 1 result
+  
+  Scenario: Searching with a ranged time filter
+    Given Sphinx is running
+    And I am searching on people
+    When I filter by birthday between 1975 and 1976
+    Then I should get 16 results
     
   Scenario: Searching to filter multiple values on an MVA
     Given Sphinx is running

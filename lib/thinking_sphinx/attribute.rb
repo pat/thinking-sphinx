@@ -89,12 +89,12 @@ module ThinkingSphinx
     def to_select_sql
       return nil unless include_as_association?
       
+      separator = all_ints? || @crc ? ',' : ' '
+      
       clause = @columns.collect { |column|
         part = column_with_prefix(column)
         type == :string ? adapter.convert_nulls(part) : part
       }.join(', ')
-      
-      separator = all_ints? || @crc ? ',' : ' '
       
       clause = adapter.cast_to_datetime(clause)             if type == :datetime
       clause = adapter.crc(clause)                          if @crc

@@ -80,6 +80,11 @@ When /^I filter between (\d+) and (\d+) days ago on (\w+)$/ do |last, first, att
   @with[attribute.to_sym] = first.to_i.days.ago..last.to_i.days.ago
 end
 
+When /^I filter by (\w+) between (\d+) and (\d+)$/ do |attribute, first, last|
+  @results = nil
+  @with[attribute.to_sym] = Time.utc(first.to_i)..Time.utc(last.to_i)
+end
+
 When /^I order by (\w+)$/ do |attribute|
   @results = nil
   @options[:order] = attribute.to_sym
