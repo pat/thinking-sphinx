@@ -175,7 +175,8 @@ module ThinkingSphinx
   end
   
   def self.mysql?
-    ::ActiveRecord::Base.connection.class.name.demodulize == "MysqlAdapter" || (
+    ::ActiveRecord::Base.connection.class.name.demodulize == "MysqlAdapter" ||
+    ::ActiveRecord::Base.connection.class.name.demodulize == "MysqlplusAdapter" || (
       jruby? && ::ActiveRecord::Base.connection.config[:adapter] == "jdbcmysql"
     )
   end
