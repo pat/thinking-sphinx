@@ -19,7 +19,7 @@ module ThinkingSphinx
   # min infix length::      1
   # mem limit::             64M
   # max matches::           1000
-  # morphology::            stem_en
+  # morphology::            nil
   # charset type::          utf-8
   # charset table::         nil
   # ignore chars::          nil
@@ -103,8 +103,7 @@ module ThinkingSphinx
       
       self.source_options  = {}
       self.index_options   = {
-        :charset_type => "utf-8",
-        :morphology   => "stem_en"
+        :charset_type => "utf-8"
       }
             
       parse_config
