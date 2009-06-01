@@ -95,3 +95,19 @@ CREATE TABLE `tags` (
   `name` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `links`;
+
+CREATE TABLE `links` (
+  `id` int(11) NOT NULL auto_increment,
+  `url` varchar(50) NOT NULL,
+  `description` varchar(200),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `links_people`;
+
+CREATE TABLE `links_people` (
+  `link_id` int(11) NOT NULL,
+  `person_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

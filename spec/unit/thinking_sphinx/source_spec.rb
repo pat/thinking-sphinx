@@ -37,6 +37,10 @@ describe ThinkingSphinx::Source do
       ThinkingSphinx::Attribute.new(
         @source, ThinkingSphinx::Index::FauxColumn.new(:tags, :id), :as => :tag_ids
       )
+      ThinkingSphinx::Attribute.new(
+        @source, ThinkingSphinx::Index::FauxColumn.new(:contacts, :id),
+        :as => :contact_ids, :source => :query
+      )
       
       @source.conditions << "`birthday` <= NOW()"
       @source.groupings  << "`first_name`"
@@ -102,8 +106,16 @@ describe ThinkingSphinx::Source do
         @query.should match(/`tags`.`id`.+ AS `tag_ids`.+FROM/)
       end
       
+      it "should not match the sourced MVA attribute" do
+        @query.should_not match(/contact_ids/)
+      end
+      
       it "should include joins for required associations" do
         @query.should match(/LEFT OUTER JOIN `tags`/)
+      end
+      
+      it "should not include joins for the sourced MVA attribute" do
+        @query.should_not match(/LEFT OUTER JOIN `contacts`/)
       end
       
       it "should include any defined conditions" do

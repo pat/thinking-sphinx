@@ -127,7 +127,7 @@ module ThinkingSphinx
     def config_value(offset = nil)
       if type == :multi
         multi_config = include_as_association? ? "field" :
-          source_value(offset).gsub(/\n\s*/, " ")
+          source_value(offset).gsub(/\n\s*/, " ").strip
         "uint #{unique_name} from #{multi_config}"
       else
         unique_name

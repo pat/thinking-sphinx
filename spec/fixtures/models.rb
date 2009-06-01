@@ -29,6 +29,10 @@ class Friendship < ActiveRecord::Base
   end
 end
 
+class Link < ActiveRecord::Base
+  has_and_belongs_to_many :people
+end
+
 class Person < ActiveRecord::Base
   belongs_to :team, :polymorphic => :true
   has_many :contacts
@@ -37,8 +41,9 @@ class Person < ActiveRecord::Base
   has_many :friends, :through => :friendships
   
   has_many :tags
-  
   has_many :football_teams, :through => :tags
+  
+  has_and_belongs_to_many :links
   
   define_index do
     indexes [first_name, middle_initial, last_name], :as => :name
