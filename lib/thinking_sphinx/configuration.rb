@@ -149,6 +149,8 @@ module ThinkingSphinx
     # messy dependencies issues).
     # 
     def load_models
+      return if defined?(Rails) && Rails.configuration.cache_classes
+      
       self.model_directories.each do |base|
         Dir["#{base}**/*.rb"].each do |file|
           model_name = file.gsub(/^#{base}([\w_\/\\]+)\.rb/, '\1')
