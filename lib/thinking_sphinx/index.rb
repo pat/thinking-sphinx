@@ -63,7 +63,8 @@ module ThinkingSphinx
     def options
       all_index_options = ThinkingSphinx::Configuration.instance.index_options.clone
       @options.keys.select { |key|
-        ThinkingSphinx::Configuration::IndexOptions.include?(key.to_s)
+        ThinkingSphinx::Configuration::IndexOptions.include?(key.to_s) ||
+        ThinkingSphinx::Configuration::CustomOptions.include?(key.to_s)
       }.each { |key| all_index_options[key.to_sym] = @options[key] }
       all_index_options
     end

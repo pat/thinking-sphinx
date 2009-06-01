@@ -54,6 +54,8 @@ module ThinkingSphinx
       min_infix_len min_prefix_len min_word_len mlock morphology ngram_chars
       ngram_len phrase_boundary phrase_boundary_step preopen stopwords
       wordforms )
+    
+    CustomOptions = %w( disable_range )
         
     attr_accessor :config_file, :searchd_log_file, :query_log_file,
       :pid_file, :searchd_file_path, :address, :port, :allow_star,
@@ -227,6 +229,7 @@ module ThinkingSphinx
         
         set_sphinx_setting self.source_options, key, value, SourceOptions
         set_sphinx_setting self.index_options,  key, value, IndexOptions
+        set_sphinx_setting self.index_options,  key, value, CustomOptions
         set_sphinx_setting @configuration.searchd, key, value
         set_sphinx_setting @configuration.indexer, key, value
       end unless conf.nil?

@@ -174,4 +174,44 @@ describe ThinkingSphinx::Source do
       end
     end
   end
+  
+  describe "#to_riddle_for_core with range disabled" do
+    before :each do
+      ThinkingSphinx::Field.new(
+        @source, ThinkingSphinx::Index::FauxColumn.new(:first_name)
+      )
+    end
+    
+    describe "set per-index" do
+      before :each do
+        @index.local_options[:disable_range] = true
+        @riddle = @source.to_riddle_for_core(1, 0)
+      end
+      
+      it "should not have the range in the sql_query" do
+        @riddle.sql_query.should_not match(/`people`.`id` >= \$start/)
+        @riddle.sql_query.should_not match(/`people`.`id` <= \$end/)
+      end
+    
+      it "should not have a sql_query_range" do
+        @riddle.sql_query_range.should be_nil
+      end
+    end
+    
+    describe "set globally" do
+      before :each do
+        ThinkingSphinx::Configuration.instance.index_options[:disable_range] = true
+        @riddle = @source.to_riddle_for_core(1, 0)
+      end
+      
+      it "should not have the range in the sql_query" do
+        @riddle.sql_query.should_not match(/`people`.`id` >= \$start/)
+        @riddle.sql_query.should_not match(/`people`.`id` <= \$end/)
+      end
+    
+      it "should not have a sql_query_range" do
+        @riddle.sql_query_range.should be_nil
+      end
+    end
+  end
 end

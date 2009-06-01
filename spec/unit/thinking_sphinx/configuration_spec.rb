@@ -102,6 +102,25 @@ describe ThinkingSphinx::Configuration do
     end
   end
   
+  describe "index options" do
+    before :each do
+      @settings = {
+        "development" => {"disable_range" => true}
+      }
+      
+      open("#{RAILS_ROOT}/config/sphinx.yml", "w") do |f|
+        f.write  YAML.dump(@settings)
+      end
+      
+      @config = ThinkingSphinx::Configuration.instance
+      @config.send(:parse_config)
+    end
+    
+    it "should collect disable_range" do
+      @config.index_options[:disable_range].should be_true
+    end
+  end
+  
   it "should insert set index options into the configuration file" do
     config = ThinkingSphinx::Configuration.instance
     ThinkingSphinx::Configuration::IndexOptions.each do |option|

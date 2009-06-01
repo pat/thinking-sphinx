@@ -17,7 +17,7 @@ module ThinkingSphinx
 SELECT #{ sql_select_clause options[:offset] }
 FROM #{ @model.quoted_table_name }
   #{ all_associations.collect { |assoc| assoc.to_sql }.join(' ') }
-WHERE #{ sql_where_clause(options) }
+#{ sql_where_clause(options) }
 GROUP BY #{ sql_group_clause }
         SQL
 
@@ -30,6 +30,8 @@ GROUP BY #{ sql_group_clause }
       # so pass in :delta => true to get the delta version of the SQL.
       # 
       def to_sql_query_range(options={})
+        return nil if @index.options[:disable_range]
+        
         min_statement = adapter.convert_nulls(
           "MIN(#{quote_column(@model.primary_key)})", 1
         )
@@ -65,18 +67,18 @@ GROUP BY #{ sql_group_clause }
       end
 
       def sql_where_clause(options)
-        logic = [
+        logic = []
+        logic += [
           "#{@model.quoted_table_name}.#{quote_column(@model.primary_key)} >= $start",
           "#{@model.quoted_table_name}.#{quote_column(@model.primary_key)} <= $end"
-        ]
+        ] unless @index.options[:disable_range]
 
         if self.delta? && !@index.delta_object.clause(@model, options[:delta]).blank?
           logic << "#{@index.delta_object.clause(@model, options[:delta])}"
         end
 
         logic += (@conditions || [])
-
-        logic.join(" AND ")
+        logic.empty? ? "" : "WHERE #{logic.join(' AND ')}"
       end
 
       def sql_group_clause
