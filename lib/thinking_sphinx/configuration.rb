@@ -225,7 +225,7 @@ module ThinkingSphinx
       conf = YAML::load(ERB.new(IO.read(path)).result)[environment]
       
       conf.each do |key,value|
-        self.send("#{key}=", value) if self.methods.include?("#{key}=")
+        self.send("#{key}=", value) if self.respond_to?("#{key}=")
         
         set_sphinx_setting self.source_options, key, value, SourceOptions
         set_sphinx_setting self.index_options,  key, value, IndexOptions
@@ -246,8 +246,8 @@ module ThinkingSphinx
       if object.is_a?(Hash)
         object[key.to_sym] = value if allowed.include?(key.to_s)
       else
-        object.send("#{key}=", value) if object.methods.include?("#{key}")
-        send("#{key}=", value) if self.methods.include?("#{key}")
+        object.send("#{key}=", value) if object.respond_to?("#{key}")
+        send("#{key}=", value) if self.respond_to?("#{key}")
       end
     end
   end
