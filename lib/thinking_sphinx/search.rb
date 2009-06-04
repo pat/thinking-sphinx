@@ -222,6 +222,10 @@ module ThinkingSphinx
       # * <tt>:group_by</tt> determines the field which is used for grouping
       # * <tt>:group_clause</tt> determines the sorting order 
       #
+      # As a convenience, you can also use
+      # * <tt>:group</tt>
+      # which sets :group_by and defaults to :group_function of :attr
+      # 
       # === group_function
       #  
       # Valid values for :group_function are
