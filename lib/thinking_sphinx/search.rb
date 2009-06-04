@@ -508,6 +508,12 @@ module ThinkingSphinx
           end
         end
         
+        # Group by defaults using :group
+        if options[:group]
+          options[:group_by] = options[:group].to_s
+          options[:group_function] ||= :attr
+        end
+        
         [
           :max_matches, :match_mode, :sort_mode, :sort_by, :id_range,
           :group_by, :group_function, :group_clause, :group_distinct, :cut_off,

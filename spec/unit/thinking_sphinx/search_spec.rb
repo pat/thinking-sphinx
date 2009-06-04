@@ -86,6 +86,20 @@ describe ThinkingSphinx::Search do
       end
     end
     
+    describe "grouping" do
+      before :each do
+        @client = Riddle::Client.new
+        @client.stub_method(:query => {:matches => []})
+        Riddle::Client.stub_method(:new => @client)
+      end
+
+      it "should convert group into group_by and group_function" do
+        ThinkingSphinx::Search.search "foo", :group => :edition
+        @client.group_function.should == :attr
+        @client.group_by.should == "edition"
+      end
+    end
+    
     describe ":comment option" do
       before :each do
         @client = Riddle::Client.new
