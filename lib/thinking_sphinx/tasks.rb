@@ -2,7 +2,11 @@ require 'fileutils'
 
 namespace :thinking_sphinx do
   task :app_env do
-    Rake::Task[:environment].invoke if defined?(RAILS_ROOT)
+    if defined?(RAILS_ROOT)
+      Rake::Task[:environment].invoke
+      Rails.configuration.cache_classes = false
+    end
+    
     Rake::Task[:merb_env].invoke    if defined?(Merb)
   end
   
