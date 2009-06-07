@@ -5,7 +5,8 @@ describe ThinkingSphinx::Search do
   describe "search method" do
     describe ":star option" do
       before :each do
-        @client = Riddle::Client.stub_instance(
+        @client = Riddle::Client.new
+        @client.stub!(
           :filters    => [],
           :filters=   => true,
           :id_range=  => true,
@@ -26,25 +27,29 @@ describe ThinkingSphinx::Search do
       end
       
       it "should not apply by default" do
+        @client.should_receive(:query).with("foo bar",'*','')
+        
         ThinkingSphinx::Search.search "foo bar"
-        @client.should have_received(:query).with("foo bar",'*','')
       end
 
       it "should apply when passed, and handle full extended syntax" do
         input    = %{a b* c (d | e) 123 5&6 (f_f g) !h "i j" "k l"~10 "m n"/3 @o p -(q|r)}
         expected = %{*a* b* *c* (*d* | *e*) *123* *5*&*6* (*f_f* *g*) !*h* "i j" "k l"~10 "m n"/3 @o *p* -(*q*|*r*)}
+        @client.should_receive(:query).with(expected,'*','')
+        
         ThinkingSphinx::Search.search input, :star => true
-        @client.should have_received(:query).with(expected,'*','')
       end
 
       it "should default to /\w+/ as token" do
+        @client.should_receive(:query).with("*foo*@*bar*.*com*",'*','')
+        
         ThinkingSphinx::Search.search "foo@bar.com", :star => true
-        @client.should have_received(:query).with("*foo*@*bar*.*com*",'*','')
       end
 
       it "should honour custom token" do
+        @client.should_receive(:query).with("*foo@bar.com* -*foo-bar*",'*','')
+        
         ThinkingSphinx::Search.search "foo@bar.com -foo-bar", :star => /[\w@.-]+/u
-        @client.should have_received(:query).with("*foo@bar.com* -*foo-bar*",'*','')
       end
     end
     

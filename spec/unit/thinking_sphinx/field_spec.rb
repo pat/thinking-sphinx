@@ -85,15 +85,15 @@ describe ThinkingSphinx::Field do
       @field.columns.each { |col| @field.associations[col] = [] }
       @field.model = Person
       
-      @first_join   = Object.stub_instance(:aliased_table_name => "tabular")
-      @second_join  = Object.stub_instance(:aliased_table_name => "data")
+      @first_join   = Object.new
+      @first_join.stub!(:aliased_table_name => "tabular")
+      @second_join  = Object.new
+      @second_join.stub!(:aliased_table_name => "data")
       
-      @first_assoc  = ThinkingSphinx::Association.stub_instance(
-        :join => @first_join, :has_column? => true
-      )
-      @second_assoc = ThinkingSphinx::Association.stub_instance(
-        :join => @second_join, :has_column? => true
-      )
+      @first_assoc  = ThinkingSphinx::Association.new nil, nil
+      @first_assoc.stub!(:join => @first_join, :has_column? => true)
+      @second_assoc = ThinkingSphinx::Association.new nil, nil
+      @second_assoc.stub!(:join => @second_join, :has_column? => true)
     end
     
     it "should return the column name if the column is a string" do

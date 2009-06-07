@@ -105,12 +105,14 @@ describe ThinkingSphinx do
     
     describe "if not using MySQL" do
       before :each do
-        adapter = defined?(JRUBY_VERSION) ? :JdbcAdapter : :PostgreSQLAdapter
+        adapter = defined?(JRUBY_VERSION) ? 'JdbcAdapter' : 'PostgreSQLAdapter'
         unless ::ActiveRecord::ConnectionAdapters.const_defined?(adapter)
           pending "No PostgreSQL"
           return
         end
-        @connection = ::ActiveRecord::ConnectionAdapters.const_get(adapter).stub_instance(
+        
+        @connection = stub(adapter).as_null_object
+        @connection.stub!(
           :select_all => true,
           :config => {:adapter => defined?(JRUBY_VERSION) ? 'jdbcpostgresql' : 'postgresql'}
         )
@@ -124,9 +126,9 @@ describe ThinkingSphinx do
       end
     
       it "should not call select_all" do
-        ThinkingSphinx.use_group_by_shortcut?
+        @connection.should_not_receive(:select_all)
         
-        @connection.should_not have_received(:select_all)
+        ThinkingSphinx.use_group_by_shortcut?
       end
     end
   end

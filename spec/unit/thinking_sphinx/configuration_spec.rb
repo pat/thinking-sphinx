@@ -10,11 +10,11 @@ describe ThinkingSphinx::Configuration do
     
     it "should use the Merb environment value if set" do
       unless defined?(Merb)
-        module Merb; end
+        module ::Merb; end
       end
             
       ThinkingSphinx::Configuration.stub_method(:defined? => true)
-      Merb.stub_method(:environment => "merb_production")
+      Merb.stub!(:environment => "merb_production")
       ThinkingSphinx::Configuration.environment.should == "merb_production"
       
       Object.send(:remove_const, :Merb)

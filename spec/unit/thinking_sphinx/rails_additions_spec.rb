@@ -20,12 +20,16 @@ describe ThinkingSphinx::HashExcept do
   end
   
   describe "extends Hash" do
+    before :each do
+      @instance_methods = Hash.instance_methods.collect { |m| m.to_s }
+    end
+    
     it 'with except' do
-      Hash.instance_methods.include?('except').should be_true
+      @instance_methods.include?('except').should be_true
     end
 
     it 'with except!' do
-      Hash.instance_methods.include?('except!').should be_true
+      @instance_methods.include?('except!').should be_true
     end
   end
 end
@@ -45,7 +49,7 @@ describe ThinkingSphinx::ArrayExtractOptions do
   
   describe "extends Array" do
     it 'with extract_options!' do
-      Array.instance_methods.include?('extract_options!').should be_true
+      Array.instance_methods.collect { |m| m.to_s }.include?('extract_options!').should be_true
     end
   end
 end
@@ -61,7 +65,9 @@ describe ThinkingSphinx::AbstractQuotedTableName do
   
   describe "extends ActiveRecord::ConnectionAdapters::AbstractAdapter" do
     it 'with quote_table_name' do
-      ActiveRecord::ConnectionAdapters::AbstractAdapter.instance_methods.include?('quote_table_name').should be_true
+      ActiveRecord::ConnectionAdapters::AbstractAdapter.instance_methods.collect { |m|
+        m.to_s
+      }.include?('quote_table_name').should be_true
     end
   end
 end
@@ -77,7 +83,9 @@ describe ThinkingSphinx::MysqlQuotedTableName do
   describe "extends ActiveRecord::ConnectionAdapters::MysqlAdapter" do
     it 'with quote_table_name' do
       adapter = defined?(JRUBY_VERSION) ? :JdbcAdapter : :MysqlAdapter
-      ActiveRecord::ConnectionAdapters.const_get(adapter).instance_methods.include?("quote_table_name").should be_true
+      ActiveRecord::ConnectionAdapters.const_get(adapter).instance_methods.collect { |m|
+        m.to_s
+      }.include?("quote_table_name").should be_true
     end
   end  
 end

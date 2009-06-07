@@ -79,7 +79,8 @@ describe ThinkingSphinx::Association do
     before :each do
       @parent_join = ::ActiveRecord::Associations::ClassMethods::JoinDependency::JoinAssociation.stub_instance
       @join = ::ActiveRecord::Associations::ClassMethods::JoinDependency::JoinAssociation.stub_instance
-      @parent = ThinkingSphinx::Association.stub_instance(:join_to => true, :join => nil)
+      @parent = ThinkingSphinx::Association.new(nil, nil)
+      @parent.stub!(:join_to => true, :join => nil)
       @base_join = Object.stub_instance(:joins => [:a, :b, :c])
       
       ::ActiveRecord::Associations::ClassMethods::JoinDependency::JoinAssociation.stub_method(:new => @join)
@@ -87,19 +88,17 @@ describe ThinkingSphinx::Association do
     
     it "should call the parent's join_to if parent has no join" do
       @assoc = ThinkingSphinx::Association.new(@parent, :ref)
+      @parent.should_receive(:join_to).with(@base_join)
       
       @assoc.join_to(@base_join)
-      
-      @parent.should have_received(:join_to).with(@base_join)
     end
     
     it "should not call the parent's join_to if it already has a join" do
       @assoc = ThinkingSphinx::Association.new(@parent, :ref)
       @parent.stub_method(:join => @parent_join)
+      @parent.should_not_receive(:join_to)
       
       @assoc.join_to(@base_join)
-      
-      @parent.should_not have_received(:join_to)
     end
     
     it "should define the join association with a JoinAssociation instance" do

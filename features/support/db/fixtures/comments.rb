@@ -1,3 +1,4 @@
+# encoding: UTF-8
 Comment.create(
   :name         => "Pat",
   :content      => "+1",

@@ -2,19 +2,19 @@ require 'spec/spec_helper'
 
 describe "ThinkingSphinx::ActiveRecord::Search" do
   it "should add search_for_ids to ActiveRecord::Base" do
-    ActiveRecord::Base.methods.should include("search_for_ids")
+    ActiveRecord::Base.should respond_to("search_for_ids")
   end
   
   it "should add search_for_ids to ActiveRecord::Base" do
-    ActiveRecord::Base.methods.should include("search")
+    ActiveRecord::Base.should respond_to("search")
   end
   
   it "should add search_count to ActiveRecord::Base" do
-    ActiveRecord::Base.methods.should include("search_count")
+    ActiveRecord::Base.should respond_to("search_count")
   end
 
   it "should add search_for_id to ActiveRecord::Base" do
-    ActiveRecord::Base.methods.should include("search_for_id")
+    ActiveRecord::Base.should respond_to("search_for_id")
   end
   
   describe "search_for_ids method" do
