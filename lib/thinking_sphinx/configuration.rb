@@ -168,6 +168,8 @@ module ThinkingSphinx
             model_name.gsub!(/.*[\/\\]/, '').nil? ? next : retry
           rescue NameError
             next
+          rescue StandardError
+            puts "Warning: Error loading #{file}"
           end
         end
       end

@@ -121,6 +121,62 @@ describe ThinkingSphinx::Configuration do
     end
   end
   
+  describe "#load_models" do
+    before :each do
+      @config = ThinkingSphinx::Configuration.instance
+      @config.model_directories = ['']
+      
+      @file_name        = 'a.rb'
+      @model_name_lower = 'a'
+      @class_name       = 'A'
+      
+      @file_name.stub!(:gsub).and_return(@model_name_lower)
+      @model_name_lower.stub!(:camelize).and_return(@class_name)
+      Dir.stub(:[]).and_return([@file_name])
+    end
+    
+    it "should load the files by guessing the file name" do
+      @class_name.should_receive(:constantize).and_return(true)
+      
+      @config.load_models
+    end
+    
+    it "should not raise errors if the model name is nil" do
+      @file_name.stub!(:gsub).and_return(nil)
+      
+      lambda {
+        @config.load_models
+      }.should_not raise_error
+    end
+    
+    it "should not raise errors if the file name does not represent a class name" do
+      @class_name.should_receive(:constantize).and_raise(NameError)
+      
+      lambda {
+        @config.load_models
+      }.should_not raise_error
+    end
+    
+    it "should retry if the first pass fails and contains a directory" do
+      @model_name_lower.stub!(:gsub!).and_return(true, nil)
+      @class_name.stub(:constantize).and_raise(LoadError)
+      @model_name_lower.should_receive(:camelize).twice
+      
+      lambda {
+        @config.load_models
+      }.should_not raise_error
+    end
+    
+    it "should catch database errors with a warning" do
+      @class_name.should_receive(:constantize).and_raise(Mysql::Error)
+      @config.should_receive(:puts).with('Warning: Error loading a.rb')
+      
+      lambda {
+        @config.load_models
+      }.should_not raise_error
+    end
+  end
+  
   it "should insert set index options into the configuration file" do
     config = ThinkingSphinx::Configuration.instance
     ThinkingSphinx::Configuration::IndexOptions.each do |option|
