@@ -275,4 +275,28 @@ describe ThinkingSphinx::Facet do
       ThinkingSphinx::Facet.new(attribute).type.should == :anything
     end
   end
+  
+  describe "#value" do
+    before :each do
+      @index  = ThinkingSphinx::Index.new(Friendship)
+      @source = ThinkingSphinx::Source.new(@index)
+      @field  = ThinkingSphinx::Field.new(
+        @source, ThinkingSphinx::Index::FauxColumn.new(:person, :first_name)
+      )
+      @facet  = ThinkingSphinx::Facet.new(@field)
+    end
+    
+    it "should return association values" do
+      person      = Person.find(:first)
+      friendship  = Friendship.new(:person => person)
+      
+      @facet.value(friendship, 1).should == person.first_name
+    end
+    
+    it "should return nil if the association is nil" do
+      friendship = Friendship.new(:person => nil)
+      
+      @facet.value(friendship, 1).should be_nil
+    end
+  end
 end
