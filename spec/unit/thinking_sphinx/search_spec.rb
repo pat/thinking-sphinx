@@ -187,6 +187,18 @@ describe ThinkingSphinx::Search do
       )
     end
     
+    it "should not use an explicit :page" do
+      ThinkingSphinx::Search.stub!(:search).and_return(@city_results, @birthday_results)
+      ThinkingSphinx::Search.should_receive(:search) do |options|
+        options[:page].should == 1
+      end
+      
+      ThinkingSphinx::Search.facets(
+        :all_attributes => true,
+        :page           => 3
+      )
+    end
+    
     describe "conflicting facets" do
       before :each do
         @index = ThinkingSphinx::Index::Builder.generate(Alpha) do

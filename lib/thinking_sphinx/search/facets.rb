@@ -56,7 +56,8 @@ module ThinkingSphinx
         {
           :group_function => :attr,
           :limit          => max,
-          :max_matches    => max
+          :max_matches    => max,
+          :page           => 1
         }
       end
       
