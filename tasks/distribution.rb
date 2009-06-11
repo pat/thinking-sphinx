@@ -27,6 +27,7 @@ spec = Gem::Specification.new do |s|
   s.rubyforge_project = "thinking-sphinx"
   s.test_files        = FileList["spec/**/*_spec.rb"]
   s.files             = FileList[
+    "rails/*.rb",
     "lib/**/*.rb",
     "LICENCE",
     "README.textile",
