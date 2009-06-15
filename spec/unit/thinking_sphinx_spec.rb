@@ -51,6 +51,22 @@ describe ThinkingSphinx do
     ThinkingSphinx.updates_enabled?.should be_true
   end
   
+  it "should always say Sphinx is running if flagged as being on a remote machine" do
+    ThinkingSphinx.remote_sphinx = true
+    ThinkingSphinx.stub_method(:sphinx_running_by_pid? => false)
+    
+    ThinkingSphinx.sphinx_running?.should be_true
+  end
+  
+  it "should actually pay attention to Sphinx if not on a remote machine" do
+    ThinkingSphinx.remote_sphinx = false
+    ThinkingSphinx.stub_method(:sphinx_running_by_pid? => false)
+    ThinkingSphinx.sphinx_running?.should be_false
+    
+    ThinkingSphinx.stub_method(:sphinx_running_by_pid? => true)
+    ThinkingSphinx.sphinx_running?.should be_true
+  end
+  
   describe "use_group_by_shortcut? method" do
     before :each do
       adapter = defined?(JRUBY_VERSION) ? :JdbcAdapter : :MysqlAdapter

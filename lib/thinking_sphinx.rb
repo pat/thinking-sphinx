@@ -138,7 +138,39 @@ module ThinkingSphinx
     )
   end
   
+  @@remote_sphinx = false
+  
+  # An indication of whether Sphinx is running on a remote machine instead of
+  # the same machine.
+  # 
+  def self.remote_sphinx?
+    @@remote_sphinx
+  end
+  
+  # Tells Thinking Sphinx that Sphinx is running on a different machine, and
+  # thus it can't reliably guess whether it is running or not (ie: the 
+  # #sphinx_running? method), and so just assumes it is.
+  # 
+  # Useful for multi-machine deployments. Set it in your production.rb file.
+  # 
+  #   ThinkingSphinx.remote_sphinx = true
+  # 
+  def self.remote_sphinx=(value)
+    @@remote_sphinx = value
+  end
+  
+  # Check if Sphinx is running. If remote_sphinx is set to true (indicating
+  # Sphinx is on a different machine), this will always return true, and you
+  # will have to handle any connection errors yourself.
+  # 
   def self.sphinx_running?
+    remote_sphinx? || sphinx_running_by_pid?
+  end
+  
+  # Check if Sphinx is actually running, provided the pid is on the same
+  # machine as this code.
+  # 
+  def self.sphinx_running_by_pid?
     !!sphinx_pid && pid_active?(sphinx_pid)
   end
   
