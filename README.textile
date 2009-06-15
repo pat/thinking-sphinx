@@ -25,11 +25,18 @@ Then install the ginger gem. The steps are the same, except that you might need 
   cd ginger
   rake gem
   sudo gem install pkg/ginger-1.1.0.gem
+  
+Alternatively, install the ginger gem directly from the freelancing-god github repository
+
+  sudo gem sources -a http://gems.github.com
+  sudo gem install freelancing-god-ginger
 
 Then set up your database:
 
   cp spec/fixtures/database.yml.default spec/fixtures/database.yml
   mysqladmin -u root create thinking_sphinx
+  
+This last step can be done automatically by the contribute.rb script if all dependencies are met.
 
 Make sure you don't have another Sphinx daemon (searchd) running. If you do, quit it with "rake ts:stop"
 in the app root.
