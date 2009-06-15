@@ -25,6 +25,8 @@ module ThinkingSphinx
   # ignore chars::          nil
   # html strip::            false
   # html remove elements::  ''
+  # searchd_binary_name::   searchd
+  # indexer_binary_name::   indexer
   #
   # If you want to change these settings, create a YAML file at
   # config/sphinx.yml with settings for each environment, in a similar
@@ -32,7 +34,8 @@ module ThinkingSphinx
   # searchd_log_file, query_log_file, pid_file, searchd_file_path, port,
   # allow_star, enable_star, min_prefix_len, min_infix_len, mem_limit,
   # max_matches, morphology, charset_type, charset_table, ignore_chars,
-  # html_strip, html_remove_elements, delayed_job_priority.
+  # html_strip, html_remove_elements, delayed_job_priority,
+  # searchd_binary_name, indexer_binary_name.
   #
   # I think you've got the idea.
   # 
@@ -60,7 +63,7 @@ module ThinkingSphinx
     attr_accessor :config_file, :searchd_log_file, :query_log_file,
       :pid_file, :searchd_file_path, :address, :port, :allow_star,
       :database_yml_file, :app_root, :bin_path, :model_directories,
-      :delayed_job_priority
+      :delayed_job_priority, :searchd_binary_name, :indexer_binary_name
     
     attr_accessor :source_options, :index_options
     
@@ -107,6 +110,9 @@ module ThinkingSphinx
       self.index_options   = {
         :charset_type => "utf-8"
       }
+      
+      self.searchd_binary_name = "searchd"
+      self.indexer_binary_name = "indexer"
             
       parse_config
       

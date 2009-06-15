@@ -48,7 +48,9 @@ describe ThinkingSphinx::Configuration do
           "morphology"        => "stem_ru",
           "charset_type"      => "latin1",
           "charset_table"     => "table",
-          "ignore_chars"      => "e"
+          "ignore_chars"      => "e",
+          "searchd_binary_name" => "searchd",
+          "indexer_binary_name" => "indexer"
         }
       }
       
@@ -62,7 +64,7 @@ describe ThinkingSphinx::Configuration do
       config.send(:parse_config)
       
       %w(config_file searchd_log_file query_log_file pid_file searchd_file_path
-        address port).each do |key|
+        address port searchd_binary_name indexer_binary_name).each do |key|
         config.send(key).should == @settings["development"][key]
       end
     end
