@@ -4,6 +4,27 @@ require 'rubygems'
 require 'yaml'
 require 'pp'
 
+require 'optparse'
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: example.rb [options]"
+
+  opts.on("-g [NAME]", "--ginger [NAME]", "Ginger gem name") do |name|
+    options[:ginger] = name
+  end
+
+  opts.on("-n [NAME]", "--notamock [NAME]", "Not A Mock gem name") do |name|
+    options[:notamock] = name
+  end
+
+  opts.on("-s [NAME]", "--sphinx [NAME]", "Sphinx daemon name") do |name|
+    options[:sphinx] = name
+  end
+end.parse!
+
+OPTIONS = options
+
 module ContributeHelper; end
 
 class Contribute
@@ -14,7 +35,8 @@ class Contribute
       Dependencies::Sphinx,
       Dependencies::Mysql,
       Dependencies::AR,
-      Dependencies::Ginger
+      Dependencies::Ginger,
+      Dependencies::NotAMock
     ]
   end
 
@@ -159,6 +181,8 @@ EO_CREATE_DATABASE_FAILED
     begin
       ActiveRecord::Base.connection.create_database('thinking_sphinx')
       colour_puts "<green>successful</green>"
+      puts
+      return true
     rescue ActiveRecord::StatementInvalid
       if $!.message[/database exists/]
         colour_puts "<green>successful</green> (database already existed)"
@@ -166,10 +190,9 @@ EO_CREATE_DATABASE_FAILED
         return true
       else
         colour_puts "<red>failed</red>"
+		    colour_puts CREATE_DATABASE_FAILED
       end
     end
-    
-    colour_puts CREATE_DATABASE_FAILED
     
     false
   end
@@ -272,6 +295,11 @@ module ContributeHelper
     
     puts
     
+    if !all_found
+	    print "You may wish to try setting additional options. Use ./contribute.rb -h for details"
+	    puts
+	  end
+    
     all_found
   end
   
@@ -315,14 +343,19 @@ module Dependencies
   end
   
   class Ginger < ContributeHelper::Gem
-    name 'ginger'
+    name(OPTIONS.has_key?(:ginger) ? OPTIONS[:ginger] : 'ginger')
+  end
+  
+  class NotAMock < ContributeHelper::Gem
+    name(OPTIONS.has_key?(:notamock) ? OPTIONS[:notamock] : 'not_a_mock')
   end
   
   class Sphinx < ContributeHelper::Dependency
     name 'sphinx'
     
     def check
-      output = `which searchd`
+		  app_name = OPTIONS.has_key?(:sphinx) ? OPTIONS[:sphinx] : 'searchd'
+      output = `which #{app_name}`
       @location = output.chomp if $? == 0
       $? == 0
     end
