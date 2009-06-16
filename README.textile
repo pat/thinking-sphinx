@@ -139,3 +139,5 @@ Since I first released this library, there's been quite a few people who have su
 * Tien Dung
 * Johannes Kaefer
 * Paul Campbell
+* Matthew Beale
+* Tom Simnett
