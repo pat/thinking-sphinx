@@ -642,11 +642,11 @@ module ThinkingSphinx
         }.flatten : []
         
         lat_attr = klass ? klass.sphinx_indexes.collect { |index|
-          index.options[:latitude_attr]
+          index.local_options[:latitude_attr]
         }.compact.first : nil
         
         lon_attr = klass ? klass.sphinx_indexes.collect { |index|
-          index.options[:longitude_attr]
+          index.local_options[:longitude_attr]
         }.compact.first : nil
         
         lat_attr = options[:latitude_attr] if options[:latitude_attr]
