@@ -46,7 +46,7 @@ namespace :thinking_sphinx do
     raise RuntimeError, "searchd is not running." unless sphinx_running?
     config = ThinkingSphinx::Configuration.instance
     pid    = sphinx_pid
-    system! "#{config.bin_path}#{searchd_binary_name} --stop --config #{config.config_file}"
+    system! "#{config.bin_path}#{config.searchd_binary_name} --stop --config #{config.config_file}"
     puts "Stopped search daemon (pid #{pid})."
   end
   
@@ -71,7 +71,7 @@ namespace :thinking_sphinx do
     end
         
     FileUtils.mkdir_p config.searchd_file_path
-    cmd = "#{config.bin_path}#{indexer_binary_name} --config #{config.config_file} --all"
+    cmd = "#{config.bin_path}#{config.indexer_binary_name} --config #{config.config_file} --all"
     cmd << " --rotate" if sphinx_running?
     
     system! cmd

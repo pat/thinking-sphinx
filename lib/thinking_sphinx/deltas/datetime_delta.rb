@@ -18,8 +18,8 @@ module ThinkingSphinx
         config = ThinkingSphinx::Configuration.instance
         rotate = ThinkingSphinx.sphinx_running? ? "--rotate" : ""
         
-        output = `#{config.bin_path}indexer --config #{config.config_file} #{rotate} #{delta_index_name model}`
-        output += `#{config.bin_path}indexer --config #{config.config_file} #{rotate} --merge #{core_index_name model} #{delta_index_name model} --merge-dst-range sphinx_deleted 0 0`
+        output = `#{config.bin_path}#{config.indexer_binary_name} --config #{config.config_file} #{rotate} #{delta_index_name model}`
+        output += `#{config.bin_path}#{config.indexer_binary_name} --config #{config.config_file} #{rotate} --merge #{core_index_name model} #{delta_index_name model} --merge-dst-range sphinx_deleted 0 0`
         puts output unless ThinkingSphinx.suppress_delta_output?
         
         true

@@ -49,8 +49,8 @@ describe ThinkingSphinx::Configuration do
           "charset_type"      => "latin1",
           "charset_table"     => "table",
           "ignore_chars"      => "e",
-          "searchd_binary_name" => "searchd",
-          "indexer_binary_name" => "indexer"
+          "searchd_binary_name" => "sphinx-searchd",
+          "indexer_binary_name" => "sphinx-indexer"
         }
       }
       
