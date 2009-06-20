@@ -36,8 +36,8 @@ module ThinkingSphinx
       clause
     end
     
-    def convert_nulls(clause, default = '')
-      default = "'#{default}'" if default.is_a?(String)
+    def convert_nulls(clause, default = 'NULL')
+      default = "#{default}" if default.is_a?(String)
       
       "COALESCE(#{clause}, #{default})"
     end
