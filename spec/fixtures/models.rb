@@ -85,6 +85,8 @@ class Child < Person
 end
 
 class Alpha < ActiveRecord::Base
+  has_many :betas
+  
   define_index do
     indexes :name, :sortable => true
     
@@ -93,11 +95,17 @@ class Alpha < ActiveRecord::Base
 end
 
 class Beta < ActiveRecord::Base
+  has_many :gammas
+  
   define_index do
     indexes :name, :sortable => true
     
     set_property :delta => true
   end
+end
+
+class Gamma < ActiveRecord::Base
+  #
 end
 
 class Search < ActiveRecord::Base

@@ -127,7 +127,7 @@ module ThinkingSphinx
     def config_value(offset = nil)
       if type == :multi
         multi_config = include_as_association? ? "field" :
-          source_value(offset).gsub(/\n\s*/, " ").strip
+          source_value(offset).gsub(/\s+/m, " ").strip
         "uint #{unique_name} from #{multi_config}"
       else
         unique_name
@@ -194,24 +194,25 @@ module ThinkingSphinx
     end
     
     def query(offset)
-      assoc = association_for_mva
-      raise "Could not determine SQL for MVA" if assoc.nil?
+      base_assoc = base_association_for_mva
+      end_assoc  = end_association_for_mva
+      raise "Could not determine SQL for MVA" if base_assoc.nil?
       
       <<-SQL
-SELECT #{foreign_key_for_mva assoc}
+SELECT #{foreign_key_for_mva base_assoc}
   #{ThinkingSphinx.unique_id_expression(offset)} AS #{quote_column('id')},
-  #{primary_key_for_mva(assoc)} AS #{quote_column(unique_name)}
-FROM #{quote_table_name assoc.table}
+  #{primary_key_for_mva(end_assoc)} AS #{quote_column(unique_name)}
+FROM #{quote_table_name base_assoc.table} #{association_joins}
       SQL
     end
     
     def query_clause
-      foreign_key = foreign_key_for_mva association_for_mva
+      foreign_key = foreign_key_for_mva base_association_for_mva
       "WHERE #{foreign_key} >= $start AND #{foreign_key} <= $end"
     end
     
     def range_query
-      assoc       = association_for_mva
+      assoc       = base_association_for_mva
       foreign_key = foreign_key_for_mva assoc
       "SELECT MIN(#{foreign_key}), MAX(#{foreign_key}) FROM #{quote_table_name assoc.table}"
     end
@@ -226,10 +227,32 @@ FROM #{quote_table_name assoc.table}
       quote_with_table assoc.table, assoc.reflection.primary_key_name
     end
     
-    def association_for_mva
+    def end_association_for_mva
       @association_for_mva ||= associations[columns.first].detect { |assoc|
         assoc.has_column?(columns.first.__name)
       }
+    end
+    
+    def base_association_for_mva
+      @first_association_for_mva ||= begin
+        assoc = end_association_for_mva
+        while !assoc.parent.nil?
+          assoc = assoc.parent
+        end
+        
+        assoc
+      end
+    end
+    
+    def association_joins
+      joins = []
+      assoc = end_association_for_mva
+      while assoc != base_association_for_mva
+        joins << assoc.to_sql
+        assoc = assoc.parent
+      end
+      
+      joins.join(' ')
     end
     
     def is_many_ints?

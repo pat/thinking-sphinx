@@ -73,7 +73,18 @@ DROP TABLE IF EXISTS `betas`;
 CREATE TABLE `betas` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(50) NOT NULL,
+  `alpha_id` int(11),
   `delta` tinyint(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `gammas`;
+
+CREATE TABLE `gammas` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(50) NOT NULL,
+  `value` int(11),
+  `beta_id` int(11),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

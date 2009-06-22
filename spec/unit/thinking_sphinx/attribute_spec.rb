@@ -321,6 +321,26 @@ describe ThinkingSphinx::Attribute do
     end
   end
   
+  describe "MVA via two has-many associations with a ranged source query" do
+    before :each do
+      @index  = ThinkingSphinx::Index.new(Alpha)
+      @source = ThinkingSphinx::Source.new(@index)
+      @attribute = ThinkingSphinx::Attribute.new(@source,
+        [ThinkingSphinx::Index::FauxColumn.new(:betas, :gammas, :value)],
+        :as => :gamma_values, :source => :ranged_query
+      )
+    end
+    
+    it "should use a ranged query" do
+      @attribute.type_to_config.should == :sql_attr_multi
+      
+      declaration, query, range_query = @attribute.config_value.split('; ')
+      declaration.should == "uint gamma_values from ranged-query"
+      query.should       == "SELECT `betas`.`alpha_id` #{ThinkingSphinx.unique_id_expression} AS `id`, `gammas`.`value` AS `gamma_values` FROM `betas` LEFT OUTER JOIN `gammas` ON gammas.beta_id = betas.id WHERE `betas`.`alpha_id` >= $start AND `betas`.`alpha_id` <= $end"
+      range_query.should == "SELECT MIN(`betas`.`alpha_id`), MAX(`betas`.`alpha_id`) FROM `betas`"
+    end
+  end
+  
   describe "with custom queries" do
     before :each do
       index = CricketTeam.sphinx_indexes.first
