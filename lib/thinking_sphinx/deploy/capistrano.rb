@@ -4,8 +4,12 @@ Capistrano::Configuration.instance(:must_exist).load do
       desc "Install Sphinx by source"
       task :sphinx do
         with_postgres = false
-        run "which pg_config" do |channel, stream, data|
-          with_postgres = !(data.nil? || data == "")
+        begin
+          run "which pg_config" do |channel, stream, data|
+            with_postgres = !(data.nil? || data == "")
+          end
+        rescue Capistrano::CommandError => e
+          puts "Continuing despite error: #{e.message}"
         end
       
         args = []
