@@ -1,7 +1,18 @@
 Capistrano::Configuration.instance(:must_exist).load do
   namespace :thinking_sphinx do
     namespace :install do
-      desc "Install Sphinx by source"
+      desc <<-DESC
+        Install Sphinx by source
+        
+        If Postgres is available, Sphinx will use it.
+        
+        If the variable :thinking_sphinx_configure_args is set, it will
+        be passed to the Sphinx configure script. You can use this to
+        install Sphinx in a non-standard location:
+        
+          set :thinking_sphinx_configure_args, "--prefix=$HOME/software"
+DESC
+
       task :sphinx do
         with_postgres = false
         begin
@@ -18,7 +29,8 @@ Capistrano::Configuration.instance(:must_exist).load do
             args << "--with-pgsql=#{data}"
           end
         end
-      
+        args << fetch(:thinking_sphinx_configure_args, '')
+        
         commands = <<-CMD
         wget -q http://www.sphinxsearch.com/downloads/sphinx-0.9.8.1.tar.gz >> sphinx.log
         tar xzvf sphinx-0.9.8.1.tar.gz
