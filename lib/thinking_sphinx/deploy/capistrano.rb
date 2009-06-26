@@ -37,7 +37,7 @@ DESC
         cd sphinx-0.9.8.1
         ./configure #{args.join(" ")}
         make
-        sudo make install
+        #{try_sudo} make install
         rm -rf sphinx-0.9.8.1 sphinx-0.9.8.1.tar.gz
         CMD
         run commands.split(/\n\s+/).join(" && ")
@@ -45,7 +45,7 @@ DESC
     
       desc "Install Thinking Sphinx as a gem from GitHub"
       task :ts do
-        sudo "gem install freelancing-god-thinking-sphinx --source http://gems.github.com"
+        run "#{try_sudo} gem install freelancing-god-thinking-sphinx --source http://gems.github.com"
       end
     end
   
@@ -86,7 +86,7 @@ DESC
   
     desc "Add the shared folder for sphinx files for the production environment"
     task :shared_sphinx_folder, :roles => :web do
-      sudo "mkdir -p #{shared_path}/db/sphinx/production"
+      run "mkdir -p #{shared_path}/db/sphinx/production"
     end
 
     def rake(*tasks)
