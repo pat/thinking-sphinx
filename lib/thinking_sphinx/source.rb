@@ -8,7 +8,7 @@ module ThinkingSphinx
     
     attr_accessor :model, :fields, :attributes, :conditions, :groupings,
       :options
-    attr_reader :base
+    attr_reader :base, :index
     
     def initialize(index, options = {})
       @index        = index
@@ -56,7 +56,7 @@ module ThinkingSphinx
       source.parent = "#{name}_core_#{index}"
       
       set_source_database_settings  source
-      set_source_attributes         source, offset
+      set_source_attributes         source, offset, true
       set_source_sql                source, offset, true
       
       source
@@ -89,9 +89,9 @@ module ThinkingSphinx
       source.sql_sock = config[:socket]
     end
     
-    def set_source_attributes(source, offset)
+    def set_source_attributes(source, offset, delta = false)
       attributes.each do |attrib|
-        source.send(attrib.type_to_config) << attrib.config_value(offset)
+        source.send(attrib.type_to_config) << attrib.config_value(offset, delta)
       end
     end
     
