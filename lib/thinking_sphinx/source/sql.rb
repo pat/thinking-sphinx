@@ -112,7 +112,9 @@ GROUP BY #{ sql_group_clause }
       end
 
       def crc_column
-        if @model.column_names.include?(@model.inheritance_column)
+        if @model.table_exists? &&
+          @model.column_names.include?(@model.inheritance_column)
+          
           adapter.cast_to_unsigned(adapter.convert_nulls(
             adapter.crc(adapter.quote_with_table(@model.inheritance_column), true),
             @model.to_crc32
