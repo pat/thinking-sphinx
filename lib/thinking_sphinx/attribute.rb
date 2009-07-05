@@ -142,6 +142,8 @@ module ThinkingSphinx
     def type
       @type ||= begin
         base_type = case
+        when is_many_datetimes?
+          :datetime
         when is_many?, is_many_ints?
           :multi
         when @associations.values.flatten.length > 1
@@ -274,14 +276,19 @@ WHERE #{@source.index.delta_object.clause(model, true)})
     def is_many_ints?
       concat_ws? && all_ints?
     end
+    
+    def is_many_datetimes?
+      is_many_ints? && (translated_type_from_database rescue nil) == :datetime
+    end
         
     def type_from_database
       klass = @associations.values.flatten.first ? 
         @associations.values.flatten.first.reflection.klass : @model
       
-      klass.columns.detect { |col|
-        @columns.collect { |c| c.__name.to_s }.include? col.name
-      }.type
+      column = klass.columns.detect { |col|
+                 @columns.collect { |c| c.__name.to_s }.include? col.name
+               }
+      column.nil? ? nil : column.type
     end
     
     def translated_type_from_database
