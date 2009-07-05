@@ -89,7 +89,7 @@ module ThinkingSphinx
     def to_select_sql
       return nil unless include_as_association?
       
-      separator = all_ints? || @crc ? ',' : ' '
+      separator = all_ints? || all_datetimes? || @crc ? ',' : ' '
       
       clause = @columns.collect { |column|
         part = column_with_prefix(column)
@@ -173,12 +173,20 @@ module ThinkingSphinx
     end
     
     def all_ints?
+      all_of_type?(:integer)
+    end
+    
+    def all_datetimes?
+      all_of_type?(:datetime)
+    end
+    
+    def all_of_type?(column_type)
       @columns.all? { |col|
         klasses = @associations[col].empty? ? [@model] :
           @associations[col].collect { |assoc| assoc.reflection.klass }
         klasses.all? { |klass|
           column = klass.columns.detect { |column| column.name == col.__name.to_s }
-          !column.nil? && (column.type == :integer || column.type == :datetime)
+          !column.nil? && column.type == column_type
         }
       }
     end
@@ -278,9 +286,9 @@ WHERE #{@source.index.delta_object.clause(model, true)})
     end
     
     def is_many_datetimes?
-      is_many_ints? && (translated_type_from_database rescue nil) == :datetime
+      is_many? && all_datetimes?
     end
-        
+       
     def type_from_database
       klass = @associations.values.flatten.first ? 
         @associations.values.flatten.first.reflection.klass : @model
