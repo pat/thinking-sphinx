@@ -9,7 +9,7 @@ end
 require 'yaml'
 
 class SphinxHelper
-  attr_accessor :host, :username, :password
+  attr_accessor :host, :username, :password, :socket
   attr_reader   :path
   
   def initialize
@@ -22,6 +22,7 @@ class SphinxHelper
       @host     = config["host"]
       @username = config["username"]
       @password = config["password"]
+      @socket   = config["socket"]
     end
     
     @path = File.expand_path(File.dirname(__FILE__))
@@ -37,7 +38,8 @@ class SphinxHelper
       :database => 'thinking_sphinx',
       :username => @username,
       :password => @password,
-      :host     => @host
+      :host     => @host,
+      :socket   => @socket
     )
     ActiveRecord::Base.logger = Logger.new(File.open("tmp/activerecord.log", "a"))
     
