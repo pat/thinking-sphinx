@@ -176,7 +176,7 @@ module ThinkingSphinx
           @associations[col].collect { |assoc| assoc.reflection.klass }
         klasses.all? { |klass|
           column = klass.columns.detect { |column| column.name == col.__name.to_s }
-          !column.nil? && column.type == :integer
+          !column.nil? && (column.type == :integer || column.type == :datetime)
         }
       }
     end
