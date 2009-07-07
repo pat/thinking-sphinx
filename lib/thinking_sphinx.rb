@@ -184,7 +184,7 @@ module ThinkingSphinx
       cat_command = 'type'
     end
     
-    `#{cat_command} #{pid_file}`[/\d+/]
+    `#{cat_command} \"#{pid_file}\"`[/\d+/]
   end
   
   def self.pid_active?(pid)
