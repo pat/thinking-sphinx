@@ -27,6 +27,7 @@ CREATE TABLE `friendships` (
   `person_id` int(11) NOT NULL,
   `friend_id` int(11) NOT NULL,
   `created_at` datetime NOT NULL,
+  `created_on` date NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

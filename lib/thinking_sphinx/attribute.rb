@@ -93,10 +93,17 @@ module ThinkingSphinx
       
       clause = @columns.collect { |column|
         part = column_with_prefix(column)
-        type == :string ? adapter.convert_nulls(part) : part
+        case type
+        when :string
+          adapter.convert_nulls(part)
+        when :datetime
+          adapter.cast_to_datetime(part)
+        else
+          part
+        end
       }.join(', ')
       
-      clause = adapter.cast_to_datetime(clause)             if type == :datetime
+      # clause = adapter.cast_to_datetime(clause)             if type == :datetime
       clause = adapter.crc(clause)                          if @crc
       clause = adapter.concatenate(clause, separator)       if concat_ws?
       clause = adapter.group_concatenate(clause, separator) if is_many?
@@ -177,18 +184,7 @@ module ThinkingSphinx
     end
     
     def all_datetimes?
-      all_of_type?(:datetime)
-    end
-    
-    def all_of_type?(column_type)
-      @columns.all? { |col|
-        klasses = @associations[col].empty? ? [@model] :
-          @associations[col].collect { |assoc| assoc.reflection.klass }
-        klasses.all? { |klass|
-          column = klass.columns.detect { |column| column.name == col.__name.to_s }
-          !column.nil? && column.type == column_type
-        }
-      }
+      all_of_type?(:datetime, :date, :timestamp)
     end
     
     private
@@ -294,8 +290,8 @@ WHERE #{@source.index.delta_object.clause(model, true)})
         @associations.values.flatten.first.reflection.klass : @model
       
       column = klass.columns.detect { |col|
-                 @columns.collect { |c| c.__name.to_s }.include? col.name
-               }
+        @columns.collect { |c| c.__name.to_s }.include? col.name
+      }
       column.nil? ? nil : column.type
     end
     
@@ -317,6 +313,17 @@ block:
   has "CAST(column AS INT)", :type => :integer, :as => :column
         MESSAGE
       end
+    end
+    
+    def all_of_type?(*column_types)
+      @columns.all? { |col|
+        klasses = @associations[col].empty? ? [@model] :
+          @associations[col].collect { |assoc| assoc.reflection.klass }
+        klasses.all? { |klass|
+          column = klass.columns.detect { |column| column.name == col.__name.to_s }
+          !column.nil? && column_types.include?(column.type)
+        }
+      }
     end
   end
 end

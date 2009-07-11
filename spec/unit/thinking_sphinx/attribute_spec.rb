@@ -88,6 +88,19 @@ describe ThinkingSphinx::Attribute do
     end
   end
   
+  describe '#to_select_sql' do
+    it "should convert a mixture of dates and datetimes to timestamps" do
+      attribute = ThinkingSphinx::Attribute.new(@source,
+        [ ThinkingSphinx::Index::FauxColumn.new(:created_at),
+          ThinkingSphinx::Index::FauxColumn.new(:created_on) ],
+        :as => :times
+      )
+      attribute.model = Friendship
+      
+      attribute.to_select_sql.should == "CONCAT_WS(',', UNIX_TIMESTAMP(`friendships`.`created_at`), UNIX_TIMESTAMP(`friendships`.`created_on`)) AS `times`"
+    end
+  end
+  
   describe "is_many? method" do
     before :each do
       @assoc_a = Object.stub_instance(:is_many? => true)
@@ -191,7 +204,7 @@ describe ThinkingSphinx::Attribute do
       attribute.model = Person
       attribute.columns.each { |col| attribute.associations[col] = [] }
       
-      attribute.send(:all_ints?).should be_true
+      attribute.should be_all_ints
     end
     
     it "should return false if only some columns are integers" do
@@ -202,7 +215,7 @@ describe ThinkingSphinx::Attribute do
       attribute.model = Person
       attribute.columns.each { |col| attribute.associations[col] = [] }
       
-      attribute.send(:all_ints?).should be_false
+      attribute.should_not be_all_ints
     end
     
     it "should return false if no columns are integers" do
@@ -213,7 +226,42 @@ describe ThinkingSphinx::Attribute do
       attribute.model = Person
       attribute.columns.each { |col| attribute.associations[col] = [] }
       
-      attribute.send(:all_ints?).should be_false
+      attribute.should_not be_all_ints
+    end
+  end
+  
+  describe "all_datetimes? method" do
+    it "should return true if all columns are datetimes" do
+      attribute = ThinkingSphinx::Attribute.new(@source,
+        [ ThinkingSphinx::Index::FauxColumn.new(:created_at),
+          ThinkingSphinx::Index::FauxColumn.new(:updated_at) ]
+      )
+      attribute.model = Friendship
+      attribute.columns.each { |col| attribute.associations[col] = [] }
+      
+      attribute.should be_all_datetimes
+    end
+    
+    it "should return false if only some columns are datetimes" do
+      attribute = ThinkingSphinx::Attribute.new(@source,
+        [ ThinkingSphinx::Index::FauxColumn.new(:id),
+          ThinkingSphinx::Index::FauxColumn.new(:created_at) ]
+      )
+      attribute.model = Friendship
+      attribute.columns.each { |col| attribute.associations[col] = [] }
+      
+      attribute.should_not be_all_datetimes
+    end
+    
+    it "should return true if all columns can be " do
+      attribute = ThinkingSphinx::Attribute.new(@source,
+        [ ThinkingSphinx::Index::FauxColumn.new(:created_at),
+          ThinkingSphinx::Index::FauxColumn.new(:created_on) ]
+      )
+      attribute.model = Friendship
+      attribute.columns.each { |col| attribute.associations[col] = [] }
+      
+      attribute.should be_all_datetimes
     end
   end
   
