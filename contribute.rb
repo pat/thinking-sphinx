@@ -364,9 +364,9 @@ module Dependencies
 
     def check
       app_name = OPTIONS.has_key?(:sphinx) ? OPTIONS[:sphinx] : 'searchd'
-      output = `which #{app_name}`
-      @location = output.chomp if $? == 0
-      $? == 0
+      app_name << '.exe' if RUBY_PLATFORM =~ /mswin/ && app_name[-4, 4] != '.exe'
+
+      !(@location = ENV['PATH'].split(File::PATH_SEPARATOR).map { |path| File.join(path, app_name) }.find { |path| File.file?(path) && File.executable?(path) }).nil?
     end
   end
 end
