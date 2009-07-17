@@ -156,7 +156,7 @@ module ThinkingSphinx
       #
       #   development:
       #     enable_star: 1
-      #     min_infix_length: 2
+      #     min_infix_len: 2
       #
       # Note that this will make indexing take longer.
       #
