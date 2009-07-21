@@ -771,7 +771,7 @@ describe ThinkingSphinx::Search do
   
   describe '#excerpt_for' do
     before :each do
-      @client.stub!(:excerpts => 'excerpted string')
+      @client.stub!(:excerpts => ['excerpted string'])
       @client.stub!(:query => {
         :matches => [],
         :words => {'one' => {}, 'two' => {}}
