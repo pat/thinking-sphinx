@@ -131,11 +131,7 @@ module ThinkingSphinx
       # that for multi-model search, an id may occur in more than one model.
       #
       # == Infix (Star) Searching
-      #
-      # By default, Sphinx uses English stemming, e.g. matching "shoes" if you
-      # search for "shoe". It won't find "Melbourne" if you search for
-      # "elbourn", though.
-      #
+      # 
       # Enable infix searching by something like this in config/sphinx.yml:
       #
       #   development:
