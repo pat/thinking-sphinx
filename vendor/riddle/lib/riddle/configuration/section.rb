@@ -21,7 +21,7 @@ module Riddle
             conf = "  #{setting} = "
           else
             conf = setting_to_array(setting).collect { |set|
-              "  #{setting} = #{set}"  
+              "  #{setting} = #{set}"
             }
           end
           conf.length == 0 ? nil : conf

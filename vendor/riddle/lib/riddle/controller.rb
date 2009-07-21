@@ -10,7 +10,7 @@ module Riddle
       cmd << " --rotate" if running?
       `#{cmd}`
     end
-    
+
     def start
       return if running?
 
