@@ -567,6 +567,31 @@ describe ThinkingSphinx::Search do
         @client.anchor[:longitude].should == -1.0
       end
     end
+    
+    describe 'excerpts' do
+      before :each do
+        @search = ThinkingSphinx::Search.new
+      end
+      
+      it "should add excerpts method if objects don't already have one" do
+        @search.first.should respond_to(:excerpts)
+      end
+      
+      it "should return an instance of ThinkingSphinx::Excerpter" do
+        @search.first.excerpts.should be_a(ThinkingSphinx::Excerpter)
+      end
+      
+      it "should not add excerpts method if objects already have one" do
+        @search.last.excerpts.should_not be_a(ThinkingSphinx::Excerpter)
+      end
+      
+      it "should set up the excerpter with the instances and search" do
+        ThinkingSphinx::Excerpter.should_receive(:new).with(@search, @alpha_a)
+        ThinkingSphinx::Excerpter.should_receive(:new).with(@search, @alpha_b)
+        
+        @search.first
+      end
+    end
   end
   
   describe '#current_page' do
@@ -741,6 +766,45 @@ describe ThinkingSphinx::Search do
         obj.should   == @alpha
         index.should == 0
       end
+    end
+  end
+  
+  describe '#excerpt_for' do
+    before :each do
+      @client.stub!(:excerpts => 'excerpted string')
+      @client.stub!(:query => {
+        :matches => [],
+        :words => {'one' => {}, 'two' => {}}
+      })
+      @search = ThinkingSphinx::Search.new(:classes => [Alpha])
+    end
+    
+    it "should return the Sphinx excerpt value" do
+      @search.excerpt_for('string').should == 'excerpted string'
+    end
+    
+    it "should use the given model's core index" do
+      @client.should_receive(:excerpts) do |options|
+        options[:index].should == 'alpha_core'
+      end
+      
+      @search.excerpt_for('string')
+    end
+    
+    it "should optionally take a second argument to allow for multi-model searches" do
+      @client.should_receive(:excerpts) do |options|
+        options[:index].should == 'beta_core'
+      end
+      
+      @search.excerpt_for('string', Beta)
+    end
+    
+    it "should join the words together" do
+      @client.should_receive(:excerpts) do |options|
+        options[:words].should == @search.results[:words].keys.join(' ')
+      end
+      
+      @search.excerpt_for('string', Beta)
     end
   end
 end

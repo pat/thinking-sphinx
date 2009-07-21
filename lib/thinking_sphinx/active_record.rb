@@ -140,11 +140,11 @@ module ThinkingSphinx
               ThinkingSphinx::AbstractAdapter.detect(self)
           end
           
-          private
-          
           def sphinx_name
             self.name.underscore.tr(':/\\', '_')
           end
+          
+          private
           
           def sphinx_delta?
             self.sphinx_indexes.any? { |index| index.delta? }

@@ -1,3 +1,4 @@
+# encoding: UTF-8
 module ThinkingSphinx
   # Once you've got those indexes in and built, this is the stuff that
   # matters - how to search! This class provides a generic search
@@ -10,9 +11,9 @@ module ThinkingSphinx
     CoreMethods = %w( class class_eval extend frozen? id instance_eval
       instance_of? instance_values instance_variable_defined?
       instance_variable_get instance_variable_set instance_variables is_a?
-      kind_of? member? object_id respond_to? send type )
-    SafeMethods = %w( method methods nil? partition private_methods
-      protected_methods public_methods send )
+      kind_of? member? method methods nil? object_id respond_to? send type )
+    SafeMethods = %w( partition private_methods protected_methods
+      public_methods send )
     
     instance_methods.select { |method|
       method.to_s[/^__/].nil? && !CoreMethods.include?(method.to_s)
@@ -159,6 +160,19 @@ module ThinkingSphinx
       end
     end
     
+    def excerpt_for(string, model = nil)
+      if model.nil? && options[:classes].length == 1
+        model ||= options[:classes].first
+      end
+      
+      populate
+      client.excerpts(
+        :docs   => [string],
+        :words  => results[:words].keys.join(' '),
+        :index  => "#{model.sphinx_name}_core"
+      ).first
+    end
+    
     private
     
     def config
@@ -184,6 +198,20 @@ module ThinkingSphinx
           }
         else
           replace instances_from_matches
+          add_excerpter
+        end
+      end
+    end
+    
+    def add_excerpter
+      each do |object|
+        next if object.respond_to?(:excerpts)
+        
+        excerpter = ThinkingSphinx::Excerpter.new self, object
+        block = lambda { excerpter }
+        
+        object.metaclass.instance_eval do
+          define_method(:excerpts, &block)
         end
       end
     end

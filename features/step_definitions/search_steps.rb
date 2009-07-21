@@ -1,3 +1,4 @@
+# encoding: UTF-8
 When /^I search for the specific id of (\d+) in the (\w+) index$/ do |id, index|
   @id     = id.to_i
   @index  = index
@@ -63,4 +64,22 @@ end
 
 Then /^I should get a value of (\d+)$/ do |count|
   results.should == count.to_i
+end
+
+Then /^the (\w+) excerpt of the first result is "(.*)"$/ do |column, string|
+  excerpt = results.excerpt_for(results.first.send(column))
+  if excerpt.respond_to?(:force_encoding)
+    excerpt = excerpt.force_encoding('UTF-8')
+  end
+  
+  excerpt.should == string
+end
+
+Then /^calling (\w+) on the first result excerpts object should return "(.*)"$/ do |column, string|
+  excerpt = results.first.excerpts.send(column)
+  if excerpt.respond_to?(:force_encoding)
+    excerpt = excerpt.force_encoding('UTF-8')
+  end
+  
+  excerpt.should == string
 end

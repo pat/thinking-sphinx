@@ -101,6 +101,10 @@ class Alpha < ActiveRecord::Base
     
     set_property :field_weights => {"name" => 10}
   end
+  
+  def big_name
+    name.upcase
+  end
 end
 
 class Beta < ActiveRecord::Base
@@ -113,6 +117,10 @@ class Beta < ActiveRecord::Base
     has :id, :as => :lon
     
     set_property :delta => true
+  end
+  
+  def excerpts
+    false
   end
 end
 
