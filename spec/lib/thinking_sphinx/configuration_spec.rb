@@ -219,4 +219,29 @@ describe ThinkingSphinx::Configuration do
     }
     file.should_not match(/index alpha_core\s+\{\s+[^\}]*prefix_fields\s+=[^\}]*\}/m)
   end
+  
+  describe '#client' do
+    before :each do
+      @config = ThinkingSphinx::Configuration.instance
+      @config.address     = 'domain.url'
+      @config.port        = 3333
+      @config.configuration.searchd.max_matches = 100
+    end
+    
+    it "should return an instance of Riddle::Client" do
+      @config.client.should be_a(Riddle::Client)
+    end
+    
+    it "should use the configuration address" do
+      @config.client.server.should == 'domain.url'
+    end
+    
+    it "should use the configuration port" do
+      @config.client.port.should == 3333
+    end
+    
+    it "should use the configuration max matches" do
+      @config.client.max_matches.should == 100
+    end
+  end
 end

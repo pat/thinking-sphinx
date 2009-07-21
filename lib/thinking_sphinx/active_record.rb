@@ -1,6 +1,5 @@
 require 'thinking_sphinx/active_record/attribute_updates'
 require 'thinking_sphinx/active_record/delta'
-require 'thinking_sphinx/active_record/search'
 require 'thinking_sphinx/active_record/has_many_association'
 
 module ThinkingSphinx
@@ -80,6 +79,7 @@ module ThinkingSphinx
             
             after_destroy :toggle_deleted
             
+            include ThinkingSphinx::SearchMethods
             include ThinkingSphinx::ActiveRecord::AttributeUpdates
             
             index
@@ -215,7 +215,6 @@ module ThinkingSphinx
       end
       
       base.send(:include, ThinkingSphinx::ActiveRecord::Delta)
-      base.send(:include, ThinkingSphinx::ActiveRecord::Search)
       
       ::ActiveRecord::Associations::HasManyAssociation.send(
         :include, ThinkingSphinx::ActiveRecord::HasManyAssociation

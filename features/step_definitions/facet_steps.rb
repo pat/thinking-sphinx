@@ -22,7 +22,7 @@ When "I don't want classes included" do
 end
 
 When "I want all possible attributes" do
-  @options[:all_attributes] = true
+  @options[:all_facets] = true
 end
 
 When /^I drill down where (\w+) is (\w+)$/ do |facet, value|

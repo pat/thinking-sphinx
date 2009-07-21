@@ -221,6 +221,12 @@ module ThinkingSphinx
       @configuration.searchd.query_log = file
     end
     
+    def client
+      client = Riddle::Client.new address, port
+      client.max_matches = configuration.searchd.max_matches || 1000
+      client
+    end
+    
     private
     
     # Parse the config/sphinx.yml file - if it exists - then use the attribute

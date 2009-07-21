@@ -54,3 +54,14 @@ Spec::Runner.configure do |config|
     FileUtils.rm_r "#{Dir.pwd}/tmp" rescue nil
   end
 end
+
+def minimal_result_hashes(*instances)
+  instances.collect do |instance|
+    {
+      :attributes => {
+        'sphinx_internal_id' => instance.id,
+        'class_crc'          => instance.class.name.to_crc32
+      }
+    }
+  end
+end

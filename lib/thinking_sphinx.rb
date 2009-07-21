@@ -15,12 +15,13 @@ require 'thinking_sphinx/collection'
 require 'thinking_sphinx/configuration'
 require 'thinking_sphinx/facet'
 require 'thinking_sphinx/class_facet'
-require 'thinking_sphinx/facet_collection'
+require 'thinking_sphinx/facet_search'
 require 'thinking_sphinx/field'
 require 'thinking_sphinx/index'
 require 'thinking_sphinx/source'
 require 'thinking_sphinx/rails_additions'
 require 'thinking_sphinx/search'
+require 'thinking_sphinx/search_methods'
 require 'thinking_sphinx/deltas'
 
 require 'thinking_sphinx/adapters/abstract_adapter'
@@ -212,4 +213,6 @@ module ThinkingSphinx
       jruby? && ::ActiveRecord::Base.connection.config[:adapter] == "jdbcmysql"
     )
   end
+  
+  extend ThinkingSphinx::SearchMethods::ClassMethods
 end

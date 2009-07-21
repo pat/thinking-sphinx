@@ -150,7 +150,7 @@ Then /^I should not get (\d+) results?$/ do |count|
 end
 
 def results
-  @results ||= (@model || ThinkingSphinx::Search).send(
+  @results ||= (@model || ThinkingSphinx).send(
     @method,
     @query,
     @options.merge(
