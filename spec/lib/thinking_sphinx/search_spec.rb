@@ -384,6 +384,31 @@ describe ThinkingSphinx::Search do
         filter.attribute.should == 'sphinx_internal_id'
         filter.exclude?.should be_true
       end
+      
+      describe 'in :conditions' do
+        it "should add as filters for known attributes in :conditions option" do
+          ThinkingSphinx::Search.new('general',
+            :conditions => {:word => 'specific', :lat => 1.5},
+            :classes    => [Alpha]
+          ).first
+          
+          filter = @client.filters.last
+          filter.values.should == [1.5]
+          filter.attribute.should == 'lat'
+          filter.exclude?.should be_false        
+        end
+        
+        it "should not add the filter to the query string" do
+          @client.should_receive(:query) do |query, index, comment|
+            query.should == 'general @word specific'
+          end
+          
+          ThinkingSphinx::Search.new('general',
+            :conditions => {:word => 'specific', :lat => 1.5},
+            :classes    => [Alpha]
+          ).first
+        end
+      end
     end
     
     describe 'sort mode' do

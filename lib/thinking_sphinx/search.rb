@@ -291,7 +291,12 @@ module ThinkingSphinx
     def conditions_as_query
       return '' if @options[:conditions].blank?
       
-      ' ' + @options[:conditions].keys.collect { |key|
+      # Soon to be deprecated.
+      keys = @options[:conditions].keys.reject { |key|
+        attributes.include?(key)
+      }
+      
+      ' ' + keys.collect { |key|
         "@#{key} #{options[:conditions][key]}"
       }.join(' ')
     end
@@ -420,8 +425,19 @@ module ThinkingSphinx
       filters
     end
     
+    def condition_filters
+      (options[:conditions] || {}).collect { |attrib, value|
+        if attributes.include?(attrib)
+          Riddle::Client::Filter.new attrib.to_s, filter_value(value)
+        else
+          nil
+        end
+      }.compact
+    end
+    
     def filters
       internal_filters +
+      condition_filters +
       (options[:with] || {}).collect { |attrib, value|
         Riddle::Client::Filter.new attrib.to_s, filter_value(value)
       } +
@@ -491,12 +507,17 @@ module ThinkingSphinx
     def attribute(*keys)
       return nil if options[:classes].length != 1
       
-      attributes = options[:classes].first.sphinx_indexes.collect { |index|
-        index.attributes.collect { |attrib| attrib.unique_name }
-      }.flatten
       keys.detect { |key|
         attributes.include?(key)
       }
+    end
+    
+    def attributes
+      return [] if (options[:classes] || []).length != 1
+      
+      attributes = options[:classes].first.sphinx_indexes.collect { |index|
+        index.attributes.collect { |attrib| attrib.unique_name }
+      }.flatten
     end
     
     def stale_retries
