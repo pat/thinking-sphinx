@@ -480,6 +480,24 @@ describe ThinkingSphinx::Search do
       end
     end
     
+    describe 'field weights' do
+      it "should set field weights as provided" do
+        ThinkingSphinx::Search.new(
+          :field_weights => {'foo' => 10, 'bar' => 5}
+        ).first
+        
+        @client.field_weights.should == {
+          'foo' => 10, 'bar' => 5
+        }
+      end
+      
+      it "should use field weights set in the index" do
+        ThinkingSphinx::Search.new(:classes => [Alpha]).first
+        
+        @client.field_weights.should == {'name' => 10}
+      end
+    end
+    
     describe 'index weights' do
       it "should send index weights through to the client" do
         ThinkingSphinx::Search.new(:index_weights => {'foo' => 100}).first

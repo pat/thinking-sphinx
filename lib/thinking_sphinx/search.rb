@@ -229,14 +229,16 @@ module ThinkingSphinx
       client = config.client
       
       index_options = (options[:classes] || []).length != 1 ?
-        {} : options[:classes].first.sphinx_index_options
+        {} : options[:classes].first.sphinx_indexes.first.local_options
       
       [
         :max_matches, :group_by, :group_function, :group_clause,
         :group_distinct, :id_range, :cut_off, :retry_count, :retry_delay,
         :rank_mode, :max_query_time, :field_weights
       ].each do |key|
+        # puts "key: #{key}"
         value = options[key] || index_options[key]
+        # puts "value: #{value.inspect}"
         client.send("#{key}=", value) if value
       end
       
