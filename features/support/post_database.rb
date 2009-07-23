@@ -11,6 +11,7 @@ Kernel.const_set :RAILS_ROOT, "#{Dir.pwd}/tmp" unless defined?(RAILS_ROOT)
 at_exit do
   ThinkingSphinx::Configuration.instance.controller.stop
   sleep(1) # Ensure Sphinx has shut down completely
+  ActiveRecord::Base.logger.close
   FileUtils.rm_r "#{Dir.pwd}/tmp"
 end
 
