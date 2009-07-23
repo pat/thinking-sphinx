@@ -19,3 +19,7 @@ Feature: Checking whether Sphinx is running or not
     When I kill the Sphinx process
     And I wait for Sphinx to catch up
     Then Sphinx should not be running
+    
+    When I start Sphinx again
+    And I wait for Sphinx to catch up
+    Then Sphinx should be running again

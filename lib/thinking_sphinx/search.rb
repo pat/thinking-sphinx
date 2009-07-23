@@ -8,10 +8,11 @@ module ThinkingSphinx
   # called from a model.
   # 
   class Search
-    CoreMethods = %w( class class_eval extend frozen? id instance_eval
+    CoreMethods = %w( == class class_eval extend frozen? id instance_eval
       instance_of? instance_values instance_variable_defined?
       instance_variable_get instance_variable_set instance_variables is_a?
-      kind_of? member? method methods nil? object_id respond_to? send type )
+      kind_of? member? method methods nil? object_id respond_to? send should
+      type )
     SafeMethods = %w( partition private_methods protected_methods
       public_methods send )
     
@@ -20,6 +21,9 @@ module ThinkingSphinx
     }.each { |method|
       undef_method method
     }
+    
+    HashOptions   = [:conditions, :with, :without, :with_all]
+    ArrayOptions  = [:classes, :without_ids]
     
     attr_reader :args, :options, :results
     
@@ -59,8 +63,18 @@ module ThinkingSphinx
       @args     = args
     end
     
+    def to_a
+      populate
+      @array
+    end
+    
     def method_missing(method, *args, &block)
-      unless SafeMethods.include?(method.to_s)
+      if is_scope?(method)
+        add_scope(method, *args, &block)
+        return self
+      elsif method.to_s[/^each_with_.*/].nil? && !@array.respond_to?(method)
+        super
+      elsif !SafeMethods.include?(method.to_s)
         populate
       end
       
@@ -603,6 +617,27 @@ module ThinkingSphinx
       results[:matches].each_with_index do |match, index|
         yield self[index],
           (match[:attributes][attribute] || match[:attributes]["@#{attribute}"])
+      end
+    end
+    
+    def is_scope?(method)
+      options[:classes] && options[:classes].length == 1 &&
+      options[:classes].first.sphinx_scopes.include?(method)
+    end
+    
+    def add_scope(method, *args, &block)
+      search = options[:classes].first.send(method, *args, &block)
+      
+      search.options.keys.each do |key|
+        if HashOptions.include?(key)
+          options[key] ||= {}
+          options[key].merge! search.options[key]
+        elsif ArrayOptions.include?(key)
+          options[key] ||= []
+          options[key] += search.options[key]
+        else
+          options[key] = search.options[key]
+        end
       end
     end
   end

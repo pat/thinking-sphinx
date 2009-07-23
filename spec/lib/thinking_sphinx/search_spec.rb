@@ -32,6 +32,26 @@ describe ThinkingSphinx::Search do
     end
   end
   
+  describe '#method_missing' do
+    it "should handle Array methods" do
+      ThinkingSphinx::Search.new.private_methods.should be_an(Array)
+    end
+    
+    it "should raise a NoMethodError exception if unknown method" do
+      lambda {
+        ThinkingSphinx::Search.new.foo
+      }.should raise_error(NoMethodError)
+    end
+    
+    it "should not request results from client if method does not exist" do
+      @client.should_not_receive(:query)
+      
+      lambda {
+        ThinkingSphinx::Search.new.foo
+      }.should raise_error(NoMethodError)
+    end
+  end
+  
   describe '.search' do
     it "return the output of ThinkingSphinx.search" do
       @results = [] # to confirm same object

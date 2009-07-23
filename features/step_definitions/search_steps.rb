@@ -59,7 +59,7 @@ Then "searching for ids should match the record ids of the normal search results
   @results = nil
   @method  = :search_for_ids
   
-  results.should == normal_results.collect(&:id)
+  results.to_a.should == normal_results.collect(&:id)
 end
 
 Then /^I should get a value of (\d+)$/ do |count|

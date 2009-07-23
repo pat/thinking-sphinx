@@ -10,6 +10,7 @@ Before do
   @without    = {}
   @with_all   = {}
   @options    = {}
+  @results    = nil
 end
 
 Given /^I am searching on (.+)$/ do |model|
@@ -147,6 +148,11 @@ end
 
 Then /^I should not get (\d+) results?$/ do |count|
   results.length.should_not == count.to_i
+end
+
+Then /^I should get as many results as there are (.+)$/ do |model|
+  results.length.should == model.gsub(/\s/, '_').singularize.camelize.
+    constantize.count
 end
 
 def results

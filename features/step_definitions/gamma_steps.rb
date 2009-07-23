@@ -5,7 +5,7 @@ When /^I destroy gamma (\w+) without callbacks$/ do |name|
 end
 
 Then "I should get a single result of nil" do
-  results.should == [nil]
+  results.to_a.should == [nil]
 end
 
 Then /^I should get a single gamma result with a name of (\w+)$/ do |name|

@@ -6,4 +6,15 @@ class Person < ActiveRecord::Base
     has birthday
     has gender, :facet => true
   end
+  
+  sphinx_scope(:with_first_name) { |name|
+    { :conditions => {:first_name => name} }
+  }
+  sphinx_scope(:with_last_name) { |name|
+    { :conditions => {:last_name => name} }
+  }
+  sphinx_scope(:with_id) { |id|
+    { :with => {:sphinx_internal_id => id} }
+  }
+  sphinx_scope(:ids_only) { {:ids_only => true} }
 end

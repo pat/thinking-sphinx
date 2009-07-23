@@ -6,9 +6,9 @@ Feature: Searching via STI model relationships
   Scenario: Searching from a parent model
     Given Sphinx is running
     And I am searching on animals
-    Then I should get 8 result
+    Then I should get as many results as there are animals
   
   Scenario: Searching from a child model
     Given Sphinx is running
     And I am searching on cats
-    Then I should get 5 result
+    Then I should get as many results as there are cats
