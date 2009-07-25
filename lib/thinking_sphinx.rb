@@ -37,8 +37,8 @@ Merb::Plugins.add_rakefiles(
 module ThinkingSphinx
   module Version #:nodoc:
     Major = 1
-    Minor = 1
-    Tiny  = 24
+    Minor = 2
+    Tiny  = 0
     
     String = [Major, Minor, Tiny].join('.')
   end
