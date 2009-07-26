@@ -40,7 +40,7 @@ module Riddle
     end
 
     def running?
-      pid && !!Process.kill(0, pid)
+      !!pid && !!Process.kill(0, pid)
     rescue
       false
     end
