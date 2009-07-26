@@ -184,7 +184,7 @@ module ThinkingSphinx
   end
 
   def self.pid_active?(pid)
-    !!Process.kill(0, pid)
+    !!Process.kill(0, pid.to_i)
   rescue Exception => e
     false
   end

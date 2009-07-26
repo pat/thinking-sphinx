@@ -15,7 +15,8 @@ module Riddle
       return if running?
 
       cmd = "searchd --pidfile --config #{@path}"
-      `#{cmd}`
+      cmd = "start /B #{cmd}" if RUBY_PLATFORM =~ /mswin/
+      system(cmd)
 
       sleep(1)
 
@@ -26,9 +27,9 @@ module Riddle
 
     def stop
       return unless running?
-      Process.kill('SIGTERM', pid)
+      Process.kill('SIGTERM', pid.to_i)
     rescue Errno::EINVAL
-      Process.kill('SIGKILL', pid)
+      Process.kill('SIGKILL', pid.to_i)
     end
 
     def pid
@@ -40,7 +41,7 @@ module Riddle
     end
 
     def running?
-      !!pid && !!Process.kill(0, pid)
+      !!pid && !!Process.kill(0, pid.to_i)
     rescue
       false
     end
