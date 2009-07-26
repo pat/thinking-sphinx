@@ -4,7 +4,7 @@ module Riddle
       @configuration  = configuration
       @path           = path
     end
-    
+
     def index
       cmd = "indexer --config #{@path} --all"
       cmd << " --rotate" if running?
@@ -15,7 +15,7 @@ module Riddle
       return if running?
 
       cmd = "searchd --pidfile --config #{@path}"
-      `#{cmd}`    
+      `#{cmd}`
 
       sleep(1)
 
@@ -26,19 +26,24 @@ module Riddle
 
     def stop
       return unless running?
-      `kill #{pid}`
+      Process.kill('SIGTERM', pid)
+    rescue Errno::EINVAL
+      Process.kill('SIGKILL', pid)
     end
 
     def pid
-      if File.exists?("#{@configuration.searchd.pid_file}")
-        `cat #{@configuration.searchd.pid_file}`[/\d+/]
+      if File.exists?(@configuration.searchd.pid_file)
+        File.read(@configuration.searchd.pid_file)[/\d+/]
       else
         nil
       end
     end
 
     def running?
-      pid && `ps #{pid} | wc -l`.to_i > 1
+      pid && !!Process.kill(0, pid)
+    rescue
+      false
     end
+
   end
 end
