@@ -10,14 +10,15 @@ module Riddle
       
       # Append raw data (only use if you know what you're doing)
       def append(*args)
-        return if args.length == 0
-        
         args.each { |arg| @message << arg }
       end
       
       # Append a string's length, then the string itself
       def append_string(str)
-        @message << [str.send(@size_method)].pack('N') + str
+        string = string.respond_to?(:force_encoding) ?
+          str.force_encoding('ASCII-8BIT') : str
+        
+        @message << [string.send(@size_method)].pack('N') + string
       end
       
       # Append an integer
