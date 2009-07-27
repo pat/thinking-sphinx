@@ -662,6 +662,14 @@ describe ThinkingSphinx::Search do
       ThinkingSphinx::Search.new.current_page.should == 1
     end
     
+    it "should handle string page values" do
+      ThinkingSphinx::Search.new(:page => '2').current_page.should == 2
+    end
+    
+    it "should handle empty string page values" do
+      ThinkingSphinx::Search.new(:page => '').current_page.should == 1
+    end
+    
     it "should return the requested page" do
       ThinkingSphinx::Search.new(:page => 10).current_page.should == 10
     end

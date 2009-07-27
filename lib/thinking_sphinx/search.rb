@@ -101,7 +101,7 @@ module ThinkingSphinx
     # @return [Integer]
     # 
     def current_page
-      @options[:page] || 1
+      @options[:page].blank? ? 1 : @options[:page].to_i
     end
     
     # The next page number of the result set. If there are no more pages
