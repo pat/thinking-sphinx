@@ -33,10 +33,10 @@ GROUP BY #{ sql_group_clause }
         return nil if @index.options[:disable_range]
         
         min_statement = adapter.convert_nulls(
-          "MIN(#{quote_column(@model.primary_key)})", 1
+          "MIN(#{quote_column(@model.primary_key_for_sphinx)})", 1
         )
         max_statement = adapter.convert_nulls(
-          "MAX(#{quote_column(@model.primary_key)})", 1
+          "MAX(#{quote_column(@model.primary_key_for_sphinx)})", 1
         )
 
         sql = "SELECT #{min_statement}, #{max_statement} " +
@@ -53,14 +53,14 @@ GROUP BY #{ sql_group_clause }
       # 
       def to_sql_query_info(offset)
         "SELECT * FROM #{@model.quoted_table_name} WHERE " +
-        "#{quote_column(@model.primary_key)} = (($id - #{offset}) / #{ThinkingSphinx.indexed_models.size})"
+        "#{quote_column(@model.primary_key_for_sphinx)} = (($id - #{offset}) / #{ThinkingSphinx.indexed_models.size})"
       end
 
       def sql_select_clause(offset)
         unique_id_expr = ThinkingSphinx.unique_id_expression(offset)
 
         (
-          ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key)} #{unique_id_expr} AS #{quote_column(@model.primary_key)} "] + 
+          ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key_for_sphinx)} #{unique_id_expr} AS #{quote_column(@model.primary_key_for_sphinx)} "] + 
           @fields.collect     { |field|     field.to_select_sql     } +
           @attributes.collect { |attribute| attribute.to_select_sql }
         ).compact.join(", ")
@@ -69,8 +69,8 @@ GROUP BY #{ sql_group_clause }
       def sql_where_clause(options)
         logic = []
         logic += [
-          "#{@model.quoted_table_name}.#{quote_column(@model.primary_key)} >= $start",
-          "#{@model.quoted_table_name}.#{quote_column(@model.primary_key)} <= $end"
+          "#{@model.quoted_table_name}.#{quote_column(@model.primary_key_for_sphinx)} >= $start",
+          "#{@model.quoted_table_name}.#{quote_column(@model.primary_key_for_sphinx)} <= $end"
         ] unless @index.options[:disable_range]
 
         if self.delta? && !@index.delta_object.clause(@model, options[:delta]).blank?
@@ -88,7 +88,7 @@ GROUP BY #{ sql_group_clause }
         end
 
         (
-          ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key)}"] + 
+          ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key_for_sphinx)}"] + 
           @fields.collect     { |field|     field.to_group_sql     }.compact +
           @attributes.collect { |attribute| attribute.to_group_sql }.compact +
           @groupings + internal_groupings

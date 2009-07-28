@@ -13,6 +13,15 @@ module ThinkingSphinx
       base.class_eval do
         class_inheritable_array :sphinx_indexes, :sphinx_facets
         class << self
+
+          def set_sphinx_primary_key attribute
+            @sphinx_primary_key_attribute = attribute
+          end
+
+          def primary_key_for_sphinx
+            @sphinx_primary_key_attribute || self.send(:primary_key)
+          end
+
           # Allows creation of indexes for Sphinx. If you don't do this, there
           # isn't much point trying to search (or using this plugin at all,
           # really).
@@ -264,14 +273,15 @@ module ThinkingSphinx
     rescue ::ThinkingSphinx::ConnectionError
       # nothing
     end
-    
+
     def sphinx_document_id
-      (self.id * ThinkingSphinx.indexed_models.size) +
+      key = @sphinx_primary_key_attribute || self.class.send(:primary_key)
+      self.attributes[key] * ThinkingSphinx.indexed_models.size +
         ThinkingSphinx.indexed_models.index(self.class.source_of_sphinx_index.name)
     end
-    
+
     private
-    
+
     def sphinx_index_name(suffix)
       "#{self.class.source_of_sphinx_index.name.underscore.tr(':/\\', '_')}_#{suffix}"
     end

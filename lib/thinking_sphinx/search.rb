@@ -554,7 +554,7 @@ module ThinkingSphinx
       instances = ids.length > 0 ? klass.find(
         :all,
         :joins      => options[:joins],
-        :conditions => {klass.primary_key.to_sym => ids},
+        :conditions => {klass.primary_key_for_sphinx.to_sym => ids},
         :include    => (options[:include] || index_options[:include]),
         :select     => (options[:select]  || index_options[:select]),
         :order      => (options[:sql_order] || index_options[:sql_order])
@@ -573,7 +573,9 @@ module ThinkingSphinx
       return instances if options[:sql_order]
 
       ids.collect { |obj_id|
-        instances.detect { |obj| obj.id == obj_id }
+        instances.detect do |obj|
+          obj.attributes[klass.primary_key_for_sphinx.to_s] == obj_id
+        end
       }
     end
     
@@ -594,7 +596,7 @@ module ThinkingSphinx
         groups.detect { |crc, group|
           crc == match[:attributes]["class_crc"]
         }[1].detect { |obj|
-          obj && obj.id == match[:attributes]["sphinx_internal_id"]
+          obj && obj.attributes[obj.class.primary_key_for_sphinx.to_s] == match[:attributes]["sphinx_internal_id"]
         }
       end
     end
