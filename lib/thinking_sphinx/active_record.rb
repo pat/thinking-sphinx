@@ -273,6 +273,10 @@ module ThinkingSphinx
     rescue ::ThinkingSphinx::ConnectionError
       # nothing
     end
+    
+    def primary_key_for_sphinx
+      self.send(self.class.primary_key_for_sphinx)
+    end
 
     def sphinx_document_id
       key = self.class.primary_key_for_sphinx

@@ -564,7 +564,7 @@ module ThinkingSphinx
       # the search method can retry without them. See 
       # ThinkingSphinx::Search.retry_search_on_stale_index.
       if options[:raise_on_stale] && instances.length < ids.length
-        stale_ids = ids - instances.map {|i| i.id }
+        stale_ids = ids - instances.map { |i| i.id }
         raise StaleIdsException, stale_ids
       end
 
@@ -574,7 +574,7 @@ module ThinkingSphinx
 
       ids.collect { |obj_id|
         instances.detect do |obj|
-          obj.attributes[klass.primary_key_for_sphinx.to_s] == obj_id
+          obj.primary_key_for_sphinx == obj_id
         end
       }
     end
@@ -595,8 +595,8 @@ module ThinkingSphinx
       results[:matches].collect do |match|
         groups.detect { |crc, group|
           crc == match[:attributes]["class_crc"]
-        }[1].detect { |obj|
-          obj && obj.attributes[obj.class.primary_key_for_sphinx.to_s] == match[:attributes]["sphinx_internal_id"]
+        }[1].compact.detect { |obj|
+          obj.primary_key_for_sphinx == match[:attributes]["sphinx_internal_id"]
         }
       end
     end
