@@ -493,10 +493,10 @@ module ThinkingSphinx
       return {} unless options[:geo] || (options[:lat] && options[:lng])
       
       {
-        :latitude       => options[:geo] ? options[:geo].first : options[:lat],
-        :longitude      => options[:geo] ? options[:geo].last  : options[:lng],
-        :latitude_attr  => latitude_attr,
-        :longitude_attr => longitude_attr
+        :latitude   => options[:geo] ? options[:geo].first : options[:lat],
+        :longitude  => options[:geo] ? options[:geo].last  : options[:lng],
+        :latitude_attribute  => latitude_attr,
+        :longitude_attribute => longitude_attr
       }
     end
     

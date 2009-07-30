@@ -563,8 +563,8 @@ describe ThinkingSphinx::Search do
           :classes => [Alpha]
         ).first
         
-        @client.anchor[:latitude_attr].should == :lat
-        @client.anchor[:longitude_attr].should == :lng
+        @client.anchor[:latitude_attribute].should == :lat
+        @client.anchor[:longitude_attribute].should == :lng
       end
       
       it "should detect lat and lon attributes on the given model" do
@@ -573,8 +573,8 @@ describe ThinkingSphinx::Search do
           :classes => [Beta]
         ).first
         
-        @client.anchor[:latitude_attr].should == :lat
-        @client.anchor[:longitude_attr].should == :lon
+        @client.anchor[:latitude_attribute].should == :lat
+        @client.anchor[:longitude_attribute].should == :lon
       end
       
       it "should detect latitude and longitude attributes on the given model" do
@@ -583,8 +583,8 @@ describe ThinkingSphinx::Search do
           :classes => [Person]
         ).first
         
-        @client.anchor[:latitude_attr].should == :latitude
-        @client.anchor[:longitude_attr].should == :longitude
+        @client.anchor[:latitude_attribute].should == :latitude
+        @client.anchor[:longitude_attribute].should == :longitude
       end
       
       it "should accept manually defined latitude and longitude attributes" do
@@ -595,8 +595,8 @@ describe ThinkingSphinx::Search do
           :longitude_attr => :leftright
         ).first
         
-        @client.anchor[:latitude_attr].should == :updown
-        @client.anchor[:longitude_attr].should == :leftright
+        @client.anchor[:latitude_attribute].should == :updown
+        @client.anchor[:longitude_attribute].should == :leftright
       end
       
       it "should accept manually defined latitude and longitude attributes in the given model" do
@@ -605,8 +605,8 @@ describe ThinkingSphinx::Search do
           :classes => [Friendship]
         ).first
         
-        @client.anchor[:latitude_attr].should == :person_id
-        @client.anchor[:longitude_attr].should == :person_id
+        @client.anchor[:latitude_attribute].should == :person_id
+        @client.anchor[:longitude_attribute].should == :person_id
       end
       
       it "should accept geo array for geo-position values" do
