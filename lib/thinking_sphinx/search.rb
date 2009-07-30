@@ -495,8 +495,8 @@ module ThinkingSphinx
       {
         :latitude   => options[:geo] ? options[:geo].first : options[:lat],
         :longitude  => options[:geo] ? options[:geo].last  : options[:lng],
-        :latitude_attribute  => latitude_attr,
-        :longitude_attribute => longitude_attr
+        :latitude_attribute  => latitude_attr.to_s,
+        :longitude_attribute => longitude_attr.to_s
       }
     end
     
