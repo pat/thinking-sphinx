@@ -15,8 +15,8 @@ module Riddle
       
       # Append a string's length, then the string itself
       def append_string(str)
-        string = string.respond_to?(:force_encoding) ?
-          str.force_encoding('ASCII-8BIT') : str
+        string = str.dup
+        string.encode!('ASCII-8BIT') if str.respond_to?(:force_encoding)
         
         @message << [string.send(@size_method)].pack('N') + string
       end
