@@ -5,6 +5,9 @@ class Person < ActiveRecord::Base
     has [first_name, middle_initial, last_name], :as => :name_sort
     has birthday
     has gender, :facet => true
+    
+    set_property :min_infix_len => 1
+    set_property :enable_star => true
   end
   
   sphinx_scope(:with_first_name) { |name|

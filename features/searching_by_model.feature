@@ -143,4 +143,9 @@ Feature: Searching on a single model
     And I am searching on people
     When I am retrieving the result count
     Then I should get a value of 1000
-    
+  
+  Scenario: Searching with Unicode Characters
+    Given Sphinx is running
+    And I am searching on people
+    When I search for "José* "
+    Then I should get 1 result
