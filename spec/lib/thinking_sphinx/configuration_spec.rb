@@ -244,4 +244,19 @@ describe ThinkingSphinx::Configuration do
       @config.client.max_matches.should == 100
     end
   end
+  
+  describe '#models_by_crc' do
+    before :each do
+      @config = ThinkingSphinx::Configuration.instance
+    end
+    
+    it "should return a hash" do
+      @config.models_by_crc.should be_a(Hash)
+    end
+    
+    it "should pair class names to their crc codes" do
+      @config.models_by_crc[Person.to_crc32].should == 'Person'
+      @config.models_by_crc[Alpha.to_crc32].should  == 'Alpha'
+    end
+  end
 end
