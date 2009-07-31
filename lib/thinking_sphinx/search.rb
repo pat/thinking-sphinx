@@ -444,6 +444,11 @@ module ThinkingSphinx
     def condition_filters
       (options[:conditions] || {}).collect { |attrib, value|
         if attributes.include?(attrib)
+          puts <<-MSG
+Deprecation Warning: filters on attributes should be done using the :with
+option, not :conditions. For example:
+  :with => {:#{attrib} => #{value.inspect}}
+MSG
           Riddle::Client::Filter.new attrib.to_s, filter_value(value)
         else
           nil
