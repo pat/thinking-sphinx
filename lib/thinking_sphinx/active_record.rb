@@ -274,10 +274,16 @@ module ThinkingSphinx
       # nothing
     end
     
+    # Returns the unique integer id for the object. This method uses the
+    # attribute hash to get around ActiveRecord always mapping the #id method
+    # to whatever the real primary key is (which may be a unique string hash).
+    # 
+    # @return [Integer] Unique record id for the purposes of Sphinx.
+    # 
     def primary_key_for_sphinx
-      self.send(self.class.primary_key_for_sphinx)
+      attributes[self.class.primary_key_for_sphinx.to_s]
     end
-
+    
     def sphinx_document_id
       key = self.class.primary_key_for_sphinx
       self.attributes[key] * ThinkingSphinx.indexed_models.size +

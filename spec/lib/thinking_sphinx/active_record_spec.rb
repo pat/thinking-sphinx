@@ -326,4 +326,29 @@ describe "ThinkingSphinx::ActiveRecord" do
     
     (beta.id * model_count + offset).should == beta.sphinx_document_id
   end
+  
+  describe '#primary_key_for_sphinx' do
+    before :each do
+      @person = Person.find(:first)
+    end
+    
+    after :each do
+      Person.set_sphinx_primary_key nil
+    end
+    
+    it "should return the id by default" do
+      @person.primary_key_for_sphinx.should == @person.id
+    end
+    
+    it "should use the sphinx primary key to determine the value" do
+      Person.set_sphinx_primary_key :first_name
+      @person.primary_key_for_sphinx.should == @person.first_name
+    end
+    
+    it "should not use accessor methods but the attributes hash" do
+      id = @person.id
+      @person.stub!(:id => 'unique_hash')
+      @person.primary_key_for_sphinx.should == id
+    end
+  end
 end

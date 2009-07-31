@@ -104,13 +104,16 @@ describe ThinkingSphinx::Search do
       @alpha_a, @alpha_b  = Alpha.new,  Alpha.new
       @beta_a, @beta_b    = Beta.new,   Beta.new
       
-      @alpha_a.stub!(:id => 1); @alpha_b.stub!(:id => 2)
-      @beta_a.stub!(:id => 1);  @beta_b.stub!(:id => 2)
+      @alpha_a.stub! :id => 1, :attributes => {'id' => 1}
+      @alpha_b.stub! :id => 2, :attributes => {'id' => 2}
+      @beta_a.stub!  :id => 1, :attributes => {'id' => 1}
+      @beta_b.stub!  :id => 2, :attributes => {'id' => 2}
+      
       @client.stub! :query => {
         :matches => minimal_result_hashes(@alpha_a, @beta_b, @alpha_b, @beta_a)
       }
-      Alpha.stub!(:find => [@alpha_a, @alpha_b])
-      Beta.stub!(:find => [@beta_a, @beta_b])
+      Alpha.stub! :find => [@alpha_a, @alpha_b]
+      Beta.stub!  :find => [@beta_a, @beta_b]
     end
     
     it "should issue only one select per model" do
@@ -740,7 +743,7 @@ describe ThinkingSphinx::Search do
   describe '.each_with_groupby_and_count' do
     before :each do
       @alpha = Alpha.new
-      @alpha.stub!(:id => 1)
+      @alpha.stub!(:id => 1, :attributes => {'id' => 1})
       
       @client.stub! :query => {
         :matches => [{
@@ -768,7 +771,7 @@ describe ThinkingSphinx::Search do
   describe '.each_with_weighting' do
     before :each do
       @alpha = Alpha.new
-      @alpha.stub!(:id => 1)
+      @alpha.stub!(:id => 1, :attributes => {'id' => 1})
       
       @client.stub! :query => {
         :matches => [{
@@ -793,7 +796,7 @@ describe ThinkingSphinx::Search do
   describe '.each_with_*' do
     before :each do
       @alpha = Alpha.new
-      @alpha.stub!(:id => 1)
+      @alpha.stub!(:id => 1, :attributes => {'id' => 1})
       
       @client.stub! :query => {
         :matches => [{
