@@ -118,6 +118,18 @@ describe ThinkingSphinx::ActiveRecordStoreFullSTIClass do
   end
 end
 
+describe ThinkingSphinx::MetaClass do
+  describe 'metaclass' do
+    it "should exist as an instance method in Object" do
+      Object.new.should respond_to('metaclass')
+    end
+    
+    it "should return the meta/eigen/singleton class" do
+      Object.new.metaclass.should be_a(Class)
+    end
+  end
+end
+
 class TestModel
   @@squares = 89
   @@circles = 43

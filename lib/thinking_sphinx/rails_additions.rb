@@ -134,3 +134,17 @@ end
 Class.extend(
   ThinkingSphinx::ClassAttributeMethods
 ) unless Class.respond_to?(:cattr_reader)
+
+module ThinkingSphinx
+  module MetaClass
+    def metaclass
+      class << self
+        self
+      end
+    end
+  end
+end
+
+unless Object.new.respond_to?(:metaclass)
+  Object.send(:include, ThinkingSphinx::MetaClass)
+end
