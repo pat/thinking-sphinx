@@ -285,8 +285,7 @@ module ThinkingSphinx
     end
     
     def sphinx_document_id
-      key = self.class.primary_key_for_sphinx
-      self.attributes[key] * ThinkingSphinx.indexed_models.size +
+      primary_key_for_sphinx * ThinkingSphinx.indexed_models.size +
         ThinkingSphinx.indexed_models.index(self.class.source_of_sphinx_index.name)
     end
 

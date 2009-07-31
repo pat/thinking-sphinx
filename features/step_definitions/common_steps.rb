@@ -121,6 +121,11 @@ When /^I set retry stale to (\w+)$/ do |retry_stale|
   end
 end
 
+When /^I destroy (\w+) (\w+)$/ do |model, name|
+  model.gsub(/\s/, '_').camelize.
+    constantize.find_by_name(name).destroy
+end
+
 Then /^the (\w+) of each result should indicate order$/ do |attribute|
   results.inject(nil) do |prev, current|
     unless prev.nil?

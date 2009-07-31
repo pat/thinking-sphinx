@@ -6,6 +6,7 @@ end
 Robot.create :name => 'Fritz',      :internal_id => 'F0001'
 Robot.create :name => 'Sizzle',     :internal_id => 'S0001'
 Robot.create :name => 'Sizzle Jr.', :internal_id => 'S0002'
+Robot.create :name => 'Expendable', :internal_id => 'E0001'
 
 # Annnnnnnnnnd we're back
 class Robot < ActiveRecord::Base
