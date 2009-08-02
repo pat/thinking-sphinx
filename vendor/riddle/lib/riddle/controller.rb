@@ -15,8 +15,12 @@ module Riddle
       return if running?
 
       cmd = "searchd --pidfile --config #{@path}"
-      cmd = "start /B #{cmd}" if RUBY_PLATFORM =~ /mswin/
-      `#{cmd}`
+
+      if RUBY_PLATFORM =~ /mswin/
+        system("start /B #{cmd} 1> NUL 2>&1")
+      else
+        `#{cmd}`
+      end
 
       sleep(1)
 
