@@ -14,7 +14,9 @@ module ThinkingSphinx
           
           metaclass.instance_eval do
             define_method(method) do |*args|
-              options = block.call(*args)
+              options = {:classes => classes_option}
+              options.merge! block.call(*args)
+              
               ThinkingSphinx::Search.new(options)
             end
           end

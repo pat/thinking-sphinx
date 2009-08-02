@@ -50,6 +50,24 @@ describe ThinkingSphinx::Search do
         ThinkingSphinx::Search.new.foo
       }.should raise_error(NoMethodError)
     end
+    
+    it "should accept sphinx scopes" do
+      search = ThinkingSphinx::Search.new(:classes => [Alpha])
+      
+      lambda {
+        search.by_name('Pat')
+      }.should_not raise_error(NoMethodError)
+    end
+    
+    it "should return itself when using a sphinx scope" do
+      search = ThinkingSphinx::Search.new(:classes => [Alpha])
+      search.by_name('Pat').object_id.should == search.object_id
+    end
+    
+    it "should keep the same search object when chaining multiple scopes" do
+      search = ThinkingSphinx::Search.new(:classes => [Alpha])
+      search.by_name('Pat').ids_only.object_id.should == search.object_id
+    end
   end
   
   describe '.search' do
@@ -879,6 +897,47 @@ describe ThinkingSphinx::Search do
       end
       
       @search.excerpt_for('string', Beta)
+    end
+  end
+  
+  describe '#search' do
+    before :each do
+      @search = ThinkingSphinx::Search.new('word',
+        :conditions => {:field  => 'field'},
+        :with       => {:int    => 5}
+      )
+    end
+    
+    it "should return itself" do
+      @search.search.object_id.should == @search.object_id
+    end
+    
+    it "should merge in arguments" do
+      @client.should_receive(:query) do |query, index, comments|
+        query.should == 'word more @field field'
+      end
+      
+      @search.search('more').first
+    end
+    
+    it "should merge conditions" do
+      @client.should_receive(:query) do |query, index, comments|
+        query.should match(/@name plato/)
+        query.should match(/@field field/)
+      end
+      
+      @search.search(:conditions => {:name => 'plato'}).first
+    end
+    
+    it "should merge filters" do
+      @search.search(:with => {:float => 1.5}).first
+      
+      @client.filters.detect { |filter|
+        filter.attribute == 'float'
+      }.should_not be_nil
+      @client.filters.detect { |filter|
+        filter.attribute == 'int'
+      }.should_not be_nil
     end
   end
 end

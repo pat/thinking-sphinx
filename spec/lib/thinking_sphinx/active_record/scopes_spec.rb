@@ -57,8 +57,12 @@ describe ThinkingSphinx::ActiveRecord::Scopes do
       Alpha.sphinx_scope(:with_betas) { {:classes => [Beta]} }
     end
     
-    it "should return a ThinkingSphinx object" do
+    it "should return a ThinkingSphinx::Search object" do
       Alpha.by_name('foo').should be_a(ThinkingSphinx::Search)
+    end
+    
+    it "should set the classes option" do
+      Alpha.by_name('foo').options[:classes].should == [Alpha]
     end
     
     it "should be able to be called on a ThinkingSphinx::Search object" do

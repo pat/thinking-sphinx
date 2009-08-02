@@ -102,6 +102,11 @@ class Alpha < ActiveRecord::Base
     set_property :field_weights => {"name" => 10}
   end
   
+  sphinx_scope(:by_name) { |name|
+    {:conditions => {:name => name}}
+  }
+  sphinx_scope(:ids_only) { {:ids_only => true} }
+  
   def big_name
     name.upcase
   end

@@ -187,6 +187,11 @@ module ThinkingSphinx
       ).first
     end
     
+    def search(*args)
+      merge_search ThinkingSphinx::Search.new(*args)
+      self
+    end
+    
     private
     
     def config
@@ -624,7 +629,11 @@ MSG
     end
     
     def add_scope(method, *args, &block)
-      search = options[:classes].first.send(method, *args, &block)
+      merge_search options[:classes].first.send(method, *args, &block)
+    end
+    
+    def merge_search(search)
+      search.args.each { |arg| args << arg }
       
       search.options.keys.each do |key|
         if HashOptions.include?(key)
@@ -633,6 +642,7 @@ MSG
         elsif ArrayOptions.include?(key)
           options[key] ||= []
           options[key] += search.options[key]
+          options[key].uniq!
         else
           options[key] = search.options[key]
         end
