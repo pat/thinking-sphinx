@@ -5,6 +5,7 @@ end
 require 'active_record'
 require 'riddle'
 require 'after_commit'
+require 'yaml'
 
 require 'thinking_sphinx/core/string'
 require 'thinking_sphinx/property'
@@ -35,14 +36,6 @@ Merb::Plugins.add_rakefiles(
 ) if defined?(Merb)
 
 module ThinkingSphinx
-  module Version #:nodoc:
-    Major = 1
-    Minor = 2
-    Tiny  = 5
-    
-    String = [Major, Minor, Tiny].join('.')
-  end
-
   # A ConnectionError will get thrown when a connection to Sphinx can't be
   # made.
   class ConnectionError < StandardError
@@ -56,7 +49,16 @@ module ThinkingSphinx
       self.ids = ids
     end
   end
-
+  
+  # The current version of Thinking Sphinx.
+  # 
+  # @return [String] The version number as a string
+  # 
+  def self.version
+    hash = YAML.load_file File.join(File.dirname(__FILE__), '../VERSION.yml')
+    [hash[:major], hash[:minor], hash[:patch]].join('.')
+  end
+  
   # The collection of indexed models. Keep in mind that Rails lazily loads
   # its classes, so this may not actually be populated with _all_ the models
   # that have Sphinx indexes.

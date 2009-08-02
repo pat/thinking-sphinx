@@ -33,6 +33,17 @@ describe ThinkingSphinx::Search do
   end
   
   describe '#method_missing' do
+    before :each do
+      Alpha.sphinx_scope(:by_name) { |name|
+        {:conditions => {:name => name}}
+      }
+      Alpha.sphinx_scope(:ids_only) { {:ids_only => true} }
+    end
+    
+    after :each do
+      Alpha.remove_sphinx_scopes
+    end
+    
     it "should handle Array methods" do
       ThinkingSphinx::Search.new.private_methods.should be_an(Array)
     end

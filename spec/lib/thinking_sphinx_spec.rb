@@ -67,6 +67,16 @@ describe ThinkingSphinx do
     ThinkingSphinx.sphinx_running?.should be_true
   end
   
+  describe '.version' do
+    it "should return the version from the stored YAML file" do
+      version = Jeweler::VersionHelper.new(
+        File.join(File.dirname(__FILE__), '../..')
+      ).to_s
+      
+      ThinkingSphinx.version.should == version
+    end
+  end
+  
   describe "use_group_by_shortcut? method" do
     before :each do
       adapter = defined?(JRUBY_VERSION) ? :JdbcAdapter : :MysqlAdapter

@@ -3,6 +3,7 @@ $:.unshift File.dirname(__FILE__) + '/../lib'
 require 'rubygems'
 require 'fileutils'
 require 'ginger'
+require 'jeweler'
 
 require 'lib/thinking_sphinx'
 

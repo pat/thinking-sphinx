@@ -12,7 +12,7 @@ namespace :thinking_sphinx do
   
   desc "Output the current Thinking Sphinx version"
   task :version => :app_env do
-    puts "Thinking Sphinx v" + ThinkingSphinx::Version::String
+    puts "Thinking Sphinx v" + ThinkingSphinx.version
   end
   
   desc "Stop if running, then start a Sphinx searchd daemon using Thinking Sphinx's settings"
