@@ -149,3 +149,9 @@ Feature: Searching on a single model
     And I am searching on people
     When I search for "José* "
     Then I should get 1 result
+
+  Scenario: Searching by fields from HABTM joins
+    Given Sphinx is running
+    And I am searching on posts
+    When I search for "Shakespeare"
+    Then I should get 1 result
