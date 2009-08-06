@@ -43,7 +43,7 @@ namespace :thinking_sphinx do
   
   desc "Stop Sphinx using Thinking Sphinx's settings"
   task :stop => :app_env do
-    if sphinx_running?
+    unless sphinx_running?
       puts "searchd is not running"
     else
       config = ThinkingSphinx::Configuration.instance
