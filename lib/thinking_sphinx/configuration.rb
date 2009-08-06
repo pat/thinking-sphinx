@@ -157,7 +157,9 @@ module ThinkingSphinx
     # messy dependencies issues).
     # 
     def load_models
-      return if defined?(Rails) && Rails.configuration.cache_classes
+      return if defined?(Rails) &&
+        Rails.configuration.cache_classes &&
+        Rails::VERSION::STRING.to_f > 2.1
       
       self.model_directories.each do |base|
         Dir["#{base}**/*.rb"].each do |file|
