@@ -43,11 +43,14 @@ namespace :thinking_sphinx do
   
   desc "Stop Sphinx using Thinking Sphinx's settings"
   task :stop => :app_env do
-    raise RuntimeError, "searchd is not running." unless sphinx_running?
-    config = ThinkingSphinx::Configuration.instance
-    pid    = sphinx_pid
-    system! "#{config.bin_path}#{config.searchd_binary_name} --stop --config \"#{config.config_file}\""
-    puts "Stopped search daemon (pid #{pid})."
+    if sphinx_running?
+      puts "searchd is not running"
+    else
+      config = ThinkingSphinx::Configuration.instance
+      pid    = sphinx_pid
+      system! "#{config.bin_path}#{config.searchd_binary_name} --stop --config \"#{config.config_file}\""
+      puts "Stopped search daemon (pid #{pid})."
+    end
   end
   
   desc "Restart Sphinx"
