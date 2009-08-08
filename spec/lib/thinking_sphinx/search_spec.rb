@@ -32,6 +32,31 @@ describe ThinkingSphinx::Search do
     end
   end
   
+  describe '#populated?' do
+    before :each do
+      @search = ThinkingSphinx::Search.new
+    end
+    
+    it "should be false if the client request has not been made" do
+      @search.populated?.should be_false
+    end
+    
+    it "should be true once the client request has been made" do
+      @search.first
+      @search.populated?.should be_true
+    end
+  end
+  
+  describe '#results' do
+    it "should populate search results before returning" do
+      @search = ThinkingSphinx::Search.new
+      @search.populated?.should be_false
+      
+      @search.results
+      @search.populated?.should be_true
+    end
+  end
+  
   describe '#method_missing' do
     before :each do
       Alpha.sphinx_scope(:by_name) { |name|

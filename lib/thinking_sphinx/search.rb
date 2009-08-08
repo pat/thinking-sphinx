@@ -25,7 +25,7 @@ module ThinkingSphinx
     HashOptions   = [:conditions, :with, :without, :with_all]
     ArrayOptions  = [:classes, :without_ids]
     
-    attr_reader :args, :options, :results
+    attr_reader :args, :options
     
     # Deprecated. Use ThinkingSphinx.search
     def self.search(*args)
@@ -66,6 +66,24 @@ module ThinkingSphinx
     def to_a
       populate
       @array
+    end
+    
+    # Indication of whether the request has been made to Sphinx for the search
+    # query.
+    # 
+    # @return [Boolean] true if the results have been requested.
+    # 
+    def populated?
+      !!@populated
+    end
+    
+    # The query result hash from Riddle.
+    # 
+    # @return [Hash] Raw Sphinx results
+    # 
+    def results
+      populate
+      @results
     end
     
     def method_missing(method, *args, &block)
