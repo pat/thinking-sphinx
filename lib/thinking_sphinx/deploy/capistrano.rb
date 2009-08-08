@@ -91,8 +91,9 @@ DESC
 
     def rake(*tasks)
       rails_env = fetch(:rails_env, "production")
+      rake = fetch(:rake, "rake")
       tasks.each do |t|
-        run "cd #{current_path} && rake #{t} RAILS_ENV=#{rails_env}"
+        run "cd #{current_path}; #{rake} RAILS_ENV=#{rails_env} #{t}"
       end
     end
   end
