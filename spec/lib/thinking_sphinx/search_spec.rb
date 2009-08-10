@@ -7,7 +7,7 @@ describe ThinkingSphinx::Search do
     @client = Riddle::Client.new
     
     @config.stub!(:client => @client)
-    @client.stub!(:query => {:matches => [], :total_found => 41})
+    @client.stub!(:query => {:matches => [], :total_found => 41, :total => 41})
   end
   
   it "not request results from the client if not accessing items" do
@@ -755,6 +755,14 @@ describe ThinkingSphinx::Search do
     
     it "should allow for custom per_page values" do
       ThinkingSphinx::Search.new(:per_page => 30).total_pages.should == 2
+    end
+    
+    it "should not overstep the max_matches implied limit" do
+      @client.stub!(:query => {
+        :matches => [], :total_found => 41, :total => 40
+      })
+      
+      ThinkingSphinx::Search.new.total_pages.should == 2
     end
   end
   

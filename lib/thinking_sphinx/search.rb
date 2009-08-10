@@ -154,7 +154,8 @@ module ThinkingSphinx
     # @return [Integer]
     # 
     def total_pages
-      @total_pages ||= (total_entries / per_page.to_f).ceil
+      populate
+      @total_pages ||= (@results[:total] / per_page.to_f).ceil
     end
     # Compatibility with older versions of will_paginate
     alias_method :page_count, :total_pages
