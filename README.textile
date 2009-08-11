@@ -30,6 +30,10 @@ Alternatively, install the ginger gem directly from the freelancing-god github r
 
   sudo gem sources -a http://gems.github.com
   sudo gem install freelancing-god-ginger
+  
+Then install the cucumber, yard, jeweler and rspec gems. Make sure you have a git install version 1.6.0.0 or higher, otherwise the jeweler gem won't install.
+
+  sudo gem install cucumber yard jeweler rspec
 
 Then set up your database:
 

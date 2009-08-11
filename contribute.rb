@@ -40,6 +40,10 @@ class Contribute
       Dependencies::Sphinx,
       Dependencies::Mysql,
       Dependencies::AR,
+      Dependencies::Rspec,
+      Dependencies::Cucumber,
+      Dependencies::Yard,
+      Dependencies::Jeweler,
       Dependencies::Ginger,
       Dependencies::NotAMock
     ]
@@ -345,6 +349,22 @@ end
 module Dependencies
   class Mysql < ContributeHelper::Gem
     name(defined?(JRUBY_VERSION) ? 'jdbc-mysql' : 'mysql')
+  end
+  
+  class Rspec < ContributeHelper::Gem
+    name 'rspec'
+  end
+
+  class Cucumber < ContributeHelper::Gem
+    name 'cucumber'
+  end
+
+  class Yard < ContributeHelper::Gem
+    name 'yard'
+  end
+
+  class Jeweler < ContributeHelper::Gem
+    name 'jeweler'
   end
 
   class AR < ContributeHelper::Gem
