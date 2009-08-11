@@ -19,14 +19,6 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
     @beta.should have_received(:toggle_delta)
   end
   
-  it "should call the toggle_delta on associated instances" do
-    
-    #if parent changes the first name, all childs should also toggle the delta
-   # @parent = Parent.
-    
-    
-  end
-
   describe "suspended_delta method" do
     before :each do
       ThinkingSphinx.stub_method(:deltas_enabled? => true)
