@@ -153,3 +153,4 @@ Since I first released this library, there's been quite a few people who have su
 * Rob Anderton
 * Zach Inglis
 * Ward Bekker
+* Brian Terlson
