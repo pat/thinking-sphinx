@@ -198,7 +198,6 @@ module ThinkingSphinx
       #   set_property :delta => true
       #   set_property :field_weights => {"name" => 100}
       #   set_property :order => "name ASC"
-      #   set_property :include => :picture
       #   set_property :select => 'name'
       # 
       # Also, the following two properties are particularly relevant for
