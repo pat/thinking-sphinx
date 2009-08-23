@@ -41,10 +41,10 @@ module ThinkingSphinx
     end
     
     def name
-      self.class.name(@model)
+      self.class.name_for @model
     end
     
-    def self.name(model)
+    def self.name_for(model)
       model.name.underscore.tr(':/\\', '_')
     end
     

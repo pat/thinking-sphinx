@@ -428,7 +428,7 @@ module ThinkingSphinx
       weights = options[:index_weights] || {}
       weights.keys.inject({}) do |hash, key|
         if key.is_a?(Class)
-          name = ThinkingSphinx::Index.name(key)
+          name = ThinkingSphinx::Index.name_for(key)
           hash["#{name}_core"]  = weights[key]
           hash["#{name}_delta"] = weights[key]
         else
