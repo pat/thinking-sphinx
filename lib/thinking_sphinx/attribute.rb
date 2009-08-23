@@ -75,7 +75,9 @@ module ThinkingSphinx
       @crc            = options[:crc]
       
       @type         ||= :multi    unless @query_source.nil?
-      @type           = :integer  if @type == :string && @crc
+      if @type == :string && @crc
+        @type = is_many? ? :multi : :integer
+      end
       
       source.attributes << self
     end

@@ -95,7 +95,9 @@ module ThinkingSphinx
         return nil unless object = object.send(method)
       }
       if object.is_a?(Array)
-        object.collect { |item| item.send(column.__name) }
+        object.collect { |item| item.send(column.__name) }.detect { |item|
+          item.to_crc32 == attribute_value
+        }
       else
         object.send(column.__name)
       end

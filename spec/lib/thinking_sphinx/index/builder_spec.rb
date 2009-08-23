@@ -288,6 +288,41 @@ describe ThinkingSphinx::Index::Builder do
     end
   end
   
+  describe 'faceted MVA field' do
+    before :each do
+      @index = ThinkingSphinx::Index::Builder.generate(Person) do
+        indexes tags(:name), :as => :tags, :facet => true
+      end
+      
+      @source = @index.sources.first
+    end
+    
+    after :each do
+      Person.sphinx_facets.delete_at(-1)
+    end
+    
+    it "should have one field" do
+      @source.fields.length.should == 1
+    end
+    
+    it "should have one attribute alongside the four internal ones" do
+      @source.attributes.length.should == 5
+    end
+    
+    it "should set the attribute name to have the _facet suffix" do
+      @source.attributes.last.unique_name.should == :tags_facet
+    end
+    
+    it "should set the attribute type to multi" do
+      @source.attributes.last.type.should == :multi
+    end
+    
+    it "should set the attribute column to be the same as the field" do
+      @source.attributes.last.columns.length.should == 1
+      @source.attributes.last.columns.first.__name.should == :name
+    end
+  end
+  
   describe "no fields" do
     it "should raise an exception" do
       lambda {
