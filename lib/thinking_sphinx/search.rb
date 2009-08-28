@@ -293,7 +293,7 @@ module ThinkingSphinx
     end
     
     def log(*args)
-      self.class.log(args)
+      self.class.log(*args)
     end
     
     def client
