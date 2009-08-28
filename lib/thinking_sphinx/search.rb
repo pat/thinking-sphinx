@@ -333,7 +333,7 @@ module ThinkingSphinx
       
       # Soon to be deprecated.
       keys = @options[:conditions].keys.reject { |key|
-        attributes.include?(key.to_sym => )
+        attributes.include?(key.to_sym)
       }
       
       ' ' + keys.collect { |key|
