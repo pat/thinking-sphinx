@@ -231,8 +231,12 @@ module ThinkingSphinx
       
       retry_on_stale_index do
         begin
-          log "Querying Sphinx: #{query}"
-          @results = client.query query, indexes, comment
+          log "Querying: '#{query}'"
+          runtime = Benchmark.realtime {
+            @results = client.query query, index, comment
+          }
+          log "Found #{@results[:total_found]} results", :debug,
+            "Sphinx (#{sprintf("%f", runtime)}s)"
         rescue Errno::ECONNREFUSED => err
           raise ThinkingSphinx::ConnectionError,
             'Connection to Sphinx Daemon (searchd) failed.'
@@ -280,13 +284,16 @@ module ThinkingSphinx
       end
     end
     
-    def self.log(message, method = :debug)
+    def self.log(message, method = :debug, identifier = 'Sphinx')
       return if ::ActiveRecord::Base.logger.nil?
-      ::ActiveRecord::Base.logger.send method, message
+      identifier_color, message_color = "4;32;1", "0" # 0;1 = Bold
+      info = "  \e[#{identifier_color}m#{identifier}\e[0m   "
+      info << "\e[#{message_color}m#{message}\e[0m"
+      ::ActiveRecord::Base.logger.send method, info
     end
     
-    def log(message, method = :debug)
-      self.class.log(message, method)
+    def log(*args)
+      self.class.log(args)
     end
     
     def client
