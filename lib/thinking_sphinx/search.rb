@@ -333,7 +333,7 @@ module ThinkingSphinx
       
       # Soon to be deprecated.
       keys = @options[:conditions].keys.reject { |key|
-        attributes.include?(key)
+        attributes.include?(key.to_sym => )
       }
       
       ' ' + keys.collect { |key|
@@ -467,7 +467,7 @@ module ThinkingSphinx
     
     def condition_filters
       (options[:conditions] || {}).collect { |attrib, value|
-        if attributes.include?(attrib)
+        if attributes.include?(attrib.to_sym)
           puts <<-MSG
 Deprecation Warning: filters on attributes should be done using the :with
 option, not :conditions. For example:
