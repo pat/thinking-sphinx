@@ -281,7 +281,7 @@ module ThinkingSphinx
     # @return [Integer] Unique record id for the purposes of Sphinx.
     # 
     def primary_key_for_sphinx
-      read_attribute(self.class.primary_key_for_sphinx)
+      @primary_key_for_sphinx ||= read_attribute(self.class.primary_key_for_sphinx)
     end
     
     def sphinx_document_id
