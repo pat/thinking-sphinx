@@ -688,6 +688,35 @@ describe ThinkingSphinx::Search do
       end
     end
     
+    describe 'sql ordering' do
+      before :each do
+        @client.stub! :query => {
+          :matches => minimal_result_hashes(@alpha_b, @alpha_a)
+        }
+        Alpha.stub! :find => [@alpha_a, @alpha_b]
+      end
+      
+      it "shouldn't re-sort SQL results based on Sphinx information" do
+        search = ThinkingSphinx::Search.new(
+          :classes    => [Alpha],
+          :sql_order  => 'id'
+        )
+        search.first.should == @alpha_a
+        search.last.should  == @alpha_b
+      end
+      
+      it "should use the option for the ActiveRecord::Base#find calls" do
+        Alpha.should_receive(:find) do |mode, options|
+          options[:order].should == 'id'
+        end
+        
+        ThinkingSphinx::Search.new(
+          :classes    => [Alpha],
+          :sql_order  => 'id'
+        ).first
+      end
+    end
+    
     describe 'excerpts' do
       before :each do
         @search = ThinkingSphinx::Search.new

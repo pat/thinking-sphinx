@@ -321,6 +321,10 @@ module ThinkingSphinx
       end
     end
     
+    def classes
+      @classes ||= options[:classes] || []
+    end
+    
     def query
       @query ||= begin
         q = @args.join(' ') << conditions_as_query
@@ -404,9 +408,9 @@ module ThinkingSphinx
     end
     
     def field_names
-      return [] if (options[:classes] || []).length != 1
+      return [] if classes.length != 1
       
-      options[:classes].first.sphinx_indexes.collect { |index|
+      classes.first.sphinx_indexes.collect { |index|
         index.fields.collect { |field| field.unique_name }
       }.flatten
     end
@@ -450,7 +454,7 @@ module ThinkingSphinx
     def internal_filters
       filters = [Riddle::Client::Filter.new('sphinx_deleted', [0])]
       
-      class_crcs = (options[:classes] || []).collect { |klass|
+      class_crcs = classes.collect { |klass|
         klass.to_crc32s
       }.flatten
       
@@ -542,15 +546,15 @@ MSG
     end
     
     def index_option(key)
-      return nil if options[:classes].length != 1
+      return nil if classes.length != 1
       
-      options[:classes].first.sphinx_indexes.collect { |index|
+      classes.first.sphinx_indexes.collect { |index|
         index.local_options[key]
       }.compact.first
     end
     
     def attribute(*keys)
-      return nil if options[:classes].length != 1
+      return nil if classes.length != 1
       
       keys.detect { |key|
         attributes.include?(key)
@@ -558,9 +562,9 @@ MSG
     end
     
     def attributes
-      return [] if (options[:classes] || []).length != 1
+      return [] if classes.length != 1
       
-      attributes = options[:classes].first.sphinx_indexes.collect { |index|
+      attributes = classes.first.sphinx_indexes.collect { |index|
         index.attributes.collect { |attrib| attrib.unique_name }
       }.flatten
     end
@@ -599,7 +603,7 @@ MSG
 
       # if the user has specified an SQL order, return the collection
       # without rearranging it into the Sphinx order
-      return instances if options[:sql_order]
+      return instances if (options[:sql_order] || index_options[:sql_order])
 
       ids.collect { |obj_id|
         instances.detect do |obj|
@@ -612,6 +616,8 @@ MSG
     # the number of #find's in multi-model searches.
     # 
     def instances_from_matches
+      return single_class_results if classes.length == 1
+      
       groups = results[:matches].group_by { |match|
         match[:attributes]["class_crc"]
       }
@@ -630,6 +636,10 @@ MSG
       end
     end
     
+    def single_class_results
+      instances_from_class classes.first, results[:matches]
+    end
+    
     def class_from_crc(crc)
       config.models_by_crc[crc].constantize
     end
@@ -643,12 +653,12 @@ MSG
     end
     
     def is_scope?(method)
-      options[:classes] && options[:classes].length == 1 &&
-      options[:classes].first.sphinx_scopes.include?(method)
+      classes && classes.length == 1 &&
+      classes.first.sphinx_scopes.include?(method)
     end
     
     def add_scope(method, *args, &block)
-      merge_search options[:classes].first.send(method, *args, &block)
+      merge_search classes.first.send(method, *args, &block)
     end
     
     def merge_search(search)
