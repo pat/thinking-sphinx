@@ -72,6 +72,16 @@ describe ThinkingSphinx::Source do
       @riddle.sql_sock.should == config[:socket]
     end
     
+    it "should use a default username of root if nothing else is provided" do
+      Person.connection.stub!(:instance_variable_get => {
+        :user     => nil,
+        :username => nil
+      })
+      
+      riddle = @source.to_riddle_for_core(1, 0)
+      riddle.sql_user.should == 'root'
+    end
+    
     it "should assign attributes" do
       # 3 internal attributes plus the one requested
       @riddle.sql_attr_uint.length.should == 4
