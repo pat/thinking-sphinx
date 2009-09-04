@@ -379,6 +379,13 @@ describe ThinkingSphinx::Search do
         filter.exclude?.should be_false
       end
       
+      it "should treat nils in arrays as 0" do
+        ThinkingSphinx::Search.new(:with => {:ints => [nil, 1, 2, 3]}).first
+        
+        filter = @client.filters.last
+        filter.values.should    == [0, 1, 2, 3]
+      end
+      
       it "should append inclusive filters of time ranges" do
         first, last = 1.week.ago, Time.now
         ThinkingSphinx::Search.new(:with => {

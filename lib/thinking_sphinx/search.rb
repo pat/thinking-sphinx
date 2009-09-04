@@ -517,6 +517,8 @@ MSG
         value.collect { |v| filter_value(v) }.flatten
       when Time
         value.respond_to?(:in_time_zone) ? [value.utc.to_i] : [value.to_i]
+      when NilClass
+        0
       else
         Array(value)
       end
