@@ -72,7 +72,7 @@ module ThinkingSphinx
     end
     
     def value(object, attribute_value)
-      return translate(object, attribute_value) if translate?
+      return translate(object, attribute_value) if translate? || float?
       
       case @property.type
       when :datetime
@@ -105,6 +105,10 @@ module ThinkingSphinx
     
     def column
       @property.columns.first
+    end
+    
+    def float?
+      @property.type == :float
     end
   end
 end

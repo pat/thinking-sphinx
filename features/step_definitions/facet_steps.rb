@@ -77,6 +77,16 @@ Then /^the ([\w_\s]+) facet should have an? "(\w+)" key$/ do |name, key|
   results[facet_name(name)].keys.should include(key)
 end
 
+Then /^the ([\w_\s]+) facet should have an? (\d+\.?\d*) key$/ do |name, key|
+  if key[/\./]
+    key = key.to_f
+  else
+    key = key.to_i
+  end
+  
+  results[facet_name(name)].keys.should include(key)
+end
+
 def facet_name(string)
   string.gsub(/\s/, '').underscore.to_sym
 end

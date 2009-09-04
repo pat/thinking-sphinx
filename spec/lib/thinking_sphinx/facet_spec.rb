@@ -277,26 +277,45 @@ describe ThinkingSphinx::Facet do
   end
   
   describe "#value" do
-    before :each do
-      @index  = ThinkingSphinx::Index.new(Friendship)
-      @source = ThinkingSphinx::Source.new(@index)
-      @field  = ThinkingSphinx::Field.new(
-        @source, ThinkingSphinx::Index::FauxColumn.new(:person, :first_name)
-      )
-      @facet  = ThinkingSphinx::Facet.new(@field)
+    describe 'for fields from associations' do
+      before :each do
+        @index  = ThinkingSphinx::Index.new(Friendship)
+        @source = ThinkingSphinx::Source.new(@index)
+        @field  = ThinkingSphinx::Field.new(
+          @source, ThinkingSphinx::Index::FauxColumn.new(:person, :first_name)
+        )
+        @facet  = ThinkingSphinx::Facet.new(@field)
+      end
+    
+      it "should return association values" do
+        person      = Person.find(:first)
+        friendship  = Friendship.new(:person => person)
+      
+        @facet.value(friendship, 1).should == person.first_name
+      end
+    
+      it "should return nil if the association is nil" do
+        friendship = Friendship.new(:person => nil)
+      
+        @facet.value(friendship, 1).should be_nil
+      end
     end
     
-    it "should return association values" do
-      person      = Person.find(:first)
-      friendship  = Friendship.new(:person => person)
+    describe 'for float attributes' do
+      before :each do
+        @index     = ThinkingSphinx::Index.new(Alpha)
+        @source    = ThinkingSphinx::Source.new(@index)
+        @attribute = ThinkingSphinx::Attribute.new(
+          @source, ThinkingSphinx::Index::FauxColumn.new(:cost)
+        )
+        @facet     = ThinkingSphinx::Facet.new(@attribute)
+      end
       
-      @facet.value(friendship, 1).should == person.first_name
-    end
-    
-    it "should return nil if the association is nil" do
-      friendship = Friendship.new(:person => nil)
+      it "should translate using the given model" do
+        alpha = Alpha.new(:cost => 10.5)
       
-      @facet.value(friendship, 1).should be_nil
+        @facet.value(alpha, 1093140480).should == 10.5
+      end
     end
   end
 end

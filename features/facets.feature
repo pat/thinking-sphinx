@@ -27,6 +27,13 @@ Feature: Search and browse models by their defined facets
     And I should have the facet State
     And I should have the facet Age
   
+  Scenario: Requseting float facets
+    Given Sphinx is running
+    And I am searching on alphas
+    When I am requesting facet results
+    Then I should have 1 facet
+    And the Cost facet should have a 5.55 key
+  
   Scenario: Requesting facet results
     Given Sphinx is running
     And I am searching on developers
