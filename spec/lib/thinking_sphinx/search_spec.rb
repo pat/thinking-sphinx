@@ -971,6 +971,14 @@ describe ThinkingSphinx::Search do
       
       @search.excerpt_for('string', Beta)
     end
+    
+    it "should use the correct index in STI situations" do
+      @client.should_receive(:excerpts) do |options|
+        options[:index].should == 'person_core'
+      end
+      
+      @search.excerpt_for('string', Parent)
+    end
   end
   
   describe '#search' do

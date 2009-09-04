@@ -194,15 +194,15 @@ module ThinkingSphinx
     end
     
     def excerpt_for(string, model = nil)
-      if model.nil? && options[:classes].length == 1
-        model ||= options[:classes].first
+      if model.nil? && classes.length == 1
+        model ||= classes.first
       end
       
       populate
       client.excerpts(
         :docs   => [string],
         :words  => results[:words].keys.join(' '),
-        :index  => "#{model.sphinx_name}_core"
+        :index  => "#{model.source_of_sphinx_index.sphinx_name}_core"
       ).first
     end
     
@@ -266,8 +266,8 @@ module ThinkingSphinx
     def client
       client = config.client
       
-      index_options = (options[:classes] || []).length != 1 ?
-        {} : options[:classes].first.sphinx_indexes.first.local_options
+      index_options = classes.length != 1 ?
+        {} : classes.first.sphinx_indexes.first.local_options
       
       [
         :max_matches, :group_by, :group_function, :group_clause,
