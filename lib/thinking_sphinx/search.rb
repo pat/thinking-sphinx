@@ -201,8 +201,8 @@ module ThinkingSphinx
     end
     
     def excerpt_for(string, model = nil)
-      if model.nil? && classes.length == 1
-        model ||= classes.first
+      if model.nil? && one_class
+        model ||= one_class
       end
       
       populate
@@ -273,8 +273,8 @@ module ThinkingSphinx
     def client
       client = config.client
       
-      index_options = classes.length != 1 ?
-        {} : classes.first.sphinx_indexes.first.local_options
+      index_options = one_class ?
+        one_class.sphinx_indexes.first.local_options : {}
       
       [
         :max_matches, :group_by, :group_function, :group_clause,
@@ -330,6 +330,10 @@ module ThinkingSphinx
     
     def classes
       @classes ||= options[:classes] || []
+    end
+    
+    def one_class
+      @one_class ||= classes.length != 1 ? nil : classes.first
     end
     
     def query
@@ -411,9 +415,9 @@ module ThinkingSphinx
     end
     
     def field_names
-      return [] if classes.length != 1
+      return [] unless one_class
       
-      classes.first.sphinx_indexes.collect { |index|
+      one_class.sphinx_indexes.collect { |index|
         index.fields.collect { |field| field.unique_name }
       }.flatten
     end
@@ -551,15 +555,15 @@ MSG
     end
     
     def index_option(key)
-      return nil if classes.length != 1
+      return nil unless one_class
       
-      classes.first.sphinx_indexes.collect { |index|
+      one_class.sphinx_indexes.collect { |index|
         index.local_options[key]
       }.compact.first
     end
     
     def attribute(*keys)
-      return nil if classes.length != 1
+      return nil unless one_class
       
       keys.detect { |key|
         attributes.include?(key)
@@ -567,9 +571,9 @@ MSG
     end
     
     def attributes
-      return [] if classes.length != 1
+      return [] unless one_class
       
-      attributes = classes.first.sphinx_indexes.collect { |index|
+      attributes = one_class.sphinx_indexes.collect { |index|
         index.attributes.collect { |attrib| attrib.unique_name }
       }.flatten
     end
@@ -621,7 +625,7 @@ MSG
     # the number of #find's in multi-model searches.
     # 
     def instances_from_matches
-      return single_class_results if classes.length == 1
+      return single_class_results if one_class
       
       groups = results[:matches].group_by { |match|
         match[:attributes]["class_crc"]
@@ -642,7 +646,7 @@ MSG
     end
     
     def single_class_results
-      instances_from_class classes.first, results[:matches]
+      instances_from_class one_class, results[:matches]
     end
     
     def class_from_crc(crc)
@@ -658,12 +662,11 @@ MSG
     end
     
     def is_scope?(method)
-      classes && classes.length == 1 &&
-      classes.first.sphinx_scopes.include?(method)
+      one_class && one_class.sphinx_scopes.include?(method)
     end
     
     def add_scope(method, *args, &block)
-      merge_search classes.first.send(method, *args, &block)
+      merge_search one_class.send(method, *args, &block)
     end
     
     def merge_search(search)
