@@ -193,6 +193,14 @@ describe ThinkingSphinx::Search do
       search[3].id.should == 1
     end
     
+    it "should use the requested classes to generate the index argument" do
+      @client.should_receive(:query) do |query, index, comment|
+        index.should == 'alpha_core,beta_core,beta_delta'
+      end
+      
+      ThinkingSphinx::Search.new(:classes => [Alpha, Beta]).first
+    end
+    
     describe 'query' do
       it "should concatenate arguments with spaces" do
         @client.should_receive(:query) do |query, index, comment|
@@ -835,6 +843,27 @@ describe ThinkingSphinx::Search do
     
     it "should increase by the per_page value for each page in" do
       ThinkingSphinx::Search.new(:per_page => 25, :page => 2).offset.should == 25
+    end
+  end
+  
+  describe '#indexes' do
+    it "should default to '*'" do
+      ThinkingSphinx::Search.new.indexes.should == '*'
+    end
+    
+    it "should use given class to determine index name" do
+      ThinkingSphinx::Search.new(:classes => [Alpha]).indexes.
+        should == 'alpha_core'
+    end
+    
+    it "should add both core and delta indexes for given classes" do
+      ThinkingSphinx::Search.new(:classes => [Alpha, Beta]).indexes.
+        should == 'alpha_core,beta_core,beta_delta'
+    end
+    
+    it "should respect the :index option" do
+      ThinkingSphinx::Search.new(:classes => [Alpha], :index => '*').indexes.
+        should == '*'
     end
   end
   

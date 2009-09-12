@@ -177,6 +177,13 @@ module ThinkingSphinx
       (current_page - 1) * per_page
     end
     
+    def indexes
+      return options[:index] if options[:index]
+      return '*' if classes.empty?
+      
+      classes.collect { |klass| klass.sphinx_index_names }.flatten.join(',')
+    end
+    
     def each_with_groupby_and_count(&block)
       populate
       results[:matches].each_with_index do |match, index|
@@ -224,7 +231,7 @@ module ThinkingSphinx
       retry_on_stale_index do
         begin
           log "Querying Sphinx: #{query}"
-          @results = client.query query, index, comment
+          @results = client.query query, indexes, comment
         rescue Errno::ECONNREFUSED => err
           raise ThinkingSphinx::ConnectionError,
             'Connection to Sphinx Daemon (searchd) failed.'
@@ -361,10 +368,6 @@ module ThinkingSphinx
           "*#{proper}*"
         end
       end
-    end
-    
-    def index
-      options[:index] || '*'
     end
     
     def comment

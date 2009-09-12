@@ -1,7 +1,7 @@
 require 'spec/spec_helper'
 
-describe "ThinkingSphinx::ActiveRecord" do
-  describe "define_index method" do
+describe ThinkingSphinx::ActiveRecord do
+  describe '.define_index' do
     before :each do
       module ::TestModule
         class TestModel < ActiveRecord::Base; end
@@ -154,7 +154,7 @@ describe "ThinkingSphinx::ActiveRecord" do
     end
   end
 
-  describe "source_of_sphinx_index method" do
+  describe '.source_of_sphinx_index' do
     it "should return self if model defines an index" do
       Person.source_of_sphinx_index.should == Person
     end
@@ -164,13 +164,13 @@ describe "ThinkingSphinx::ActiveRecord" do
     end
   end
   
-  describe "to_crc32 method" do
+  describe '.to_crc32' do
     it "should return an integer" do
       Person.to_crc32.should be_a_kind_of(Integer)
     end
   end
     
-  describe "to_crc32s method" do
+  describe '.to_crc32s' do
     it "should return an array" do
       Person.to_crc32s.should be_a_kind_of(Array)
     end
@@ -349,6 +349,20 @@ describe "ThinkingSphinx::ActiveRecord" do
       id = @person.id
       @person.stub!(:id => 'unique_hash')
       @person.primary_key_for_sphinx.should == id
+    end
+  end
+  
+  describe '.sphinx_index_names' do
+    it "should return the core index" do
+      Alpha.sphinx_index_names.should == ['alpha_core']
+    end
+    
+    it "should return the delta index if enabled" do
+      Beta.sphinx_index_names.should == ['beta_core', 'beta_delta']
+    end
+    
+    it "should return the superclass with an index definition" do
+      Parent.sphinx_index_names.should == ['person_core', 'person_delta']
     end
   end
 end

@@ -155,6 +155,14 @@ module ThinkingSphinx
             self.name.underscore.tr(':/\\', '_')
           end
           
+          def sphinx_index_names
+            klass = source_of_sphinx_index
+            names = ["#{klass.sphinx_name}_core"]
+            names << "#{klass.sphinx_name}_delta" if sphinx_delta?
+            
+            names
+          end
+          
           private
           
           def sphinx_delta?
