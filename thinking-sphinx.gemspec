@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{thinking-sphinx}
-  s.version = "1.2.10"
+  s.version = "1.2.11"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pat Allan"]
-  s.date = %q{2009-09-12}
+  s.date = %q{2009-09-13}
   s.email = %q{pat@freelancing-gods.com}
   s.extra_rdoc_files = [
     "README.textile"
@@ -89,7 +89,6 @@ Gem::Specification.new do |s|
      "vendor/riddle/lib/riddle/configuration/xml_source.rb",
      "vendor/riddle/lib/riddle/controller.rb"
   ]
-  s.has_rdoc = true
   s.homepage = %q{http://ts.freelancing-gods.com}
   s.post_install_message = %q{With the release of Thinking Sphinx 1.1.18, there is one important change to
 note: previously, the default morphology for indexing was 'stem_en'. The new
@@ -110,7 +109,7 @@ http://www.sphinxsearch.com/docs/manual-0.9.8.html#conf-morphology
 }
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.1}
+  s.rubygems_version = %q{1.3.5}
   s.summary = %q{A concise and easy-to-use Ruby library that connects ActiveRecord to the Sphinx search daemon, managing configuration, indexing and searching.}
   s.test_files = [
     "spec/lib/thinking_sphinx/active_record/delta_spec.rb",
@@ -138,7 +137,7 @@ http://www.sphinxsearch.com/docs/manual-0.9.8.html#conf-morphology
 
   if s.respond_to? :specification_version then
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
-    s.specification_version = 2
+    s.specification_version = 3
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<activerecord>, [">= 1.15.6"])
