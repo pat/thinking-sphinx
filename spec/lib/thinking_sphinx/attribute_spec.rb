@@ -265,6 +265,41 @@ describe ThinkingSphinx::Attribute do
     end
   end
   
+  describe '#all_strings?' do
+    it "should return true if all columns are strings or text" do
+      attribute = ThinkingSphinx::Attribute.new(@source,
+        [ ThinkingSphinx::Index::FauxColumn.new(:first_name),
+          ThinkingSphinx::Index::FauxColumn.new(:last_name) ]
+      )
+      attribute.model = Person
+      attribute.columns.each { |col| attribute.associations[col] = [] }
+      
+      attribute.should be_all_strings
+    end
+    
+    it "should return false if only some columns are strings" do
+      attribute = ThinkingSphinx::Attribute.new(@source,
+        [ ThinkingSphinx::Index::FauxColumn.new(:id),
+          ThinkingSphinx::Index::FauxColumn.new(:first_name) ]
+      )
+      attribute.model = Person
+      attribute.columns.each { |col| attribute.associations[col] = [] }
+      
+      attribute.should_not be_all_strings
+    end
+    
+    it "should return true if all columns are not strings" do
+      attribute = ThinkingSphinx::Attribute.new(@source,
+        [ ThinkingSphinx::Index::FauxColumn.new(:id),
+          ThinkingSphinx::Index::FauxColumn.new(:parent_id) ]
+      )
+      attribute.model = Person
+      attribute.columns.each { |col| attribute.associations[col] = [] }
+      
+      attribute.should_not be_all_strings
+    end
+  end
+  
   describe "MVA with source query" do
     before :each do
       @attribute = ThinkingSphinx::Attribute.new(@source,

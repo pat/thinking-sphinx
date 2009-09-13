@@ -162,11 +162,12 @@ module ThinkingSphinx
         end
         
         if base_type == :string && @crc
-          :integer
+          base_type = :integer
         else
-          @crc = false
-          base_type
+          @crc = false unless base_type == :multi && is_many_strings? && @crc
         end
+        
+        base_type
       end
     end
     
@@ -187,6 +188,10 @@ module ThinkingSphinx
     
     def all_datetimes?
       all_of_type?(:datetime, :date, :timestamp)
+    end
+    
+    def all_strings?
+      all_of_type?(:string, :text)
     end
     
     private
@@ -285,6 +290,10 @@ WHERE #{@source.index.delta_object.clause(model, true)})
     
     def is_many_datetimes?
       is_many? && all_datetimes?
+    end
+    
+    def is_many_strings?
+      is_many? && all_strings?
     end
        
     def type_from_database
