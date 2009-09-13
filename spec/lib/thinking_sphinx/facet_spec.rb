@@ -299,6 +299,18 @@ describe ThinkingSphinx::Facet do
       
         @facet.value(friendship, 1).should be_nil
       end
+      
+      it "should return multi-level association values" do
+        person      = Person.find(:first)
+        tag         = person.tags.build(:name => 'buried')
+        friendship  = Friendship.new(:person => person)
+        
+        field  = ThinkingSphinx::Field.new(
+          @source, ThinkingSphinx::Index::FauxColumn.new(:person, :tags, :name)
+        )
+        ThinkingSphinx::Facet.new(field).value(friendship, 'buried'.to_crc32).
+          should == 'buried'
+      end
     end
     
     describe 'for float attributes' do
