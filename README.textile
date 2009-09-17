@@ -14,7 +14,7 @@ To quickly see if your system is ready to run the thinking sphinx specs, run the
 
 To get the spec suite running, you will need to install the ginger gem:
 
-  sudo gem install ginger --source http://gemcutter.org
+<pre><code>sudo gem install ginger --source http://gemcutter.org</code></pre>
   
 Then install the cucumber, yard, jeweler and rspec gems. Make sure you have a git install version 1.6.0.0 or higher, otherwise the jeweler gem won't install.
 
@@ -22,8 +22,10 @@ Then install the cucumber, yard, jeweler and rspec gems. Make sure you have a gi
 
 Then set up your database:
 
-  cp spec/fixtures/database.yml.default spec/fixtures/database.yml
+<pre>
+  cp spec/fixtures/database.yml.default spec/fixtures/database.yml &&
   mysqladmin -u root create thinking_sphinx
+</pre>
   
 This last step can be done automatically by the contribute.rb script if all dependencies are met.
 
