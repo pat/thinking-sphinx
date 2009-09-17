@@ -16,10 +16,10 @@ To get the spec suite running, you will need to install the ginger gem:
 
 <pre><code>sudo gem install ginger --source http://gemcutter.org</code></pre>
   
-Then install the cucumber, yard, jeweler and rspec gems. Make sure you have a git install version 1.6.0.0 or higher, otherwise the jeweler gem won't install.
+Then install the cucumber, yard, jeweler and rspec gems. Make sure you have a git install version 1.6.0.0 or higher, otherwise the jeweler gem won't install. Bluecloth is required for some of the yard documentation.
 
 <pre>
-  sudo gem install cucumber yard jeweler rspec
+  sudo gem install bluecloth cucumber yard jeweler rspec 
 </pre>
 
 Then set up your database:
