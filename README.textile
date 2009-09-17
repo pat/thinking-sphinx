@@ -18,7 +18,9 @@ To get the spec suite running, you will need to install the ginger gem:
   
 Then install the cucumber, yard, jeweler and rspec gems. Make sure you have a git install version 1.6.0.0 or higher, otherwise the jeweler gem won't install.
 
+<pre>
   sudo gem install cucumber yard jeweler rspec
+</pre>
 
 Then set up your database:
 
@@ -34,11 +36,15 @@ in the app root.
 
 You should now have a passing test suite from which to build your patch on.
 
+<pre>
   rake spec
+</pre>
 
 If you get the message "Failed to start searchd daemon", run the spec with sudo:
 
+<pre>
   sudo rake spec
+</pre>
 
 If you quit the spec suite before it's completed, you may be left with data in the test
 database, causing the next run to have failures. Let that run complete and then try again.
