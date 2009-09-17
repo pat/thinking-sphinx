@@ -1,17 +1,19 @@
 require 'spec/spec_helper'
 
 describe ThinkingSphinx::Association do
-  describe "class-level children method" do
+  describe '.children' do
     before :each do
-      @normal_reflection = ::ActiveRecord::Reflection::AssociationReflection.
-        new(:has_many, :normal, {}, 'AR')
-      @normal_reflection.stub!(:options => {:polymorphic => false})
+      @normal_reflection = stub('reflection', :options => {
+        :polymorphic => false
+      })
       @normal_association = ThinkingSphinx::Association.new(nil, nil)
-      @poly_reflection = ::ActiveRecord::Reflection::AssociationReflection.new(
-        :has_many, 'polly', {:polymorphic => true}, 'AR'
+      @poly_reflection = stub('reflection',
+        :options        => {:polymorphic => true},
+        :macro          => :has_many,
+        :name           => 'polly',
+        :active_record  => 'AR'
       )
-      @non_poly_reflection = ::ActiveRecord::Reflection::AssociationReflection.
-        new(:has_many, :non_polly, {}, 'AR')
+      @non_poly_reflection = stub('reflection')
       
       Person.stub!(:reflect_on_association => @normal_reflection)
       ThinkingSphinx::Association.stub!(
@@ -56,22 +58,26 @@ describe ThinkingSphinx::Association do
     end
   end
   
-  describe "instance-level children method" do
-    it "should return the children associations for the given association" do
-      @reflection = ::ActiveRecord::Reflection::AssociationReflection.new(
-        :macro, :name, {}, :active_record
-      )
-      @reflection.stub!(:klass => :klass)
-      @association = ThinkingSphinx::Association.new(nil, @reflection)
+  describe '#children' do
+    before :each do
+      @reflection   = stub('reflection', :klass => :klass)
+      @association  = ThinkingSphinx::Association.new(nil, @reflection)
       ThinkingSphinx::Association.stub!(:children => :result)
+    end
+    
+    it "should return the children associations for the given association" do
+      @association.children(:assoc).should == :result
+    end
+    
+    it "should request children for the reflection klass" do
       ThinkingSphinx::Association.should_receive(:children).
         with(:klass, :assoc, @association)
       
-      @association.children(:assoc).should == :result
+      @association.children(:assoc)
     end
   end
   
-  describe "join_to method" do
+  describe '#join_to' do
     before :each do
       @parent_join = stub('join assoc').as_null_object
       @join = stub('join assoc').as_null_object
@@ -104,7 +110,7 @@ describe ThinkingSphinx::Association do
     end
   end
   
-  describe "to_sql method" do
+  describe '#to_sql' do
     before :each do
       @reflection = stub('reflection', :klass => Person)
       @association = ThinkingSphinx::Association.new(nil, @reflection)
@@ -127,7 +133,7 @@ describe ThinkingSphinx::Association do
     end
   end
   
-  describe "is_many? method" do
+  describe '#is_many?' do
     before :each do
       @parent = stub('assoc', :is_many? => :parent_is_many)
       @reflection = stub('reflection', :macro => :has_many)
@@ -154,7 +160,7 @@ describe ThinkingSphinx::Association do
     end
   end
   
-  describe "ancestors method" do
+  describe '#ancestors' do
     it "should return an array of associations - including all parents" do
       parent = stub('assoc', :ancestors => [:all, :ancestors])
       association = ThinkingSphinx::Association.new(parent, @reflection)
@@ -162,7 +168,7 @@ describe ThinkingSphinx::Association do
     end
   end
   
-  describe "polymorphic_classes method" do
+  describe '.polymorphic_classes' do
     it "should return all the polymorphic result types as classes" do
       Person.connection.stub!(:select_all => [
         {"person_type" => "Person"},
@@ -177,7 +183,7 @@ describe ThinkingSphinx::Association do
     end
   end
   
-  describe "casted_options method" do
+  describe '.casted_options' do
     before :each do
       @options = {
         :foreign_key  => "thing_id",
