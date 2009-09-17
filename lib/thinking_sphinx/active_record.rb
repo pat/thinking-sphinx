@@ -75,6 +75,7 @@ module ThinkingSphinx
             return unless ThinkingSphinx.define_indexes?
             
             self.sphinx_indexes ||= []
+            self.sphinx_facets  ||= []
             index = ThinkingSphinx::Index::Builder.generate(self, &block)
             
             self.sphinx_indexes << index
