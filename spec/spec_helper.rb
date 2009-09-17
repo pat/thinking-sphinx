@@ -7,7 +7,6 @@ require 'jeweler'
 
 require 'lib/thinking_sphinx'
 
-require 'not_a_mock'
 require 'will_paginate'
 
 require 'spec/sphinx_helper'
@@ -44,11 +43,6 @@ Spec::Runner.configure do |config|
         klass.send(:include, AfterCommit::ConnectionAdapters)
       end
     }
-  end
-  
-  config.after :each do
-    NotAMock::CallRecorder.instance.reset
-    NotAMock::Stubber.instance.reset
   end
   
   config.after :all do

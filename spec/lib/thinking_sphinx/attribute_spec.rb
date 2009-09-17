@@ -25,7 +25,7 @@ describe ThinkingSphinx::Attribute do
   describe "unique_name method" do
     before :each do
       @attribute = ThinkingSphinx::Attribute.new @source, [
-        Object.stub_instance(:__stack => [], :__name => "col_name")
+        stub('column', :__stack => [], :__name => "col_name")
       ]
     end
     
@@ -35,7 +35,7 @@ describe ThinkingSphinx::Attribute do
     end
     
     it "should use the alias if there's multiple columns" do
-      @attribute.columns << Object.stub_instance(:__stack => [], :__name => "col_name")
+      @attribute.columns << stub('column', :__stack => [], :__name => "col_name")
       @attribute.unique_name.should be_nil
       
       @attribute.alias = "alias"
@@ -103,9 +103,9 @@ describe ThinkingSphinx::Attribute do
   
   describe "is_many? method" do
     before :each do
-      @assoc_a = Object.stub_instance(:is_many? => true)
-      @assoc_b = Object.stub_instance(:is_many? => true)
-      @assoc_c = Object.stub_instance(:is_many? => true)
+      @assoc_a = stub('assoc', :is_many? => true)
+      @assoc_b = stub('assoc', :is_many? => true)
+      @assoc_c = stub('assoc', :is_many? => true)
       
       @attribute = ThinkingSphinx::Attribute.new(
         @source, [ThinkingSphinx::Index::FauxColumn.new(:col_name)]
@@ -120,16 +120,16 @@ describe ThinkingSphinx::Attribute do
     end
     
     it "should return true if one association returns true to is_many?" do
-      @assoc_b.stub_method(:is_many? => false)
-      @assoc_c.stub_method(:is_many? => false)
+      @assoc_b.stub!(:is_many? => false)
+      @assoc_c.stub!(:is_many? => false)
       
       @attribute.send(:is_many?).should be_true
     end
     
     it "should return false if all associations return false to is_many?" do
-      @assoc_a.stub_method(:is_many? => false)
-      @assoc_b.stub_method(:is_many? => false)
-      @assoc_c.stub_method(:is_many? => false)
+      @assoc_a.stub!(:is_many? => false)
+      @assoc_b.stub!(:is_many? => false)
+      @assoc_c.stub!(:is_many? => false)
       
       @attribute.send(:is_many?).should be_false
     end
@@ -168,11 +168,11 @@ describe ThinkingSphinx::Attribute do
       @column = ThinkingSphinx::Index::FauxColumn.new(:col_name)
       @attribute = ThinkingSphinx::Attribute.new(@source, [@column])
       @attribute.model = Person
-      @attribute.stub_method(:is_many? => false)
+      @attribute.stub!(:is_many? => false)
     end
     
     it "should return :multi if is_many? is true" do
-      @attribute.stub_method(:is_many? => true)
+      @attribute.stub!(:is_many? => true)
       @attribute.send(:type).should == :multi
     end
     

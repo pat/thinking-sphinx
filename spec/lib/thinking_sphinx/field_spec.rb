@@ -23,7 +23,7 @@ describe ThinkingSphinx::Field do
   describe "unique_name method" do
     before :each do
       @field = ThinkingSphinx::Field.new @source, [
-        Object.stub_instance(:__stack => [], :__name => "col_name")
+        stub('column', :__stack => [], :__name => "col_name")
       ]
     end
     
@@ -33,7 +33,7 @@ describe ThinkingSphinx::Field do
     end
     
     it "should use the alias if there's multiple columns" do
-      @field.columns << Object.stub_instance(:__stack => [], :__name => "col_name")
+      @field.columns << stub('column', :__stack => [], :__name => "col_name")
       @field.unique_name.should be_nil
       
       @field.alias = "alias"
@@ -48,14 +48,14 @@ describe ThinkingSphinx::Field do
   describe "prefixes method" do
     it "should default to false" do
       @field = ThinkingSphinx::Field.new(
-        @source, [Object.stub_instance(:__stack => [])]
+        @source, [stub('column', :__stack => [])]
       )
       @field.prefixes.should be_false
     end
     
     it "should be true if the corresponding option is set" do
       @field = ThinkingSphinx::Field.new(
-        @source, [Object.stub_instance(:__stack => [])], :prefixes => true
+        @source, [stub('column', :__stack => [])], :prefixes => true
       )
       @field.prefixes.should be_true
     end
@@ -64,14 +64,14 @@ describe ThinkingSphinx::Field do
   describe "infixes method" do
     it "should default to false" do
       @field = ThinkingSphinx::Field.new(
-        @source, [Object.stub_instance(:__stack => [])]
+        @source, [stub('column', :__stack => [])]
       )
       @field.infixes.should be_false
     end
     
     it "should be true if the corresponding option is set" do
       @field = ThinkingSphinx::Field.new(
-        @source, [Object.stub_instance(:__stack => [])], :infixes => true
+        @source, [stub('column', :__stack => [])], :infixes => true
       )
       @field.infixes.should be_true
     end
@@ -120,9 +120,9 @@ describe ThinkingSphinx::Field do
   
   describe "is_many? method" do
     before :each do
-      @assoc_a = Object.stub_instance(:is_many? => true)
-      @assoc_b = Object.stub_instance(:is_many? => true)
-      @assoc_c = Object.stub_instance(:is_many? => true)
+      @assoc_a = stub('assoc', :is_many? => true)
+      @assoc_b = stub('assoc', :is_many? => true)
+      @assoc_c = stub('assoc', :is_many? => true)
       
       @field = ThinkingSphinx::Field.new(
         @source, [ThinkingSphinx::Index::FauxColumn.new(:col_name)]
@@ -137,16 +137,16 @@ describe ThinkingSphinx::Field do
     end
     
     it "should return true if one association returns true to is_many?" do
-      @assoc_b.stub_method(:is_many? => false)
-      @assoc_c.stub_method(:is_many? => false)
+      @assoc_b.stub!(:is_many? => false)
+      @assoc_c.stub!(:is_many? => false)
       
       @field.send(:is_many?).should be_true
     end
     
     it "should return false if all associations return false to is_many?" do
-      @assoc_a.stub_method(:is_many? => false)
-      @assoc_b.stub_method(:is_many? => false)
-      @assoc_c.stub_method(:is_many? => false)
+      @assoc_a.stub!(:is_many? => false)
+      @assoc_b.stub!(:is_many? => false)
+      @assoc_c.stub!(:is_many? => false)
       
       @field.send(:is_many?).should be_false
     end

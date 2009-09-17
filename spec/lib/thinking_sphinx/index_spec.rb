@@ -5,11 +5,11 @@ describe ThinkingSphinx::Index do
     before :each do
       @index = ThinkingSphinx::Index.new(Person)
       
-      @field_a = ThinkingSphinx::Field.stub_instance(:prefixes => true)
-      @field_b = ThinkingSphinx::Field.stub_instance(:prefixes => false)
-      @field_c = ThinkingSphinx::Field.stub_instance(:prefixes => true)
+      @field_a = stub('field', :prefixes => true)
+      @field_b = stub('field', :prefixes => false)
+      @field_c = stub('field', :prefixes => true)
       
-      @index.stub_method(:fields => [@field_a, @field_b, @field_c])
+      @index.stub!(:fields => [@field_a, @field_b, @field_c])
     end
     
     it "should return fields that are flagged as prefixed" do
@@ -26,11 +26,11 @@ describe ThinkingSphinx::Index do
     before :each do
       @index = ThinkingSphinx::Index.new(Person)
       
-      @field_a = ThinkingSphinx::Field.stub_instance(:infixes => true)
-      @field_b = ThinkingSphinx::Field.stub_instance(:infixes => false)
-      @field_c = ThinkingSphinx::Field.stub_instance(:infixes => true)
+      @field_a = stub('field', :infixes => true)
+      @field_b = stub('field', :infixes => false)
+      @field_c = stub('field', :infixes => true)
       
-      @index.stub_method(:fields => [@field_a, @field_b, @field_c])
+      @index.stub!(:fields => [@field_a, @field_b, @field_c])
     end
     
     it "should return fields that are flagged as infixed" do

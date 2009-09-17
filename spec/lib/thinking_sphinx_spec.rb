@@ -53,17 +53,17 @@ describe ThinkingSphinx do
   
   it "should always say Sphinx is running if flagged as being on a remote machine" do
     ThinkingSphinx.remote_sphinx = true
-    ThinkingSphinx.stub_method(:sphinx_running_by_pid? => false)
+    ThinkingSphinx.stub!(:sphinx_running_by_pid? => false)
     
     ThinkingSphinx.sphinx_running?.should be_true
   end
   
   it "should actually pay attention to Sphinx if not on a remote machine" do
     ThinkingSphinx.remote_sphinx = false
-    ThinkingSphinx.stub_method(:sphinx_running_by_pid? => false)
+    ThinkingSphinx.stub!(:sphinx_running_by_pid? => false)
     ThinkingSphinx.sphinx_running?.should be_false
     
-    ThinkingSphinx.stub_method(:sphinx_running_by_pid? => true)
+    ThinkingSphinx.stub!(:sphinx_running_by_pid? => true)
     ThinkingSphinx.sphinx_running?.should be_true
   end
   
@@ -85,17 +85,18 @@ describe ThinkingSphinx do
         return
       end
       
-      @connection = ::ActiveRecord::ConnectionAdapters.const_get(adapter).stub_instance(
+      @connection = stub('adapter',
         :select_all => true,
+        :class      => ActiveRecord::ConnectionAdapters::MysqlAdapter,
         :config => {:adapter => defined?(JRUBY_VERSION) ? 'jdbcmysql' : 'mysql'}
       )
-      ::ActiveRecord::Base.stub_method(
+      ::ActiveRecord::Base.stub!(
         :connection => @connection
       )
     end
     
     it "should return true if no ONLY_FULL_GROUP_BY" do
-      @connection.stub_method(
+      @connection.stub!(
         :select_all => {:a => "OTHER SETTINGS"}
       )
       
@@ -103,7 +104,7 @@ describe ThinkingSphinx do
     end
   
     it "should return true if NULL value" do
-      @connection.stub_method(
+      @connection.stub!(
         :select_all => {:a => nil}
       )
       
@@ -111,7 +112,7 @@ describe ThinkingSphinx do
     end
   
     it "should return false if ONLY_FULL_GROUP_BY is set" do
-      @connection.stub_method(
+      @connection.stub!(
         :select_all => {:a => "OTHER SETTINGS,ONLY_FULL_GROUP_BY,blah"}
       )
       
@@ -119,7 +120,7 @@ describe ThinkingSphinx do
     end
     
     it "should return false if ONLY_FULL_GROUP_BY is set in any of the values" do
-      @connection.stub_method(
+      @connection.stub!(
         :select_all => {
           :a => "OTHER SETTINGS",
           :b => "ONLY_FULL_GROUP_BY"
@@ -142,7 +143,7 @@ describe ThinkingSphinx do
           :select_all => true,
           :config => {:adapter => defined?(JRUBY_VERSION) ? 'jdbcpostgresql' : 'postgresql'}
         )
-        ::ActiveRecord::Base.stub_method(
+        ::ActiveRecord::Base.stub!(
           :connection => @connection
         )
       end

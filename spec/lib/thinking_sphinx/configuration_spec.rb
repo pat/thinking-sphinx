@@ -13,7 +13,7 @@ describe ThinkingSphinx::Configuration do
         module ::Merb; end
       end
 
-      ThinkingSphinx::Configuration.stub_method(:defined? => true)
+      ThinkingSphinx::Configuration.stub!(:defined? => true)
       Merb.stub!(:environment => "merb_production")
       ThinkingSphinx::Configuration.environment.should == "merb_production"
 
