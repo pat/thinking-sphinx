@@ -14,7 +14,7 @@ module ThinkingSphinx
       kind_of? member? method methods nil? object_id respond_to? send should
       type )
     SafeMethods = %w( partition private_methods protected_methods
-      public_methods send )
+      public_methods send class )
     
     instance_methods.select { |method|
       method.to_s[/^__/].nil? && !CoreMethods.include?(method.to_s)
@@ -215,6 +215,7 @@ module ThinkingSphinx
     end
     
     def search(*args)
+      add_scope :default if is_scope?(:default)
       merge_search ThinkingSphinx::Search.new(*args)
       self
     end

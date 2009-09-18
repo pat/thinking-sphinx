@@ -8,6 +8,10 @@ module ThinkingSphinx
       end
     
       module ClassMethods
+        def default_sphinx_scope(&block)
+          sphinx_scope(:default, &block)
+        end
+
         def sphinx_scope(method, &block)
           @sphinx_scopes ||= []
           @sphinx_scopes << method

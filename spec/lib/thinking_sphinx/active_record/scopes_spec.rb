@@ -34,7 +34,17 @@ describe ThinkingSphinx::ActiveRecord::Scopes do
       Alpha.sphinx_scopes.should == [:by_name]
     end
   end
-  
+
+  describe '.default_sphinx_scope' do
+    before :each do
+      Alpha.default_sphinx_scope { |name| {:conditions => {:name => name}} }
+    end
+    
+    it "should return an array of defined scope names as symbols" do
+      Alpha.sphinx_scopes.should == [:default]
+    end
+  end
+
   describe '.remove_sphinx_scopes' do
     before :each do
       Alpha.sphinx_scope(:by_name) { |name| {:conditions => {:name => name}} }
@@ -49,7 +59,35 @@ describe ThinkingSphinx::ActiveRecord::Scopes do
       Alpha.sphinx_scopes.should be_empty
     end
   end
-  
+
+  describe '.example_default_scope' do
+    before :each do
+      Alpha.default_sphinx_scope { {:conditions => {:name => 'foo'}} }
+      Alpha.sphinx_scope(:by_name) { |name| {:conditions => {:name => name}} }
+      Alpha.sphinx_scope(:by_foo)  { |foo|  {:conditions => {:foo  => foo}}  }
+    end
+
+    it "should return a ThinkingSphinx::Search object" do
+      Alpha.search.should be_a(ThinkingSphinx::Search)
+    end
+
+    it "should apply the default scope options to the underlying search object" do
+      search = ThinkingSphinx::Search.new(:classes => [Alpha])
+      search.search.options[:conditions].should == {:name => 'foo'}
+    end
+
+    it "should apply the default scope options and scope options to the underlying search object" do
+      search = ThinkingSphinx::Search.new(:classes => [Alpha])
+      search.by_foo('foo').search.options[:conditions].should == {:foo => 'foo', :name => 'foo'}
+    end
+
+    # FIXME: Probably the other way around is more logical? How to do this?
+    it "should apply the default scope options after other scope options to the underlying search object" do
+      search = ThinkingSphinx::Search.new(:classes => [Alpha])
+      search.by_name('bar').search.options[:conditions].should == {:name => 'foo'}
+    end
+  end
+
   describe '.example_scope' do
     before :each do
       Alpha.sphinx_scope(:by_name) { |name| {:conditions => {:name => name}} }
