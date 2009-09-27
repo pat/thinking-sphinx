@@ -100,6 +100,8 @@ module ThinkingSphinx
           adapter.convert_nulls(part)
         when :datetime
           adapter.cast_to_datetime(part)
+        when :multi
+          adapter.convert_nulls(part, 0)
         else
           part
         end

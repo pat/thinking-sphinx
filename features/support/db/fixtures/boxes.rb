@@ -5,3 +5,5 @@ end
 (11..20).each do |i|
   Box.create :width => i, :length => i+1, :depth => i+2
 end
+
+Box.create :width => 5, :length => 5, :depth => nil

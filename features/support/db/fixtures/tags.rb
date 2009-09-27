@@ -23,3 +23,5 @@ Developer.find(:all).each do |developer|
     )
   end
 end
+
+Tagging.create(:taggable => Developer.last)

@@ -60,6 +60,18 @@ Feature: Searching on a single model
     And I filter by both 11 and 12 on dimensions
     Then I should get 1 result
   
+  Scenario: Searching by NULL/0 values in MVAs
+    Given Sphinx is running
+    And I am searching on boxes
+    When I filter by 0 on dimensions
+    Then I should get 1 result
+    
+    Given Sphinx is running
+    And I am searching on developers
+    When I clear existing filters
+    And I filter by 0 on tag_ids
+    Then I should get 1 result
+  
   Scenario: Searching on a MVA configured as ranged_query
     Given Sphinx is running
     And I am searching on posts
