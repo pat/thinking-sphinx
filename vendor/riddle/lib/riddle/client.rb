@@ -405,7 +405,7 @@ module Riddle
             "Connection to #{@server} on #{@port} timed out after #{@timeout} seconds"
         end
       end
-      
+
       begin
         yield socket
       ensure
@@ -414,8 +414,8 @@ module Riddle
     end
     
     def initialise_connection
-      socket = TCPSocket.new @server, @port
-      
+      socket = initialise_socket
+
       # Checking version
       version = socket.recv(4).unpack('N*').first
       if version < 1
@@ -425,6 +425,19 @@ module Riddle
       
       # Send version
       socket.send [1].pack('N'), 0
+      
+      socket
+    end
+    
+    def initialise_socket
+      tries = 0
+      begin
+        socket = TCPSocket.new @server, @port
+      rescue Errno::ECONNREFUSED => e
+        retry if (tries += 1) < 5
+        raise Riddle::ConnectionError,
+          "Connection to #{@server} on #{@port} failed. #{e.message}"
+      end
       
       socket
     end
