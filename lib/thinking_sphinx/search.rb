@@ -180,11 +180,12 @@ module ThinkingSphinx
     end
     
     # The current page's offset, based on the number of records per page.
+    # Or explicit :offset if given. 
     # 
     # @return [Integer]
     # 
     def offset
-      (current_page - 1) * per_page
+      @options[:offset] || ((current_page - 1) * per_page)
     end
     
     def indexes

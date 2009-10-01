@@ -907,6 +907,11 @@ describe ThinkingSphinx::Search do
     it "should increase by the per_page value for each page in" do
       ThinkingSphinx::Search.new(:per_page => 25, :page => 2).offset.should == 25
     end
+
+    it "should prioritise explicit :offset over calculated if given" do
+      ThinkingSphinx::Search.new(:offset => 5).offset.should == 5
+    end
+    
   end
   
   describe '#indexes' do
