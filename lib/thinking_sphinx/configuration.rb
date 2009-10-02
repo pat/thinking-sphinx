@@ -158,8 +158,8 @@ module ThinkingSphinx
     # 
     def load_models
       return if defined?(Rails) &&
-        Rails.configuration.cache_classes &&
-        Rails::VERSION::STRING.to_f > 2.1
+        Rails::VERSION::STRING.to_f > 2.1 &&
+        Rails.configuration.cache_classes
       
       self.model_directories.each do |base|
         Dir["#{base}**/*.rb"].each do |file|
