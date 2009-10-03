@@ -732,28 +732,54 @@ describe ThinkingSphinx::Search do
       end
     end
     
-    describe 'excerpts' do
-      before :each do
-        @search = ThinkingSphinx::Search.new
-      end
+    context 'result objects' do
+      describe '#excerpts' do
+        before :each do
+          @search = ThinkingSphinx::Search.new
+        end
       
-      it "should add excerpts method if objects don't already have one" do
-        @search.first.should respond_to(:excerpts)
-      end
+        it "should add excerpts method if objects don't already have one" do
+          @search.first.should respond_to(:excerpts)
+        end
       
-      it "should return an instance of ThinkingSphinx::Excerpter" do
-        @search.first.excerpts.should be_a(ThinkingSphinx::Excerpter)
-      end
+        it "should return an instance of ThinkingSphinx::Excerpter" do
+          @search.first.excerpts.should be_a(ThinkingSphinx::Excerpter)
+        end
       
-      it "should not add excerpts method if objects already have one" do
-        @search.last.excerpts.should_not be_a(ThinkingSphinx::Excerpter)
-      end
+        it "should not add excerpts method if objects already have one" do
+          @search.last.excerpts.should_not be_a(ThinkingSphinx::Excerpter)
+        end
       
-      it "should set up the excerpter with the instances and search" do
-        ThinkingSphinx::Excerpter.should_receive(:new).with(@search, @alpha_a)
-        ThinkingSphinx::Excerpter.should_receive(:new).with(@search, @alpha_b)
+        it "should set up the excerpter with the instances and search" do
+          ThinkingSphinx::Excerpter.should_receive(:new).with(@search, @alpha_a)
+          ThinkingSphinx::Excerpter.should_receive(:new).with(@search, @alpha_b)
         
-        @search.first
+          @search.first
+        end
+      end
+    
+      describe '#sphinx_attributes' do
+        before :each do
+          @search = ThinkingSphinx::Search.new
+        end
+        
+        it "should add sphinx_attributes method if objects don't already have one" do
+          @search.last.should respond_to(:sphinx_attributes)
+        end
+        
+        it "should return a hash" do
+          @search.last.sphinx_attributes.should be_a(Hash)
+        end
+        
+        it "should not add sphinx_attributes if objects have a method of that name already" do
+          @search.first.sphinx_attributes.should_not be_a(Hash)
+        end
+        
+        it "should pair sphinx_attributes with the correct hash" do
+          hash = @search.last.sphinx_attributes
+          hash['sphinx_internal_id'].should == @search.last.id
+          hash['class_crc'].should == @search.last.class.to_crc32
+        end
       end
     end
   end

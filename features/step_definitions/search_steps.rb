@@ -83,3 +83,7 @@ Then /^calling (\w+) on the first result excerpts object should return "(.*)"$/ 
   
   excerpt.should == string
 end
+
+Then /^the first result should have a (\w+\s?\w*) of (\d+)$/ do |attribute, value|
+  results.first.sphinx_attributes[attribute.gsub(/\s+/, '_')].should == value.to_i
+end

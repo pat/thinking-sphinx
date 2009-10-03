@@ -244,6 +244,7 @@ module ThinkingSphinx
         else
           replace instances_from_matches
           add_excerpter
+          add_sphinx_attributes
         end
       end
     end
@@ -257,6 +258,23 @@ module ThinkingSphinx
         
         object.metaclass.instance_eval do
           define_method(:excerpts, &block)
+        end
+      end
+    end
+    
+    def add_sphinx_attributes
+      each do |object|
+        next if object.nil? || object.respond_to?(:sphinx_attributes)
+        
+        match = @results[:matches].detect { |match|
+          match[:attributes]['sphinx_internal_id'] == object.
+            primary_key_for_sphinx &&
+          match[:attributes]['class_crc'] == object.class.to_crc32
+        }
+        next if match.nil?
+        
+        object.metaclass.instance_eval do
+          define_method(:sphinx_attributes) { match[:attributes] }
         end
       end
     end

@@ -11,8 +11,9 @@ class Post < ActiveRecord::Base
     indexes tags.text, :as => :tags
     indexes comments.content, :as => :comments
     indexes authors.name, :as => :authors
-
+    
     has comments(:id), :as => :comment_ids, :source => :ranged_query
     has category.name, :facet => true, :as => :category_name, :type => :string
+    has 'COUNT(DISTINCT comments.id)', :as => :comments_count, :type => :integer
   end
 end

@@ -105,6 +105,10 @@ class Alpha < ActiveRecord::Base
   def big_name
     name.upcase
   end
+  
+  def sphinx_attributes
+    :existing
+  end
 end
 
 class Beta < ActiveRecord::Base
