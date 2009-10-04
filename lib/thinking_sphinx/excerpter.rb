@@ -14,7 +14,7 @@ module ThinkingSphinx
     end
     
     def method_missing(method, *args, &block)
-      string = @instance.send(method, *args, &block).to_s
+      string = CGI::escapeHTML @instance.send(method, *args, &block).to_s
       
       @search.excerpt_for(string, @instance.class)
     end

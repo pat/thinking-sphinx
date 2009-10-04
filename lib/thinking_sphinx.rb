@@ -6,6 +6,7 @@ require 'active_record'
 require 'riddle'
 require 'after_commit'
 require 'yaml'
+require 'cgi'
 
 require 'thinking_sphinx/core/array'
 require 'thinking_sphinx/core/string'
