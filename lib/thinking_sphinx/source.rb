@@ -33,7 +33,7 @@ module ThinkingSphinx
     end
     
     def name
-      @model.name.underscore.tr(':/\\', '_')
+      @model.sphinx_name
     end
     
     def to_riddle_for_core(offset, index)
