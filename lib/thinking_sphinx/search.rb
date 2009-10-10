@@ -192,6 +192,7 @@ module ThinkingSphinx
           match[:attributes]["@count"]
       end
     end
+    alias_method :each_with_group_and_count, :each_with_groupby_and_count
     
     def each_with_weighting(&block)
       populate

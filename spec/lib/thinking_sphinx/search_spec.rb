@@ -919,6 +919,15 @@ describe ThinkingSphinx::Search do
         count.should  == 5
       end
     end
+    
+    it "should be aliased to each_with_group_and_count" do
+      search = ThinkingSphinx::Search.new
+      search.each_with_group_and_count do |obj, group, count|
+        obj.should    == @alpha
+        group.should  == 101
+        count.should  == 5
+      end
+    end
   end
   
   describe '.each_with_weighting' do
