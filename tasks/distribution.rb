@@ -25,7 +25,10 @@ Jeweler::Tasks.new do |gem|
     "vendor/**/*",
     "VERSION.yml"
   ]
-  gem.test_files = FileList["spec/**/*_spec.rb"]
+  gem.test_files = FileList[
+    "features/**/*",
+    "spec/**/*_spec.rb"
+  ]
   
   gem.add_dependency 'activerecord', '>= 1.15.6'
   
