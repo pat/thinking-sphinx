@@ -12,24 +12,9 @@ Fork on GitHub and after you've committed tested patches, send a pull request.
 
 To quickly see if your system is ready to run the thinking sphinx specs, run the contribute.rb script found in the project root directory. Use the following instructions to install any missing requirements.
 
-To get the spec suite running, you will need to install the not-a-mock gem if you don't already have it:
+To get the spec suite running, you will need to install the ginger gem:
 
-  git clone git://github.com/freelancing-god/not-a-mock.git
-  cd not-a-mock
-  rake gem
-  gem install pkg/not_a_mock-1.1.0.gem
-  
-Then install the ginger gem. The steps are the same, except that you might need to sudo the gem install:
-
-  git clone git://github.com/freelancing-god/ginger.git
-  cd ginger
-  rake gem
-  sudo gem install pkg/ginger-1.1.0.gem
-  
-Alternatively, install the ginger gem directly from the freelancing-god github repository
-
-  sudo gem sources -a http://gems.github.com
-  sudo gem install freelancing-god-ginger
+  sudo gem install ginger --source http://gemcutter.org
   
 Then install the cucumber, yard, jeweler and rspec gems. Make sure you have a git install version 1.6.0.0 or higher, otherwise the jeweler gem won't install.
 
@@ -156,3 +141,4 @@ Since I first released this library, there's been quite a few people who have su
 * Brian Terlson
 * Christian Aust
 * Martin Sarasale
+* Édouard Brière
