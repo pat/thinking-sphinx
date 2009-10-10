@@ -19,10 +19,6 @@ OptionParser.new do |opts|
     options[:ginger] = name
   end
 
-  opts.on("-n [NAME]", "--notamock [NAME]", "Not A Mock gem name") do |name|
-    options[:notamock] = name
-  end
-
   opts.on("-s [NAME]", "--sphinx [NAME]", "Sphinx daemon name") do |name|
     options[:sphinx] = name
   end
@@ -45,7 +41,6 @@ class Contribute
       Dependencies::Yard,
       Dependencies::Jeweler,
       Dependencies::Ginger,
-      Dependencies::NotAMock
     ]
   end
 
@@ -373,10 +368,6 @@ module Dependencies
 
   class Ginger < ContributeHelper::Gem
     name(OPTIONS.has_key?(:ginger) ? OPTIONS[:ginger] : 'ginger')
-  end
-
-  class NotAMock < ContributeHelper::Gem
-    name(OPTIONS.has_key?(:notamock) ? OPTIONS[:notamock] : 'not_a_mock')
   end
 
   class Sphinx < ContributeHelper::Dependency
