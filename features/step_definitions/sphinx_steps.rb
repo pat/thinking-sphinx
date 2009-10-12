@@ -25,3 +25,7 @@ end
 Then "Sphinx should not be running" do
   ThinkingSphinx.sphinx_running?.should be_false
 end
+
+When /^I (enable|disable) delta updates$/ do |mode|
+  ThinkingSphinx.deltas_enabled = (mode == 'enable')
+end

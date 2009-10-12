@@ -276,8 +276,7 @@ module ThinkingSphinx
         "#{self.class.sphinx_indexes.first.name}_delta",
         ['sphinx_deleted'],
         {self.sphinx_document_id => 1}
-      ) if ThinkingSphinx.deltas_enabled? &&
-        self.class.sphinx_indexes.any? { |index| index.delta? } &&
+      ) if self.class.sphinx_indexes.any? { |index| index.delta? } &&
         self.toggled_delta?
     rescue ::ThinkingSphinx::ConnectionError
       # nothing

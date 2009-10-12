@@ -268,17 +268,6 @@ describe ThinkingSphinx::ActiveRecord do
       @person.toggle_deleted
     end
     
-    it "should not update the delta index if delta indexing is disabled" do
-      ThinkingSphinx.deltas_enabled = false
-      Person.sphinx_indexes.each { |index| index.stub!(:delta? => true) }
-      @person.delta = true
-      @client.should_not_receive(:update).with(
-        "person_delta", ["sphinx_deleted"], {@person.sphinx_document_id => 1}
-      )
-      
-      @person.toggle_deleted
-    end
-    
     it "should not update either index if updates are disabled" do
       ThinkingSphinx.updates_enabled = false
       ThinkingSphinx.deltas_enabled  = true
