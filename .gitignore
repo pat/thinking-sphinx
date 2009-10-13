@@ -3,6 +3,6 @@ pkg
 coverage
 *.tmproj
 rdoc
-spec/fixtures/database.yml
+database.yml
 tmp
 *.gem

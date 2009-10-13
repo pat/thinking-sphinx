@@ -131,12 +131,13 @@ module ThinkingSphinx
   def self.suppress_delta_output=(value)
     @@suppress_delta_output = value
   end
-
+  
+  @@use_group_by_shortcut = nil
   # Checks to see if MySQL will allow simplistic GROUP BY statements. If not,
   # or if not using MySQL, this will return false.
   #
   def self.use_group_by_shortcut?
-    !!(
+    @@use_group_by_shortcut ||= !!(
       mysql? && ::ActiveRecord::Base.connection.select_all(
         "SELECT @@global.sql_mode, @@session.sql_mode;"
       ).all? { |key,value| value.nil? || value[/ONLY_FULL_GROUP_BY/].nil? }

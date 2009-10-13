@@ -1,0 +1,126 @@
+require 'cucumber/thinking_sphinx/sql_logger'
+
+module Cucumber
+  module ThinkingSphinx
+    class InternalWorld
+      attr_accessor :temporary_directory, :migrations_directory,
+        :models_directory, :fixtures_directory, :database_file
+      attr_accessor :adapter, :database, :username,
+        :password, :host
+      
+      def initialize
+        @temporary_directory  = "#{Dir.pwd}/tmp"
+        @migrations_directory = "features/support/db/migrations"
+        @models_directory     = "features/support/models"
+        @fixtures_directory   = "features/support/db/fixtures"
+        @database_file        = "features/support/database.yml"
+        
+        @adapter  = 'mysql'
+        @database = 'thinking_sphinx'
+        @username = 'thinking_sphinx'
+        # @password = 'thinking_sphinx'
+        @host     = 'localhost'
+      end
+      
+      def setup
+        make_temporary_directory
+        
+        configure_cleanup
+        configure_thinking_sphinx
+        configure_database
+        configure_active_record
+        
+        prepare_data
+        setup_sphinx
+        
+        self
+      end
+      
+      private
+      
+      def config
+        @config ||= ::ThinkingSphinx::Configuration.instance
+      end
+      
+      def make_temporary_directory
+        FileUtils.mkdir_p temporary_directory
+        Dir["#{temporary_directory}/*"].each do |file|
+          FileUtils.rm_rf file
+        end
+      end
+      
+      def configure_thinking_sphinx
+        config.config_file        = "#{temporary_directory}/sphinx.conf"
+        config.searchd_log_file   = "#{temporary_directory}/searchd.log"
+        config.query_log_file     = "#{temporary_directory}/searchd.query.log"
+        config.pid_file           = "#{temporary_directory}/searchd.pid"
+        config.searchd_file_path  = "#{temporary_directory}/indexes/"
+        
+        ::ThinkingSphinx.suppress_delta_output = true
+      end
+      
+      def configure_cleanup
+        Kernel.at_exit do
+          ::ThinkingSphinx::Configuration.instance.controller.stop
+          sleep(0.5) # Ensure Sphinx has shut down completely
+          ActiveRecord::Base.logger.close
+        end
+      end
+      
+      def configure_database
+        ActiveRecord::Base.establish_connection database_settings
+      end
+      
+      def yaml_database_settings
+        return {} unless File.exist?(@database_file)
+        
+        YAML.load open(@database_file)
+      end
+      
+      def database_settings
+        yaml = yaml_database_settings
+        {
+          :adapter  => @adapter,
+          :database => yaml['database'] || @database,
+          :username => yaml['username'] || @username,
+          :password => yaml['password'] || @password,
+          :host     => yaml['host']     || @host
+        }
+      end
+      
+      def configure_active_record
+        ActiveRecord::Base.logger = Logger.new(
+          open("#{temporary_directory}/active_record.log", "a")
+        )
+        
+        ActiveRecord::Base.connection.class.send(
+          :include, Cucumber::ThinkingSphinx::SqlLogger
+        )
+      end
+      
+      def prepare_data
+        ::ThinkingSphinx.deltas_enabled = false
+        
+        load_files migrations_directory
+        load_files models_directory
+        load_files fixtures_directory
+        
+        ::ThinkingSphinx.deltas_enabled = true
+      end
+      
+      def load_files(path)
+        Dir["#{path}/*.rb"].each do |file|
+          require file.gsub(/\.rb$/, '')
+        end
+      end
+      
+      def setup_sphinx
+        FileUtils.mkdir_p config.searchd_file_path
+        
+        config.build
+        config.controller.index
+        config.controller.start
+      end
+    end
+  end
+end
