@@ -1,4 +1,4 @@
-When "I am requesting facet results$" do
+When /^I am requesting facet results$/ do
   @results = nil
   @method  = :facets
 end
