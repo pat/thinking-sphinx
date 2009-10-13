@@ -15,5 +15,6 @@ class Post < ActiveRecord::Base
     has comments(:id), :as => :comment_ids, :source => :ranged_query
     has category.name, :facet => true, :as => :category_name, :type => :string
     has 'COUNT(DISTINCT comments.id)', :as => :comments_count, :type => :integer
+    has comments.created_at, :as => :comments_created_at
   end
 end

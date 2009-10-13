@@ -60,6 +60,12 @@ Feature: Searching on a single model
     And I filter by both 11 and 12 on dimensions
     Then I should get 1 result
   
+  Scenario: Filtering on timestamp MVAs
+    Given Sphinx is running
+    And I am searching on posts
+    When I filter by 978307200 on comments_created_at
+    Then I should get 1 result
+  
   Scenario: Searching by NULL/0 values in MVAs
     Given Sphinx is running
     And I am searching on boxes

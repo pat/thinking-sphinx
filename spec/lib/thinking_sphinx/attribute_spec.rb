@@ -22,7 +22,7 @@ describe ThinkingSphinx::Attribute do
     end
   end
   
-  describe "unique_name method" do
+  describe '#unique_name' do
     before :each do
       @attribute = ThinkingSphinx::Attribute.new @source, [
         stub('column', :__stack => [], :__name => "col_name")
@@ -47,7 +47,7 @@ describe ThinkingSphinx::Attribute do
     end
   end
   
-  describe "column_with_prefix method" do
+  describe '#column_with_prefix' do
     before :each do
       @attribute = ThinkingSphinx::Attribute.new @source, [
         ThinkingSphinx::Index::FauxColumn.new(:col_name)
@@ -101,7 +101,7 @@ describe ThinkingSphinx::Attribute do
     end
   end
   
-  describe "is_many? method" do
+  describe '#is_many?' do
     before :each do
       @assoc_a = stub('assoc', :is_many? => true)
       @assoc_b = stub('assoc', :is_many? => true)
@@ -135,7 +135,7 @@ describe ThinkingSphinx::Attribute do
     end
   end
   
-  describe "is_string? method" do
+  describe '#is_string?' do
     before :each do
       @col_a = ThinkingSphinx::Index::FauxColumn.new("a")
       @col_b = ThinkingSphinx::Index::FauxColumn.new("b")
@@ -163,7 +163,7 @@ describe ThinkingSphinx::Attribute do
     end
   end
   
-  describe "type method" do
+  describe '#type' do
     before :each do
       @column = ThinkingSphinx::Index::FauxColumn.new(:col_name)
       @attribute = ThinkingSphinx::Attribute.new(@source, [@column])
@@ -193,9 +193,16 @@ describe ThinkingSphinx::Attribute do
       @column.send(:instance_variable_set, :@name, "id")
       @attribute.send(:type).should == :integer
     end
+    
+    it "should return :multi if the columns return multiple datetimes" do
+      @attribute.stub!(:is_many? => true)
+      @attribute.stub!(:all_datetimes? => true)
+      
+      @attribute.type.should == :multi
+    end
   end
   
-  describe "all_ints? method" do
+  describe '#all_ints?' do
     it "should return true if all columns are integers" do
       attribute = ThinkingSphinx::Attribute.new(@source,
         [ ThinkingSphinx::Index::FauxColumn.new(:id),
@@ -230,7 +237,7 @@ describe ThinkingSphinx::Attribute do
     end
   end
   
-  describe "all_datetimes? method" do
+  describe '#all_datetimes?' do
     it "should return true if all columns are datetimes" do
       attribute = ThinkingSphinx::Attribute.new(@source,
         [ ThinkingSphinx::Index::FauxColumn.new(:created_at),

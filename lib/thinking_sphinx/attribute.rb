@@ -101,6 +101,7 @@ module ThinkingSphinx
         when :datetime
           adapter.cast_to_datetime(part)
         when :multi
+          part = adapter.cast_to_datetime(part) if is_many_datetimes?
           adapter.convert_nulls(part, 0)
         else
           part
@@ -153,8 +154,6 @@ module ThinkingSphinx
     def type
       @type ||= begin
         base_type = case
-        when is_many_datetimes?
-          :datetime
         when is_many?, is_many_ints?
           :multi
         when @associations.values.flatten.length > 1

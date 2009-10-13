@@ -5,4 +5,6 @@ ActiveRecord::Base.connection.create_table :comments, :force => true do |t|
   t.column :content,  :text
   t.column :post_id,  :integer, :null => false
   t.column :category_id, :integer, :null => false
+  t.column :created_at, :datetime
+  t.column :updated_at, :datetime
 end
