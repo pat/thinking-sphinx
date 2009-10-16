@@ -27,12 +27,16 @@ module Cucumber
         
         configure_cleanup
         configure_thinking_sphinx
-        configure_database
         configure_active_record
         
         prepare_data
         setup_sphinx
         
+        self
+      end
+      
+      def configure_database
+        ActiveRecord::Base.establish_connection database_settings
         self
       end
       
@@ -65,10 +69,6 @@ module Cucumber
           sleep(0.5) # Ensure Sphinx has shut down completely
           ActiveRecord::Base.logger.close
         end
-      end
-      
-      def configure_database
-        ActiveRecord::Base.establish_connection database_settings
       end
       
       def yaml_database_settings
