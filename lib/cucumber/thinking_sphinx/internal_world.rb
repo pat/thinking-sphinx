@@ -15,7 +15,7 @@ module Cucumber
         @fixtures_directory   = "features/support/db/fixtures"
         @database_file        = "features/support/database.yml"
         
-        @adapter  = 'mysql'
+        @adapter  = ENV['DATABASE'] || 'mysql'
         @database = 'thinking_sphinx'
         @username = 'thinking_sphinx'
         # @password = 'thinking_sphinx'

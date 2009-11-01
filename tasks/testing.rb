@@ -10,17 +10,17 @@ end
 
 desc "Run all feature-set configurations"
 task :features do |t|
-  puts   "rake features:mysql"
-  system "rake features:mysql"
-  puts   "rake features:postgresql"
-  system "rake features:postgresql"
+  databases = ENV['DATABASES'] || 'mysql,postgresql'
+  databases.split(',').each do |database|
+    puts   "rake features:#{database}"
+    system "rake features:#{database}"
+  end
 end
 
 namespace :features do
   def add_task(name, description)
     Cucumber::Rake::Task.new(name, description) do |t|
-      t.cucumber_opts = "--format pretty"
-      t.profile = name
+      t.cucumber_opts = "--format pretty features/*.feature DATABASE=#{name}"
     end
   end
   
@@ -62,22 +62,11 @@ end
 
 desc "Build cucumber.yml file"
 task :cucumber_defaults do
-  default_requires = %w(
-    --require features/support/env.rb
-    --require features/support/db/mysql.rb
-    --require features/support/db/active_record.rb
-    --require features/support/post_database.rb
-  ).join(" ")
-  
-  step_definitions = FileList["features/step_definitions/**.rb"].collect { |path|
+  steps = FileList["features/step_definitions/**.rb"].collect { |path|
     "--require #{path}"
   }.join(" ")
   
-  features = FileList["features/*.feature"].join(" ")
-  
   File.open('cucumber.yml', 'w') { |f|
-    f.write "default: \"#{default_requires} #{step_definitions}\"\n\n"
-    f.write "mysql: \"#{default_requires} #{step_definitions} #{features}\"\n\n"
-    f.write "postgresql: \"#{default_requires.gsub(/mysql/, 'postgresql')} #{step_definitions} #{features}\""
+    f.write "default: \"--require features/support/env.rb #{steps}\"\n"
   }
 end
