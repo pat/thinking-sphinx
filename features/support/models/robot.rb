@@ -5,4 +5,8 @@ class Robot < ActiveRecord::Base
   define_index do
     indexes :name
   end
+  
+  def id
+    internal_id
+  end
 end

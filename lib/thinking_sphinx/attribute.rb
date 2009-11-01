@@ -101,14 +101,14 @@ module ThinkingSphinx
         when :datetime
           adapter.cast_to_datetime(part)
         when :multi
-          part = adapter.cast_to_datetime(part) if is_many_datetimes?
-          adapter.convert_nulls(part, 0)
+          part = adapter.cast_to_datetime(part)   if is_many_datetimes?
+          part = adapter.convert_nulls(part, '0') if is_many_ints?
+          part
         else
           part
         end
       }.join(', ')
       
-      # clause = adapter.cast_to_datetime(clause)             if type == :datetime
       clause = adapter.crc(clause)                          if @crc
       clause = adapter.concatenate(clause, separator)       if concat_ws?
       clause = adapter.group_concatenate(clause, separator) if is_many?

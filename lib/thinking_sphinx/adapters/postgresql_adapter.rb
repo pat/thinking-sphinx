@@ -10,18 +10,17 @@ module ThinkingSphinx
     end
     
     def concatenate(clause, separator = ' ')
-      clause.split(', ').collect { |field|
-        case field
-        when /COALESCE/, "'')"
-          field
-        else
-          "COALESCE(CAST(#{field} as varchar), '')"
-        end
-      }.join(" || '#{separator}' || ")
+      if clause[/^COALESCE/]
+        clause.split('), ').join(") || '#{separator}' || ")
+      else
+        clause.split(', ').collect { |field|
+          "CAST(COALESCE(#{field}, '') as varchar)"
+        }.join(" || '#{separator}' || ")
+      end
     end
     
     def group_concatenate(clause, separator = ' ')
-      "array_to_string(array_accum(#{clause}), '#{separator}')"
+      "array_to_string(array_accum(COALESCE(#{clause}, '0')), '#{separator}')"
     end
     
     def cast_to_string(clause)
@@ -37,8 +36,16 @@ module ThinkingSphinx
     end
     
     def convert_nulls(clause, default = '')
-      default = "'#{default}'"  if default.is_a?(String)
-      default = 'NULL'          if default.nil?
+      default = case default
+      when String
+        "'#{default}'"
+      when NilClass
+        'NULL'
+      when Fixnum
+        "#{default}::bigint"
+      else
+        default
+      end
       
       "COALESCE(#{clause}, #{default})"
     end

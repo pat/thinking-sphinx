@@ -1,6 +1,6 @@
 # Reset the primary key to allow us to create robots with specific internal_ids
 class Robot < ActiveRecord::Base
-  set_primary_key :id
+  set_primary_key :alternate_primary_key
 end
 
 Robot.create :name => 'Fritz',      :internal_id => 'F0001'

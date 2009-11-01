@@ -13,7 +13,7 @@ module ThinkingSphinx
     end
     
     def group_concatenate(clause, separator = ' ')
-      "GROUP_CONCAT(DISTINCT #{clause} SEPARATOR '#{separator}')"
+      "GROUP_CONCAT(DISTINCT IFNULL(#{clause}, '0') SEPARATOR '#{separator}')"
     end
     
     def cast_to_string(clause)
