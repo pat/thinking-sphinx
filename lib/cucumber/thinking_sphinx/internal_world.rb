@@ -78,14 +78,13 @@ module Cucumber
       end
       
       def database_settings
-        yaml = yaml_database_settings
         {
           :adapter  => @adapter,
-          :database => yaml['database'] || @database,
-          :username => yaml['username'] || @username,
-          :password => yaml['password'] || @password,
-          :host     => yaml['host']     || @host
-        }
+          :database => @database,
+          :username => @username,
+          :password => @password,
+          :host     => @host
+        }.merge yaml_database_settings
       end
       
       def configure_active_record
