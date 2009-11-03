@@ -215,7 +215,7 @@ module ThinkingSphinx
     end
     
     def search(*args)
-      add_scope :default if is_scope?(:default)
+      add_default_scope
       merge_search ThinkingSphinx::Search.new(*args)
       self
     end
@@ -690,6 +690,11 @@ MSG
     
     def is_scope?(method)
       one_class && one_class.sphinx_scopes.include?(method)
+    end
+    
+    # Adds the default_sphinx_scope if set.
+    def add_default_scope
+      add_scope(one_class.get_default_sphinx_scope) if one_class && one_class.has_default_sphinx_scope?
     end
     
     def add_scope(method, *args, &block)

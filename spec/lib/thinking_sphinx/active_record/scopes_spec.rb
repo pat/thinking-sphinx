@@ -37,11 +37,16 @@ describe ThinkingSphinx::ActiveRecord::Scopes do
 
   describe '.default_sphinx_scope' do
     before :each do
-      Alpha.default_sphinx_scope { |name| {:conditions => {:name => name}} }
+      Alpha.sphinx_scope(:scope_used_as_default_scope) { {:conditions => {:name => 'name'}} }
+      Alpha.default_sphinx_scope :scope_used_as_default_scope
     end
     
     it "should return an array of defined scope names as symbols" do
-      Alpha.sphinx_scopes.should == [:default]
+      Alpha.sphinx_scopes.should == [:scope_used_as_default_scope]
+    end
+    
+    it "should have a default_sphinx_scope" do
+      Alpha.has_default_sphinx_scope?.should be_true
     end
   end
 
@@ -62,7 +67,8 @@ describe ThinkingSphinx::ActiveRecord::Scopes do
 
   describe '.example_default_scope' do
     before :each do
-      Alpha.default_sphinx_scope { {:conditions => {:name => 'foo'}} }
+      Alpha.sphinx_scope(:foo_scope){ {:conditions => {:name => 'foo'}} }
+      Alpha.default_sphinx_scope :foo_scope
       Alpha.sphinx_scope(:by_name) { |name| {:conditions => {:name => name}} }
       Alpha.sphinx_scope(:by_foo)  { |foo|  {:conditions => {:foo  => foo}}  }
     end

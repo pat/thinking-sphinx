@@ -12,19 +12,23 @@ module ThinkingSphinx
         # Similar to ActiveRecord's default_scope method Thinking Sphinx supports
         # a default_sphinx_scope. For example:
         #
-        #    default_sphinx_scope {
-        #         { :order => 'created_at DESC' }
-        #       }
+        #    default_sphinx_scope :some_sphinx_named_scope
         #
-        # The scope is automatically applied when the search method is called.
-        # The default_scope can also be created using:
-        #
-        #   sphinx_scope(:default) {
-        #         { :order => 'created_at DESC' }
-        #      }
-        #
-        def default_sphinx_scope(&block)
-          sphinx_scope(:default, &block)
+        # The scope is automatically applied when the search method is called. It
+        # will only be applied if it is an existing sphinx_scope.
+        def default_sphinx_scope(sphinx_scope_name)
+          @default_sphinx_scope = sphinx_scope_name
+        end
+
+        # Returns the default_sphinx_scope or nil if none is set.
+        def get_default_sphinx_scope
+          @default_sphinx_scope
+        end
+
+        # Returns true if the current Model has a default_sphinx_scope. Also checks if
+        # the default_sphinx_scope actually is a scope.
+        def has_default_sphinx_scope?
+          !@default_sphinx_scope.nil? && sphinx_scopes.include?(@default_sphinx_scope)
         end
 
         # Similar to ActiveRecord's named_scope method Thinking Sphinx supports
