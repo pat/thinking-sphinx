@@ -269,13 +269,13 @@ module ThinkingSphinx
       client.update(
         "#{self.class.sphinx_indexes.first.name}_core",
         ['sphinx_deleted'],
-        {self.sphinx_document_id => 1}
+        {self.sphinx_document_id => [1]}
       ) if self.in_core_index?
       
       client.update(
         "#{self.class.sphinx_indexes.first.name}_delta",
         ['sphinx_deleted'],
-        {self.sphinx_document_id => 1}
+        {self.sphinx_document_id => [1]}
       ) if self.class.sphinx_indexes.any? { |index| index.delta? } &&
         self.toggled_delta?
     rescue ::ThinkingSphinx::ConnectionError
