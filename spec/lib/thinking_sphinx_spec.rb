@@ -93,6 +93,10 @@ describe ThinkingSphinx do
       ::ActiveRecord::Base.stub!(
         :connection => @connection
       )
+      
+      ThinkingSphinx.module_eval do
+        class_variable_set :@@use_group_by_shortcut, nil
+      end
     end
     
     it "should return true if no ONLY_FULL_GROUP_BY" do
