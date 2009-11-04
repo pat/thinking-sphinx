@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{thinking-sphinx}
-  s.version = "1.3.0"
+  s.version = "1.3.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pat Allan"]
@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
     "LICENCE",
      "README.textile",
      "VERSION.yml",
+     "lib/cucumber/thinking_sphinx/external_world.rb",
      "lib/cucumber/thinking_sphinx/internal_world.rb",
      "lib/cucumber/thinking_sphinx/sql_logger.rb",
      "lib/thinking_sphinx.rb",
