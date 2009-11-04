@@ -1,6 +1,5 @@
 Before do
   $queries_executed = []
-  ThinkingSphinx::Deltas::Job.cancel_thinking_sphinx_jobs
   
   @model      = nil
   @method     = :search

@@ -1,6 +1,4 @@
 require 'thinking_sphinx/deltas/default_delta'
-require 'thinking_sphinx/deltas/delayed_delta'
-require 'thinking_sphinx/deltas/datetime_delta'
 
 module ThinkingSphinx
   module Deltas
