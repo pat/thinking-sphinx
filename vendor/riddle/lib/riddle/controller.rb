@@ -5,8 +5,10 @@ module Riddle
       @path           = path
     end
     
-    def index
-      cmd = "indexer --config #{@path} --all"
+    def index(*indexes)
+      indexes << '--all' if indexes.empty?
+      
+      cmd = "indexer --config #{@path} #{indexes.join(' ')}"
       cmd << " --rotate" if running?
       `#{cmd}`
     end
