@@ -33,14 +33,19 @@ module Riddle
       :search   => 0, # SEARCHD_COMMAND_SEARCH
       :excerpt  => 1, # SEARCHD_COMMAND_EXCERPT
       :update   => 2, # SEARCHD_COMMAND_UPDATE
-      :keywords => 3  # SEARCHD_COMMAND_KEYWORDS
+      :keywords => 3, # SEARCHD_COMMAND_KEYWORDS
+      :persist  => 4, # SEARCHD_COMMAND_PERSIST
+      :status   => 5, # SEARCHD_COMMAND_STATUS
+      :query    => 6  # SEARCHD_COMMAND_QUERY
     }
     
     Versions = {
       :search   => 0x113, # VER_COMMAND_SEARCH
       :excerpt  => 0x100, # VER_COMMAND_EXCERPT
       :update   => 0x101, # VER_COMMAND_UPDATE
-      :keywords => 0x100  # VER_COMMAND_KEYWORDS
+      :keywords => 0x100, # VER_COMMAND_KEYWORDS
+      :status   => 0x100, # VER_COMMAND_STATUS
+      :query    => 0x100  # VER_COMMAND_QUERY
     }
     
     Statuses = {
@@ -64,7 +69,10 @@ module Riddle
       :proximity_bm25 => 0, # SPH_RANK_PROXIMITY_BM25
       :bm25           => 1, # SPH_RANK_BM25
       :none           => 2, # SPH_RANK_NONE
-      :wordcount      => 3  # SPH_RANK_WORDCOUNT
+      :wordcount      => 3, # SPH_RANK_WORDCOUNT
+      :proximity      => 4, # SPH_RANK_PROXIMITY
+      :match_any      => 5, # SPH_RANK_MATCHANY
+      :fieldmask      => 6  # SPH_RANK_FIELDMASK
     }
     
     SortModes = {
@@ -82,6 +90,7 @@ module Riddle
       :ordinal    => 3, # SPH_ATTR_ORDINAL
       :bool       => 4, # SPH_ATTR_BOOL
       :float      => 5, # SPH_ATTR_FLOAT
+      :bigint     => 6, # SPH_ATTR_BIGINT
       :multi      => 0x40000000 # SPH_ATTR_MULTI
     }
     
@@ -104,7 +113,7 @@ module Riddle
       :match_mode, :sort_mode, :sort_by, :weights, :id_range, :filters,
       :group_by, :group_function, :group_clause, :group_distinct, :cut_off,
       :retry_count, :retry_delay, :anchor, :index_weights, :rank_mode,
-      :max_query_time, :field_weights, :timeout
+      :max_query_time, :field_weights, :timeout, :overrides, :select
     attr_reader :queue
     
     # Can instantiate with a specific server and port - otherwise it assumes
@@ -113,6 +122,7 @@ module Riddle
     def initialize(server=nil, port=nil)
       @server = server || "localhost"
       @port   = port   || 3312
+      @socket = nil
       
       reset
       
@@ -146,6 +156,8 @@ module Riddle
       # string keys are field names, integer values are weightings
       @field_weights  = {}
       @timeout        = 0
+      @overrides      = {}
+      @select         = "*"
     end
     
     # Set the geo-anchor point - with the names of the attributes that contain
@@ -389,27 +401,77 @@ module Riddle
       end
     end
     
+    def status
+      response = Response.new request(
+        :status, Message.new
+      )
+      
+      rows, cols = response.next_int, response.next_int
+      
+      (0...rows).inject({}) do |hash, row|
+        hash[response.next.to_sym] = response.next
+        hash
+      end
+    end
+    
+    def add_override(attribute, type, values)
+      @overrides[attribute] = {:type => type, :values => values}
+    end
+    
+    def open
+      open_socket
+      
+      return if Versions[:search] < 0x116
+      
+      @socket.send [
+        Commands[:persist], 0, 4, 1
+      ].pack("nnNN"), 0
+    end
+    
+    def close
+      close_socket
+    end
+    
     private
     
-    # Connects to the Sphinx daemon, and yields a socket to use. The socket is
-    # closed at the end of the block.
-    def connect(&block)
-      socket = nil
+    def open_socket
+      raise "Already Connected" unless @socket.nil?
+      
       if @timeout == 0
-        socket = initialise_connection
+        @socket = initialise_connection
       else
         begin
-          Timeout.timeout(@timeout) { socket = initialise_connection }
+          Timeout.timeout(@timeout) { @socket = initialise_connection }
         rescue Timeout::Error
           raise Riddle::ConnectionError,
             "Connection to #{@server} on #{@port} timed out after #{@timeout} seconds"
         end
       end
-
-      begin
-        yield socket
-      ensure
-        socket.close
+      
+      true
+    end
+    
+    def close_socket
+      raise "Not Connected" if @socket.nil?
+      
+      @socket.close
+      @socket = nil
+      
+      true
+    end
+    
+    # Connects to the Sphinx daemon, and yields a socket to use. The socket is
+    # closed at the end of the block.
+    def connect(&block)
+      unless @socket.nil?
+        yield @socket
+      else
+        open_socket
+        begin
+          yield @socket
+        ensure
+          close_socket
+        end
       end
     end
     
@@ -453,7 +515,7 @@ module Riddle
       if message.respond_to?(:force_encoding)
         message = message.force_encoding('ASCII-8BIT')
       end
-          
+      
       connect do |socket|
         case command
         when :search
@@ -463,6 +525,10 @@ module Riddle
             Commands[command], Versions[command],
             4+message.length,  messages.length
           ].pack("nnNN") + message, 0
+        when :status
+          socket.send [
+            Commands[command], Versions[command], 4, 1
+          ].pack("nnNN"), 0
         else
           socket.send [
             Commands[command], Versions[command], message.length
@@ -565,6 +631,30 @@ module Riddle
       
       message.append_string comments
       
+      return message.to_s if Versions[:search] < 0x116
+      
+      # Overrides  
+      message.append_int @overrides.length
+      @overrides.each do |key,val|
+        message.append_string key.to_s
+        message.append_int AttributeTypes[val[:type]]
+        message.append_int val[:values].length
+        val[:values].each do |id,map|
+          message.append_64bit_int id
+          method = case val[:type]
+          when :float
+            :append_float
+          when :bigint
+            :append_64bit_int
+          else
+            :append_int
+          end
+          message.send method, map
+        end
+      end
+      
+      message.append_string @select
+      
       message.to_s
     end
     
@@ -626,9 +716,11 @@ module Riddle
       
       case type
       when AttributeTypes[:float]
-        is_multi ? response.next_float_array : response.next_float
+        is_multi ? response.next_float_array    : response.next_float
+      when AttributeTypes[:bigint]
+        is_multi ? response.next_64bit_int_arry : response.next_64bit_int
       else
-        is_multi ? response.next_int_array   : response.next_int
+        is_multi ? response.next_int_array      : response.next_int
       end
     end
   end

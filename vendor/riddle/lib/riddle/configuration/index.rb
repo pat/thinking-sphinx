@@ -2,19 +2,23 @@ module Riddle
   class Configuration
     class Index < Riddle::Configuration::Section
       self.settings = [:source, :path, :docinfo, :mlock, :morphology,
-        :stopwords, :wordforms, :exceptions, :min_word_len, :charset_type,
-        :charset_table, :ignore_chars, :min_prefix_len, :min_infix_len,
-        :prefix_fields, :infix_fields, :enable_star, :ngram_len, :ngram_chars,
-        :phrase_boundary, :phrase_boundary_step, :html_strip,
-        :html_index_attrs, :html_remove_elements, :preopen]
+        :min_stemming_len, :stopwords, :wordforms, :exceptions, :min_word_len,
+        :charset_type, :charset_table, :ignore_chars, :min_prefix_len,
+        :min_infix_len, :prefix_fields, :infix_fields, :enable_star,
+        :ngram_len, :ngram_chars, :phrase_boundary, :phrase_boundary_step,
+        :html_strip, :html_index_attrs, :html_remove_elements, :preopen,
+        :ondisk_dict, :inplace_enable, :inplace_hit_gap, :inplace_docinfo_gap,
+        :inplace_reloc_factor, :inplace_write_factor, :index_exact_words]
       
       attr_accessor :name, :parent, :sources, :path, :docinfo, :mlock,
-        :morphologies, :stopword_files, :wordform_files, :exception_files,
-        :min_word_len, :charset_type, :charset_table, :ignore_characters,
-        :min_prefix_len, :min_infix_len, :prefix_field_names,
-        :infix_field_names, :enable_star, :ngram_len, :ngram_characters,
-        :phrase_boundaries, :phrase_boundary_step, :html_strip,
-        :html_index_attrs, :html_remove_element_tags, :preopen
+        :morphologies, :min_stemming_len, :stopword_files, :wordform_files,
+        :exception_files, :min_word_len, :charset_type, :charset_table,
+        :ignore_characters, :min_prefix_len, :min_infix_len,
+        :prefix_field_names, :infix_field_names, :enable_star, :ngram_len,
+        :ngram_characters, :phrase_boundaries, :phrase_boundary_step,
+        :html_strip, :html_index_attrs, :html_remove_element_tags, :preopen,
+        :ondisk_dict, :inplace_enable, :inplace_hit_gap, :inplace_docinfo_gap,
+        :inplace_reloc_factor, :inplace_write_factor, :index_exact_words
       
       def initialize(name, *sources)
         @name                     = name

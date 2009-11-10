@@ -75,6 +75,16 @@ module Riddle
         return items
       end
       
+      def next_64bit_int_array
+        count = next_int
+        items = []
+        for i in 0...count
+          items << self.next_64bit_int
+        end
+        
+        return items
+      end
+      
       # Returns the length of the streamed data
       def length
         @str.length

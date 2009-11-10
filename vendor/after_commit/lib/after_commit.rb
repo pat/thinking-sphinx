@@ -1,45 +1,65 @@
-require 'after_commit/active_record'
-require 'after_commit/connection_adapters'
-
 module AfterCommit
-  def self.committed_records
-    @@committed_records ||= []
+  def self.record(connection, record)
+    Thread.current[:committed_records] ||= {}
+    Thread.current[:committed_records][connection.object_id] ||= []
+    Thread.current[:committed_records][connection.object_id] << record
   end
 
-  def self.committed_records=(committed_records)
-    @@committed_records = committed_records
+  def self.record_created(connection, record)
+    Thread.current[:committed_records_on_create] ||= {}
+    Thread.current[:committed_records_on_create][connection.object_id] ||= []
+    Thread.current[:committed_records_on_create][connection.object_id] << record
   end
-  
-  def self.committed_records_on_create
-    @@committed_records_on_create ||= []
+
+  def self.record_updated(connection, record)
+    Thread.current[:committed_records_on_update] ||= {}
+    Thread.current[:committed_records_on_update][connection.object_id] ||= []
+    Thread.current[:committed_records_on_update][connection.object_id] << record
   end
-  
-  def self.committed_records_on_create=(committed_records)
-    @@committed_records_on_create = committed_records
+
+  def self.record_destroyed(connection, record)
+    Thread.current[:committed_records_on_destroy] ||= {}
+    Thread.current[:committed_records_on_destroy][connection.object_id] ||= []
+    Thread.current[:committed_records_on_destroy][connection.object_id] << record
   end
-  
-  def self.committed_records_on_update
-    @@committed_records_on_update ||= []
+
+  def self.created_records(connection)
+    Thread.current[:committed_records_on_create] ||= {}
+    Thread.current[:committed_records_on_create][connection.object_id] ||= []
   end
-  
-  def self.committed_records_on_update=(committed_records)
-    @@committed_records_on_update = committed_records
+
+  def self.updated_records(connection)
+    Thread.current[:committed_records_on_update] ||= {}
+    Thread.current[:committed_records_on_update][connection.object_id] ||= []
   end
-  
-  def self.committed_records_on_destroy
-    @@committed_records_on_destroy ||= []
+
+  def self.destroyed_records(connection)
+    Thread.current[:committed_records_on_destroy] ||= {}
+    Thread.current[:committed_records_on_destroy][connection.object_id] ||= []
   end
-  
-  def self.committed_records_on_destroy=(committed_records)
-    @@committed_records_on_destroy = committed_records
+
+  def self.records(connection)
+    Thread.current[:committed_records] ||= {}
+    Thread.current[:committed_records][connection.object_id] ||= []
+  end
+
+  def self.cleanup(connection)
+    Thread.current[:committed_records]            = {}
+    Thread.current[:committed_records_on_create]  = {}
+    Thread.current[:committed_records_on_update]  = {}
+    Thread.current[:committed_records_on_destroy] = {}
   end
 end
+
+require 'after_commit/active_record'
+require 'after_commit/connection_adapters'
 
 ActiveRecord::Base.send(:include, AfterCommit::ActiveRecord)
 
 Object.subclasses_of(ActiveRecord::ConnectionAdapters::AbstractAdapter).each do |klass|
   klass.send(:include, AfterCommit::ConnectionAdapters)
 end
+
 if defined?(JRUBY_VERSION) and defined?(JdbcSpec::MySQL)
   JdbcSpec::MySQL.send :include, AfterCommit::ConnectionAdapters
 end

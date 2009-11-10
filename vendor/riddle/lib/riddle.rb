@@ -7,24 +7,18 @@ require 'riddle/controller'
 
 module Riddle #:nodoc:
   class ConnectionError < StandardError #:nodoc:
+    #
   end
   
-  module Version #:nodoc:
-    Major   = 0
-    Minor   = 9
-    Tiny    = 8
-    # Revision number for RubyForge's sake, taken from what Sphinx
-    # outputs to the command line.
-    Rev     = 1533
-    # Release number to mark my own fixes, beyond feature parity with
-    # Sphinx itself.
-    Release = 11
-    
-    String      = [Major, Minor, Tiny].join('.')
-    GemVersion  = [Major, Minor, Tiny, Rev, Release].join('.')
+  def self.escape_pattern
+    Thread.current[:riddle_escape_pattern] ||= /[\(\)\|\-!@~"&\/]/
+  end
+  
+  def self.escape_pattern=(pattern)
+    Thread.current[:riddle_escape_pattern] = pattern
   end
   
   def self.escape(string)
-    string.gsub(/[\(\)\|\-!@~"&\/]/) { |char| "\\#{char}" }
+    string.gsub(escape_pattern) { |char| "\\#{char}" }
   end
 end

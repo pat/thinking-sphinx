@@ -1,16 +1,17 @@
 module Riddle
   class Configuration
     class DistributedIndex < Riddle::Configuration::Section
-      self.settings = [:type, :local, :agent, :agent_connect_timeout,
-        :agent_query_timeout]
+      self.settings = [:type, :local, :agent, :agent_blackhole,
+        :agent_connect_timeout, :agent_query_timeout]
       
-      attr_accessor :name, :local_indexes, :remote_indexes,
+      attr_accessor :name, :local_indexes, :remote_indexes, :agent_blackhole,
         :agent_connect_timeout, :agent_query_timeout
       
       def initialize(name)
-        @name           = name
-        @local_indexes  = []
-        @remote_indexes = []
+        @name             = name
+        @local_indexes    = []
+        @remote_indexes   = []
+        @agent_blackhole  = []
       end
       
       def type
@@ -29,7 +30,7 @@ module Riddle
           }.collect { |index| index.name }.join(",")
         }
       end
-      
+            
       def render
         raise ConfigurationError unless valid?
         

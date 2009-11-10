@@ -35,6 +35,10 @@ module Riddle
         @message << [float].pack('f').unpack('L*').pack("N")
       end
       
+      def append_boolean(bool)
+        append_int(bool ? 1 : 0)
+      end
+      
       # Append multiple integers
       def append_ints(*ints)
         ints.each { |int| append_int(int) }
