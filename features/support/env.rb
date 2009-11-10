@@ -13,6 +13,7 @@ require 'cucumber/thinking_sphinx/internal_world'
 world = Cucumber::ThinkingSphinx::InternalWorld.new
 world.configure_database
 
-require 'thinking_sphinx'
+SphinxVersion = ENV['VERSION'] || '0.9.8'
+require "thinking_sphinx/#{SphinxVersion}"
 
 world.setup

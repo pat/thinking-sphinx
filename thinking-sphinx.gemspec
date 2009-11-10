@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{thinking-sphinx}
-  s.version = "1.3.2"
+  s.version = "1.3.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pat Allan"]
-  s.date = %q{2009-11-05}
+  s.date = %q{2009-11-10}
   s.description = %q{A concise and easy-to-use Ruby library that connects ActiveRecord to the Sphinx search daemon, managing configuration, indexing and searching.}
   s.email = %q{pat@freelancing-gods.com}
   s.extra_rdoc_files = [
@@ -23,6 +23,8 @@ Gem::Specification.new do |s|
      "lib/cucumber/thinking_sphinx/internal_world.rb",
      "lib/cucumber/thinking_sphinx/sql_logger.rb",
      "lib/thinking_sphinx.rb",
+     "lib/thinking_sphinx/0.9.8.rb",
+     "lib/thinking_sphinx/0.9.9.rb",
      "lib/thinking_sphinx/active_record.rb",
      "lib/thinking_sphinx/active_record/attribute_updates.rb",
      "lib/thinking_sphinx/active_record/delta.rb",
@@ -59,31 +61,7 @@ Gem::Specification.new do |s|
      "rails/init.rb",
      "tasks/distribution.rb",
      "tasks/rails.rake",
-     "tasks/testing.rb",
-     "vendor/after_commit/LICENSE",
-     "vendor/after_commit/README",
-     "vendor/after_commit/Rakefile",
-     "vendor/after_commit/init.rb",
-     "vendor/after_commit/lib/after_commit.rb",
-     "vendor/after_commit/lib/after_commit/active_record.rb",
-     "vendor/after_commit/lib/after_commit/connection_adapters.rb",
-     "vendor/after_commit/test/after_commit_test.rb",
-     "vendor/riddle/lib/riddle.rb",
-     "vendor/riddle/lib/riddle/client.rb",
-     "vendor/riddle/lib/riddle/client/filter.rb",
-     "vendor/riddle/lib/riddle/client/message.rb",
-     "vendor/riddle/lib/riddle/client/response.rb",
-     "vendor/riddle/lib/riddle/configuration.rb",
-     "vendor/riddle/lib/riddle/configuration/distributed_index.rb",
-     "vendor/riddle/lib/riddle/configuration/index.rb",
-     "vendor/riddle/lib/riddle/configuration/indexer.rb",
-     "vendor/riddle/lib/riddle/configuration/remote_index.rb",
-     "vendor/riddle/lib/riddle/configuration/searchd.rb",
-     "vendor/riddle/lib/riddle/configuration/section.rb",
-     "vendor/riddle/lib/riddle/configuration/source.rb",
-     "vendor/riddle/lib/riddle/configuration/sql_source.rb",
-     "vendor/riddle/lib/riddle/configuration/xml_source.rb",
-     "vendor/riddle/lib/riddle/controller.rb"
+     "tasks/testing.rb"
   ]
   s.homepage = %q{http://ts.freelancing-gods.com}
   s.post_install_message = %q{If you're upgrading, you should read this:
@@ -215,11 +193,17 @@ http://freelancing-god.github.com/ts/en/upgrading.html
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<activerecord>, [">= 1.15.6"])
+      s.add_runtime_dependency(%q<riddle>, [">= 1.0.0"])
+      s.add_runtime_dependency(%q<after_commit>, [">= 1.0.0"])
     else
       s.add_dependency(%q<activerecord>, [">= 1.15.6"])
+      s.add_dependency(%q<riddle>, [">= 1.0.0"])
+      s.add_dependency(%q<after_commit>, [">= 1.0.0"])
     end
   else
     s.add_dependency(%q<activerecord>, [">= 1.15.6"])
+    s.add_dependency(%q<riddle>, [">= 1.0.0"])
+    s.add_dependency(%q<after_commit>, [">= 1.0.0"])
   end
 end
 

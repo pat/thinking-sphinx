@@ -5,7 +5,8 @@ require 'fileutils'
 require 'ginger'
 require 'jeweler'
 
-require 'lib/thinking_sphinx'
+SphinxVersion = ENV['VERSION'] || '0.9.8'
+require "lib/thinking_sphinx/#{SphinxVersion}"
 
 require 'will_paginate'
 

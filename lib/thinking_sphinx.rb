@@ -3,7 +3,6 @@ Dir[File.join(File.dirname(__FILE__), '../vendor/*/lib')].each do |path|
 end
 
 require 'active_record'
-require 'riddle'
 require 'after_commit'
 require 'yaml'
 require 'cgi'

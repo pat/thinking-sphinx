@@ -2,9 +2,7 @@ require 'yard'
 require 'jeweler'
 
 desc 'Generate documentation'
-YARD::Rake::YardocTask.new do |t|
-  # t.title = 'Thinking Sphinx - ActiveRecord Sphinx Plugin'
-end
+YARD::Rake::YardocTask.new
 
 Jeweler::Tasks.new do |gem|
   gem.name        = "thinking-sphinx"
@@ -22,7 +20,6 @@ Jeweler::Tasks.new do |gem|
     "README.textile",
     "tasks/**/*.rb",
     "tasks/**/*.rake",
-    "vendor/**/*",
     "VERSION.yml"
   ]
   gem.test_files = FileList[
@@ -31,6 +28,8 @@ Jeweler::Tasks.new do |gem|
   ]
   
   gem.add_dependency 'activerecord', '>= 1.15.6'
+  gem.add_dependency 'riddle',       '>= 1.0.0'
+  gem.add_dependency 'after_commit', '>= 1.0.0'
   
   gem.post_install_message = <<-MESSAGE
 If you're upgrading, you should read this:

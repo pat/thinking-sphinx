@@ -1,4 +1,4 @@
-require 'thinking_sphinx'
+require 'thinking_sphinx/0.9.8'
 
 if Rails::VERSION::STRING.to_f < 2.1
   ThinkingSphinx::Configuration.instance.load_models

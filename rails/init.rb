@@ -1,4 +1,4 @@
-require 'thinking_sphinx'
+require 'thinking_sphinx/0.9.8'
 require 'action_controller/dispatcher'
 
 ActionController::Dispatcher.to_prepare :thinking_sphinx do
