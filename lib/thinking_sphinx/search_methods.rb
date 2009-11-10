@@ -155,7 +155,7 @@ module ThinkingSphinx
       # asterisks. You need to make the config/sphinx.yml changes yourself.
       #
       # By default, the tokens are assumed to match the regular expression
-      # /\w+/u. If you've modified the charset_table, pass another regular
+      # /\w\+/u\+. If you've modified the charset_table, pass another regular
       # expression, e.g.
       #
       #   User.search("oo@bar.c", :star => /[\w@.]+/u)
@@ -313,9 +313,9 @@ module ThinkingSphinx
       # Once you've got your results set, you can access the distances as
       # follows:
       # 
-      # @results.each_with_geodist do |result, distance|
-      #   # ...
-      # end
+      #   @results.each_with_geodist do |result, distance|
+      #     # ...
+      #   end
       # 
       # The distance value is returned as a float, representing the distance in
       # metres.
