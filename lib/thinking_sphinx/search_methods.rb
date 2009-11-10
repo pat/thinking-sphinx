@@ -320,6 +320,22 @@ module ThinkingSphinx
       # The distance value is returned as a float, representing the distance in
       # metres.
       # 
+      # == Filtering by custom attributes
+      #
+      # Do note that this applies only to sphinx 0.9.9
+      # 
+      # Should you find yourself in desperate need of a filter that involves
+      # selecting either one of multiple conditions, one solution could be
+      # provided by the :sph_select option within the search. 
+      # This handles which fields are selected by sphinx from its store.
+      #
+      # The default value is "*", and you can add custom fields using syntax
+      # similar to sql:
+      #
+      #   Flower.search "foo", :sph_select => "*, petals < 1 or color = 2 as grass"
+      #
+      # This will add the 'grass' attribute, which will now be usable in your filters.
+      #   
       # == Handling a Stale Index
       #
       # Especially if you don't use delta indexing, you risk having records in

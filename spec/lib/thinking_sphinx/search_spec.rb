@@ -302,6 +302,21 @@ describe ThinkingSphinx::Search do
         @client.match_mode.should == :extended2
       end
     end
+
+    describe 'sph_select' do
+      it "should default to *" do
+        ThinkingSphinx::Search.new.first
+        
+        @client.select.should == "*"
+      end
+      
+      it "should get set on the client if specified" do
+        ThinkingSphinx::Search.new('general', :sph_select => "*, foo as bar").first
+        
+        @client.select.should == "*, foo as bar"
+      end
+
+    end
     
     describe 'pagination' do
       it "should set the limit using per_page" do
