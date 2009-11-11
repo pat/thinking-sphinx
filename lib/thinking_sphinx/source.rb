@@ -43,8 +43,8 @@ module ThinkingSphinx
       
       set_source_database_settings  source
       set_source_attributes         source, offset
-      set_source_sql                source, offset
       set_source_settings           source
+      set_source_sql                source, offset
       
       source
     end
@@ -57,6 +57,7 @@ module ThinkingSphinx
       
       set_source_database_settings  source
       set_source_attributes         source, offset, true
+      set_source_settings           source
       set_source_sql                source, offset, true
       
       source
