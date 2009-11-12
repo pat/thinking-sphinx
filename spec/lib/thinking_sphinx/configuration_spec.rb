@@ -210,17 +210,20 @@ describe ThinkingSphinx::Configuration do
 
       config.source_options[option.to_sym] = nil
     end
+    
+    config.source_options["sql_query_pre"] = nil  
   end
   
   it "should not blow away delta or utf options if sql pre is specified in config" do
     config = ThinkingSphinx::Configuration.instance
-    config.source_options[:sql_query_pre] = ["a pre query"]
+    config.source_options["sql_query_pre"] = ["a pre query"]
     config.build
     file = open(config.config_file) { |f| f.read }
     
-    file.should match(/sql_query_pre = a pre query\n\s*sql_query_pre = SET NAMES utf8/im)
     file.should match(/sql_query_pre = a pre query\n\s*sql_query_pre = UPDATE `\w+` SET `delta` = 0 WHERE `delta` = 1/im)
     file.should match(/sql_query_pre = a pre query\n\s*sql_query_pre = \n/im)
+    
+    config.source_options["sql_query_pre"] = nil
   end
 
   it "should set any explicit prefixed or infixed fields" do
