@@ -142,3 +142,4 @@ Since I first released this library, there's been quite a few people who have su
 * Christian Aust
 * Martin Sarasale
 * Édouard Brière
+* Steve Madsen
