@@ -8,7 +8,8 @@ module Riddle
         :ngram_len, :ngram_chars, :phrase_boundary, :phrase_boundary_step,
         :html_strip, :html_index_attrs, :html_remove_elements, :preopen,
         :ondisk_dict, :inplace_enable, :inplace_hit_gap, :inplace_docinfo_gap,
-        :inplace_reloc_factor, :inplace_write_factor, :index_exact_words]
+        :inplace_reloc_factor, :inplace_write_factor, :index_exact_words,
+        :overshort_step, :stopwords_step]
       
       attr_accessor :name, :parent, :sources, :path, :docinfo, :mlock,
         :morphologies, :min_stemming_len, :stopword_files, :wordform_files,
@@ -18,7 +19,8 @@ module Riddle
         :ngram_characters, :phrase_boundaries, :phrase_boundary_step,
         :html_strip, :html_index_attrs, :html_remove_element_tags, :preopen,
         :ondisk_dict, :inplace_enable, :inplace_hit_gap, :inplace_docinfo_gap,
-        :inplace_reloc_factor, :inplace_write_factor, :index_exact_words
+        :inplace_reloc_factor, :inplace_write_factor, :index_exact_words,
+        :overshort_step, :stopwords_step
       
       def initialize(name, *sources)
         @name                     = name

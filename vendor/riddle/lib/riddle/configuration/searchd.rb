@@ -5,7 +5,8 @@ module Riddle
         :read_timeout, :client_timeout, :max_children, :pid_file, :max_matches,
         :seamless_rotate, :preopen_indexes, :unlink_old, :attr_flush_period,
         :ondisk_dict_default, :max_packet_size, :mva_updates_pool,
-        :crash_log_path, :max_filters, :max_filter_values]
+        :crash_log_path, :max_filters, :max_filter_values, :listen_backlog,
+        :read_buffer, :read_unhinted]
       
       attr_accessor *self.settings
             
