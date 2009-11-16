@@ -452,4 +452,18 @@ describe ThinkingSphinx::Index::Builder do
       @index.delta_object.should be_a_kind_of(ThinkingSphinx::Deltas::DefaultDelta)
     end
   end
+  
+  context 'index options' do
+    before :each do
+      @index = ThinkingSphinx::Index::Builder.generate(Person) do
+        indexes first_name
+        
+        set_property :index_exact_words => true
+      end
+    end
+    
+    it "should track the index_exact_words option to the index" do
+      @index.local_options[:index_exact_words].should be_true
+    end
+  end
 end
