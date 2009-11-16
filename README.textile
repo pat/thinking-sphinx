@@ -144,3 +144,4 @@ Since I first released this library, there's been quite a few people who have su
 * Édouard Brière
 * Steve Madsen
 * Justin DeWind
+* Chris Z
