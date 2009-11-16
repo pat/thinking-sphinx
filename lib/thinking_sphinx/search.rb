@@ -234,7 +234,7 @@ module ThinkingSphinx
         begin
           log "Querying: '#{query}'"
           runtime = Benchmark.realtime {
-            @results = client.query query, index, comment
+            @results = client.query query, indexes, comment
           }
           log "Found #{@results[:total_found]} results", :debug,
             "Sphinx (#{sprintf("%f", runtime)}s)"
