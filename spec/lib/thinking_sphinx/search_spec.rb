@@ -834,6 +834,14 @@ describe ThinkingSphinx::Search do
       
       ThinkingSphinx::Search.new.total_pages.should == 2
     end
+    
+    it "should return 0 if there is no index and therefore no results" do
+      @client.stub!(:query => {
+        :matches => [], :total_found => nil, :total => nil
+      })
+      
+      ThinkingSphinx::Search.new.total_pages.should == 0
+    end
   end
   
   describe '#next_page' do

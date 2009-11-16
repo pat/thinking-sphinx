@@ -155,6 +155,8 @@ module ThinkingSphinx
     # 
     def total_pages
       populate
+      return 0 if @results[:total].nil?
+      
       @total_pages ||= (@results[:total] / per_page.to_f).ceil
     end
     # Compatibility with older versions of will_paginate
