@@ -20,7 +20,7 @@ Jeweler::Tasks.new do |gem|
     "README.textile",
     "tasks/**/*.rb",
     "tasks/**/*.rake",
-    "VERSION.yml"
+    "VERSION"
   ]
   gem.test_files = FileList[
     "features/**/*",
