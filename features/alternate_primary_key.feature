@@ -23,5 +23,5 @@ Feature: Searching on a single model
     
     When I destroy robot Expendable
     And I wait for Sphinx to catch up
-    And I search for three
+    And I search for Expendable
     Then I should get 0 results
