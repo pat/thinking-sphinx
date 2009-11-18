@@ -10,22 +10,25 @@ module ThinkingSphinx
       private
             
       def update_attribute_values
-        return unless ThinkingSphinx.updates_enabled? && ThinkingSphinx.sphinx_running?
+        return true unless ThinkingSphinx.updates_enabled? &&
+          ThinkingSphinx.sphinx_running?
         
         config = ThinkingSphinx::Configuration.instance
-        client = Riddle::Client.new config.address, config.port
+        client = config.client
         
-        self.sphinx_indexes.each do |index|
+        self.class.sphinx_indexes.each do |index|
           attribute_pairs  = attribute_values_for_index(index)
           attribute_names  = attribute_pairs.keys
           attribute_values = attribute_names.collect { |key|
             attribute_pairs[key]
           }
           
-          client.update "#{index.name}_core", attribute_names, {
+          client.update "#{index.core_name}", attribute_names, {
             sphinx_document_id => attribute_values
-          } if in_core_index?
+          } if self.class.search_for_id(sphinx_document_id, index.core_name)
         end
+        
+        true
       end
       
       def updatable_attributes(index)

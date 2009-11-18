@@ -466,4 +466,14 @@ describe ThinkingSphinx::Index::Builder do
       @index.local_options[:index_exact_words].should be_true
     end
   end
+  
+  context 'with an explicit name' do
+    it "should set the index's name using the provided value" do
+      index = ThinkingSphinx::Index::Builder.generate(Person, 'custom') do
+        indexes first_name
+      end
+      
+      index.name.should == 'custom'
+    end
+  end
 end

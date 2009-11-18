@@ -73,14 +73,12 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
       Person.delta_object.stub!(:` => "", :toggled => true)
       
       @person = Person.new
-      @person.stub!(
-        :in_both_indexes?     => false,
-        :sphinx_document_id => 1
-      )
+      Person.stub!(:search_for_id => false)
+      @person.stub!(:sphinx_document_id => 1)
       
       @client = Riddle::Client.new
       @client.stub!(:update => true)
-      Riddle::Client.stub!(:new => @client)
+      ThinkingSphinx::Configuration.instance.stub!(:client => @client)
     end
     
     it "shouldn't index if delta indexing is disabled" do
@@ -121,7 +119,7 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
     end
     
     it "should update the deleted attribute if in the core index" do
-      @person.stub!(:in_both_indexes? => true)
+      Person.stub!(:search_for_id => true)
       @client.should_receive(:update)
       
       @person.send(:index_delta)

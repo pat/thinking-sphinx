@@ -1,5 +1,5 @@
 When /^I create a new beta named (\w+)$/ do |name|
-  Beta.create(:name => name, :value => 101)
+  Beta.create!(:name => name, :value => 101)
 end
 
 When /^I change the (\w+) of beta (\w+) to (\w+)$/ do |column, name, replacement|

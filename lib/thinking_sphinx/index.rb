@@ -2,14 +2,8 @@ require 'thinking_sphinx/index/builder'
 require 'thinking_sphinx/index/faux_column'
 
 module ThinkingSphinx
-  # The Index class is a ruby representation of a Sphinx source (not a Sphinx
-  # index - yes, I know it's a little confusing. You'll manage). This is
-  # another 'internal' Thinking Sphinx class - if you're using it directly,
-  # you either know what you're doing, or messing with things beyond your ken.
-  # Enjoy.
-  # 
   class Index
-    attr_accessor :model, :sources, :delta_object
+    attr_accessor :name, :model, :sources, :delta_object
     
     # Create a new index instance by passing in the model it is tied to, and
     # a block to build it with (optional but recommended). For documentation
@@ -26,6 +20,7 @@ module ThinkingSphinx
     #   end
     #
     def initialize(model, &block)
+      @name         = self.class.name_for model
       @model        = model
       @sources      = []
       @options      = {}
@@ -40,8 +35,19 @@ module ThinkingSphinx
       @sources.collect { |source| source.attributes }.flatten
     end
     
-    def name
-      self.class.name_for @model
+    def core_name
+      "#{name}_core"
+    end
+    
+    def delta_name
+      "#{name}_delta"
+    end
+    
+    def all_names
+      names  = [core_name]
+      names << delta_name if delta?
+      
+      names
     end
     
     def self.name_for(model)
@@ -61,7 +67,7 @@ module ThinkingSphinx
     end
     
     def options
-      all_index_options = ThinkingSphinx::Configuration.instance.index_options.clone
+      all_index_options = config.index_options.clone
       @options.keys.select { |key|
         ThinkingSphinx::Configuration::IndexOptions.include?(key.to_s) ||
         ThinkingSphinx::Configuration::CustomOptions.include?(key.to_s)
@@ -71,6 +77,12 @@ module ThinkingSphinx
     
     def delta?
       !@delta_object.nil?
+    end
+    
+    def to_riddle(offset)
+      indexes = [to_riddle_for_core(offset)]
+      indexes << to_riddle_for_delta(offset) if delta?
+      indexes << to_riddle_for_distributed
     end
     
     private
@@ -83,17 +95,62 @@ module ThinkingSphinx
       options[:charset_type] == "utf-8"
     end
     
-    # Does all the magic with the block provided to the base #initialize.
-    # Creates a new class subclassed from Builder, and evaluates the block
-    # on it, then pulls all relevant settings - fields, attributes, conditions,
-    # properties - into the new index.
-    # 
-    def initialize_from_builder(&block)
-      #
-    end
-    
     def sql_query_pre_for_delta
       [""]
+    end
+    
+    def config
+      @config ||= ThinkingSphinx::Configuration.instance
+    end
+    
+    def to_riddle_for_core(offset)
+      index = Riddle::Configuration::Index.new core_name
+      index.path = File.join config.searchd_file_path, index.name
+      
+      set_configuration_options_for_indexes index
+      set_field_settings_for_indexes        index
+      
+      sources.each_with_index do |source, i|
+        index.sources << source.to_riddle_for_core(offset, i)
+      end
+      
+      index
+    end
+    
+    def to_riddle_for_delta(offset)
+      index = Riddle::Configuration::Index.new delta_name
+      index.parent = core_name
+      index.path = File.join config.searchd_file_path, index.name
+      
+      sources.each_with_index do |source, i|
+        index.sources << source.to_riddle_for_delta(offset, i)
+      end
+      
+      index
+    end
+    
+    def to_riddle_for_distributed
+      index = Riddle::Configuration::DistributedIndex.new name
+      index.local_indexes << core_name
+      index.local_indexes.unshift delta_name if delta?
+      index
+    end
+    
+    def set_configuration_options_for_indexes(index)
+      config.index_options.each do |key, value|
+        index.send("#{key}=".to_sym, value)
+      end
+      
+      options.each do |key, value|
+        index.send("#{key}=".to_sym, value) if ThinkingSphinx::Configuration::IndexOptions.include?(key.to_s) && !value.nil?
+      end
+    end
+    
+    def set_field_settings_for_indexes(index)
+      field_names = lambda { |field| field.unique_name.to_s }
+      
+      index.prefix_field_names += prefix_fields.collect(&field_names)
+      index.infix_field_names  += infix_fields.collect(&field_names)
     end
   end
 end

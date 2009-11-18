@@ -1,102 +1,59 @@
 require 'spec/spec_helper'
 
 describe ThinkingSphinx::ActiveRecord do
+  before :each do
+    @existing_alpha_indexes = Alpha.sphinx_indexes.clone
+    @existing_beta_indexes  = Beta.sphinx_indexes.clone
+    
+    Alpha.sphinx_indexes.clear
+    Beta.sphinx_indexes.clear
+  end
+  
+  after :each do
+    Alpha.sphinx_indexes.replace @existing_alpha_indexes
+    Beta.sphinx_indexes.replace  @existing_beta_indexes
+  end
+  
   describe '.define_index' do
-    before :each do
-      module ::TestModule
-        class TestModel < ActiveRecord::Base; end
-      end
-      
-      TestModule::TestModel.stub!(
-        :before_save    => true,
-        :after_commit   => true,
-        :after_destroy  => true
-      )
-      
-      @index = ThinkingSphinx::Index.new(TestModule::TestModel)
-      @index.stub!(:delta? => false)
-      ThinkingSphinx::Index::Builder.stub!(:generate => @index)
-    end
-    
-    after :each do
-      # Remove the class so we can redefine it
-      TestModule.send(:remove_const, :TestModel)
-      
-      ThinkingSphinx.indexed_models.delete "TestModule::TestModel"
-    end
-    
     it "should do nothing if indexes are disabled" do
       ThinkingSphinx.define_indexes = false
       ThinkingSphinx::Index.should_not_receive(:new)
       
-      TestModule::TestModel.define_index {}
+      Alpha.define_index { }
       
       ThinkingSphinx.define_indexes = true
     end
     
     it "should add a new index to the model" do
-      TestModule::TestModel.define_index {}
+      index = Alpha.define_index { indexes :name }
       
-      TestModule::TestModel.sphinx_indexes.length.should == 1
+      Alpha.sphinx_indexes.should include(index)
     end
     
     it "should add to ThinkingSphinx.indexed_models if the model doesn't already exist in the array" do
-      TestModule::TestModel.define_index do; end
+      Alpha.define_index { indexes :name }
       
-      ThinkingSphinx.indexed_models.should include("TestModule::TestModel")
+      ThinkingSphinx.indexed_models.should include("Alpha")
     end
     
     it "shouldn't add to ThinkingSphinx.indexed_models if the model already exists in the array" do
-      TestModule::TestModel.define_index do; end
+      Alpha.define_index { indexes :name }
+      Alpha.define_index { indexes :name }
       
       ThinkingSphinx.indexed_models.select { |model|
-        model == "TestModule::TestModel"
+        model == "Alpha"
       }.length.should == 1
-      
-      TestModule::TestModel.define_index do; end
-      
-      ThinkingSphinx.indexed_models.select { |model|
-        model == "TestModule::TestModel"
-      }.length.should == 1
-    end
-    
-    it "should add before_save and after_commit hooks to the model if delta indexing is enabled" do
-      @index.stub!(:delta? => true)
-      TestModule::TestModel.should_receive(:before_save).with(:toggle_delta)
-      TestModule::TestModel.should_receive(:after_commit).with(:index_delta)
-      
-      TestModule::TestModel.define_index do; end
-    end
-    
-    it "should not add before_save and after_commit hooks to the model if delta indexing is disabled" do
-      TestModule::TestModel.should_not_receive(:before_save).with(:toggle_delta)
-      TestModule::TestModel.should_not_receive(:after_commit).with(:index_delta)
-      
-      TestModule::TestModel.define_index do; end
-    end
-    
-    it "should add an after_destroy hook with delta indexing enabled" do
-      @index.stub!(:delta? => true)
-      TestModule::TestModel.should_receive(:after_destroy).with(:toggle_deleted)
-      
-      TestModule::TestModel.define_index do; end
-    end
-    
-    it "should add an after_destroy hook with delta indexing disabled" do
-      TestModule::TestModel.should_receive(:after_destroy).with(:toggle_deleted)
-      
-      TestModule::TestModel.define_index do; end
     end
     
     it "should return the new index" do
-      TestModule::TestModel.define_index.should == @index
+      Alpha.define_index.should be_a(ThinkingSphinx::Index)
     end
     
     it "should die quietly if there is a database error" do
       ThinkingSphinx::Index::Builder.stub(:generate) { raise Mysql::Error }
       
       lambda {
-        TestModule::TestModel.define_index
+        Alpha.define_index { indexes :name }
       }.should_not raise_error
     end
     
@@ -104,9 +61,122 @@ describe ThinkingSphinx::ActiveRecord do
       ThinkingSphinx::Index::Builder.stub(:generate) { raise StandardError }
       
       lambda {
-        TestModule::TestModel.define_index
+        Alpha.define_index { indexes :name }
       }.should raise_error
     end
+    
+    it "should set the index's name using the parameter if provided" do
+      index = Alpha.define_index('custom') { indexes :name }
+      
+      index.name.should == 'custom'
+    end
+    
+    context 'callbacks' do
+      it "should add a toggle_deleted callback" do
+        Alpha.should_receive(:after_destroy).with(:toggle_deleted)
+      
+        Alpha.define_index { indexes :name }
+      end
+      
+      it "should not add toggle_deleted callback more than once" do
+        Alpha.should_receive(:after_destroy).with(:toggle_deleted).once
+      
+        Alpha.define_index { indexes :name }
+        Alpha.define_index { indexes :name }
+      end
+      
+      it "should add a update_attribute_values callback" do
+        Alpha.should_receive(:after_commit).with(:update_attribute_values)
+      
+        Alpha.define_index { indexes :name }
+      end
+    
+      it "should not add update_attribute_values callback more than once" do
+        Alpha.should_receive(:after_commit).with(:update_attribute_values).once
+      
+        Alpha.define_index { indexes :name }
+        Alpha.define_index { indexes :name }
+      end
+      
+      it "should add a toggle_delta callback if deltas are enabled" do
+        Beta.should_receive(:before_save).with(:toggle_delta)
+
+        Beta.define_index {
+          indexes :name
+          set_property :delta => true
+        }
+      end
+      
+      it "should not add a toggle_delta callback if deltas are disabled" do
+        Alpha.should_not_receive(:before_save).with(:toggle_delta)
+
+        Alpha.define_index { indexes :name }
+      end
+      
+      it "should add the toggle_delta callback if deltas are disabled in other indexes" do
+        Beta.should_receive(:before_save).with(:toggle_delta).once
+
+        Beta.define_index { indexes :name }
+        Beta.define_index {
+          indexes :name
+          set_property :delta => true
+        }
+      end
+      
+      it "should only add the toggle_delta callback once" do
+        Beta.should_receive(:before_save).with(:toggle_delta).once
+
+        Beta.define_index {
+          indexes :name
+          set_property :delta => true
+        }
+        Beta.define_index {
+          indexes :name
+          set_property :delta => true
+        }
+      end
+      
+      it "should add an index_delta callback if deltas are enabled" do
+        Beta.stub!(:after_commit => true)
+        Beta.should_receive(:after_commit).with(:index_delta)
+
+        Beta.define_index {
+          indexes :name
+          set_property :delta => true
+        }
+      end
+      
+      it "should not add an index_delta callback if deltas are disabled" do
+        Alpha.should_not_receive(:after_commit).with(:index_delta)
+
+        Alpha.define_index { indexes :name }
+      end
+      
+      it "should add the index_delta callback if deltas are disabled in other indexes" do
+        Beta.stub!(:after_commit => true)
+        Beta.should_receive(:after_commit).with(:index_delta).once
+
+        Beta.define_index { indexes :name }
+        Beta.define_index {
+          indexes :name
+          set_property :delta => true
+        }
+      end
+      
+      it "should only add the index_delta callback once" do
+        Beta.stub!(:after_commit => true)
+        Beta.should_receive(:after_commit).with(:index_delta).once
+
+        Beta.define_index {
+          indexes :name
+          set_property :delta => true
+        }
+        Beta.define_index {
+          indexes :name
+          set_property :delta => true
+        }
+      end
+    end    
   end
 
   describe "index methods" do
@@ -188,17 +258,9 @@ describe ThinkingSphinx::ActiveRecord do
       @client.stub!(:update => true)
       @person = Person.find(:first)
       
-      Riddle::Client.stub!(:new => @client)
+      @configuration.stub!(:client => @client)
       Person.sphinx_indexes.each { |index| index.stub!(:delta? => false) }
-      @person.stub!(:in_core_index? => true)
-    end
-    
-    it "should create a client using the Configuration's address and port" do
-      Riddle::Client.should_receive(:new).with(
-        @configuration.address, @configuration.port
-      )
-      
-      @person.toggle_deleted
+      Person.stub!(:search_for_id => true)
     end
     
     it "should update the core index's deleted flag if in core index" do
@@ -210,7 +272,7 @@ describe ThinkingSphinx::ActiveRecord do
     end
     
     it "shouldn't update the core index's deleted flag if the record isn't in it" do
-      @person.stub!(:in_core_index? => false)
+      Person.stub!(:search_for_id => false)
       @client.should_not_receive(:update).with(
         "person_core", ["sphinx_deleted"], {@person.sphinx_document_id => [1]}
       )
@@ -221,7 +283,7 @@ describe ThinkingSphinx::ActiveRecord do
     it "shouldn't attempt to update the deleted flag if sphinx isn't running" do
       ThinkingSphinx.stub!(:sphinx_running? => false)
       @client.should_not_receive(:update)
-      @person.should_not_receive(:in_core_index?)
+      Person.should_not_receive(:search_for_id)
       
       @person.toggle_deleted
     end
@@ -294,22 +356,29 @@ describe ThinkingSphinx::ActiveRecord do
     end
   end
   
-  it "should return the sphinx document id as expected" do
-    person      = Person.find(:first)
-    model_count = ThinkingSphinx.indexed_models.length
-    offset      = ThinkingSphinx.indexed_models.index("Person")
+  describe '#sphinx_document_id' do
+    before :each do
+      Alpha.define_index { indexes :name }
+      Beta.define_index  { indexes :name }
+    end
     
-    (person.id * model_count + offset).should == person.sphinx_document_id
-    
-    alpha       = Alpha.find(:first)
-    offset      = ThinkingSphinx.indexed_models.index("Alpha")
-    
-    (alpha.id * model_count + offset).should == alpha.sphinx_document_id
-    
-    beta        = Beta.find(:first)
-    offset      = ThinkingSphinx.indexed_models.index("Beta")
-    
-    (beta.id * model_count + offset).should == beta.sphinx_document_id
+    it "should return values with the expected offset" do
+      person      = Person.find(:first)
+      model_count = ThinkingSphinx.indexed_models.length
+      offset      = ThinkingSphinx.indexed_models.index("Person")
+      
+      (person.id * model_count + offset).should == person.sphinx_document_id
+      
+      alpha       = Alpha.find(:first)
+      offset      = ThinkingSphinx.indexed_models.index("Alpha")
+      
+      (alpha.id * model_count + offset).should == alpha.sphinx_document_id
+      
+      beta        = Beta.find(:first)
+      offset      = ThinkingSphinx.indexed_models.index("Beta")
+      
+      (beta.id * model_count + offset).should == beta.sphinx_document_id
+    end
   end
   
   describe '#primary_key_for_sphinx' do
@@ -339,15 +408,106 @@ describe ThinkingSphinx::ActiveRecord do
   
   describe '.sphinx_index_names' do
     it "should return the core index" do
+      Alpha.define_index { indexes :name }
       Alpha.sphinx_index_names.should == ['alpha_core']
     end
     
     it "should return the delta index if enabled" do
+      Beta.define_index {
+        indexes :name
+        set_property :delta => true
+      }
+      
       Beta.sphinx_index_names.should == ['beta_core', 'beta_delta']
     end
     
     it "should return the superclass with an index definition" do
       Parent.sphinx_index_names.should == ['person_core', 'person_delta']
+    end
+  end
+  
+  describe '.indexed_by_sphinx?' do
+    it "should return true if there is at least one index on the model" do
+      Alpha.define_index { indexes :name }
+      
+      Alpha.should be_indexed_by_sphinx
+    end
+    
+    it "should return false if there are no indexes on the model" do
+      Gamma.should_not be_indexed_by_sphinx
+    end
+  end
+  
+  describe '.delta_indexed_by_sphinx?' do
+    it "should return true if there is at least one delta index on the model" do
+      Beta.define_index {
+        indexes :name
+        set_property :delta => true
+      }
+      
+      Beta.should be_delta_indexed_by_sphinx
+    end
+    
+    it "should return false if there are no delta indexes on the model" do
+      Alpha.define_index { indexes :name }
+      
+      Alpha.should_not be_delta_indexed_by_sphinx
+    end
+  end
+  
+  describe '.delete_in_index' do
+    before :each do
+      @client = stub('client')
+      ThinkingSphinx.stub!(:sphinx_running? => true)
+      ThinkingSphinx::Configuration.instance.stub!(:client => @client)
+      Alpha.stub!(:search_for_id => true)
+    end
+    
+    it "should not update if the document isn't in the given index" do
+      Alpha.stub!(:search_for_id => false)
+      @client.should_not_receive(:update)
+      
+      Alpha.delete_in_index('alpha_core', 42)
+    end
+    
+    it "should direct the update to the supplied index" do
+      @client.should_receive(:update) do |index, attributes, values|
+        index.should == 'custom_index_core'
+      end
+      
+      Alpha.delete_in_index('custom_index_core', 42)
+    end
+    
+    it "should set the sphinx_deleted flag to true" do
+      @client.should_receive(:update) do |index, attributes, values|
+        attributes.should == ['sphinx_deleted']
+        values.should == {42 => [1]}
+      end
+      
+      Alpha.delete_in_index('alpha_core', 42)
+    end
+  end
+  
+  describe '.core_index_names' do
+    it "should return each index's core name" do
+      foo = Alpha.define_index { indexes :name }
+      foo.name = 'foo'
+      bar = Alpha.define_index { indexes :name }
+      bar.name = 'bar'
+      
+      Alpha.core_index_names.should == ['foo_core', 'bar_core']
+    end
+  end
+  
+  describe '.delta_index_names' do
+    it "should return index delta names, for indexes with deltas enabled" do
+      foo = Alpha.define_index { indexes :name }
+      foo.name = 'foo'
+      foo.delta_object = stub('delta')
+      bar = Alpha.define_index { indexes :name }
+      bar.name = 'bar'
+      
+      Alpha.delta_index_names.should == ['foo_delta']
     end
   end
 end

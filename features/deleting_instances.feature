@@ -56,6 +56,9 @@ Feature: Keeping Sphinx in line with deleted model instances
     And I am searching on betas
     When I create a new beta named thirteen
     And I wait for Sphinx to catch up
+    And I search for thirteen
+    Then I should get 1 result
+    
     And I disable delta updates
     And I destroy beta thirteen
     And I wait for Sphinx to catch up

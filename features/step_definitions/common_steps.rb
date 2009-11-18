@@ -10,6 +10,8 @@ Before do
   @with_all   = {}
   @options    = {}
   @results    = nil
+  
+  Given "updates are enabled"
 end
 
 Given /^I am searching on (.+)$/ do |model|
@@ -23,6 +25,11 @@ end
 When /^I am searching for ids$/ do
   @results = nil
   @method = :search_for_ids
+end
+
+When /^I use index (.+)$/ do |index|
+  @results = nil
+  @options[:index] = index
 end
 
 When /^I am retrieving the result count$/ do
@@ -47,6 +54,10 @@ end
 When /^I search for (\w+) on (\w+)$/ do |query, field|
   @results = nil
   @conditions[field.to_sym] = query
+end
+
+When /^I output the raw result data$/ do
+  puts results.results.inspect
 end
 
 When /^I clear existing filters$/ do
@@ -143,7 +154,7 @@ Then /^I can iterate by result and (\w+)$/ do |attribute|
   iteration = lambda { |result, attr_value|
     result.should be_kind_of(@model)
     unless attribute == "group" && attr_value.nil?
-      attr_value.should be_kind_of(Integer) 
+      attr_value.should be_kind_of(Integer)
     end
   }
   

@@ -155,3 +155,4 @@ Since I first released this library, there's been quite a few people who have su
 * Chris Z
 * Chris Roos
 * Andrew Assarattanakul
+* Jonas von Andrian

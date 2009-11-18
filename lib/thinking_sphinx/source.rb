@@ -33,12 +33,12 @@ module ThinkingSphinx
     end
     
     def name
-      @model.sphinx_name
+      index.name
     end
     
-    def to_riddle_for_core(offset, index)
+    def to_riddle_for_core(offset, position)
       source = Riddle::Configuration::SQLSource.new(
-        "#{name}_core_#{index}", adapter.sphinx_identifier
+        "#{index.core_name}_#{position}", adapter.sphinx_identifier
       )
       
       set_source_database_settings  source
@@ -49,11 +49,11 @@ module ThinkingSphinx
       source
     end
     
-    def to_riddle_for_delta(offset, index)
+    def to_riddle_for_delta(offset, position)
       source = Riddle::Configuration::SQLSource.new(
-        "#{name}_delta_#{index}", adapter.sphinx_identifier
+        "#{index.delta_name}_#{position}", adapter.sphinx_identifier
       )
-      source.parent = "#{name}_core_#{index}"
+      source.parent = "#{index.core_name}_#{position}"
       
       set_source_database_settings  source
       set_source_attributes         source, offset, true

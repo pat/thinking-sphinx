@@ -84,7 +84,7 @@ describe ThinkingSphinx do
   describe '.version' do
     it "should return the version from the stored YAML file" do
       version = Jeweler::VersionHelper.new(
-        File.join(File.dirname(__FILE__), '../..')
+        File.join(File.dirname(__FILE__), '..')
       ).to_s
       
       ThinkingSphinx.version.should == version

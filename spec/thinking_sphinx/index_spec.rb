@@ -42,4 +42,136 @@ describe ThinkingSphinx::Index do
       @index.infix_fields.should_not include(@field_b)
     end
   end
+  
+  describe '.name_for' do
+    it "should return the model's name downcased" do
+      ThinkingSphinx::Index.name_for(Alpha).should == 'alpha'
+    end
+    
+    it "should separate words by underscores" do
+      ThinkingSphinx::Index.name_for(ActiveRecord).should == 'active_record'
+    end
+    
+    it "should separate namespaces by underscores" do
+      ThinkingSphinx::Index.name_for(ActiveRecord::Base).
+        should == 'active_record_base'
+    end
+  end
+  
+  describe '#name' do
+    it "should return the downcased name of the index's model" do
+      ThinkingSphinx::Index.new(Alpha).name.should == 'alpha'
+    end
+    
+    it "should return a custom name if one is set" do
+      index = ThinkingSphinx::Index.new(Alpha)
+      index.name = 'custom'
+      index.name.should == 'custom'
+    end
+  end
+  
+  describe '#core_name' do
+    it "should take the index's name and append _core" do
+      ThinkingSphinx::Index.new(Alpha).core_name.should == 'alpha_core'
+    end
+  end
+  
+  describe '#delta_name' do
+    it "should take the index's name and append _delta" do
+      ThinkingSphinx::Index.new(Alpha).delta_name.should == 'alpha_delta'
+    end
+  end
+  
+  describe '#all_names' do
+    it "should return the core index name by default" do
+      ThinkingSphinx::Index.new(Alpha).all_names.should == ['alpha_core']
+    end
+    
+    it "should return both core and delta names if deltas are enabled" do
+      index = ThinkingSphinx::Index.new(Alpha)
+      index.delta_object = stub('delta')
+      
+      index.all_names.should == ['alpha_core', 'alpha_delta']
+    end
+    
+    it "should respect custom names" do
+      index = ThinkingSphinx::Index.new(Alpha)
+      index.name = 'custom'
+      
+      index.all_names.should == ['custom_core']
+    end
+    
+    it "should respect custom names when deltas are enabled" do
+      index = ThinkingSphinx::Index.new(Alpha)
+      index.name = 'custom'
+      index.delta_object = stub('delta')
+      
+      index.all_names.should == ['custom_core', 'custom_delta']
+    end
+  end
+  
+  describe '#to_riddle' do
+    it "should return two Riddle indexes if deltas are disabled" do
+      index = ThinkingSphinx::Index.new(Alpha)
+      
+      index.to_riddle(0).length.should == 2
+    end
+    
+    it "should return three Riddle indexes if deltas are enabled" do
+      index = ThinkingSphinx::Index.new(Beta)
+      index.delta_object = stub('delta')
+      
+      index.to_riddle(0).length.should == 3
+    end
+    
+    it "should include a distributed index" do
+      index = ThinkingSphinx::Index.new(Alpha)
+      
+      index.to_riddle(0).last.
+        should be_a(Riddle::Configuration::DistributedIndex)
+    end
+    
+    context 'core index' do
+      before :each do
+        @index = ThinkingSphinx::Index.new(Alpha).to_riddle(0).first
+      end
+      
+      it "should use the core name" do
+        @index.name.should == 'alpha_core'
+      end
+    end
+    
+    context 'delta index' do
+      before :each do
+        index = ThinkingSphinx::Index.new(Beta)
+        index.delta_object = stub('delta')
+        @index = index.to_riddle(0)[1]
+      end
+      
+      it "should use the delta name" do
+        @index.name.should == 'beta_delta'
+      end
+    end
+    
+    context 'distributed index' do
+      it "should use the index's name" do
+        index = ThinkingSphinx::Index.new(Alpha)
+
+        index.to_riddle(0).last.name.should == 'alpha'
+      end
+      
+      it "should add the core index" do
+        index = ThinkingSphinx::Index.new(Alpha)
+
+        index.to_riddle(0).last.local_indexes.should include('alpha_core')
+      end
+      
+      it "should add the delta index if there is one" do
+        index = ThinkingSphinx::Index.new(Beta)
+        index.delta_object = stub('delta')
+
+        index.to_riddle(0).last.local_indexes.should include('beta_delta')
+      end
+    end
+  end
 end
