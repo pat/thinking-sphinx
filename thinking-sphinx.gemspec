@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{thinking-sphinx}
-  s.version = "1.3.5"
+  s.version = "1.3.6"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pat Allan"]
-  s.date = %q{2009-11-17}
+  s.date = %q{2009-11-18}
   s.description = %q{A concise and easy-to-use Ruby library that connects ActiveRecord to the Sphinx search daemon, managing configuration, indexing and searching.}
   s.email = %q{pat@freelancing-gods.com}
   s.extra_rdoc_files = [
@@ -85,6 +85,7 @@ http://freelancing-god.github.com/ts/en/upgrading.html
      "features/handling_edits.feature",
      "features/retry_stale_indexes.feature",
      "features/searching_across_models.feature",
+     "features/searching_by_index.feature",
      "features/searching_by_model.feature",
      "features/searching_with_find_arguments.feature",
      "features/sphinx_detection.feature",
@@ -105,8 +106,6 @@ http://freelancing-god.github.com/ts/en/upgrading.html
      "features/support/database.example.yml",
      "features/support/database.yml",
      "features/support/db",
-     "features/support/db/active_record.rb",
-     "features/support/db/database.yml",
      "features/support/db/fixtures",
      "features/support/db/fixtures/alphas.rb",
      "features/support/db/fixtures/authors.rb",
@@ -140,8 +139,6 @@ http://freelancing-god.github.com/ts/en/upgrading.html
      "features/support/db/migrations/create_robots.rb",
      "features/support/db/migrations/create_taggings.rb",
      "features/support/db/migrations/create_tags.rb",
-     "features/support/db/mysql.rb",
-     "features/support/db/postgresql.rb",
      "features/support/env.rb",
      "features/support/lib",
      "features/support/lib/generic_delta_handler.rb",
@@ -163,28 +160,27 @@ http://freelancing-god.github.com/ts/en/upgrading.html
      "features/support/models/robot.rb",
      "features/support/models/tag.rb",
      "features/support/models/tagging.rb",
-     "features/support/post_database.rb",
-     "spec/lib/thinking_sphinx/active_record/delta_spec.rb",
-     "spec/lib/thinking_sphinx/active_record/has_many_association_spec.rb",
-     "spec/lib/thinking_sphinx/active_record/scopes_spec.rb",
-     "spec/lib/thinking_sphinx/active_record_spec.rb",
-     "spec/lib/thinking_sphinx/association_spec.rb",
-     "spec/lib/thinking_sphinx/attribute_spec.rb",
-     "spec/lib/thinking_sphinx/configuration_spec.rb",
-     "spec/lib/thinking_sphinx/core/array_spec.rb",
-     "spec/lib/thinking_sphinx/core/string_spec.rb",
-     "spec/lib/thinking_sphinx/excerpter_spec.rb",
-     "spec/lib/thinking_sphinx/facet_search_spec.rb",
-     "spec/lib/thinking_sphinx/facet_spec.rb",
-     "spec/lib/thinking_sphinx/field_spec.rb",
-     "spec/lib/thinking_sphinx/index/builder_spec.rb",
-     "spec/lib/thinking_sphinx/index/faux_column_spec.rb",
-     "spec/lib/thinking_sphinx/index_spec.rb",
-     "spec/lib/thinking_sphinx/rails_additions_spec.rb",
-     "spec/lib/thinking_sphinx/search_methods_spec.rb",
-     "spec/lib/thinking_sphinx/search_spec.rb",
-     "spec/lib/thinking_sphinx/source_spec.rb",
-     "spec/lib/thinking_sphinx_spec.rb"
+     "spec/thinking_sphinx/active_record/delta_spec.rb",
+     "spec/thinking_sphinx/active_record/has_many_association_spec.rb",
+     "spec/thinking_sphinx/active_record/scopes_spec.rb",
+     "spec/thinking_sphinx/active_record_spec.rb",
+     "spec/thinking_sphinx/association_spec.rb",
+     "spec/thinking_sphinx/attribute_spec.rb",
+     "spec/thinking_sphinx/configuration_spec.rb",
+     "spec/thinking_sphinx/core/array_spec.rb",
+     "spec/thinking_sphinx/core/string_spec.rb",
+     "spec/thinking_sphinx/excerpter_spec.rb",
+     "spec/thinking_sphinx/facet_search_spec.rb",
+     "spec/thinking_sphinx/facet_spec.rb",
+     "spec/thinking_sphinx/field_spec.rb",
+     "spec/thinking_sphinx/index/builder_spec.rb",
+     "spec/thinking_sphinx/index/faux_column_spec.rb",
+     "spec/thinking_sphinx/index_spec.rb",
+     "spec/thinking_sphinx/rails_additions_spec.rb",
+     "spec/thinking_sphinx/search_methods_spec.rb",
+     "spec/thinking_sphinx/search_spec.rb",
+     "spec/thinking_sphinx/source_spec.rb",
+     "spec/thinking_sphinx_spec.rb"
   ]
 
   if s.respond_to? :specification_version then
