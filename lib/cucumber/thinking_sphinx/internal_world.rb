@@ -108,7 +108,8 @@ module Cucumber
       end
       
       def load_files(path)
-        Dir["#{path}/*.rb"].each do |file|
+        files = Dir["#{path}/*.rb"].sort!
+        files.each do |file|
           require file.gsub(/\.rb$/, '')
         end
       end
