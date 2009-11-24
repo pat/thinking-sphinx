@@ -13,8 +13,10 @@ module ThinkingSphinx
       #   source.to_sql(:delta => true)
       #
       def to_sql(options={})
-        sql = <<-SQL
-SELECT #{ sql_select_clause options[:offset] }
+        sql = "SELECT "
+        sql += "SQL_NO_CACHE " if adapter.sphinx_identifier == "mysql"
+        sql += <<-SQL
+#{ sql_select_clause options[:offset] }
 FROM #{ @model.quoted_table_name }
   #{ all_associations.collect { |assoc| assoc.to_sql }.join(' ') }
 #{ sql_where_clause(options) }
