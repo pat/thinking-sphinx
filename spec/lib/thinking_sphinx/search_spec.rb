@@ -868,6 +868,14 @@ describe ThinkingSphinx::Search do
     it "should return the total number of results, not just the amount on the page" do
       ThinkingSphinx::Search.new.total_entries.should == 41
     end
+    
+    it "should return 0 if there is no index and therefore no results" do
+      @client.stub!(:query => {
+        :matches => [], :total_found => nil
+      })
+      
+      ThinkingSphinx::Search.new.total_entries.should == 0
+    end
   end
   
   describe '#offset' do

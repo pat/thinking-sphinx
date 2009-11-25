@@ -168,6 +168,8 @@ module ThinkingSphinx
     # 
     def total_entries
       populate
+      return 0 if @results[:total_found].nil?
+      
       @total_entries ||= @results[:total_found]
     end
     
