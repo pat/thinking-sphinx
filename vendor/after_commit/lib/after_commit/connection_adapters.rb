@@ -7,7 +7,9 @@ module AfterCommit
         # override it so that after this happens, any records that were saved
         # or destroyed within this transaction now get their after_commit
         # callback fired.
-        def commit_db_transaction_with_callback          
+        def commit_db_transaction_with_callback
+          increment_transaction_pointer
+          committed = false
           begin
             trigger_before_commit_callbacks
             trigger_before_commit_on_create_callbacks
@@ -15,13 +17,17 @@ module AfterCommit
             trigger_before_commit_on_destroy_callbacks
             
             commit_db_transaction_without_callback
+            committed = true
             
             trigger_after_commit_callbacks
             trigger_after_commit_on_create_callbacks
             trigger_after_commit_on_update_callbacks
             trigger_after_commit_on_destroy_callbacks
+          rescue
+            rollback_db_transaction unless committed
           ensure
             AfterCommit.cleanup(self)
+            decrement_transaction_pointer
           end
         end 
         alias_method_chain :commit_db_transaction, :callback
@@ -39,6 +45,14 @@ module AfterCommit
           end
         end
         alias_method_chain :rollback_db_transaction, :callback
+        
+        def unique_transaction_key
+          [object_id, transaction_pointer]
+        end
+        
+        def old_transaction_key
+          [object_id, transaction_pointer - 1]
+        end
         
         protected
         
@@ -133,6 +147,20 @@ module AfterCommit
             rescue
             end
           end 
+        end
+        
+        def transaction_pointer
+          Thread.current[:after_commit_pointer] ||= 0
+        end
+        
+        def increment_transaction_pointer
+          Thread.current[:after_commit_pointer] ||= 0
+          Thread.current[:after_commit_pointer] += 1
+        end
+        
+        def decrement_transaction_pointer
+          Thread.current[:after_commit_pointer] ||= 0
+          Thread.current[:after_commit_pointer] -= 1
         end
       end 
     end 

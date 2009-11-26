@@ -2,6 +2,34 @@ module AfterCommit
   module ActiveRecord
     def self.included(base)
       base.class_eval do
+        class << self
+          def establish_connection_with_after_commit(spec = nil)
+            establish_connection_without_after_commit spec
+            include_after_commit_extensions
+          end
+          alias_method_chain :establish_connection, :after_commit
+          
+          def include_after_commit_extensions
+            base = ::ActiveRecord::ConnectionAdapters::AbstractAdapter
+            Object.subclasses_of(base).each do |klass|
+              include_after_commit_extension klass
+            end
+            
+            if defined?(JRUBY_VERSION) and defined?(JdbcSpec::MySQL)
+              include_after_commit_extension JdbcSpec::MySQL
+            end
+          end
+          
+          private
+          
+          def include_after_commit_extension(adapter)
+            additions = AfterCommit::ConnectionAdapters
+            unless adapter.included_modules.include?(additions)
+              adapter.send :include, additions
+            end
+          end
+        end
+        
         # The define_callbacks method was added post Rails 2.0.2 - if it
         # doesn't exist, we define the callback manually
         if respond_to?(:define_callbacks)
