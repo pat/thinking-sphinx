@@ -79,11 +79,11 @@ module Cucumber
       
       def database_settings
         {
-          :adapter  => @adapter,
-          :database => @database,
-          :username => @username,
-          :password => @password,
-          :host     => @host
+          'adapter'  => @adapter,
+          'database' => @database,
+          'username' => @username,
+          'password' => @password,
+          'host'     => @host
         }.merge yaml_database_settings
       end
       
