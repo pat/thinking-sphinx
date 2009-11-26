@@ -303,7 +303,7 @@ describe ThinkingSphinx::Search do
       end
     end
 
-    describe 'sph_select' do
+    describe 'sphinx_select' do
       it "should default to *" do
         ThinkingSphinx::Search.new.first
         
@@ -311,7 +311,9 @@ describe ThinkingSphinx::Search do
       end
       
       it "should get set on the client if specified" do
-        ThinkingSphinx::Search.new('general', :sph_select => "*, foo as bar").first
+        ThinkingSphinx::Search.new('general',
+          :sphinx_select => "*, foo as bar"
+        ).first
         
         @client.select.should == "*, foo as bar"
       end

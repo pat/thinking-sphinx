@@ -326,15 +326,17 @@ module ThinkingSphinx
       # 
       # Should you find yourself in desperate need of a filter that involves
       # selecting either one of multiple conditions, one solution could be
-      # provided by the :sph_select option within the search. 
+      # provided by the :sphinx_select option within the search. 
       # This handles which fields are selected by sphinx from its store.
       #
       # The default value is "*", and you can add custom fields using syntax
       # similar to sql:
       #
-      #   Flower.search "foo", :sph_select => "*, petals < 1 or color = 2 as grass"
+      #   Flower.search "foo",
+      #     :sphinx_select => "*, petals < 1 or color = 2 as grass"
       #
-      # This will add the 'grass' attribute, which will now be usable in your filters.
+      # This will add the 'grass' attribute, which will now be usable in your
+      # filters.
       #   
       # == Handling a Stale Index
       #
