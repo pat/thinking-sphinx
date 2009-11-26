@@ -113,8 +113,17 @@ module Riddle
       :match_mode, :sort_mode, :sort_by, :weights, :id_range, :filters,
       :group_by, :group_function, :group_clause, :group_distinct, :cut_off,
       :retry_count, :retry_delay, :anchor, :index_weights, :rank_mode,
-      :max_query_time, :field_weights, :timeout, :overrides, :select
+      :max_query_time, :field_weights, :timeout, :overrides, :select,
+      :connection
     attr_reader :queue
+    
+    def self.connection=(value)
+      Thread.current[:riddle_connection] = value
+    end
+
+    def self.connection
+      Thread.current[:riddle_connection]
+    end
     
     # Can instantiate with a specific server and port - otherwise it assumes
     # defaults of localhost and 3312 respectively. All other settings can be
@@ -477,7 +486,7 @@ module Riddle
     
     def initialise_connection
       socket = initialise_socket
-
+      
       # Checking version
       version = socket.recv(4).unpack('N*').first
       if version < 1
@@ -494,7 +503,13 @@ module Riddle
     def initialise_socket
       tries = 0
       begin
-        socket = TCPSocket.new @server, @port
+        socket = if self.connection
+          self.connection.call(self)
+        elsif self.class.connection
+          self.class.connection.call(self)
+        else
+          TCPSocket.new @server, @port
+        end
       rescue Errno::ECONNREFUSED => e
         retry if (tries += 1) < 5
         raise Riddle::ConnectionError,
