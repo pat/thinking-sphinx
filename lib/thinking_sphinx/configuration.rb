@@ -54,7 +54,7 @@ module ThinkingSphinx
       sql_query_killlist sql_ranged_throttle sql_query_post_index unpack_zlib
       unpack_mysqlcompress unpack_mysqlcompress_maxsize )
     
-    IndexOptions  = %w( charset_table charset_type docinfo enable_star
+    IndexOptions  = %w( charset_table charset_type charset_dictpath docinfo enable_star
       exceptions html_index_attrs html_remove_elements html_strip
       index_exact_words ignore_chars inplace_docinfo_gap inplace_enable
       inplace_hit_gap inplace_reloc_factor inplace_write_factor min_infix_len
@@ -67,7 +67,7 @@ module ThinkingSphinx
     attr_accessor :config_file, :searchd_log_file, :query_log_file,
       :pid_file, :searchd_file_path, :address, :port, :allow_star,
       :database_yml_file, :app_root, :bin_path, :model_directories,
-      :delayed_job_priority, :searchd_binary_name, :indexer_binary_name
+      :delayed_job_priority, :searchd_binary_name, :indexer_binary_name, :charset_dictpath
     
     attr_accessor :source_options, :index_options
     

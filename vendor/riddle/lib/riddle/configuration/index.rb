@@ -3,7 +3,7 @@ module Riddle
     class Index < Riddle::Configuration::Section
       self.settings = [:source, :path, :docinfo, :mlock, :morphology,
         :min_stemming_len, :stopwords, :wordforms, :exceptions, :min_word_len,
-        :charset_type, :charset_table, :ignore_chars, :min_prefix_len,
+        :charset_type, :charset_dictpath, :charset_table, :ignore_chars, :min_prefix_len,
         :min_infix_len, :prefix_fields, :infix_fields, :enable_star,
         :ngram_len, :ngram_chars, :phrase_boundary, :phrase_boundary_step,
         :html_strip, :html_index_attrs, :html_remove_elements, :preopen,
@@ -13,7 +13,7 @@ module Riddle
       
       attr_accessor :name, :parent, :sources, :path, :docinfo, :mlock,
         :morphologies, :min_stemming_len, :stopword_files, :wordform_files,
-        :exception_files, :min_word_len, :charset_type, :charset_table,
+        :exception_files, :min_word_len, :charset_type, :charset_dictpath, :charset_table,
         :ignore_characters, :min_prefix_len, :min_infix_len,
         :prefix_field_names, :infix_field_names, :enable_star, :ngram_len,
         :ngram_characters, :phrase_boundaries, :phrase_boundary_step,
