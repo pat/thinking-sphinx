@@ -63,6 +63,13 @@ module ThinkingSphinx
   def self.indexed_models
     Thread.current[:thinking_sphinx_indexed_models] ||= []
   end
+  
+  def self.superclass_indexed_models
+    klasses = indexed_models.collect { |name| name.constantize }
+    klasses.reject { |klass|
+      klass.superclass.ancestors.any? { |ancestor| klasses.include?(ancestor) }
+    }.collect { |klass| klass.name }
+  end
 
   def self.unique_id_expression(offset = nil)
     "* #{indexed_models.size} + #{offset || 0}"

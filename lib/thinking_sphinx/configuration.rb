@@ -147,8 +147,8 @@ module ThinkingSphinx
       
       @configuration.indexes.clear
       
-      ThinkingSphinx.indexed_models.each_with_index do |model, model_index|
-        @configuration.indexes.concat model.constantize.to_riddle(model_index)
+      ThinkingSphinx.indexed_models.each do |model|
+        @configuration.indexes.concat model.constantize.to_riddle
       end
       
       open(file_path, "w") do |file|

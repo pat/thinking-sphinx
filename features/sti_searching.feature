@@ -12,3 +12,8 @@ Feature: Searching via STI model relationships
     Given Sphinx is running
     And I am searching on cats
     Then I should get as many results as there are cats
+
+  Scenario: Searching across super and subclass indexes
+    Given Sphinx is running
+    When I search for "fantastic"
+    Then I should get 1 result

@@ -91,6 +91,20 @@ describe ThinkingSphinx do
     end
   end
   
+  describe '.superclass_indexed_models' do
+    it "should return indexed model names" do
+      ThinkingSphinx.stub!(:indexed_models => ['Alpha', 'Beta'])
+      
+      ThinkingSphinx.superclass_indexed_models.should == ['Alpha', 'Beta']
+    end
+    
+    it "should not include classes which have indexed superclasses" do
+      ThinkingSphinx.stub!(:indexed_models => ['Parent', 'Person'])
+      
+      ThinkingSphinx.superclass_indexed_models.should == ['Person']
+    end
+  end
+  
   describe "use_group_by_shortcut? method" do
     before :each do
       adapter = defined?(JRUBY_VERSION) ? :JdbcAdapter : :MysqlAdapter

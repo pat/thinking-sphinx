@@ -127,6 +127,7 @@ module ThinkingSphinx
         
         unless ThinkingSphinx.indexed_models.include?(self.name)
           ThinkingSphinx.indexed_models << self.name
+          ThinkingSphinx.indexed_models.sort!
         end
         
         add_sphinx_callbacks_and_extend(index.delta?)
@@ -166,11 +167,11 @@ module ThinkingSphinx
         sphinx_indexes.select(&:delta?).collect(&:delta_name)
       end
       
-      def to_riddle(offset)
+      def to_riddle
         sphinx_database_adapter.setup
         
         local_sphinx_indexes.collect { |index|
-          index.to_riddle(offset)
+          index.to_riddle(sphinx_offset)
         }.flatten
       end
       
@@ -193,6 +194,10 @@ module ThinkingSphinx
         ThinkingSphinx::Configuration.instance.client.update(
           index, ['sphinx_deleted'], {document_id => [1]}
         )
+      end
+      
+      def sphinx_offset
+        ThinkingSphinx.superclass_indexed_models.index eldest_indexed_ancestor
       end
       
       private
@@ -218,6 +223,12 @@ module ThinkingSphinx
           before_save   :toggle_delta
           after_commit  :index_delta
         end
+      end
+      
+      def eldest_indexed_ancestor
+        ancestors.reverse.detect { |ancestor|
+          ThinkingSphinx.indexed_models.include?(ancestor.name)
+        }.name
       end
     end
     
@@ -263,7 +274,7 @@ module ThinkingSphinx
     
     def sphinx_document_id
       primary_key_for_sphinx * ThinkingSphinx.indexed_models.size +
-        ThinkingSphinx.indexed_models.index(self.class.source_of_sphinx_index.name)
+        self.class.sphinx_offset
     end
 
     private

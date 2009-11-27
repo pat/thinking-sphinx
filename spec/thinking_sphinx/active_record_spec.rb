@@ -365,19 +365,9 @@ describe ThinkingSphinx::ActiveRecord do
     it "should return values with the expected offset" do
       person      = Person.find(:first)
       model_count = ThinkingSphinx.indexed_models.length
-      offset      = ThinkingSphinx.indexed_models.index("Person")
+      Person.stub!(:sphinx_offset => 3)
       
-      (person.id * model_count + offset).should == person.sphinx_document_id
-      
-      alpha       = Alpha.find(:first)
-      offset      = ThinkingSphinx.indexed_models.index("Alpha")
-      
-      (alpha.id * model_count + offset).should == alpha.sphinx_document_id
-      
-      beta        = Beta.find(:first)
-      offset      = ThinkingSphinx.indexed_models.index("Beta")
-      
-      (beta.id * model_count + offset).should == beta.sphinx_document_id
+      (person.id * model_count + 3).should == person.sphinx_document_id
     end
   end
   
@@ -508,6 +498,27 @@ describe ThinkingSphinx::ActiveRecord do
       bar.name = 'bar'
       
       Alpha.delta_index_names.should == ['foo_delta']
+    end
+  end
+  
+  describe '.sphinx_offset' do
+    it "should return the index of the model's name in all known indexed models" do
+      ThinkingSphinx.stub!(:indexed_models => ['Alpha', 'Beta'])
+      
+      Alpha.sphinx_offset.should == 0
+      Beta.sphinx_offset.should  == 1
+    end
+    
+    it "should ignore classes that have indexed superclasses" do
+      ThinkingSphinx.stub!(:indexed_models => ['Alpha', 'Parent', 'Person'])
+      
+      Person.sphinx_offset.should == 1
+    end
+    
+    it "should respect first known indexed parents" do
+      ThinkingSphinx.stub!(:indexed_models => ['Alpha', 'Parent', 'Person'])
+      
+      Parent.sphinx_offset.should == 1
     end
   end
 end
