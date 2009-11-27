@@ -87,6 +87,10 @@ Then /^the ([\w_\s]+) facet should have an? (\d+\.?\d*) key$/ do |name, key|
   results[facet_name(name)].keys.should include(key)
 end
 
+Then /^the ([\w\s]+) facet should have (\d+) keys$/ do |name, count|
+  results[facet_name(name)].keys.length.should == count.to_i
+end
+
 def facet_name(string)
   string.gsub(/\s/, '').underscore.to_sym
 end

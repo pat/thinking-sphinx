@@ -74,3 +74,9 @@ Feature: Search and browse models by their defined facets
     Then the Tags facet should have an "Australia" key
     Then the Tags facet should have an "Melbourne" key
     Then the Tags facet should have an "Victoria" key
+
+  Scenario: Requesting MVA facets from source queries
+    Given Sphinx is running
+    And I am searching on posts
+    When I am requesting facet results
+    Then the Comment Ids facet should have 9 keys

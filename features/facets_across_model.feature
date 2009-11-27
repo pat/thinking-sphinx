@@ -5,7 +5,7 @@ Feature: Search and browse across models by their defined facets
     When I am requesting facet results
     And I want all possible attributes
     Then I should have valid facet results
-    And I should have 10 facets
+    And I should have 11 facets
     And I should have the facet Class
     And the Class facet should have a "Person" key
     And I should have the facet Gender
@@ -19,7 +19,7 @@ Feature: Search and browse across models by their defined facets
     When I am requesting facet results
     And I want all possible attributes
     And I don't want classes included
-    Then I should have 9 facets
+    Then I should have 10 facets
     And I should not have the facet Class
   
   Scenario: Requesting facets common to all indexed models
