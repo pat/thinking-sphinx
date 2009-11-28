@@ -161,7 +161,7 @@ describe ThinkingSphinx::Source do
       end
       
       it "should filter the primary key with the offset" do
-        model_count = ThinkingSphinx.indexed_models.size
+        model_count = ThinkingSphinx.context.indexed_models.size
         @query.should match(/WHERE `id` = \(\(\$id - 1\) \/ #{model_count}\)/)
       end
     end

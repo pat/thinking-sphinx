@@ -55,7 +55,7 @@ GROUP BY #{ sql_group_clause }
       # 
       def to_sql_query_info(offset)
         "SELECT * FROM #{@model.quoted_table_name} WHERE " +
-        "#{quote_column(@model.primary_key_for_sphinx)} = (($id - #{offset}) / #{ThinkingSphinx.indexed_models.size})"
+        "#{quote_column(@model.primary_key_for_sphinx)} = (($id - #{offset}) / #{ThinkingSphinx.context.indexed_models.size})"
       end
 
       def sql_select_clause(offset)

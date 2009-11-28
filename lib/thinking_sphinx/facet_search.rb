@@ -64,7 +64,7 @@ module ThinkingSphinx
     
     def facet_classes
       (
-        options[:classes] || ThinkingSphinx.indexed_models.collect { |model|
+        options[:classes] || ThinkingSphinx.context.indexed_models.collect { |model|
           model.constantize
         }
       ).select { |klass| klass.sphinx_facets.any? }

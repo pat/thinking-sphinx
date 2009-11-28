@@ -30,19 +30,10 @@ describe ThinkingSphinx::ActiveRecord do
       Alpha.sphinx_indexes.should include(index)
     end
     
-    it "should add to ThinkingSphinx.indexed_models if the model doesn't already exist in the array" do
+    it "should add the model to the context collection" do
       Alpha.define_index { indexes :name }
       
-      ThinkingSphinx.indexed_models.should include("Alpha")
-    end
-    
-    it "shouldn't add to ThinkingSphinx.indexed_models if the model already exists in the array" do
-      Alpha.define_index { indexes :name }
-      Alpha.define_index { indexes :name }
-      
-      ThinkingSphinx.indexed_models.select { |model|
-        model == "Alpha"
-      }.length.should == 1
+      ThinkingSphinx.context.indexed_models.should include("Alpha")
     end
     
     it "should return the new index" do
@@ -364,7 +355,7 @@ describe ThinkingSphinx::ActiveRecord do
     
     it "should return values with the expected offset" do
       person      = Person.find(:first)
-      model_count = ThinkingSphinx.indexed_models.length
+      model_count = ThinkingSphinx.context.indexed_models.length
       Person.stub!(:sphinx_offset => 3)
       
       (person.id * model_count + 3).should == person.sphinx_document_id
@@ -502,21 +493,25 @@ describe ThinkingSphinx::ActiveRecord do
   end
   
   describe '.sphinx_offset' do
+    before :each do
+      @context = ThinkingSphinx.context
+    end
+    
     it "should return the index of the model's name in all known indexed models" do
-      ThinkingSphinx.stub!(:indexed_models => ['Alpha', 'Beta'])
+      @context.stub!(:indexed_models => ['Alpha', 'Beta'])
       
       Alpha.sphinx_offset.should == 0
       Beta.sphinx_offset.should  == 1
     end
     
     it "should ignore classes that have indexed superclasses" do
-      ThinkingSphinx.stub!(:indexed_models => ['Alpha', 'Parent', 'Person'])
+      @context.stub!(:indexed_models => ['Alpha', 'Parent', 'Person'])
       
       Person.sphinx_offset.should == 1
     end
     
     it "should respect first known indexed parents" do
-      ThinkingSphinx.stub!(:indexed_models => ['Alpha', 'Parent', 'Person'])
+      @context.stub!(:indexed_models => ['Alpha', 'Parent', 'Person'])
       
       Parent.sphinx_offset.should == 1
     end

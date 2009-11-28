@@ -10,6 +10,7 @@ require 'thinking_sphinx/active_record'
 require 'thinking_sphinx/association'
 require 'thinking_sphinx/attribute'
 require 'thinking_sphinx/configuration'
+require 'thinking_sphinx/context'
 require 'thinking_sphinx/excerpter'
 require 'thinking_sphinx/facet'
 require 'thinking_sphinx/class_facet'
@@ -60,19 +61,17 @@ module ThinkingSphinx
   # The collection of indexed models. Keep in mind that Rails lazily loads
   # its classes, so this may not actually be populated with _all_ the models
   # that have Sphinx indexes.
-  def self.indexed_models
-    Thread.current[:thinking_sphinx_indexed_models] ||= []
-  end
-  
-  def self.superclass_indexed_models
-    klasses = indexed_models.collect { |name| name.constantize }
-    klasses.reject { |klass|
-      klass.superclass.ancestors.any? { |ancestor| klasses.include?(ancestor) }
-    }.collect { |klass| klass.name }
+  def self.context
+    if Thread.current[:thinking_sphinx_context].nil?
+      Thread.current[:thinking_sphinx_context] = ThinkingSphinx::Context.new
+      Thread.current[:thinking_sphinx_context].prepare
+    end
+    
+    Thread.current[:thinking_sphinx_context]
   end
 
   def self.unique_id_expression(offset = nil)
-    "* #{indexed_models.size} + #{offset || 0}"
+    "* #{context.indexed_models.size} + #{offset || 0}"
   end
 
   # Check if index definition is disabled.

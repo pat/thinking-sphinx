@@ -124,11 +124,7 @@ module ThinkingSphinx
         self.sphinx_facets  ||= []
         
         index = ThinkingSphinx::Index::Builder.generate self, name, &block
-        
-        unless ThinkingSphinx.indexed_models.include?(self.name)
-          ThinkingSphinx.indexed_models << self.name
-          ThinkingSphinx.indexed_models.sort!
-        end
+        ThinkingSphinx.context.add_indexed_model self
         
         add_sphinx_callbacks_and_extend(index.delta?)
         self.sphinx_indexes << index
@@ -197,7 +193,8 @@ module ThinkingSphinx
       end
       
       def sphinx_offset
-        ThinkingSphinx.superclass_indexed_models.index eldest_indexed_ancestor
+        ThinkingSphinx.context.superclass_indexed_models.
+          index eldest_indexed_ancestor
       end
       
       private
@@ -227,7 +224,7 @@ module ThinkingSphinx
       
       def eldest_indexed_ancestor
         ancestors.reverse.detect { |ancestor|
-          ThinkingSphinx.indexed_models.include?(ancestor.name)
+          ThinkingSphinx.context.indexed_models.include?(ancestor.name)
         }.name
       end
     end
@@ -273,7 +270,7 @@ module ThinkingSphinx
     end
     
     def sphinx_document_id
-      primary_key_for_sphinx * ThinkingSphinx.indexed_models.size +
+      primary_key_for_sphinx * ThinkingSphinx.context.indexed_models.size +
         self.class.sphinx_offset
     end
 

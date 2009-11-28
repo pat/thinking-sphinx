@@ -1,6 +1,17 @@
 require 'spec/spec_helper'
 
 describe ThinkingSphinx do
+  describe '.context' do
+    it "should return a Context instance" do
+      ThinkingSphinx.context.should be_a(ThinkingSphinx::Context)
+    end
+    
+    it "should remember changes to the Context instance" do
+      ThinkingSphinx.context.indexed_models.replace([:model])
+      ThinkingSphinx.context.indexed_models.should == [:model]
+    end
+  end
+  
   describe '.define_indexes?' do
     it "should define indexes by default" do
       ThinkingSphinx.define_indexes?.should be_true
@@ -88,20 +99,6 @@ describe ThinkingSphinx do
       ).to_s
       
       ThinkingSphinx.version.should == version
-    end
-  end
-  
-  describe '.superclass_indexed_models' do
-    it "should return indexed model names" do
-      ThinkingSphinx.stub!(:indexed_models => ['Alpha', 'Beta'])
-      
-      ThinkingSphinx.superclass_indexed_models.should == ['Alpha', 'Beta']
-    end
-    
-    it "should not include classes which have indexed superclasses" do
-      ThinkingSphinx.stub!(:indexed_models => ['Parent', 'Person'])
-      
-      ThinkingSphinx.superclass_indexed_models.should == ['Person']
     end
   end
   

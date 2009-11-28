@@ -142,48 +142,16 @@ module ThinkingSphinx
     # indexer and searchd configuration, and sources and indexes details.
     #
     def build(file_path=nil)
-      load_models
       file_path ||= "#{self.config_file}"
       
       @configuration.indexes.clear
       
-      ThinkingSphinx.indexed_models.each do |model|
+      ThinkingSphinx.context.indexed_models.each do |model|
         @configuration.indexes.concat model.constantize.to_riddle
       end
       
       open(file_path, "w") do |file|
         file.write @configuration.render
-      end
-    end
-    
-    # Make sure all models are loaded - without reloading any that
-    # ActiveRecord::Base is already aware of (otherwise we start to hit some
-    # messy dependencies issues).
-    # 
-    def load_models
-      return if defined?(Rails) &&
-        Rails::VERSION::STRING.to_f > 2.1 &&
-        Rails.configuration.cache_classes
-      
-      self.model_directories.each do |base|
-        Dir["#{base}**/*.rb"].each do |file|
-          model_name = file.gsub(/^#{base}([\w_\/\\]+)\.rb/, '\1')
-        
-          next if model_name.nil?
-          next if ::ActiveRecord::Base.send(:subclasses).detect { |model|
-            model.name == model_name
-          }
-        
-          begin
-            model_name.camelize.constantize
-          rescue LoadError
-            model_name.gsub!(/.*[\/\\]/, '').nil? ? next : retry
-          rescue NameError
-            next
-          rescue StandardError
-            puts "Warning: Error loading #{file}"
-          end
-        end
       end
     end
     
@@ -235,7 +203,7 @@ module ThinkingSphinx
     
     def models_by_crc
       @models_by_crc ||= begin
-        ThinkingSphinx.indexed_models.inject({}) do |hash, model|
+        ThinkingSphinx.context.indexed_models.inject({}) do |hash, model|
           hash[model.constantize.to_crc32] = model
           Object.subclasses_of(model.constantize).each { |subclass|
             hash[subclass.to_crc32] = subclass.name
