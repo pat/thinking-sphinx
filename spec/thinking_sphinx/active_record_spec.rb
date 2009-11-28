@@ -5,6 +5,9 @@ describe ThinkingSphinx::ActiveRecord do
     @existing_alpha_indexes = Alpha.sphinx_indexes.clone
     @existing_beta_indexes  = Beta.sphinx_indexes.clone
     
+    Alpha.send :defined_indexes=, false
+    Beta.send  :defined_indexes=, false
+    
     Alpha.sphinx_indexes.clear
     Beta.sphinx_indexes.clear
   end
@@ -12,6 +15,9 @@ describe ThinkingSphinx::ActiveRecord do
   after :each do
     Alpha.sphinx_indexes.replace @existing_alpha_indexes
     Beta.sphinx_indexes.replace  @existing_beta_indexes
+    
+    Alpha.sphinx_index_blocks.clear
+    Beta.sphinx_index_blocks.clear
   end
   
   describe '.define_index' do
@@ -20,14 +26,15 @@ describe ThinkingSphinx::ActiveRecord do
       ThinkingSphinx::Index.should_not_receive(:new)
       
       Alpha.define_index { }
+      Alpha.define_indexes
       
       ThinkingSphinx.define_indexes = true
     end
     
-    it "should add a new index to the model" do
-      index = Alpha.define_index { indexes :name }
-      
-      Alpha.sphinx_indexes.should include(index)
+    it "should not evaluate the index block automatically" do
+      lambda {
+        Alpha.define_index { raise StandardError }
+      }.should_not raise_error
     end
     
     it "should add the model to the context collection" do
@@ -36,30 +43,29 @@ describe ThinkingSphinx::ActiveRecord do
       ThinkingSphinx.context.indexed_models.should include("Alpha")
     end
     
-    it "should return the new index" do
-      Alpha.define_index.should be_a(ThinkingSphinx::Index)
-    end
-    
     it "should die quietly if there is a database error" do
       ThinkingSphinx::Index::Builder.stub(:generate) { raise Mysql::Error }
+      Alpha.define_index { indexes :name }
       
       lambda {
-        Alpha.define_index { indexes :name }
+        Alpha.define_indexes
       }.should_not raise_error
     end
     
     it "should die noisily if there is a non-database error" do
       ThinkingSphinx::Index::Builder.stub(:generate) { raise StandardError }
+      Alpha.define_index { indexes :name }
       
       lambda {
-        Alpha.define_index { indexes :name }
+        Alpha.define_indexes
       }.should raise_error
     end
     
     it "should set the index's name using the parameter if provided" do
-      index = Alpha.define_index('custom') { indexes :name }
+      Alpha.define_index('custom') { indexes :name }
+      Alpha.define_indexes
       
-      index.name.should == 'custom'
+      Alpha.sphinx_indexes.first.name.should == 'custom'
     end
     
     context 'callbacks' do
@@ -67,6 +73,7 @@ describe ThinkingSphinx::ActiveRecord do
         Alpha.should_receive(:after_destroy).with(:toggle_deleted)
       
         Alpha.define_index { indexes :name }
+        Alpha.define_indexes
       end
       
       it "should not add toggle_deleted callback more than once" do
@@ -74,12 +81,14 @@ describe ThinkingSphinx::ActiveRecord do
       
         Alpha.define_index { indexes :name }
         Alpha.define_index { indexes :name }
+        Alpha.define_indexes
       end
       
       it "should add a update_attribute_values callback" do
         Alpha.should_receive(:after_commit).with(:update_attribute_values)
       
         Alpha.define_index { indexes :name }
+        Alpha.define_indexes
       end
     
       it "should not add update_attribute_values callback more than once" do
@@ -87,6 +96,7 @@ describe ThinkingSphinx::ActiveRecord do
       
         Alpha.define_index { indexes :name }
         Alpha.define_index { indexes :name }
+        Alpha.define_indexes
       end
       
       it "should add a toggle_delta callback if deltas are enabled" do
@@ -96,12 +106,14 @@ describe ThinkingSphinx::ActiveRecord do
           indexes :name
           set_property :delta => true
         }
+        Beta.define_indexes
       end
       
       it "should not add a toggle_delta callback if deltas are disabled" do
         Alpha.should_not_receive(:before_save).with(:toggle_delta)
 
         Alpha.define_index { indexes :name }
+        Alpha.define_indexes
       end
       
       it "should add the toggle_delta callback if deltas are disabled in other indexes" do
@@ -112,6 +124,7 @@ describe ThinkingSphinx::ActiveRecord do
           indexes :name
           set_property :delta => true
         }
+        Beta.define_indexes
       end
       
       it "should only add the toggle_delta callback once" do
@@ -125,6 +138,7 @@ describe ThinkingSphinx::ActiveRecord do
           indexes :name
           set_property :delta => true
         }
+        Beta.define_indexes
       end
       
       it "should add an index_delta callback if deltas are enabled" do
@@ -135,12 +149,14 @@ describe ThinkingSphinx::ActiveRecord do
           indexes :name
           set_property :delta => true
         }
+        Beta.define_indexes
       end
       
       it "should not add an index_delta callback if deltas are disabled" do
         Alpha.should_not_receive(:after_commit).with(:index_delta)
 
         Alpha.define_index { indexes :name }
+        Alpha.define_indexes
       end
       
       it "should add the index_delta callback if deltas are disabled in other indexes" do
@@ -152,6 +168,7 @@ describe ThinkingSphinx::ActiveRecord do
           indexes :name
           set_property :delta => true
         }
+        Beta.define_indexes
       end
       
       it "should only add the index_delta callback once" do
@@ -166,10 +183,29 @@ describe ThinkingSphinx::ActiveRecord do
           indexes :name
           set_property :delta => true
         }
+        Beta.define_indexes
       end
     end    
   end
-
+  
+  describe '.define_indexes' do
+    it "should process define_index blocks" do
+      Beta.define_index { indexes :name }
+      Beta.sphinx_indexes.length.should == 0
+      
+      Beta.define_indexes
+      Beta.sphinx_indexes.length.should == 1
+    end
+    
+    it "should not re-add indexes" do
+      Beta.define_index { indexes :name }
+      Beta.define_indexes
+      Beta.define_indexes
+      
+      Beta.sphinx_indexes.length.should == 1
+    end
+  end
+  
   describe "index methods" do
     before(:all) do
       @person = Person.find(:first)
@@ -390,6 +426,7 @@ describe ThinkingSphinx::ActiveRecord do
   describe '.sphinx_index_names' do
     it "should return the core index" do
       Alpha.define_index { indexes :name }
+      Alpha.define_indexes
       Alpha.sphinx_index_names.should == ['alpha_core']
     end
     
@@ -398,6 +435,7 @@ describe ThinkingSphinx::ActiveRecord do
         indexes :name
         set_property :delta => true
       }
+      Beta.define_indexes
       
       Beta.sphinx_index_names.should == ['beta_core', 'beta_delta']
     end
@@ -410,6 +448,7 @@ describe ThinkingSphinx::ActiveRecord do
   describe '.indexed_by_sphinx?' do
     it "should return true if there is at least one index on the model" do
       Alpha.define_index { indexes :name }
+      Alpha.define_indexes
       
       Alpha.should be_indexed_by_sphinx
     end
@@ -425,12 +464,14 @@ describe ThinkingSphinx::ActiveRecord do
         indexes :name
         set_property :delta => true
       }
+      Beta.define_indexes
       
       Beta.should be_delta_indexed_by_sphinx
     end
     
     it "should return false if there are no delta indexes on the model" do
       Alpha.define_index { indexes :name }
+      Alpha.define_indexes
       
       Alpha.should_not be_delta_indexed_by_sphinx
     end
@@ -471,10 +512,11 @@ describe ThinkingSphinx::ActiveRecord do
   
   describe '.core_index_names' do
     it "should return each index's core name" do
-      foo = Alpha.define_index { indexes :name }
-      foo.name = 'foo'
-      bar = Alpha.define_index { indexes :name }
-      bar.name = 'bar'
+      Alpha.define_index { indexes :name }
+      Alpha.define_index { indexes :name }
+      Alpha.define_indexes
+      Alpha.sphinx_indexes.first.name = 'foo'
+      Alpha.sphinx_indexes.last.name = 'bar'
       
       Alpha.core_index_names.should == ['foo_core', 'bar_core']
     end
@@ -482,11 +524,12 @@ describe ThinkingSphinx::ActiveRecord do
   
   describe '.delta_index_names' do
     it "should return index delta names, for indexes with deltas enabled" do
-      foo = Alpha.define_index { indexes :name }
-      foo.name = 'foo'
-      foo.delta_object = stub('delta')
-      bar = Alpha.define_index { indexes :name }
-      bar.name = 'bar'
+      Alpha.define_index { indexes :name }
+      Alpha.define_index { indexes :name }
+      Alpha.define_indexes
+      Alpha.sphinx_indexes.first.name = 'foo'
+      Alpha.sphinx_indexes.first.delta_object = stub('delta')
+      Alpha.sphinx_indexes.last.name = 'bar'
       
       Alpha.delta_index_names.should == ['foo_delta']
     end

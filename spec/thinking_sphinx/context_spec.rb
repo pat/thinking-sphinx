@@ -61,6 +61,16 @@ describe ThinkingSphinx::Context do
     end
   end
   
+  describe '#define_indexes' do
+    it "should call define_indexes on all known indexed models" do
+      @context.stub!(:indexed_models => ['Alpha', 'Beta'])
+      Alpha.should_receive(:define_indexes)
+      Beta.should_receive(:define_indexes)
+      
+      @context.define_indexes
+    end
+  end
+  
   describe '#add_indexed_model' do
     before :each do
       @context.indexed_models.clear

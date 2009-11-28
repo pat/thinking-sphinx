@@ -16,6 +16,8 @@ module ThinkingSphinx
         extend ThinkingSphinx::ActiveRecord::ClassMethods
         
         class << self
+          attr_accessor :sphinx_index_blocks
+          
           def set_sphinx_primary_key(attribute)
             @sphinx_primary_key_attribute = attribute
           end
@@ -52,6 +54,14 @@ module ThinkingSphinx
           end
           
           private
+          
+          def defined_indexes?
+            @defined_indexes
+          end
+          
+          def defined_indexes=(value)
+            @defined_indexes = value
+          end
           
           def sphinx_delta?
             self.sphinx_indexes.any? { |index| index.delta? }
@@ -118,18 +128,32 @@ module ThinkingSphinx
       # at ThinkingSphinx::Index::Builder.
       # 
       def define_index(name = nil, &block)
-        return unless ThinkingSphinx.define_indexes?
+        self.sphinx_index_blocks ||= []
+        self.sphinx_indexes      ||= []
+        self.sphinx_facets       ||= []
         
-        self.sphinx_indexes ||= []
-        self.sphinx_facets  ||= []
-        
-        index = ThinkingSphinx::Index::Builder.generate self, name, &block
         ThinkingSphinx.context.add_indexed_model self
         
-        add_sphinx_callbacks_and_extend(index.delta?)
-        self.sphinx_indexes << index
+        self.sphinx_index_blocks << lambda {
+          index = ThinkingSphinx::Index::Builder.generate self, name, &block
+          add_sphinx_callbacks_and_extend(index.delta?)
+          add_sphinx_index index
+        }
         
-        index
+        include ThinkingSphinx::ActiveRecord::Scopes
+        include ThinkingSphinx::SearchMethods
+      end
+      
+      def define_indexes
+        return if sphinx_index_blocks.nil? ||
+          defined_indexes?                 ||
+          !ThinkingSphinx.define_indexes?
+        
+        sphinx_index_blocks.each do |block|
+          block.call
+        end
+        
+        self.defined_indexes = true
         
         # We want to make sure that if the database doesn't exist, then Thinking
         # Sphinx doesn't mind when running non-TS tasks (like db:create, db:drop
@@ -143,6 +167,11 @@ module ThinkingSphinx
         end
       end
       
+      def add_sphinx_index(index)
+        self.sphinx_indexes << index
+        subclasses.each { |klass| klass.add_sphinx_index(index) }
+      end
+      
       def indexed_by_sphinx?
         sphinx_indexes && sphinx_indexes.length > 0
       end
@@ -152,18 +181,22 @@ module ThinkingSphinx
       end
       
       def sphinx_index_names
+        define_indexes
         sphinx_indexes.collect(&:all_names).flatten
       end
       
       def core_index_names
+        define_indexes
         sphinx_indexes.collect(&:core_name)
       end
       
       def delta_index_names
+        define_indexes
         sphinx_indexes.select(&:delta?).collect(&:delta_name)
       end
       
       def to_riddle
+        define_indexes
         sphinx_database_adapter.setup
         
         local_sphinx_indexes.collect { |index|
@@ -172,6 +205,7 @@ module ThinkingSphinx
       end
       
       def source_of_sphinx_index
+        define_indexes
         possible_models = self.sphinx_indexes.collect { |index| index.model }
         return self if possible_models.include?(self)
 
@@ -198,7 +232,7 @@ module ThinkingSphinx
       end
       
       private
-      
+            
       def local_sphinx_indexes
         sphinx_indexes.select { |index|
           index.model == self
@@ -208,10 +242,8 @@ module ThinkingSphinx
       def add_sphinx_callbacks_and_extend(delta = false)
         unless indexed_by_sphinx?
           after_destroy :toggle_deleted
-      
-          include ThinkingSphinx::SearchMethods
+          
           include ThinkingSphinx::ActiveRecord::AttributeUpdates
-          include ThinkingSphinx::ActiveRecord::Scopes
         end
         
         if delta && !delta_indexed_by_sphinx?

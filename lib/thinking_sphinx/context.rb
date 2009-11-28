@@ -9,12 +9,18 @@ class ThinkingSphinx::Context
     load_models
   end
   
+  def define_indexes
+    indexed_models.each { |model|
+      model.constantize.define_indexes
+    }
+  end
+  
   def add_indexed_model(model)
     model = model.name if model.is_a?(Class)
     
-    @indexed_models << model
-    @indexed_models.uniq!
-    @indexed_models.sort!
+    indexed_models << model
+    indexed_models.uniq!
+    indexed_models.sort!
   end
   
   def superclass_indexed_models

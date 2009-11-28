@@ -58,6 +58,8 @@ module ThinkingSphinx
     end
     
     def initialize(*args)
+      ThinkingSphinx.context.define_indexes
+      
       @array    = []
       @options  = args.extract_options!
       @args     = args

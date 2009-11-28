@@ -3,6 +3,8 @@ module ThinkingSphinx
     attr_accessor :args, :options
     
     def initialize(*args)
+      ThinkingSphinx.context.define_indexes
+      
       @options      = args.extract_options!
       @args         = args
       
