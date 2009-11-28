@@ -134,6 +134,11 @@ module ThinkingSphinx
         
         ThinkingSphinx.context.add_indexed_model self
         
+        if sphinx_index_blocks.empty?
+          before_validation :define_indexes
+          before_destroy    :define_indexes
+        end
+        
         self.sphinx_index_blocks << lambda {
           index = ThinkingSphinx::Index::Builder.generate self, name, &block
           add_sphinx_callbacks_and_extend(index.delta?)
@@ -310,6 +315,10 @@ module ThinkingSphinx
 
     def sphinx_index_name(suffix)
       "#{self.class.source_of_sphinx_index.name.underscore.tr(':/\\', '_')}_#{suffix}"
+    end
+    
+    def define_indexes
+      self.class.define_indexes
     end
   end
 end

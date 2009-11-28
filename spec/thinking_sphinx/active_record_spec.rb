@@ -69,7 +69,33 @@ describe ThinkingSphinx::ActiveRecord do
     end
     
     context 'callbacks' do
-      it "should add a toggle_deleted callback" do
+      it "should add a before_validation callback to define_indexes" do
+        Alpha.should_receive(:before_validation).with(:define_indexes)
+
+        Alpha.define_index { }
+      end
+      
+      it "should not add a before_validation callback twice" do
+        Alpha.should_receive(:before_validation).with(:define_indexes).once
+
+        Alpha.define_index { }
+        Alpha.define_index { }
+      end
+
+      it "should add a before_destroy callback to define_indexes" do
+        Alpha.should_receive(:before_destroy).with(:define_indexes)
+
+        Alpha.define_index { }
+      end
+      
+      it "should not add a before_destroy callback twice" do
+        Alpha.should_receive(:before_destroy).with(:define_indexes).once
+
+        Alpha.define_index { }
+        Alpha.define_index { }
+      end
+      
+      it "should add a toggle_deleted callback when defined" do
         Alpha.should_receive(:after_destroy).with(:toggle_deleted)
       
         Alpha.define_index { indexes :name }
@@ -84,7 +110,7 @@ describe ThinkingSphinx::ActiveRecord do
         Alpha.define_indexes
       end
       
-      it "should add a update_attribute_values callback" do
+      it "should add a update_attribute_values callback when defined" do
         Alpha.should_receive(:after_commit).with(:update_attribute_values)
       
         Alpha.define_index { indexes :name }
