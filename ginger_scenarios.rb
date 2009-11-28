@@ -21,8 +21,8 @@ Ginger.configure do |config|
   ar_2_2[/^active_?record$/] = "2.2.3"
   
   ar_2_3 = Ginger::Scenario.new
-  ar_2_3[/^active_?support$/] = "2.3.4"
-  ar_2_3[/^active_?record$/] = "2.3.4"
+  ar_2_3[/^active_?support$/] = "2.3.5"
+  ar_2_3[/^active_?record$/] = "2.3.5"
   
   config.scenarios << ar_1_2 << ar_2_0 << ar_2_1 << ar_2_2 << ar_2_3
 end
