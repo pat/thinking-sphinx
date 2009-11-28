@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{thinking-sphinx}
-  s.version = "1.3.6"
+  s.version = "1.3.7"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pat Allan"]
-  s.date = %q{2009-11-26}
+  s.date = %q{2009-11-28}
   s.description = %q{A concise and easy-to-use Ruby library that connects ActiveRecord to the Sphinx search daemon, managing configuration, indexing and searching.}
   s.email = %q{pat@freelancing-gods.com}
   s.extra_rdoc_files = [
@@ -37,6 +37,7 @@ Gem::Specification.new do |s|
      "lib/thinking_sphinx/attribute.rb",
      "lib/thinking_sphinx/class_facet.rb",
      "lib/thinking_sphinx/configuration.rb",
+     "lib/thinking_sphinx/context.rb",
      "lib/thinking_sphinx/core/array.rb",
      "lib/thinking_sphinx/core/string.rb",
      "lib/thinking_sphinx/deltas.rb",
@@ -117,6 +118,7 @@ http://freelancing-god.github.com/ts/en/upgrading.html
      "features/support/db/fixtures/developers.rb",
      "features/support/db/fixtures/dogs.rb",
      "features/support/db/fixtures/extensible_betas.rb",
+     "features/support/db/fixtures/foxes.rb",
      "features/support/db/fixtures/gammas.rb",
      "features/support/db/fixtures/people.rb",
      "features/support/db/fixtures/posts.rb",
@@ -154,6 +156,7 @@ http://freelancing-god.github.com/ts/en/upgrading.html
      "features/support/models/developer.rb",
      "features/support/models/dog.rb",
      "features/support/models/extensible_beta.rb",
+     "features/support/models/fox.rb",
      "features/support/models/gamma.rb",
      "features/support/models/person.rb",
      "features/support/models/post.rb",
@@ -167,6 +170,7 @@ http://freelancing-god.github.com/ts/en/upgrading.html
      "spec/thinking_sphinx/association_spec.rb",
      "spec/thinking_sphinx/attribute_spec.rb",
      "spec/thinking_sphinx/configuration_spec.rb",
+     "spec/thinking_sphinx/context_spec.rb",
      "spec/thinking_sphinx/core/array_spec.rb",
      "spec/thinking_sphinx/core/string_spec.rb",
      "spec/thinking_sphinx/excerpter_spec.rb",
