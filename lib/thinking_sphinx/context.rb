@@ -6,7 +6,8 @@ class ThinkingSphinx::Context
   end
   
   def prepare
-    load_models
+    load_models    unless cached?
+    add_indexed_models if cached?
   end
   
   def define_indexes
@@ -32,15 +33,23 @@ class ThinkingSphinx::Context
   
   private
   
+  def cached?
+    defined?(Rails)                   &&
+    Rails::VERSION::STRING.to_f > 2.1 &&
+    Rails.configuration.cache_classes
+  end
+  
+  def add_indexed_models
+    Object.subclasses_of(ActiveRecord::Base).each do |klass|
+      add_indexed_model klass if klass.has_sphinx_indexes?
+    end
+  end
+  
   # Make sure all models are loaded - without reloading any that
   # ActiveRecord::Base is already aware of (otherwise we start to hit some
   # messy dependencies issues).
   #
   def load_models
-    return if defined?(Rails) &&
-      Rails::VERSION::STRING.to_f > 2.1 &&
-      Rails.configuration.cache_classes
-    
     ThinkingSphinx::Configuration.instance.model_directories.each do |base|
       Dir["#{base}**/*.rb"].each do |file|
         model_name = file.gsub(/^#{base}([\w_\/\\]+)\.rb/, '\1')

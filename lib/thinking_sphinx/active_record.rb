@@ -177,6 +177,12 @@ module ThinkingSphinx
         subclasses.each { |klass| klass.add_sphinx_index(index) }
       end
       
+      def has_sphinx_indexes?
+        sphinx_indexes      && 
+        sphinx_index_blocks &&
+        (sphinx_indexes.length > 0 || sphinx_index_blocks.length > 0)
+      end
+      
       def indexed_by_sphinx?
         sphinx_indexes && sphinx_indexes.length > 0
       end

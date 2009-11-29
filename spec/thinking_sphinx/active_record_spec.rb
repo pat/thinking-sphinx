@@ -16,6 +16,9 @@ describe ThinkingSphinx::ActiveRecord do
     Alpha.sphinx_indexes.replace @existing_alpha_indexes
     Beta.sphinx_indexes.replace  @existing_beta_indexes
     
+    Alpha.send :defined_indexes=, true
+    Beta.send  :defined_indexes=, true
+    
     Alpha.sphinx_index_blocks.clear
     Beta.sphinx_index_blocks.clear
   end
@@ -583,6 +586,29 @@ describe ThinkingSphinx::ActiveRecord do
       @context.stub!(:indexed_models => ['Alpha', 'Parent', 'Person'])
       
       Parent.sphinx_offset.should == 1
+    end
+  end
+  
+  describe '.has_sphinx_indexes?' do
+    it "should return true if there are sphinx indexes defined" do
+      Alpha.sphinx_indexes.replace [stub('index')]
+      Alpha.sphinx_index_blocks.replace []
+      
+      Alpha.should have_sphinx_indexes
+    end
+    
+    it "should return true if there are sphinx index blocks defined" do
+      Alpha.sphinx_indexes.replace []
+      Alpha.sphinx_index_blocks.replace [stub('lambda')]
+      
+      Alpha.should have_sphinx_indexes
+    end
+    
+    it "should return false if there are no sphinx indexes or blocks" do
+      Alpha.sphinx_indexes.clear
+      Alpha.sphinx_index_blocks.clear
+      
+      Alpha.should_not have_sphinx_indexes
     end
   end
 end
