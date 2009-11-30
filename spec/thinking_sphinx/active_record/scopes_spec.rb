@@ -149,13 +149,13 @@ describe ThinkingSphinx::ActiveRecord::Scopes do
     end
     
     it "should return the total number of results" do
-      Alpha.by_name.search_count.should == 43
+      Alpha.by_name('foo').search_count.should == 43
     end
     
     it "should not make any calls to the database" do
       Alpha.should_not_receive(:find)
       
-      Alpha.by_name.search_count
+      Alpha.by_name('foo').search_count
     end
   end
   

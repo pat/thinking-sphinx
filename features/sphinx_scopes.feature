@@ -33,3 +33,10 @@ Feature: Sphinx Scopes
     And I am searching on people
     When I use the ids_only scope
     Then I should have an array of integers
+  
+  Scenario: Counts with scopes
+    Given Sphinx is running
+    And I am searching on people
+    When I use the with_first_name scope set to "Andrew"
+    And I am retrieving the scoped result count
+    Then I should get a value of 7
