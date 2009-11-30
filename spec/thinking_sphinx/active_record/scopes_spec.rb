@@ -137,4 +137,26 @@ describe ThinkingSphinx::ActiveRecord::Scopes do
       search.with_betas.options[:classes].should == [Alpha, Beta]
     end
   end
+  
+  describe '.search_count_with_scope' do
+    before :each do
+      @config = ThinkingSphinx::Configuration.instance
+      @client = Riddle::Client.new
+
+      @config.stub!(:client => @client)
+      @client.stub!(:query => {:matches => [], :total_found => 43})
+      Alpha.sphinx_scope(:by_name) { |name| {:conditions => {:name => name}} }
+    end
+    
+    it "should return the total number of results" do
+      Alpha.by_name.search_count.should == 43
+    end
+    
+    it "should not make any calls to the database" do
+      Alpha.should_not_receive(:find)
+      
+      Alpha.by_name.search_count
+    end
+  end
+  
 end
