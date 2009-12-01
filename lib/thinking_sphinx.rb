@@ -2,7 +2,9 @@ require 'active_record'
 require 'after_commit'
 require 'yaml'
 require 'cgi'
+require 'riddle'
 
+require 'thinking_sphinx/auto_version'
 require 'thinking_sphinx/core/array'
 require 'thinking_sphinx/core/string'
 require 'thinking_sphinx/property'
@@ -221,3 +223,5 @@ module ThinkingSphinx
   
   extend ThinkingSphinx::SearchMethods::ClassMethods
 end
+
+ThinkingSphinx::AutoVersion.detect

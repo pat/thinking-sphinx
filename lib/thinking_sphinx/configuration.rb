@@ -64,14 +64,12 @@ module ThinkingSphinx
     
     CustomOptions = %w( disable_range )
         
-    attr_accessor :config_file, :searchd_log_file, :query_log_file,
-      :pid_file, :searchd_file_path, :address, :port, :allow_star,
-      :database_yml_file, :app_root, :bin_path, :model_directories,
-      :delayed_job_priority, :searchd_binary_name, :indexer_binary_name
+    attr_accessor :searchd_file_path, :allow_star, :database_yml_file,
+      :app_root, :model_directories, :delayed_job_priority
     
     attr_accessor :source_options, :index_options
     
-    attr_reader :environment, :configuration
+    attr_reader :environment, :configuration, :controller
     
     # Load in the configuration settings - this will look for config/sphinx.yml
     # and parse it according to the current environment.
@@ -101,11 +99,12 @@ module ThinkingSphinx
       @configuration.searchd.log        = "#{self.app_root}/log/searchd.log"
       @configuration.searchd.query_log  = "#{self.app_root}/log/searchd.query.log"
       
+      @controller = Riddle::Controller.new @configuration,
+        "#{self.app_root}/config/#{environment}.sphinx.conf"
+      
       self.database_yml_file    = "#{self.app_root}/config/database.yml"
-      self.config_file          = "#{self.app_root}/config/#{environment}.sphinx.conf"
       self.searchd_file_path    = "#{self.app_root}/db/sphinx/#{environment}"
       self.allow_star           = false
-      self.bin_path             = ""
       self.model_directories    = ["#{app_root}/app/models/"] +
         Dir.glob("#{app_root}/vendor/plugins/*/app/models/")
       self.delayed_job_priority = 0
@@ -115,9 +114,6 @@ module ThinkingSphinx
         :charset_type => "utf-8"
       }
       
-      self.searchd_binary_name = "searchd"
-      self.indexer_binary_name = "indexer"
-            
       parse_config
       
       self
@@ -131,10 +127,6 @@ module ThinkingSphinx
     
     def environment
       self.class.environment
-    end
-    
-    def controller
-      @controller ||= Riddle::Controller.new(@configuration, self.config_file)
     end
     
     # Generate the config file for Sphinx by using all the settings defined and
@@ -195,6 +187,38 @@ module ThinkingSphinx
     
     def query_log_file=(file)
       @configuration.searchd.query_log = file
+    end
+    
+    def config_file
+      @controller.path
+    end
+    
+    def config_file=(file)
+      @controller.path = file
+    end
+    
+    def bin_path
+      @controller.bin_path
+    end
+    
+    def bin_path=(path)
+      @controller.bin_path = path
+    end
+    
+    def searchd_binary_name
+      @controller.searchd_binary_name
+    end
+    
+    def searchd_binary_name=(name)
+      @controller.searchd_binary_name = name
+    end
+    
+    def indexer_binary_name
+      @controller.indexer_binary_name
+    end
+    
+    def indexer_binary_name=(name)
+      @controller.indexer_binary_name = name
     end
     
     def client
