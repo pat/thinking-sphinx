@@ -1,6 +1,6 @@
 module Riddle
   class Controller
-    attr_accessor :bin_path, :searchd_binary_name, :indexer_binary_name
+    attr_accessor :path, :bin_path, :searchd_binary_name, :indexer_binary_name
     
     def initialize(configuration, path)
       @configuration  = configuration
