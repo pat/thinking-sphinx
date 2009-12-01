@@ -30,6 +30,19 @@ module Riddle
         @unpack_zlib          = []
         @unpack_mysqlcompress = []
       end
+      
+      def sql_query=(query)
+        unless query.nil?
+          max_length = 8178  # max is: 8192 - "sql_query = ".length - "\\\n".length
+          i = max_length
+          while i < query.length
+            i = query.rindex(" ", i)
+            query.insert(i, "\\" + "\n")
+            i = i + max_length
+          end
+        end
+        @sql_query = query
+      end
             
       def valid?
         super && (!( @sql_host.nil? || @sql_user.nil? || @sql_db.nil? ||

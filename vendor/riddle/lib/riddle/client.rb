@@ -129,6 +129,8 @@ module Riddle
     # defaults of localhost and 3312 respectively. All other settings can be
     # accessed and changed via the attribute accessors.
     def initialize(server=nil, port=nil)
+      Riddle.version_warning
+      
       @server = server || "localhost"
       @port   = port   || 3312
       @socket = nil

@@ -1,14 +1,31 @@
 module Riddle
   class Controller
+    attr_accessor :bin_path, :searchd_binary_name, :indexer_binary_name
+    
     def initialize(configuration, path)
       @configuration  = configuration
       @path           = path
+      
+      @bin_path            = ''
+      @searchd_binary_name = 'searchd'
+      @indexer_binary_name = 'indexer'
+    end
+    
+    def sphinx_version
+      stderr      = $stderr.dup
+      read, write = IO.pipe
+      $stderr.reopen(write)
+      `#{indexer}`[/^Sphinx (\d\.\d\.\d)/, 1]
+    rescue
+      nil
+    ensure
+      $stderr.reopen(stderr)
     end
     
     def index(*indexes)
       indexes << '--all' if indexes.empty?
       
-      cmd = "indexer --config #{@path} #{indexes.join(' ')}"
+      cmd = "#{indexer} --config #{@path} #{indexes.join(' ')}"
       cmd << " --rotate" if running?
       `#{cmd}`
     end
@@ -16,7 +33,7 @@ module Riddle
     def start
       return if running?
       
-      cmd = "searchd --pidfile --config #{@path}"
+      cmd = "#{searchd} --pidfile --config #{@path}"
       
       if RUBY_PLATFORM =~ /mswin/
         system("start /B #{cmd} 1> NUL 2>&1")
@@ -50,6 +67,16 @@ module Riddle
       !!pid && !!Process.kill(0, pid.to_i)
     rescue
       false
+    end
+    
+    private
+    
+    def indexer
+      "#{bin_path}#{indexer_binary_name}"
+    end
+    
+    def searchd
+      "#{bin_path}#{searchd_binary_name}"
     end
   end
 end

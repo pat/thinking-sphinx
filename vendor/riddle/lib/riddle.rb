@@ -1,10 +1,6 @@
 require 'socket'
 require 'timeout'
 
-require 'riddle/client'
-require 'riddle/configuration'
-require 'riddle/controller'
-
 module Riddle #:nodoc:
   class ConnectionError < StandardError #:nodoc:
     #
@@ -21,4 +17,34 @@ module Riddle #:nodoc:
   def self.escape(string)
     string.gsub(escape_pattern) { |char| "\\#{char}" }
   end
+  
+  def self.loaded_version
+    Thread.current[:riddle_sphinx_version]
+  end
+  
+  def self.loaded_version=(version)
+    Thread.current[:riddle_sphinx_version] = version
+  end
+  
+  def self.version_warning
+    return if loaded_version
+    
+    STDERR.puts %Q{
+Riddle cannot detect Sphinx on your machine, and so can't determine which
+version of Sphinx you are planning on using. Please use one of the following
+lines after "require 'riddle'" to avoid this warning.
+
+  require 'riddle/0.9.8'
+  # or
+  require 'riddle/0.9.9'
+
+    }
+  end
 end
+
+require 'riddle/auto_version'
+require 'riddle/client'
+require 'riddle/configuration'
+require 'riddle/controller'
+
+Riddle::AutoVersion.configure
