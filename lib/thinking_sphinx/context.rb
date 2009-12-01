@@ -6,7 +6,7 @@ class ThinkingSphinx::Context
   end
   
   def prepare
-    load_models    unless cached?
+    load_models
     add_indexed_models if cached?
   end
   
