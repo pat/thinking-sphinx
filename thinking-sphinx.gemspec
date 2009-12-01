@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{thinking-sphinx}
-  s.version = "1.3.7"
+  s.version = "1.3.8"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pat Allan"]
-  s.date = %q{2009-11-28}
+  s.date = %q{2009-12-01}
   s.description = %q{A concise and easy-to-use Ruby library that connects ActiveRecord to the Sphinx search daemon, managing configuration, indexing and searching.}
   s.email = %q{pat@freelancing-gods.com}
   s.extra_rdoc_files = [
@@ -23,8 +23,6 @@ Gem::Specification.new do |s|
      "lib/cucumber/thinking_sphinx/internal_world.rb",
      "lib/cucumber/thinking_sphinx/sql_logger.rb",
      "lib/thinking_sphinx.rb",
-     "lib/thinking_sphinx/0.9.8.rb",
-     "lib/thinking_sphinx/0.9.9.rb",
      "lib/thinking_sphinx/active_record.rb",
      "lib/thinking_sphinx/active_record/attribute_updates.rb",
      "lib/thinking_sphinx/active_record/delta.rb",
@@ -35,6 +33,7 @@ Gem::Specification.new do |s|
      "lib/thinking_sphinx/adapters/postgresql_adapter.rb",
      "lib/thinking_sphinx/association.rb",
      "lib/thinking_sphinx/attribute.rb",
+     "lib/thinking_sphinx/auto_version.rb",
      "lib/thinking_sphinx/class_facet.rb",
      "lib/thinking_sphinx/configuration.rb",
      "lib/thinking_sphinx/context.rb",
@@ -169,6 +168,7 @@ http://freelancing-god.github.com/ts/en/upgrading.html
      "spec/thinking_sphinx/active_record_spec.rb",
      "spec/thinking_sphinx/association_spec.rb",
      "spec/thinking_sphinx/attribute_spec.rb",
+     "spec/thinking_sphinx/auto_version_spec.rb",
      "spec/thinking_sphinx/configuration_spec.rb",
      "spec/thinking_sphinx/context_spec.rb",
      "spec/thinking_sphinx/core/array_spec.rb",
@@ -193,16 +193,16 @@ http://freelancing-god.github.com/ts/en/upgrading.html
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<activerecord>, [">= 1.15.6"])
-      s.add_runtime_dependency(%q<riddle>, [">= 1.0.2"])
+      s.add_runtime_dependency(%q<riddle>, [">= 1.0.4"])
       s.add_runtime_dependency(%q<after_commit>, [">= 1.0.5"])
     else
       s.add_dependency(%q<activerecord>, [">= 1.15.6"])
-      s.add_dependency(%q<riddle>, [">= 1.0.2"])
+      s.add_dependency(%q<riddle>, [">= 1.0.4"])
       s.add_dependency(%q<after_commit>, [">= 1.0.5"])
     end
   else
     s.add_dependency(%q<activerecord>, [">= 1.15.6"])
-    s.add_dependency(%q<riddle>, [">= 1.0.2"])
+    s.add_dependency(%q<riddle>, [">= 1.0.4"])
     s.add_dependency(%q<after_commit>, [">= 1.0.5"])
   end
 end
