@@ -94,7 +94,10 @@ module ThinkingSphinx
         return self
       elsif method == :search_count
         @options[:ids_only] = true
-        return self.total_entries
+        results_count = self.total_entries
+        @options[:ids_only] = false
+        @populated = false
+        return results_count
       elsif method.to_s[/^each_with_.*/].nil? && !@array.respond_to?(method)
         super
       elsif !SafeMethods.include?(method.to_s)
