@@ -19,11 +19,11 @@ module Riddle #:nodoc:
   end
   
   def self.loaded_version
-    Thread.current[:riddle_sphinx_version]
+    @@sphinx_version
   end
   
   def self.loaded_version=(version)
-    Thread.current[:riddle_sphinx_version] = version
+    @@sphinx_version = version
   end
   
   def self.version_warning
@@ -47,4 +47,5 @@ require 'riddle/client'
 require 'riddle/configuration'
 require 'riddle/controller'
 
+Riddle.loaded_version = nil
 Riddle::AutoVersion.configure
