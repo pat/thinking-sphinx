@@ -146,6 +146,7 @@ describe ThinkingSphinx::ActiveRecord::Scopes do
       @config.stub!(:client => @client)
       @client.stub!(:query => {:matches => [], :total_found => 43})
       Alpha.sphinx_scope(:by_name) { |name| {:conditions => {:name => name}} }
+      Alpha.sphinx_scope(:ids_only) { {:ids_only => true} }
     end
     
     it "should return the total number of results" do
@@ -158,11 +159,18 @@ describe ThinkingSphinx::ActiveRecord::Scopes do
       Alpha.by_name('foo').search_count
     end
     
-    it "should not leave the :ids_only option set and the results populated" do
+    it "should not leave the :ids_only option set and the results populated if it was not set before" do
       stored_scope = Alpha.by_name('foo')
       stored_scope.search_count
       stored_scope.options[:ids_only].should be_false
       stored_scope.populated?.should be_false
+    end
+    
+    it "should leave the :ids_only option set and the results populated if it was set before" do
+      stored_scope = Alpha.by_name('foo').ids_only
+      stored_scope.search_count
+      stored_scope.options[:ids_only].should be_true
+      stored_scope.populated?.should be_true
     end
   end
   
