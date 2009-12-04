@@ -12,32 +12,6 @@ module ThinkingSphinx
       def self.included(base)
         base.class_eval do
           class << self
-            # Temporarily disable delta indexing inside a block, then perform a single
-            # rebuild of index at the end.
-            #
-            # Useful when performing updates to batches of models to prevent
-            # the delta index being rebuilt after each individual update.
-            #
-            # In the following example, the delta index will only be rebuilt once,
-            # not 10 times.
-            #
-            #   SomeModel.suspended_delta do
-            #     10.times do
-            #       SomeModel.create( ... )
-            #     end
-            #   end
-            #
-            def suspended_delta(reindex_after = true, &block)
-              original_setting = ThinkingSphinx.deltas_enabled?
-              ThinkingSphinx.deltas_enabled = false
-              begin
-                yield
-              ensure
-                ThinkingSphinx.deltas_enabled = original_setting
-                self.index_delta if reindex_after
-              end
-            end
-
             # Build the delta index for the related model. This won't be called
             # if running in the test environment.
             #
