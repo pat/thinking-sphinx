@@ -7,8 +7,12 @@ describe ThinkingSphinx do
     end
     
     it "should remember changes to the Context instance" do
+      models = ThinkingSphinx.context.indexed_models
+      
       ThinkingSphinx.context.indexed_models.replace([:model])
       ThinkingSphinx.context.indexed_models.should == [:model]
+      
+      ThinkingSphinx.context.indexed_models.replace(models)
     end
   end
   
