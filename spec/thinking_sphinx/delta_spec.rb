@@ -1,6 +1,6 @@
 require 'spec/spec_helper'
 
-describe "ThinkingSphinx::ActiveRecord::Delta" do
+describe ThinkingSphinx::Delta do
   it "should call the toggle_delta method after a save" do
     @beta = Beta.new(:name => 'beta')
     @beta.should_receive(:toggle_delta).and_return(true)

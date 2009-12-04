@@ -257,7 +257,7 @@ describe ThinkingSphinx::Base do
     end
   end
   
-  describe "suspended_delta method" do
+  describe '.suspended_delta' do
     before :each do
       ThinkingSphinx.deltas_enabled = true
       Person.sphinx_indexes.first.delta_object.stub!(:` => "")
@@ -293,6 +293,16 @@ describe ThinkingSphinx::Base do
     it "should not reindex after the code block if false is passed in" do
       Person.should_not_receive(:index_delta)
       Person.suspended_delta(false) { 'no-op' }
+    end
+  end
+  
+  describe '.source_of_sphinx_index' do
+    it "should return self if model defines an index" do
+      Person.source_of_sphinx_index.should == Person
+    end
+
+    it "should return the parent if model inherits an index" do
+      Admin::Person.source_of_sphinx_index.should == Person
     end
   end
   

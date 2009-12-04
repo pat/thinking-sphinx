@@ -1,17 +1,17 @@
 require 'spec/spec_helper'
 
-describe ThinkingSphinx::ActiveRecord::Scopes do
+describe ThinkingSphinx::Scopes do
   after :each do
     Alpha.remove_sphinx_scopes
   end
   
   it "should be included into models with indexes" do
-    Alpha.included_modules.should include(ThinkingSphinx::ActiveRecord::Scopes)
+    Alpha.included_modules.should include(ThinkingSphinx::Scopes)
   end
   
   it "should not be included into models without indexes" do
     Gamma.included_modules.should_not include(
-      ThinkingSphinx::ActiveRecord::Scopes
+      ThinkingSphinx::Scopes
     )
   end
   

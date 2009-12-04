@@ -1,32 +1,6 @@
 require 'spec/spec_helper'
 
 describe ThinkingSphinx::ActiveRecord do
-  before :each do
-    @existing_alpha_indexes = Alpha.sphinx_indexes.clone
-    @existing_beta_indexes  = Beta.sphinx_indexes.clone
-    
-    Alpha.sphinx_indexes.clear
-    Beta.sphinx_indexes.clear
-  end
-  
-  after :each do
-    Alpha.sphinx_indexes.replace @existing_alpha_indexes
-    Beta.sphinx_indexes.replace  @existing_beta_indexes
-    
-    Alpha.sphinx_index_blocks.clear
-    Beta.sphinx_index_blocks.clear
-  end
-  
-  describe '.source_of_sphinx_index' do
-    it "should return self if model defines an index" do
-      Person.source_of_sphinx_index.should == Person
-    end
-
-    it "should return the parent if model inherits an index" do
-      Admin::Person.source_of_sphinx_index.should == Person
-    end
-  end
-  
   describe "sphinx_indexes in the inheritance chain (STI)" do
     it "should hand defined indexes on a class down to its child classes" do
       Child.sphinx_indexes.should include(*Person.sphinx_indexes)

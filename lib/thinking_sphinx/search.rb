@@ -218,10 +218,11 @@ module ThinkingSphinx
       end
       
       populate
+      index = model.source_of_sphinx_index.sphinx_indexes.first
       client.excerpts(
         :docs   => [string],
         :words  => results[:words].keys.join(' '),
-        :index  => "#{model.source_of_sphinx_index.sphinx_name}_core"
+        :index  => index.core_name
       ).first
     end
     

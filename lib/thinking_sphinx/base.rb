@@ -120,10 +120,29 @@ module ThinkingSphinx::Base
       end
     end
     
+    def source_of_sphinx_index
+      process_indexes
+      possible_models = self.sphinx_indexes.collect { |index| index.model }
+      return self if possible_models.include?(self)
+
+      parent = self.superclass
+      while !possible_models.include?(parent) && parent != absolute_superclass
+        parent = parent.superclass
+      end
+
+      return parent
+    end
+    
+    def sphinx_database_adapter
+      @sphinx_database_adapter ||=
+        ThinkingSphinx::AbstractAdapter.detect(self)
+    end
+    
     private
     
     def add_initial_sphinx_callbacks
-      #
+      include ThinkingSphinx::Scopes
+      include ThinkingSphinx::SearchMethods
     end
     
     def add_standard_sphinx_callbacks
@@ -131,7 +150,11 @@ module ThinkingSphinx::Base
     end
     
     def add_delta_sphinx_callbacks
-      #
+      include ThinkingSphinx::Delta
+    end
+    
+    def absolute_superclass
+      Object
     end
     
     def indexed_by_sphinx?
