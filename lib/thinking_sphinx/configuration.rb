@@ -140,7 +140,7 @@ module ThinkingSphinx
       
       ThinkingSphinx.context.indexed_models.each do |model|
         model = model.constantize
-        model.define_indexes
+        model.process_indexes
         @configuration.indexes.concat model.to_riddle
       end
       

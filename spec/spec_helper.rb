@@ -8,6 +8,9 @@ require 'fileutils'
 require 'ginger'
 require 'jeweler'
 
+require 'dm-core'
+require 'active_record'
+
 require "lib/thinking_sphinx"
 
 require 'will_paginate'

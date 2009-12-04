@@ -13,7 +13,7 @@ module ThinkingSphinx
       def add_internal_attribute(name, type, contents, facet = false)
         return unless attribute_by_alias(name).nil?
 
-        Attribute.new(self,
+        ThinkingSphinx::Attribute.new(self,
           ThinkingSphinx::Index::FauxColumn.new(contents),
           :type   => type,
           :as     => name,
@@ -25,7 +25,7 @@ module ThinkingSphinx
       def add_internal_facet(name)
         return unless facet_by_alias(name).nil?
 
-        @model.sphinx_facets << ClassFacet.new(attribute_by_alias(name))
+        @model.sphinx_facets << ThinkingSphinx::ClassFacet.new(attribute_by_alias(name))
       end
 
       def attribute_by_alias(attr_alias)

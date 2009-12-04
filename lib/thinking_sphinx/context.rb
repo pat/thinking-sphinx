@@ -12,7 +12,7 @@ class ThinkingSphinx::Context
   
   def define_indexes
     indexed_models.each { |model|
-      model.constantize.define_indexes
+      model.constantize.process_indexes
     }
   end
   

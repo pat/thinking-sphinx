@@ -69,9 +69,9 @@ CREATE TABLE `alphas` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `betas`;
+DROP TABLE IF EXISTS `betum`;
 
-CREATE TABLE `betas` (
+CREATE TABLE `betum` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(50) NOT NULL,
   `alpha_id` int(11),

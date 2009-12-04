@@ -5,6 +5,15 @@ module ThinkingSphinx
   class Index
     attr_accessor :name, :model, :sources, :delta_object
     
+    def self.toggle_deleted(index, document_id)
+      return unless ThinkingSphinx.sphinx_running? &&
+        ThinkingSphinx.search_for_id(document_id, index)
+      
+      ThinkingSphinx::Configuration.instance.client.update(
+        index, ['sphinx_deleted'], {document_id => [1]}
+      )
+    end
+    
     # Create a new index instance by passing in the model it is tied to, and
     # a block to build it with (optional but recommended). For documentation
     # on the syntax for inside the block, the Builder class is what you want.
@@ -83,6 +92,11 @@ module ThinkingSphinx
       indexes = [to_riddle_for_core(offset)]
       indexes << to_riddle_for_delta(offset) if delta?
       indexes << to_riddle_for_distributed
+    end
+    
+    def toggle_deleted(document_id)
+      self.class.toggle_deleted core_name,  document_id
+      self.class.toggle_deleted delta_name, document_id if delta?
     end
     
     private

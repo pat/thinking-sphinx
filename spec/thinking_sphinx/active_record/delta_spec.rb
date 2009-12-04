@@ -15,45 +15,6 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
     @beta.save!
   end
   
-  describe "suspended_delta method" do
-    before :each do
-      ThinkingSphinx.deltas_enabled = true
-      Person.sphinx_indexes.first.delta_object.stub!(:` => "")
-    end
-
-    it "should execute the argument block with deltas disabled" do
-      ThinkingSphinx.should_receive(:deltas_enabled=).once.with(false)
-      ThinkingSphinx.should_receive(:deltas_enabled=).once.with(true)
-      lambda { Person.suspended_delta { raise 'i was called' } }.should(
-        raise_error(Exception)
-      )
-    end
-
-    it "should restore deltas_enabled to its original setting" do
-      ThinkingSphinx.deltas_enabled = false
-      ThinkingSphinx.should_receive(:deltas_enabled=).twice.with(false)
-      Person.suspended_delta { 'no-op' }
-    end
-
-    it "should restore deltas_enabled to its original setting even if there was an exception" do
-      ThinkingSphinx.deltas_enabled = false
-      ThinkingSphinx.should_receive(:deltas_enabled=).twice.with(false)
-      lambda { Person.suspended_delta { raise 'bad error' } }.should(
-        raise_error(Exception)
-      )
-    end
-
-    it "should reindex by default after the code block is run" do
-      Person.should_receive(:index_delta)
-      Person.suspended_delta { 'no-op' }
-    end
-    
-    it "should not reindex after the code block if false is passed in" do
-      Person.should_not_receive(:index_delta)
-      Person.suspended_delta(false) { 'no-op' }
-    end
-  end
-  
   describe "toggle_delta method" do
     it "should set the delta value to true" do
       @person = Person.new
@@ -71,6 +32,7 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
       ThinkingSphinx.updates_enabled  = true
       ThinkingSphinx.stub!(:sphinx_running? => true)
       Person.delta_object.stub!(:` => "", :toggled => true)
+      ThinkingSphinx::Index.stub!(:toggle_deleted => true)
       
       @person = Person.new
       Person.stub!(:search_for_id => false)
@@ -112,15 +74,9 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
       @person.send(:index_delta)
     end
     
-    it "shouldn't update the deleted attribute if not in the index" do
-      @client.should_not_receive(:update)
-      
-      @person.send(:index_delta)
-    end
-    
-    it "should update the deleted attribute if in the core index" do
-      Person.stub!(:search_for_id => true)
-      @client.should_receive(:update)
+    it "should update the deleted attribute" do
+      ThinkingSphinx::Index.should_receive(:toggle_deleted).
+        with('person_core', 1)
       
       @person.send(:index_delta)
     end

@@ -1,35 +1,7 @@
-require 'active_record'
-require 'after_commit'
 require 'yaml'
 require 'cgi'
 require 'riddle'
-
-require 'thinking_sphinx/auto_version'
-require 'thinking_sphinx/core/array'
-require 'thinking_sphinx/core/string'
-require 'thinking_sphinx/property'
-require 'thinking_sphinx/active_record'
-require 'thinking_sphinx/association'
-require 'thinking_sphinx/attribute'
-require 'thinking_sphinx/configuration'
-require 'thinking_sphinx/context'
-require 'thinking_sphinx/excerpter'
-require 'thinking_sphinx/facet'
-require 'thinking_sphinx/class_facet'
-require 'thinking_sphinx/facet_search'
-require 'thinking_sphinx/field'
-require 'thinking_sphinx/index'
-require 'thinking_sphinx/source'
-require 'thinking_sphinx/rails_additions'
-require 'thinking_sphinx/search'
-require 'thinking_sphinx/search_methods'
-require 'thinking_sphinx/deltas'
-
-require 'thinking_sphinx/adapters/abstract_adapter'
-require 'thinking_sphinx/adapters/mysql_adapter'
-require 'thinking_sphinx/adapters/postgresql_adapter'
-
-ActiveRecord::Base.send(:include, ThinkingSphinx::ActiveRecord)
+require 'active_support'
 
 Merb::Plugins.add_rakefiles(
   File.join(File.dirname(__FILE__), "thinking_sphinx", "tasks")
@@ -220,8 +192,36 @@ module ThinkingSphinx
       jruby? && ::ActiveRecord::Base.connection.config[:adapter] == "jdbcmysql"
     )
   end
-  
-  extend ThinkingSphinx::SearchMethods::ClassMethods
 end
 
+require 'thinking_sphinx/auto_version'
+require 'thinking_sphinx/core/array'
+require 'thinking_sphinx/core/string'
+require 'thinking_sphinx/base'
+require 'thinking_sphinx/property'
+require 'thinking_sphinx/association'
+require 'thinking_sphinx/attribute'
+require 'thinking_sphinx/configuration'
+require 'thinking_sphinx/context'
+require 'thinking_sphinx/excerpter'
+require 'thinking_sphinx/facet'
+require 'thinking_sphinx/class_facet'
+require 'thinking_sphinx/facet_search'
+require 'thinking_sphinx/field'
+require 'thinking_sphinx/index'
+require 'thinking_sphinx/source'
+require 'thinking_sphinx/rails_additions'
+require 'thinking_sphinx/search'
+require 'thinking_sphinx/search_methods'
+require 'thinking_sphinx/deltas'
+
+require 'thinking_sphinx/adapters/abstract_adapter'
+require 'thinking_sphinx/adapters/mysql_adapter'
+require 'thinking_sphinx/adapters/postgresql_adapter'
+
+require 'thinking_sphinx/data_mapper'   if defined?(DataMapper)
+require 'thinking_sphinx/active_record' if defined?(ActiveRecord)
+
 ThinkingSphinx::AutoVersion.detect
+
+ThinkingSphinx.extend ThinkingSphinx::SearchMethods::ClassMethods

@@ -463,8 +463,8 @@ describe ThinkingSphinx::Attribute do
       
       declaration, query, range_query = @attribute.config_value.split('; ')
       declaration.should == "uint gamma_values from ranged-query"
-      query.should       == "SELECT `betas`.`alpha_id` #{ThinkingSphinx.unique_id_expression} AS `id`, `gammas`.`value` AS `gamma_values` FROM `betas` LEFT OUTER JOIN `gammas` ON gammas.beta_id = betas.id WHERE `betas`.`alpha_id` >= $start AND `betas`.`alpha_id` <= $end"
-      range_query.should == "SELECT MIN(`betas`.`alpha_id`), MAX(`betas`.`alpha_id`) FROM `betas`"
+      query.should       == "SELECT `betum`.`alpha_id` #{ThinkingSphinx.unique_id_expression} AS `id`, `gammas`.`value` AS `gamma_values` FROM `betum` LEFT OUTER JOIN `gammas` ON gammas.beta_id = betum.id WHERE `betum`.`alpha_id` >= $start AND `betum`.`alpha_id` <= $end"
+      range_query.should == "SELECT MIN(`betum`.`alpha_id`), MAX(`betum`.`alpha_id`) FROM `betum`"
     end
   end
   
@@ -485,8 +485,8 @@ describe ThinkingSphinx::Attribute do
       
       declaration, query, range_query = @attribute.config_value(nil, true).split('; ')
       declaration.should == "uint gamma_values from ranged-query"
-      query.should       == "SELECT `betas`.`alpha_id` #{ThinkingSphinx.unique_id_expression} AS `id`, `gammas`.`value` AS `gamma_values` FROM `betas` LEFT OUTER JOIN `gammas` ON gammas.beta_id = betas.id WHERE `betas`.`alpha_id` >= $start AND `betas`.`alpha_id` <= $end AND `betas`.`alpha_id` IN (SELECT `id` FROM `alphas` WHERE `alphas`.`delta` = 1)"
-      range_query.should == "SELECT MIN(`betas`.`alpha_id`), MAX(`betas`.`alpha_id`) FROM `betas`"
+      query.should       == "SELECT `betum`.`alpha_id` #{ThinkingSphinx.unique_id_expression} AS `id`, `gammas`.`value` AS `gamma_values` FROM `betum` LEFT OUTER JOIN `gammas` ON gammas.beta_id = betum.id WHERE `betum`.`alpha_id` >= $start AND `betum`.`alpha_id` <= $end AND `betum`.`alpha_id` IN (SELECT `id` FROM `alphas` WHERE `alphas`.`delta` = 1)"
+      range_query.should == "SELECT MIN(`betum`.`alpha_id`), MAX(`betum`.`alpha_id`) FROM `betum`"
     end
   end
   

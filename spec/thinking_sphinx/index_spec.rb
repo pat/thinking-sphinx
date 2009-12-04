@@ -180,4 +180,38 @@ describe ThinkingSphinx::Index do
       end
     end
   end
+  
+  describe '.toggle_deleted' do
+    before :each do
+      @client = stub('client')
+      ThinkingSphinx::Configuration.instance.stub!(:client => @client)
+      
+      ThinkingSphinx.stub!(:sphinx_running? => true)
+      ThinkingSphinx.stub!(:search_for_id => true)
+    end
+    
+    it "should not update if the document isn't in the given index" do
+      ThinkingSphinx.stub!(:search_for_id => false)
+      @client.should_not_receive(:update)
+      
+      ThinkingSphinx::Index.toggle_deleted('alpha_core', 42)
+    end
+    
+    it "should direct the update to the supplied index" do
+      @client.should_receive(:update) do |index, attributes, values|
+        index.should == 'custom_index_core'
+      end
+      
+      ThinkingSphinx::Index.toggle_deleted('custom_index_core', 42)
+    end
+    
+    it "should set the sphinx_deleted flag to true" do
+      @client.should_receive(:update) do |index, attributes, values|
+        attributes.should == ['sphinx_deleted']
+        values.should == {42 => [1]}
+      end
+      
+      ThinkingSphinx::Index.toggle_deleted('alpha_core', 42)
+    end
+  end
 end

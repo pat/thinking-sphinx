@@ -1,0 +1,3 @@
+module ThinkingSphinx::DataMapper
+  
+end

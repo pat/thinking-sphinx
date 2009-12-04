@@ -50,7 +50,9 @@ module ThinkingSphinx
       
       def delete_from_core(model, instance)
         model.core_index_names.each do |index_name|
-          model.delete_in_index index_name, instance.sphinx_document_id
+          ThinkingSphinx::Index.toggle_deleted(
+            index_name, instance.sphinx_document_id
+          )
         end
       end
       
