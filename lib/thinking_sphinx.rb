@@ -115,21 +115,6 @@ module ThinkingSphinx
     Thread.current[:thinking_sphinx_suppress_delta_output] = value
   end
   
-  # Checks to see if MySQL will allow simplistic GROUP BY statements. If not,
-  # or if not using MySQL, this will return false.
-  #
-  def self.use_group_by_shortcut?
-    if Thread.current[:thinking_sphinx_use_group_by_shortcut].nil?
-      Thread.current[:thinking_sphinx_use_group_by_shortcut] = !!(
-        mysql? && ::ActiveRecord::Base.connection.select_all(
-          "SELECT @@global.sql_mode, @@session.sql_mode;"
-        ).all? { |key,value| value.nil? || value[/ONLY_FULL_GROUP_BY/].nil? }
-      )
-    end
-    
-    Thread.current[:thinking_sphinx_use_group_by_shortcut]
-  end
-
   # An indication of whether Sphinx is running on a remote machine instead of
   # the same machine.
   #

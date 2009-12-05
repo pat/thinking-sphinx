@@ -50,7 +50,7 @@ module ThinkingSphinx
     # 
     def to_group_sql
       case
-      when is_many?, is_string?, ThinkingSphinx.use_group_by_shortcut?
+      when is_many?, is_string?, tailor.use_group_by_shortcut?
         nil
       else
         @columns.collect { |column|
@@ -74,6 +74,10 @@ module ThinkingSphinx
     
     def public?
       !admin
+    end
+    
+    def tailor
+      @source.tailor
     end
     
     private
@@ -100,11 +104,11 @@ module ThinkingSphinx
     end
     
     def quote_column(column)
-      @model.connection.quote_column_name(column)
+      tailor.quote_column_name(column)
     end
     
     def quote_table_name(table_name)
-      @model.connection.quote_table_name(table_name)
+      tailor.quote_column_name(table_name)
     end
     
     # Indication of whether the columns should be concatenated with a space
@@ -130,7 +134,7 @@ module ThinkingSphinx
       if column.is_string?
         column.__name
       elsif associations[column].empty?
-        "#{@model.quoted_table_name}.#{quote_column(column.__name)}"
+        "#{tailor.quoted_table_name}.#{quote_column(column.__name)}"
       else
         associations[column].collect { |assoc|
           assoc.has_column?(column.__name) ?
@@ -143,6 +147,8 @@ module ThinkingSphinx
     # Gets a stack of associations for a specific path.
     # 
     def association_stack(path, parent = nil)
+      return [] if path.empty?
+      
       assocs = []
       
       if parent.nil?

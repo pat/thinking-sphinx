@@ -36,13 +36,12 @@ module ThinkingSphinx::DataMapper
     
     def sphinx_adapter_type
       case repository.adapter.class.name
-      when "DataMapper::ConnectionAdapters::MysqlAdapter",
-           "DataMapper::ConnectionAdapters::MysqlplusAdapter"
+      when "DataMapper::Adapters::MysqlAdapter"
         :mysql
-      when "DataMapper::ConnectionAdapters::PostgreSQLAdapter"
+      when "DataMapper::Adapters::PostgresAdapter"
         :postgresql
       else
-        model.repository.adapter.class.name
+        repository.adapter.class.name
       end
     end
   end

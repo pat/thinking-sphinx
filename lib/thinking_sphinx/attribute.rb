@@ -301,10 +301,10 @@ WHERE #{@source.index.delta_object.clause(@source.tailor, true)})
       klass = @associations.values.flatten.first ? 
         @associations.values.flatten.first.reflection.klass : @model
       
-      column = klass.columns.detect { |col|
+      column = @source.tailor.columns_for(klass).detect { |col|
         @columns.collect { |c| c.__name.to_s }.include? col.name
       }
-      column.nil? ? nil : column.type
+      column.nil? ? nil : @source.tailor.column_type(column)
     end
     
     def translated_type_from_database
@@ -318,7 +318,7 @@ WHERE #{@source.index.delta_object.clause(@source.tailor, true)})
       else
         raise <<-MESSAGE
 
-Cannot automatically map attribute #{unique_name} in #{@model.name} to an
+Cannot automatically map attribute #{unique_name} - #{type_from_db} in #{@model.name} to an
 equivalent Sphinx type (integer, float, boolean, datetime, string as ordinal).
 You could try to explicitly convert the column's value in your define_index
 block:
@@ -332,8 +332,9 @@ block:
         klasses = @associations[col].empty? ? [@model] :
           @associations[col].collect { |assoc| assoc.reflection.klass }
         klasses.all? { |klass|
-          column = klass.columns.detect { |column| column.name == col.__name.to_s }
-          !column.nil? && column_types.include?(column.type)
+          column = @source.tailor.columns_for(klass).detect { |column| column.name == col.__name.to_s }
+          !column.nil? &&
+          column_types.include?(@source.tailor.column_type(column))
         }
       }
     end

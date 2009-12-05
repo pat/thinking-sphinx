@@ -84,6 +84,7 @@ describe ThinkingSphinx::Field do
       ]
       @field.columns.each { |col| @field.associations[col] = [] }
       @field.model = Person
+      @field.tailor.model = Person
       
       @first_join   = Object.new
       @first_join.stub!(:aliased_table_name => "tabular")

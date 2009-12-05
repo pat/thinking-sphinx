@@ -1,5 +1,5 @@
 class ThinkingSphinx::ActiveRecord::Tailor
-  attr_reader :model, :base
+  attr_accessor :model, :base
   
   def initialize(source)
     @model = source.model
@@ -51,9 +51,36 @@ class ThinkingSphinx::ActiveRecord::Tailor
     end
   end
   
+  def columns
+    @model.columns
+  end
+  
+  def columns_for(klass)
+    klass.columns
+  end
+  
+  def column_type(column)
+    column.type
+  end
+  
+  # Checks to see if MySQL will allow simplistic GROUP BY statements. If not,
+  # or if not using MySQL, this will return false.
+  #
+  def use_group_by_shortcut?
+    !!(
+      mysql? && @model.connection.select_all(
+        "SELECT @@global.sql_mode, @@session.sql_mode;"
+      ).all? { |key,value| value.nil? || value[/ONLY_FULL_GROUP_BY/].nil? }
+    )
+  end
+  
   private
   
   def adapter
     @model.sphinx_database_adapter
+  end
+  
+  def mysql?
+    adapter.sphinx_identifier == 'mysql'
   end
 end

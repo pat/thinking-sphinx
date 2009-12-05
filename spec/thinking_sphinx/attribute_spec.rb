@@ -96,6 +96,7 @@ describe ThinkingSphinx::Attribute do
         :as => :times
       )
       attribute.model = Friendship
+      attribute.tailor.model = Friendship
       
       attribute.to_select_sql.should == "CONCAT_WS(',', UNIX_TIMESTAMP(`friendships`.`created_at`), UNIX_TIMESTAMP(`friendships`.`created_on`)) AS `times`"
     end
