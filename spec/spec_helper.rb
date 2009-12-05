@@ -10,10 +10,9 @@ require 'jeweler'
 
 require 'dm-core'
 require 'active_record'
-
-require "lib/thinking_sphinx"
-
 require 'will_paginate'
+
+require 'lib/thinking_sphinx'
 
 require 'spec/sphinx_helper'
 

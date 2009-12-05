@@ -27,14 +27,14 @@ module ThinkingSphinx
         instance.delta
       end
       
-      def reset_query(model)
-        "UPDATE #{model.quoted_table_name} SET " +
-        "#{model.connection.quote_column_name(@column.to_s)} = #{adapter.boolean(false)} " +
-        "WHERE #{model.connection.quote_column_name(@column.to_s)} = #{adapter.boolean(true)}"
+      def reset_query(tailor)
+        "UPDATE #{tailor.quoted_table_name} SET " +
+        "#{tailor.quote_column_name(@column.to_s)} = #{adapter.boolean(false)} " +
+        "WHERE #{tailor.quote_column_name(@column.to_s)} = #{adapter.boolean(true)}"
       end
       
-      def clause(model, toggled)
-        "#{model.quoted_table_name}.#{model.connection.quote_column_name(@column.to_s)}" +
+      def clause(tailor, toggled)
+        "#{tailor.quoted_table_name}.#{tailor.quote_column_name(@column.to_s)}" +
         " = #{adapter.boolean(toggled)}"
       end
       

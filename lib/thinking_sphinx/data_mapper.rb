@@ -6,6 +6,10 @@ module ThinkingSphinx::DataMapper
   end
   
   module ClassMethods
+    def sphinx_tailor_for(source)
+      ThinkingSphinx::DataMapper::Tailor.new source
+    end
+    
     private
           
     def add_initial_sphinx_callbacks
@@ -29,6 +33,18 @@ module ThinkingSphinx::DataMapper
       # before_save   :toggle_delta
       # after_commit  :index_delta
     end
+    
+    def sphinx_adapter_type
+      case repository.adapter.class.name
+      when "DataMapper::ConnectionAdapters::MysqlAdapter",
+           "DataMapper::ConnectionAdapters::MysqlplusAdapter"
+        :mysql
+      when "DataMapper::ConnectionAdapters::PostgreSQLAdapter"
+        :postgresql
+      else
+        model.repository.adapter.class.name
+      end
+    end
   end
   
   def primary_key_for_sphinx
@@ -36,7 +52,4 @@ module ThinkingSphinx::DataMapper
   end
 end
 
-DataMapper::Resource.class_eval do
-  include ThinkingSphinx::Base
-  include ThinkingSphinx::DataMapper
-end
+require 'thinking_sphinx/data_mapper/tailor'

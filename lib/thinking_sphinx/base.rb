@@ -1,6 +1,16 @@
 module ThinkingSphinx::Base
   module ClassMethods
+    def sphinx_indexes
+      @sphinx_indexes ||= []
+    end
+    
+    def sphinx_index_blocks
+      @sphinx_index_blocks ||= []
+    end
+    
     def define_index(name = nil, &block)
+      add_class_methods unless respond_to?(:sphinx_facets)
+      
       ThinkingSphinx.context.add_indexed_model self
       
       add_initial_sphinx_callbacks if sphinx_index_blocks.empty?
@@ -135,7 +145,7 @@ module ThinkingSphinx::Base
     
     def sphinx_database_adapter
       @sphinx_database_adapter ||=
-        ThinkingSphinx::AbstractAdapter.detect(self)
+        ThinkingSphinx::AbstractAdapter.detect(sphinx_adapter_type, self)
     end
     
     private
@@ -176,18 +186,16 @@ module ThinkingSphinx::Base
         index.model == self
       }
     end
+    
+    def add_class_methods
+      class_inheritable_array :sphinx_facets 
+      self.sphinx_facets = []
+    end
   end
   
   def self.included(base)
-    base.extend ThinkingSphinx::Base::ClassMethods
-    
     base.class_eval do
-      class_inheritable_array :sphinx_index_blocks, :sphinx_indexes,
-        :sphinx_facets
-      
-      self.sphinx_index_blocks = []
-      self.sphinx_indexes      = []
-      self.sphinx_facets       = []
+      extend ThinkingSphinx::Base::ClassMethods
     end
   end
   

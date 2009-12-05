@@ -18,7 +18,7 @@ module ThinkingSphinx
       
       @columns.each { |col|
         @associations[col] = association_stack(col.__stack.clone).each { |assoc|
-          assoc.join_to(source.base)
+          assoc.join_to(source.tailor.base)
         }
       }
     end

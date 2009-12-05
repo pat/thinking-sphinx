@@ -1,7 +1,9 @@
 require 'after_commit'
 
+require 'thinking_sphinx/active_record/ext'
 require 'thinking_sphinx/active_record/attribute_updates'
 require 'thinking_sphinx/active_record/has_many_association'
+require 'thinking_sphinx/active_record/tailor'
 
 # Core additions to ActiveRecord models - define_index for creating indexes
 # for models. If you want to interrogate the index objects created for the
@@ -21,6 +23,10 @@ module ThinkingSphinx::ActiveRecord
     
     def primary_key_for_sphinx
       @sphinx_primary_key_attribute || primary_key
+    end
+    
+    def sphinx_tailor_for(source)
+      ThinkingSphinx::ActiveRecord::Tailor.new source
     end
     
     private
@@ -49,6 +55,26 @@ module ThinkingSphinx::ActiveRecord
     
     def absolute_superclass
       ::ActiveRecord::Base
+    end
+    
+    def sphinx_adapter_type
+      case connection.class.name
+      when "ActiveRecord::ConnectionAdapters::MysqlAdapter",
+           "ActiveRecord::ConnectionAdapters::MysqlplusAdapter"
+        :mysql
+      when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
+        :postgresql
+      when "ActiveRecord::ConnectionAdapters::JdbcAdapter"
+        if model.connection.config[:adapter] == "jdbcmysql"
+          :mysql
+        elsif model.connection.config[:adapter] == "jdbcpostgresql"
+          :postgresql
+        else
+          model.connection.config[:adapter].to_sym
+        end
+      else
+        model.connection.class.name
+      end
     end
   end
   

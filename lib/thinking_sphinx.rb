@@ -195,7 +195,11 @@ module ThinkingSphinx
 end
 
 require 'thinking_sphinx/core/array'
+require 'thinking_sphinx/core/class'
+require 'thinking_sphinx/core/hash'
+require 'thinking_sphinx/core/object'
 require 'thinking_sphinx/core/string'
+
 require 'thinking_sphinx/auto_version'
 require 'thinking_sphinx/base'
 require 'thinking_sphinx/delta'
@@ -211,7 +215,6 @@ require 'thinking_sphinx/facet_search'
 require 'thinking_sphinx/field'
 require 'thinking_sphinx/index'
 require 'thinking_sphinx/source'
-require 'thinking_sphinx/rails_additions'
 require 'thinking_sphinx/scopes'
 require 'thinking_sphinx/search'
 require 'thinking_sphinx/search_methods'

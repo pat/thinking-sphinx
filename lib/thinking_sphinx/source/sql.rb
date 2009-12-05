@@ -17,7 +17,7 @@ module ThinkingSphinx
         sql += "SQL_NO_CACHE " if adapter.sphinx_identifier == "mysql"
         sql += <<-SQL
 #{ sql_select_clause options[:offset] }
-FROM #{ @model.quoted_table_name }
+FROM #{ @tailor.quoted_table_name }
   #{ all_associations.collect { |assoc| assoc.to_sql }.join(' ') }
 #{ sql_where_clause(options) }
 GROUP BY #{ sql_group_clause }
@@ -35,16 +35,16 @@ GROUP BY #{ sql_group_clause }
         return nil if @index.options[:disable_range]
         
         min_statement = adapter.convert_nulls(
-          "MIN(#{quote_column(@model.primary_key_for_sphinx)})", 1
+          "MIN(#{quote_column(@tailor.primary_key_for_sphinx)})", 1
         )
         max_statement = adapter.convert_nulls(
-          "MAX(#{quote_column(@model.primary_key_for_sphinx)})", 1
+          "MAX(#{quote_column(@tailor.primary_key_for_sphinx)})", 1
         )
 
         sql = "SELECT #{min_statement}, #{max_statement} " +
-              "FROM #{@model.quoted_table_name} "
-        if self.delta? && !@index.delta_object.clause(@model, options[:delta]).blank?
-          sql << "WHERE #{@index.delta_object.clause(@model, options[:delta])}"
+              "FROM #{@tailor.quoted_table_name} "
+        if self.delta? && !@index.delta_object.clause(@tailor, options[:delta]).blank?
+          sql << "WHERE #{@index.delta_object.clause(@tailor, options[:delta])}"
         end
 
         sql
@@ -54,15 +54,15 @@ GROUP BY #{ sql_group_clause }
       # returns the single row for a corresponding id.
       # 
       def to_sql_query_info(offset)
-        "SELECT * FROM #{@model.quoted_table_name} WHERE " +
-        "#{quote_column(@model.primary_key_for_sphinx)} = (($id - #{offset}) / #{ThinkingSphinx.context.indexed_models.size})"
+        "SELECT * FROM #{@tailor.quoted_table_name} WHERE " +
+        "#{quote_column(@tailor.primary_key_for_sphinx)} = (($id - #{offset}) / #{ThinkingSphinx.context.indexed_models.size})"
       end
 
       def sql_select_clause(offset)
         unique_id_expr = ThinkingSphinx.unique_id_expression(offset)
 
         (
-          ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key_for_sphinx)} #{unique_id_expr} AS #{quote_column(@model.primary_key_for_sphinx)} "] + 
+          ["#{@tailor.quoted_table_name}.#{quote_column(@tailor.primary_key_for_sphinx)} #{unique_id_expr} AS #{quote_column(@tailor.primary_key_for_sphinx)} "] + 
           @fields.collect     { |field|     field.to_select_sql     } +
           @attributes.collect { |attribute| attribute.to_select_sql }
         ).compact.join(", ")
@@ -71,12 +71,12 @@ GROUP BY #{ sql_group_clause }
       def sql_where_clause(options)
         logic = []
         logic += [
-          "#{@model.quoted_table_name}.#{quote_column(@model.primary_key_for_sphinx)} >= $start",
-          "#{@model.quoted_table_name}.#{quote_column(@model.primary_key_for_sphinx)} <= $end"
+          "#{@tailor.quoted_table_name}.#{quote_column(@tailor.primary_key_for_sphinx)} >= $start",
+          "#{@tailor.quoted_table_name}.#{quote_column(@tailor.primary_key_for_sphinx)} <= $end"
         ] unless @index.options[:disable_range]
 
-        if self.delta? && !@index.delta_object.clause(@model, options[:delta]).blank?
-          logic << "#{@index.delta_object.clause(@model, options[:delta])}"
+        if self.delta? && !@index.delta_object.clause(@tailor, options[:delta]).blank?
+          logic << "#{@index.delta_object.clause(@tailor, options[:delta])}"
         end
 
         logic += (@conditions || [])
@@ -85,12 +85,12 @@ GROUP BY #{ sql_group_clause }
 
       def sql_group_clause
         internal_groupings = []
-        if @model.column_names.include?(@model.inheritance_column)
-           internal_groupings << "#{@model.quoted_table_name}.#{quote_column(@model.inheritance_column)}"
+        if @tailor.inherited?
+           internal_groupings << "#{@tailor.quoted_table_name}.#{quote_column(@tailor.inheritance_column)}"
         end
 
         (
-          ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key_for_sphinx)}"] + 
+          ["#{@tailor.quoted_table_name}.#{quote_column(@tailor.primary_key_for_sphinx)}"] + 
           @fields.collect     { |field|     field.to_group_sql     }.compact +
           @attributes.collect { |attribute| attribute.to_group_sql }.compact +
           @groupings + internal_groupings
@@ -98,8 +98,8 @@ GROUP BY #{ sql_group_clause }
       end
 
       def sql_query_pre_for_core
-        if self.delta? && !@index.delta_object.reset_query(@model).blank?
-          [@index.delta_object.reset_query(@model)]
+        if self.delta? && !@index.delta_object.reset_query(@tailor).blank?
+          [@index.delta_object.reset_query(@tailor)]
         else
           []
         end
@@ -110,20 +110,7 @@ GROUP BY #{ sql_group_clause }
       end
 
       def quote_column(column)
-        @model.connection.quote_column_name(column)
-      end
-
-      def crc_column
-        if @model.table_exists? &&
-          @model.column_names.include?(@model.inheritance_column)
-          
-          adapter.cast_to_unsigned(adapter.convert_nulls(
-            adapter.crc(adapter.quote_with_table(@model.inheritance_column), true),
-            @model.to_crc32
-          ))
-        else
-          @model.to_crc32.to_s
-        end
+        @tailor.quote_column_name(column)
       end
     end
   end

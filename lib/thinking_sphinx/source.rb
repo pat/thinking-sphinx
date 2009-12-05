@@ -8,7 +8,7 @@ module ThinkingSphinx
     
     attr_accessor :model, :fields, :attributes, :conditions, :groupings,
       :options
-    attr_reader :base, :index
+    attr_reader :tailor, :index
     
     def initialize(index, options = {})
       @index        = index
@@ -19,15 +19,7 @@ module ThinkingSphinx
       @groupings    = []
       @options      = options
       @associations = {}
-      
-      @base = ::ActiveRecord::Associations::ClassMethods::JoinDependency.new(
-        @model, [], nil
-      )
-      
-      unless @model.descends_from_active_record?
-        stored_class = @model.store_full_sti_class ? @model.name : @model.name.demodulize
-        @conditions << "#{@model.quoted_table_name}.#{quote_column(@model.inheritance_column)} = '#{stored_class}'"
-      end
+      @tailor       = @model.sphinx_tailor_for self
       
       add_internal_attributes_and_facets
     end
@@ -80,7 +72,7 @@ module ThinkingSphinx
     end
     
     def set_source_database_settings(source)
-      config = @model.connection.instance_variable_get(:@config)
+      config = @tailor.database_settings
       
       source.sql_host = config[:host]           || "localhost"
       source.sql_user = config[:username]       || config[:user] || 'root'

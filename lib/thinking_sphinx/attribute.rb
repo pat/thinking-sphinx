@@ -237,7 +237,7 @@ FROM #{quote_table_name base_assoc.table} #{association_joins}
       <<-SQL
 #{foreign_key} IN (SELECT #{quote_column model.primary_key}
 FROM #{model.quoted_table_name}
-WHERE #{@source.index.delta_object.clause(model, true)})
+WHERE #{@source.index.delta_object.clause(@source.tailor, true)})
       SQL
     end
     
