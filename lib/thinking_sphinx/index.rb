@@ -138,7 +138,8 @@ module ThinkingSphinx
     
     def set_configuration_options_for_indexes(index)
       config.index_options.each do |key, value|
-        index.send("#{key}=".to_sym, value)
+        method = "#{key}=".to_sym
+        index.send(method, value) if index.respond_to?(method)
       end
       
       options.each do |key, value|

@@ -132,12 +132,18 @@ describe ThinkingSphinx::Index do
     end
     
     context 'core index' do
-      before :each do
+      it "should use the core name" do
         @index = ThinkingSphinx::Index.new(Alpha).to_riddle(0).first
+        @index.name.should == 'alpha_core'
       end
       
-      it "should use the core name" do
-        @index.name.should == 'alpha_core'
+      it "should not try to set disable_range on the index" do
+        ThinkingSphinx::Configuration.instance.
+          index_options[:disable_range] = true
+        
+        lambda {
+          @index = ThinkingSphinx::Index.new(Alpha).to_riddle(0).first
+        }.should_not raise_error(NoMethodError)
       end
     end
     
