@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{thinking-sphinx}
-  s.version = "1.3.8"
+  s.version = "2.0.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pat Allan"]
-  s.date = %q{2009-12-02}
+  s.date = %q{2009-12-05}
   s.description = %q{A concise and easy-to-use Ruby library that connects ActiveRecord to the Sphinx search daemon, managing configuration, indexing and searching.}
   s.email = %q{pat@freelancing-gods.com}
   s.extra_rdoc_files = [
@@ -25,20 +25,27 @@ Gem::Specification.new do |s|
      "lib/thinking_sphinx.rb",
      "lib/thinking_sphinx/active_record.rb",
      "lib/thinking_sphinx/active_record/attribute_updates.rb",
-     "lib/thinking_sphinx/active_record/delta.rb",
+     "lib/thinking_sphinx/active_record/ext.rb",
      "lib/thinking_sphinx/active_record/has_many_association.rb",
-     "lib/thinking_sphinx/active_record/scopes.rb",
+     "lib/thinking_sphinx/active_record/tailor.rb",
      "lib/thinking_sphinx/adapters/abstract_adapter.rb",
      "lib/thinking_sphinx/adapters/mysql_adapter.rb",
      "lib/thinking_sphinx/adapters/postgresql_adapter.rb",
      "lib/thinking_sphinx/association.rb",
      "lib/thinking_sphinx/attribute.rb",
      "lib/thinking_sphinx/auto_version.rb",
+     "lib/thinking_sphinx/base.rb",
      "lib/thinking_sphinx/class_facet.rb",
      "lib/thinking_sphinx/configuration.rb",
      "lib/thinking_sphinx/context.rb",
      "lib/thinking_sphinx/core/array.rb",
+     "lib/thinking_sphinx/core/class.rb",
+     "lib/thinking_sphinx/core/hash.rb",
+     "lib/thinking_sphinx/core/object.rb",
      "lib/thinking_sphinx/core/string.rb",
+     "lib/thinking_sphinx/data_mapper.rb",
+     "lib/thinking_sphinx/data_mapper/tailor.rb",
+     "lib/thinking_sphinx/delta.rb",
      "lib/thinking_sphinx/deltas.rb",
      "lib/thinking_sphinx/deltas/default_delta.rb",
      "lib/thinking_sphinx/deploy/capistrano.rb",
@@ -50,7 +57,7 @@ Gem::Specification.new do |s|
      "lib/thinking_sphinx/index/builder.rb",
      "lib/thinking_sphinx/index/faux_column.rb",
      "lib/thinking_sphinx/property.rb",
-     "lib/thinking_sphinx/rails_additions.rb",
+     "lib/thinking_sphinx/scopes.rb",
      "lib/thinking_sphinx/search.rb",
      "lib/thinking_sphinx/search_methods.rb",
      "lib/thinking_sphinx/source.rb",
@@ -162,17 +169,19 @@ http://freelancing-god.github.com/ts/en/upgrading.html
      "features/support/models/robot.rb",
      "features/support/models/tag.rb",
      "features/support/models/tagging.rb",
-     "spec/thinking_sphinx/active_record/delta_spec.rb",
      "spec/thinking_sphinx/active_record/has_many_association_spec.rb",
-     "spec/thinking_sphinx/active_record/scopes_spec.rb",
+     "spec/thinking_sphinx/active_record/tailor_spec.rb",
      "spec/thinking_sphinx/active_record_spec.rb",
      "spec/thinking_sphinx/association_spec.rb",
      "spec/thinking_sphinx/attribute_spec.rb",
      "spec/thinking_sphinx/auto_version_spec.rb",
+     "spec/thinking_sphinx/base_spec.rb",
      "spec/thinking_sphinx/configuration_spec.rb",
      "spec/thinking_sphinx/context_spec.rb",
      "spec/thinking_sphinx/core/array_spec.rb",
      "spec/thinking_sphinx/core/string_spec.rb",
+     "spec/thinking_sphinx/data_mapper_spec.rb",
+     "spec/thinking_sphinx/delta_spec.rb",
      "spec/thinking_sphinx/excerpter_spec.rb",
      "spec/thinking_sphinx/facet_search_spec.rb",
      "spec/thinking_sphinx/facet_spec.rb",
@@ -181,6 +190,7 @@ http://freelancing-god.github.com/ts/en/upgrading.html
      "spec/thinking_sphinx/index/faux_column_spec.rb",
      "spec/thinking_sphinx/index_spec.rb",
      "spec/thinking_sphinx/rails_additions_spec.rb",
+     "spec/thinking_sphinx/scopes_spec.rb",
      "spec/thinking_sphinx/search_methods_spec.rb",
      "spec/thinking_sphinx/search_spec.rb",
      "spec/thinking_sphinx/source_spec.rb",
@@ -192,18 +202,15 @@ http://freelancing-god.github.com/ts/en/upgrading.html
     s.specification_version = 3
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<activerecord>, [">= 1.15.6"])
       s.add_runtime_dependency(%q<riddle>, [">= 1.0.6"])
-      s.add_runtime_dependency(%q<after_commit>, [">= 1.0.5"])
+      s.add_runtime_dependency(%q<activesupport>, [">= 1.4.4"])
     else
-      s.add_dependency(%q<activerecord>, [">= 1.15.6"])
       s.add_dependency(%q<riddle>, [">= 1.0.6"])
-      s.add_dependency(%q<after_commit>, [">= 1.0.5"])
+      s.add_dependency(%q<activesupport>, [">= 1.4.4"])
     end
   else
-    s.add_dependency(%q<activerecord>, [">= 1.15.6"])
     s.add_dependency(%q<riddle>, [">= 1.0.6"])
-    s.add_dependency(%q<after_commit>, [">= 1.0.5"])
+    s.add_dependency(%q<activesupport>, [">= 1.4.4"])
   end
 end
 
