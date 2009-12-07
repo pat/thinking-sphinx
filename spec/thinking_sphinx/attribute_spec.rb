@@ -338,7 +338,7 @@ describe ThinkingSphinx::Attribute do
       
       declaration, query = @attribute.config_value(nil, true).split('; ')
       declaration.should == "uint tag_ids from query"
-      query.should       == "SELECT `tags`.`person_id` #{ThinkingSphinx.unique_id_expression} AS `id`, `tags`.`id` AS `tag_ids` FROM `tags` WHERE `tags`.`person_id` IN (SELECT `id` FROM `people` WHERE `people`.`delta` = 1)"
+      query.should       == "SELECT `tags`.`person_id` #{ThinkingSphinx.unique_id_expression} AS `id`, `tags`.`id` AS `tag_ids` FROM `tags` WHERE `tags`.`person_id` IN (SELECT `id` FROM `people` WHERE IFNULL(`people`.`delta`, 0) = 1)"
     end
   end
   
@@ -390,7 +390,7 @@ describe ThinkingSphinx::Attribute do
       
       declaration, query, range_query = @attribute.config_value(nil, true).split('; ')
       declaration.should == "uint tag_ids from ranged-query"
-      query.should       == "SELECT `tags`.`person_id` #{ThinkingSphinx.unique_id_expression} AS `id`, `tags`.`id` AS `tag_ids` FROM `tags` WHERE `tags`.`person_id` >= $start AND `tags`.`person_id` <= $end AND `tags`.`person_id` IN (SELECT `id` FROM `people` WHERE `people`.`delta` = 1)"
+      query.should       == "SELECT `tags`.`person_id` #{ThinkingSphinx.unique_id_expression} AS `id`, `tags`.`id` AS `tag_ids` FROM `tags` WHERE `tags`.`person_id` >= $start AND `tags`.`person_id` <= $end AND `tags`.`person_id` IN (SELECT `id` FROM `people` WHERE IFNULL(`people`.`delta`, 0) = 1)"
       range_query.should == "SELECT MIN(`tags`.`person_id`), MAX(`tags`.`person_id`) FROM `tags`"
     end
   end
@@ -486,7 +486,7 @@ describe ThinkingSphinx::Attribute do
       
       declaration, query, range_query = @attribute.config_value(nil, true).split('; ')
       declaration.should == "uint gamma_values from ranged-query"
-      query.should       == "SELECT `betum`.`alpha_id` #{ThinkingSphinx.unique_id_expression} AS `id`, `gammas`.`value` AS `gamma_values` FROM `betum` LEFT OUTER JOIN `gammas` ON gammas.beta_id = betum.id WHERE `betum`.`alpha_id` >= $start AND `betum`.`alpha_id` <= $end AND `betum`.`alpha_id` IN (SELECT `id` FROM `alphas` WHERE `alphas`.`delta` = 1)"
+      query.should       == "SELECT `betum`.`alpha_id` #{ThinkingSphinx.unique_id_expression} AS `id`, `gammas`.`value` AS `gamma_values` FROM `betum` LEFT OUTER JOIN `gammas` ON gammas.beta_id = betum.id WHERE `betum`.`alpha_id` >= $start AND `betum`.`alpha_id` <= $end AND `betum`.`alpha_id` IN (SELECT `id` FROM `alphas` WHERE IFNULL(`alphas`.`delta`, 0) = 1)"
       range_query.should == "SELECT MIN(`betum`.`alpha_id`), MAX(`betum`.`alpha_id`) FROM `betum`"
     end
   end
