@@ -36,7 +36,10 @@ module Cucumber
       end
       
       def configure_database
-        ActiveRecord::Base.establish_connection database_settings
+        db_settings = database_settings
+        ActiveRecord::Base.establish_connection db_settings
+        DataMapper.setup :default, "#{db_settings['adapter']}://#{db_settings['username']}:#{db_settings['password']}@#{db_settings['host']}/#{db_settings['database']}"
+        
         self
       end
       
@@ -102,6 +105,9 @@ module Cucumber
         
         load_files migrations_directory
         load_files models_directory
+        
+        DataMapper.auto_migrate!
+        
         load_files fixtures_directory
         
         ::ThinkingSphinx.deltas_enabled = true

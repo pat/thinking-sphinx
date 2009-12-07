@@ -1,6 +1,8 @@
 require File.join(File.dirname(__FILE__), "..", "lib", "generic_delta_handler")
 
 class ExtensibleBeta < ActiveRecord::Base
+  set_table_name 'extensible_betas'
+  
   define_index do
     indexes :name, :sortable => true
     

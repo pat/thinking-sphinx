@@ -38,6 +38,15 @@ Feature: Keeping Sphinx in line with model changes when requested
     
     When I search for eleven
     Then I should get 1 result
+    
+    Given I am searching on books
+    When I search for "Colour of Magic"
+    Then I should get 0 result
+    
+    When I change the title of "The Color of Magic" to "The Colour of Magic"
+    And I wait for Sphinx to catch up
+    And I search for "Colour of Magic"
+    Then I should get 1 result
   
   Scenario: Returning new records if there's a delta
     Given Sphinx is running

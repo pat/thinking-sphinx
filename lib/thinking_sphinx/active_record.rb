@@ -97,11 +97,9 @@ module ThinkingSphinx::ActiveRecord
   def primary_key_for_sphinx
     @primary_key_for_sphinx ||= read_attribute(self.class.primary_key_for_sphinx)
   end
-
-  private
   
-  def process_indexes
-    self.class.process_indexes
+  def new_record_for_sphinx?
+    new_record?
   end
 end
 

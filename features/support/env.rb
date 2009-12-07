@@ -3,8 +3,9 @@ require 'cucumber'
 require 'spec'
 require 'fileutils'
 require 'ginger'
-require 'will_paginate'
+require 'dm-core'
 require 'active_record'
+require 'will_paginate'
 
 $:.unshift File.dirname(__FILE__) + '/../../lib'
 Dir[File.join(File.dirname(__FILE__), '../../vendor/*/lib')].each do |path|

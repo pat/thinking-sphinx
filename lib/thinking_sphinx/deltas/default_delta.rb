@@ -34,8 +34,8 @@ module ThinkingSphinx
       end
       
       def clause(tailor, toggled)
-        "#{tailor.quoted_table_name}.#{tailor.quote_column_name(@column.to_s)}" +
-        " = #{adapter.boolean(toggled)}"
+        column = "#{tailor.quoted_table_name}.#{tailor.quote_column_name(@column.to_s)}"
+        "#{adapter.convert_nulls(column, 0)} = #{adapter.boolean(toggled)}"
       end
       
       private

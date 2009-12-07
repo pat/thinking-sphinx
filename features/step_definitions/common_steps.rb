@@ -56,6 +56,11 @@ When /^I search for (\w+) on (\w+)$/ do |query, field|
   @conditions[field.to_sym] = query
 end
 
+When /^I search for "([^\"]*)" on (\w+)$/ do |query, field|
+  @results = nil
+  @conditions[field.to_sym] = query
+end
+
 When /^I output the raw result data$/ do
   puts results.results.inspect
 end

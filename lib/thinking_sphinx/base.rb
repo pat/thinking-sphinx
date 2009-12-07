@@ -213,4 +213,10 @@ module ThinkingSphinx::Base
   def primary_key_for_sphinx
     -1
   end
+  
+  private
+  
+  def process_indexes
+    self.class.process_indexes
+  end
 end

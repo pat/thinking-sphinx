@@ -33,7 +33,7 @@ module ThinkingSphinx::Delta
   end
   
   def should_toggle_delta?
-    new_record? || indexed_data_changed?
+    new_record_for_sphinx? || indexed_data_changed?
   end
   
   def indexed_data_changed?

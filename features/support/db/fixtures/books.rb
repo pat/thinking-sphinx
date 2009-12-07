@@ -1,0 +1,5 @@
+Book.create :title => "American Gods",      :author => "Neil Gaiman"
+Book.create :title => "Anansi Boys",        :author => "Neil Gaiman"
+Book.create :title => "Night Watch",        :author => "Terry Pratchett"
+Book.create :title => "The Color of Magic", :author => "Terry Pratchett"
+Book.create :title => "Da Vinci Code",      :author => "Dan Brown"

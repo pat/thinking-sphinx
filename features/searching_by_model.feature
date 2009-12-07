@@ -8,12 +8,22 @@ Feature: Searching on a single model
     And I am searching on people
     When I search for James
     Then I should get 3 results
+    
+    Given I am searching on books
+    When I search for "Neil Gaiman"
+    Then I should get 2 results
   
   Scenario: Searching on a specific field
     Given Sphinx is running
     And I am searching on people
     When I search for James on first_name
     Then I should get 2 results
+    
+  Scenario: Searching on a specific field with DataMapper
+    Given Sphinx is running
+    And I am searching on books
+    When I search for "Night Watch" on title
+    Then I should get 1 result
   
   Scenario: Searching on multiple fields
     Given Sphinx is running

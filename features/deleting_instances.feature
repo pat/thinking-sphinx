@@ -13,6 +13,15 @@ Feature: Keeping Sphinx in line with deleted model instances
     And I wait for Sphinx to catch up
     And I search for three
     Then I should get 0 results
+    
+    Given I am searching on books
+    When I search for "Da Vinci"
+    Then I should get 1 result
+    
+    When I destroy the book titled "Da Vinci Code"
+    And I wait for Sphinx to catch up
+    And I search for "Da Vinci"
+    Then I should get 0 results
   
   Scenario: Deleting subclasses when the parent class is indexed
     Given Sphinx is running
