@@ -833,6 +833,10 @@ describe ThinkingSphinx::Search do
         :per_page => 30, :limit => 40
       ).per_page.should == 40
     end
+    
+    it "should allow for string arguments" do
+      ThinkingSphinx::Search.new(:per_page => '10').per_page.should == 10
+    end
   end
   
   describe '#total_pages' do

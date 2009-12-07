@@ -151,7 +151,9 @@ module ThinkingSphinx
     # @return [Integer]
     # 
     def per_page
-      @options[:limit] || @options[:per_page] || 20
+      @options[:limit] ||= @options[:per_page]
+      @options[:limit] ||= 20
+      @options[:limit].to_i
     end
     
     # The total number of pages available if the results are paginated.
