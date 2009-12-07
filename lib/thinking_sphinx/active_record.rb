@@ -29,6 +29,16 @@ module ThinkingSphinx::ActiveRecord
       ThinkingSphinx::ActiveRecord::Tailor.new source
     end
     
+    def find_for_sphinx(ids, options, index_options)
+      find(:all,
+        :joins      => options[:joins],
+        :conditions => {primary_key_for_sphinx.to_sym => ids},
+        :include    => (options[:include] || index_options[:include]),
+        :select     => (options[:select]  || index_options[:select]),
+        :order      => (options[:sql_order] || index_options[:sql_order])
+      )
+    end
+    
     private
           
     def add_initial_sphinx_callbacks
