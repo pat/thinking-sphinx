@@ -157,3 +157,4 @@ Since I first released this library, there's been quite a few people who have su
 * Andrew Assarattanakul
 * Jonas von Andrian
 * Dimitri Krassovski
+* Sergey Kojin
