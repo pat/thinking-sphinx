@@ -73,6 +73,13 @@ namespace :thinking_sphinx do
     puts config.controller.index
   end
   
+  desc "Reindex Sphinx without regenerating the configuration file"
+  task :reindex => :app_env do
+    config = ThinkingSphinx::Configuration.instance
+    FileUtils.mkdir_p config.searchd_file_path
+    puts config.controller.index
+  end
+  
   desc "Stop Sphinx (if it's running), rebuild the indexes, and start Sphinx"
   task :rebuild => :app_env do
     Rake::Task["thinking_sphinx:stop"].invoke if sphinx_running?
@@ -93,6 +100,8 @@ namespace :ts do
   desc "Index data for Sphinx using Thinking Sphinx's settings"
   task :in      => "thinking_sphinx:index"
   task :index   => "thinking_sphinx:index"
+  desc "Reindex Sphinx without regenerating the configuration file"
+  task :reindex => "thinking_sphinx:reindex"
   desc "Restart Sphinx"
   task :restart => "thinking_sphinx:restart"
   desc "Generate the Sphinx configuration file using Thinking Sphinx's settings"
