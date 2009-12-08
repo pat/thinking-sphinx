@@ -93,15 +93,7 @@ module ThinkingSphinx
         add_scope(method, *args, &block)
         return self
       elsif method == :search_count
-        if @options[:ids_only]
-          results_count = self.total_entries
-        else
-          @options[:ids_only] = true
-          results_count = self.total_entries
-          @options[:ids_only] = false
-          @populated = false
-        end
-        return results_count
+        return scoped_count
       elsif method.to_s[/^each_with_.*/].nil? && !@array.respond_to?(method)
         super
       elsif !SafeMethods.include?(method.to_s)
@@ -737,6 +729,17 @@ MSG
           options[key] = search.options[key]
         end
       end
+    end
+    
+    def scoped_count
+      return self.total_entries if @options[:ids_only]
+      
+      @options[:ids_only] = true
+      results_count = self.total_entries
+      @options[:ids_only] = false
+      @populated = false
+      
+      results_count
     end
   end
 end
