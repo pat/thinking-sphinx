@@ -29,10 +29,8 @@ namespace :thinking_sphinx do
     raise RuntimeError, "searchd is already running." if sphinx_running?
     
     Dir["#{config.searchd_file_path}/*.spl"].each { |file| File.delete(file) }
-
-    system! "#{config.bin_path}#{config.searchd_binary_name} --pidfile --config \"#{config.config_file}\""
     
-    sleep(2)
+    config.controller.start
     
     if sphinx_running?
       puts "Started successfully (pid #{sphinx_pid})."
@@ -48,7 +46,7 @@ namespace :thinking_sphinx do
     else
       config = ThinkingSphinx::Configuration.instance
       pid    = sphinx_pid
-      system! "#{config.bin_path}#{config.searchd_binary_name} --stop --config \"#{config.config_file}\""
+      config.controller.stop
       puts "Stopped search daemon (pid #{pid})."
     end
   end
@@ -72,10 +70,7 @@ namespace :thinking_sphinx do
     end
     
     FileUtils.mkdir_p config.searchd_file_path
-    cmd = "#{config.bin_path}#{config.indexer_binary_name} --config \"#{config.config_file}\" --all"
-    cmd << " --rotate" if sphinx_running?
-    
-    system! cmd
+    puts config.controller.index
   end
   
   desc "Stop Sphinx (if it's running), rebuild the indexes, and start Sphinx"
@@ -114,20 +109,4 @@ end
 
 def sphinx_running?
   ThinkingSphinx.sphinx_running?
-end
-
-# a fail-fast, hopefully helpful version of system
-def system!(cmd)
-  unless system(cmd)
-    raise <<-SYSTEM_CALL_FAILED
-The following command failed:
-  #{cmd}
-
-This could be caused by a PATH issue in the environment of cron/passenger/etc. Your current PATH:
-  #{ENV['PATH']}
-You can set the path to your indexer and searchd binaries using the bin_path property in config/sphinx.yml:
-  production:
-    bin_path: '/usr/local/bin'
-SYSTEM_CALL_FAILED
-  end
 end
