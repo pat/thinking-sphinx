@@ -24,6 +24,10 @@ module ThinkingSphinx
       "#{@model.quoted_table_name}.#{@model.connection.quote_column_name(column)}"
     end
     
+    def quote(column)
+      @model.connection.quote_column_name(column)
+    end
+    
     protected
     
     def connection

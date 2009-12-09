@@ -1,4 +1,5 @@
 require 'thinking_sphinx/source/internal_properties'
+require 'thinking_sphinx/source/query'
 require 'thinking_sphinx/source/sql'
 
 module ThinkingSphinx
@@ -62,7 +63,7 @@ module ThinkingSphinx
     # Gets the association stack for a specific key.
     # 
     def association(key)
-      @associations[key] ||= Association.children(@model, key)
+      @associations[key] ||= ThinkingSphinx::ActiveRecord::Association.children(@model, key)
     end
     
     private

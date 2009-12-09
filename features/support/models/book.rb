@@ -8,9 +8,12 @@ class Book
   property :author, String
   property :delta,  Boolean
   
+  has n, :reviews
+  
   define_index do
     indexes title
     indexes author
+    indexes reviews.content, :as => :reviews
     
     set_property :delta => true
   end

@@ -1,10 +1,5 @@
 require 'after_commit'
 
-require 'thinking_sphinx/active_record/ext'
-require 'thinking_sphinx/active_record/attribute_updates'
-require 'thinking_sphinx/active_record/has_many_association'
-require 'thinking_sphinx/active_record/tailor'
-
 # Core additions to ActiveRecord models - define_index for creating indexes
 # for models. If you want to interrogate the index objects created for the
 # model, you can use the class-level accessor :sphinx_indexes.
@@ -102,6 +97,12 @@ module ThinkingSphinx::ActiveRecord
     new_record?
   end
 end
+
+require 'thinking_sphinx/active_record/ext'
+require 'thinking_sphinx/active_record/association'
+require 'thinking_sphinx/active_record/attribute_updates'
+require 'thinking_sphinx/active_record/has_many_association'
+require 'thinking_sphinx/active_record/tailor'
 
 ActiveRecord::Base.class_eval do
   include ThinkingSphinx::Base

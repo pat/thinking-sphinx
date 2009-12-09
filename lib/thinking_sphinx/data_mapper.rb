@@ -1,7 +1,7 @@
 module ThinkingSphinx::DataMapper
   def self.included(base)
     base.class_eval do
-      extend ThinkingSphinx::DataMapper::ClassMethods
+      extend  ThinkingSphinx::DataMapper::ClassMethods
     end
   end
   
@@ -64,4 +64,5 @@ module ThinkingSphinx::DataMapper
   end
 end
 
+require 'thinking_sphinx/data_mapper/association'
 require 'thinking_sphinx/data_mapper/tailor'
