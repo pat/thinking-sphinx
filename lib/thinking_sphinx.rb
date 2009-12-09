@@ -71,6 +71,10 @@ module ThinkingSphinx
     
     Thread.current[:thinking_sphinx_context]
   end
+  
+  def self.reset_context!
+    Thread.current[:thinking_sphinx_context] = nil
+  end
 
   def self.unique_id_expression(offset = nil)
     "* #{context.indexed_models.size} + #{offset || 0}"
