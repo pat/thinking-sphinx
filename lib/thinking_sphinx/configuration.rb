@@ -13,7 +13,7 @@ module ThinkingSphinx
   # pid file::              log/searchd.#{environment}.pid
   # searchd files::         db/sphinx/#{environment}/
   # address::               127.0.0.1
-  # port::                  3312
+  # port::                  9312
   # allow star::            false
   # min prefix length::     1
   # min infix length::      1
@@ -94,7 +94,7 @@ module ThinkingSphinx
       
       @configuration = Riddle::Configuration.new
       @configuration.searchd.address    = "127.0.0.1"
-      @configuration.searchd.port       = 3312
+      @configuration.searchd.port       = 9312
       @configuration.searchd.pid_file   = "#{self.app_root}/log/searchd.#{environment}.pid"
       @configuration.searchd.log        = "#{self.app_root}/log/searchd.log"
       @configuration.searchd.query_log  = "#{self.app_root}/log/searchd.query.log"
