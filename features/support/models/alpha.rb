@@ -4,6 +4,7 @@ class Alpha < ActiveRecord::Base
     
     has value, created_at, created_on
     has cost, :facet => true
+    has active
     
     set_property :field_weights => {"name" => 10}
   end

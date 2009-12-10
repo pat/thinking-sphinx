@@ -504,4 +504,43 @@ describe ThinkingSphinx::Attribute do
       @statement.should match(/SELECT cricket_team_id, id FROM tags/)
     end
   end
+  
+  describe '#live_value' do
+    before :each do
+      @attribute = ThinkingSphinx::Attribute.new @source, [
+        stub('column', :__stack => [], :__name => "col_name")
+      ]
+      @instance = stub('model')
+    end
+    
+    it "should translate boolean values to integers" do
+      @instance.stub!(:col_name => true)
+      @attribute.live_value(@instance).should == 1
+      
+      @instance.stub!(:col_name => false)
+      @attribute.live_value(@instance).should == 0
+    end
+    
+    it "should translate timestamps to integers" do
+      now = Time.now
+      @instance.stub!(:col_name => now)
+      @attribute.live_value(@instance).should == now.to_i
+    end
+    
+    it "should translate dates to timestamp integers" do
+      today = Date.today
+      @instance.stub!(:col_name => today)
+      @attribute.live_value(@instance).should == today.to_time.to_i
+    end
+    
+    it "should translate nils to 0" do
+      @instance.stub!(:col_name => nil)
+      @attribute.live_value(@instance).should == 0
+    end
+    
+    it "should return integers as integers" do
+      @instance.stub!(:col_name => 42)
+      @attribute.live_value(@instance).should == 42
+    end
+  end
 end

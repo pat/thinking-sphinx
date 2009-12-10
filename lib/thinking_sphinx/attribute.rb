@@ -180,7 +180,7 @@ module ThinkingSphinx
       object = instance
       column = @columns.first
       column.__stack.each { |method| object = object.send(method) }
-      object.send(column.__name)
+      sphinx_value object.send(column.__name)
     end
     
     def all_ints?
@@ -336,6 +336,21 @@ block:
           !column.nil? && column_types.include?(column.type)
         }
       }
+    end
+    
+    def sphinx_value(value)
+      case value
+      when TrueClass
+        1
+      when FalseClass, NilClass
+        0
+      when Time
+        value.to_i
+      when Date
+        value.to_time.to_i
+      else
+        value
+      end
     end
   end
 end

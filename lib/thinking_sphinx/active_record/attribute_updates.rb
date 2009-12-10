@@ -37,12 +37,7 @@ module ThinkingSphinx
       
       def attribute_values_for_index(index)
         updatable_attributes(index).inject({}) { |hash, attrib|
-          if attrib.type == :datetime && attrib.live_value(self)
-            hash[attrib.unique_name.to_s] = attrib.live_value(self).to_time.to_i
-          else
-            hash[attrib.unique_name.to_s] = attrib.live_value self
-          end
-          
+          hash[attrib.unique_name.to_s] = attrib.live_value self
           hash
         }
       end
