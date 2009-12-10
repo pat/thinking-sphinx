@@ -70,7 +70,7 @@ namespace :thinking_sphinx do
     end
     
     FileUtils.mkdir_p config.searchd_file_path
-    puts config.controller.index
+    config.controller.index :verbose => true
   end
   
   desc "Reindex Sphinx without regenerating the configuration file"
