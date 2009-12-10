@@ -16,6 +16,17 @@ describe ThinkingSphinx do
     end
   end
   
+  describe '.reset_context!' do
+    it "should remove the existing Context instance" do
+      existing = ThinkingSphinx.context
+      
+      ThinkingSphinx.reset_context!
+      ThinkingSphinx.context.should_not == existing
+      
+      Thread.current[:thinking_sphinx_context] = existing
+    end
+  end
+  
   describe '.define_indexes?' do
     it "should define indexes by default" do
       ThinkingSphinx.define_indexes?.should be_true
