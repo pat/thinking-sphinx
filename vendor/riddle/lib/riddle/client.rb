@@ -132,7 +132,7 @@ module Riddle
       Riddle.version_warning
       
       @server = server || "localhost"
-      @port   = port   || 3312
+      @port   = port   || 9312
       @socket = nil
       
       reset
@@ -474,9 +474,10 @@ module Riddle
     # Connects to the Sphinx daemon, and yields a socket to use. The socket is
     # closed at the end of the block.
     def connect(&block)
-      unless @socket.nil?
+      if @socket && !@socket.closed?
         yield @socket
       else
+        @socket = nil
         open_socket
         begin
           yield @socket

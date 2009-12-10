@@ -18,8 +18,6 @@ module Riddle
     attr_accessor :indexer
     
     def initialize
-      Riddle.version_warning
-      
       @indexer = Riddle::Configuration::Indexer.new
       @searchd = Riddle::Configuration::Searchd.new
       @indexes = []

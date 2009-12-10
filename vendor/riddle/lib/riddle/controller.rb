@@ -18,11 +18,12 @@ module Riddle
     end
     
     def index(*indexes)
+      options = indexes.last.is_a?(Hash) ? indexes.pop : {}
       indexes << '--all' if indexes.empty?
       
       cmd = "#{indexer} --config #{@path} #{indexes.join(' ')}"
       cmd << " --rotate" if running?
-      `#{cmd}`
+      options[:verbose] ? system(cmd) : `#{cmd}`
     end
     
     def start
