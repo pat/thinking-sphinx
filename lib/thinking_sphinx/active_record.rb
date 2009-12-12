@@ -164,6 +164,8 @@ module ThinkingSphinx
       end
       
       def define_indexes
+        superclass.define_indexes unless superclass == ::ActiveRecord::Base
+        
         return if sphinx_index_blocks.nil? ||
           defined_indexes?                 ||
           !ThinkingSphinx.define_indexes?
