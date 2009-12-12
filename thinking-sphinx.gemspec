@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{thinking-sphinx}
-  s.version = "1.3.10"
+  s.version = "1.3.11"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pat Allan"]
-  s.date = %q{2009-12-10}
+  s.date = %q{2009-12-12}
   s.description = %q{A concise and easy-to-use Ruby library that connects ActiveRecord to the Sphinx search daemon, managing configuration, indexing and searching.}
   s.email = %q{pat@freelancing-gods.com}
   s.extra_rdoc_files = [
@@ -73,7 +73,8 @@ http://freelancing-god.github.com/ts/en/upgrading.html
   s.rubygems_version = %q{1.3.5}
   s.summary = %q{ActiveRecord/Rails Sphinx library}
   s.test_files = [
-    "features/alternate_primary_key.feature",
+    "features/abstract_inheritance.feature",
+     "features/alternate_primary_key.feature",
      "features/attribute_transformation.feature",
      "features/attribute_updates.feature",
      "features/deleting_instances.feature",
@@ -119,6 +120,7 @@ http://freelancing-god.github.com/ts/en/upgrading.html
      "features/support/db/fixtures/extensible_betas.rb",
      "features/support/db/fixtures/foxes.rb",
      "features/support/db/fixtures/gammas.rb",
+     "features/support/db/fixtures/music.rb",
      "features/support/db/fixtures/people.rb",
      "features/support/db/fixtures/posts.rb",
      "features/support/db/fixtures/robots.rb",
@@ -135,6 +137,8 @@ http://freelancing-god.github.com/ts/en/upgrading.html
      "features/support/db/migrations/create_developers.rb",
      "features/support/db/migrations/create_extensible_betas.rb",
      "features/support/db/migrations/create_gammas.rb",
+     "features/support/db/migrations/create_genres.rb",
+     "features/support/db/migrations/create_music.rb",
      "features/support/db/migrations/create_people.rb",
      "features/support/db/migrations/create_posts.rb",
      "features/support/db/migrations/create_robots.rb",
@@ -157,6 +161,9 @@ http://freelancing-god.github.com/ts/en/upgrading.html
      "features/support/models/extensible_beta.rb",
      "features/support/models/fox.rb",
      "features/support/models/gamma.rb",
+     "features/support/models/genre.rb",
+     "features/support/models/medium.rb",
+     "features/support/models/music.rb",
      "features/support/models/person.rb",
      "features/support/models/post.rb",
      "features/support/models/robot.rb",
