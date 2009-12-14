@@ -179,7 +179,11 @@ module ThinkingSphinx
     def live_value(instance)
       object = instance
       column = @columns.first
-      column.__stack.each { |method| object = object.send(method) }
+      column.__stack.each { |method|
+        object = object.send(method)
+        return nil if object.nil?
+      }
+      
       sphinx_value object.send(column.__name)
     end
     

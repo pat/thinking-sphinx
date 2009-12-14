@@ -542,5 +542,21 @@ describe ThinkingSphinx::Attribute do
       @instance.stub!(:col_name => 42)
       @attribute.live_value(@instance).should == 42
     end
+    
+    it "should handle nils in the association chain" do
+      @attribute = ThinkingSphinx::Attribute.new @source, [
+        stub('column', :__stack => [:assoc_name], :__name => :id)
+      ]
+      @instance.stub!(:assoc_name => nil)
+      @attribute.live_value(@instance).should be_nil
+    end
+    
+    it "should handle association chains" do
+      @attribute = ThinkingSphinx::Attribute.new @source, [
+        stub('column', :__stack => [:assoc_name], :__name => :id)
+      ]
+      @instance.stub!(:assoc_name => stub('object', :id => 42))
+      @attribute.live_value(@instance).should == 42
+    end
   end
 end
