@@ -6,6 +6,13 @@ describe ThinkingSphinx::Source do
     @source = ThinkingSphinx::Source.new(@index, :sql_range_step => 1000)
   end
   
+  describe '#initialize' do
+    it "should store the current connection details" do
+      config = Person.connection.instance_variable_get(:@config)
+      @source.database_configuration.should == config
+    end
+  end
+  
   it "should generate the name from the model" do
     @source.name.should == "person"
   end
@@ -77,6 +84,7 @@ describe ThinkingSphinx::Source do
         :user     => nil,
         :username => nil
       })
+      @source = ThinkingSphinx::Source.new(@index)
       
       riddle = @source.to_riddle_for_core(1, 0)
       riddle.sql_user.should == 'root'

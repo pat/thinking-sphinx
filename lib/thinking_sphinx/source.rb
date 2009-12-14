@@ -8,7 +8,7 @@ module ThinkingSphinx
     
     attr_accessor :model, :fields, :attributes, :conditions, :groupings,
       :options
-    attr_reader :base, :index
+    attr_reader :base, :index, :database_configuration
     
     def initialize(index, options = {})
       @index        = index
@@ -19,6 +19,8 @@ module ThinkingSphinx
       @groupings    = []
       @options      = options
       @associations = {}
+      @database_configuration = @model.connection.
+        instance_variable_get(:@config).clone
       
       @base = ::ActiveRecord::Associations::ClassMethods::JoinDependency.new(
         @model, [], nil
@@ -80,7 +82,7 @@ module ThinkingSphinx
     end
     
     def set_source_database_settings(source)
-      config = @model.connection.instance_variable_get(:@config)
+      config = @database_configuration
       
       source.sql_host = config[:host]           || "localhost"
       source.sql_user = config[:username]       || config[:user] || 'root'
