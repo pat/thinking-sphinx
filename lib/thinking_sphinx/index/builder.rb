@@ -32,15 +32,11 @@ module ThinkingSphinx
       
       def initialize(index, &block)
         @index  = index
-        @source = ThinkingSphinx::Source.new(@index)
-        @index.sources << @source
         @explicit_source = false
         
         self.instance_eval &block
         
-        if @index.sources.any? { |source|
-          source.fields.length == 0
-        }
+        if no_fields?
           raise "At least one field is necessary for an index"
         end
       end
@@ -105,7 +101,7 @@ module ThinkingSphinx
       def indexes(*args)
         options = args.extract_options!
         args.each do |columns|
-          field = Field.new(@source, FauxColumn.coerce(columns), options)
+          field = Field.new(source, FauxColumn.coerce(columns), options)
           
           add_sort_attribute  field, options   if field.sortable
           add_facet_attribute field, options   if field.faceted
@@ -151,7 +147,7 @@ module ThinkingSphinx
       def has(*args)
         options = args.extract_options!
         args.each do |columns|
-          attribute = Attribute.new(@source, FauxColumn.coerce(columns), options)
+          attribute = Attribute.new(source, FauxColumn.coerce(columns), options)
           
           add_facet_attribute attribute, options if attribute.faceted
         end
@@ -162,7 +158,7 @@ module ThinkingSphinx
         options[:facet] = true
         
         args.each do |columns|
-          attribute = Attribute.new(@source, FauxColumn.coerce(columns), options)
+          attribute = Attribute.new(source, FauxColumn.coerce(columns), options)
           
           add_facet_attribute attribute, options
         end
@@ -176,7 +172,7 @@ module ThinkingSphinx
       #   where "parent_type = 'Article'", "created_at < NOW()"
       # 
       def where(*args)
-        @source.conditions += args
+        source.conditions += args
       end
       
       # Use this method to add some manual SQL strings to the GROUP BY
@@ -186,7 +182,7 @@ module ThinkingSphinx
       #   group_by "lat", "lng"
       # 
       def group_by(*args)
-        @source.groupings += args
+        source.groupings += args
       end
       
       # This is what to use to set properties on the index. Chief amongst
@@ -251,10 +247,18 @@ module ThinkingSphinx
       
       private
       
+      def source
+        @source ||= begin
+          source = ThinkingSphinx::Source.new(@index)
+          @index.sources << source
+          source
+        end
+      end
+      
       def set_single_property(key, value)
         source_options = ThinkingSphinx::Configuration::SourceOptions
         if source_options.include?(key.to_s)
-          @source.options.merge! key => value
+          source.options.merge! key => value
         else
           @index.local_options.merge!  key => value
         end
@@ -272,7 +276,7 @@ module ThinkingSphinx
       def add_internal_attribute(property, options, suffix, crc = false)
         return unless ThinkingSphinx::Facet.translate?(property)
         
-        Attribute.new(@source,
+        Attribute.new(source,
           property.columns.collect { |col| col.clone },
           options.merge(
             :type => property.is_a?(Field) ? :string : options[:type],
@@ -280,6 +284,12 @@ module ThinkingSphinx
             :crc  => crc
           ).except(:facet)
         )
+      end
+      
+      def no_fields?
+        @index.sources.empty? || @index.sources.any? { |source|
+          source.fields.length == 0
+        }
       end
     end
   end
