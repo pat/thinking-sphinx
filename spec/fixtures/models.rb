@@ -130,6 +130,10 @@ class Beta < ActiveRecord::Base
   def excerpts
     false
   end
+  
+  def matching_fields
+    :foo
+  end
 end
 
 class Gamma < ActiveRecord::Base

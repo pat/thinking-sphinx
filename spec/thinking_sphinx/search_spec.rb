@@ -153,6 +153,17 @@ describe ThinkingSphinx::Search do
     end
   end
   
+  describe '.matching_fields' do
+    it "should return objects with indexes matching 1's in the bitmask" do
+      fields = ['alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta']
+      ThinkingSphinx::Search.matching_fields(fields, 85).
+        should == ['alpha', 'gamma', 'epsilon', 'eta']
+      
+      ThinkingSphinx::Search.matching_fields(fields, 42).
+        should == ['beta', 'delta', 'zeta']
+    end
+  end
+  
   describe '#populate' do
     before :each do
       @alpha_a, @alpha_b  = Alpha.new,  Alpha.new
@@ -164,7 +175,8 @@ describe ThinkingSphinx::Search do
       @beta_b.stub!  :id => 2, :read_attribute => 2
       
       @client.stub! :query => {
-        :matches => minimal_result_hashes(@alpha_a, @beta_b, @alpha_b, @beta_a)
+        :matches => minimal_result_hashes(@alpha_a, @beta_b, @alpha_b, @beta_a),
+        :fields  => ["one", "two", "three", "four", "five"]
       }
       Alpha.stub! :find => [@alpha_a, @alpha_b]
       Beta.stub!  :find => [@beta_a, @beta_b]
@@ -796,6 +808,33 @@ describe ThinkingSphinx::Search do
           hash = @search.last.sphinx_attributes
           hash['sphinx_internal_id'].should == @search.last.id
           hash['class_crc'].should == @search.last.class.to_crc32
+        end
+      end
+      
+      describe '#matching_fields' do
+        it "should add matching_fields method if using fieldmask ranking mode" do
+          search = ThinkingSphinx::Search.new :rank_mode => :fieldmask
+          search.first.should respond_to(:matching_fields)
+        end
+        
+        it "should not add matching_fields method if using a different ranking mode" do
+          search = ThinkingSphinx::Search.new :rank_mode => :bm25
+          search.first.should_not respond_to(:matching_fields)
+        end
+        
+        it "should not add matching_fields method if object already have one" do
+          search = ThinkingSphinx::Search.new :rank_mode => :fieldmask
+          search.last.matching_fields.should_not be_an(Array)
+        end
+        
+        it "should return an array" do
+          search = ThinkingSphinx::Search.new :rank_mode => :fieldmask
+          search.first.matching_fields.should be_an(Array)
+        end
+        
+        it "should return the fields that the bitmask match" do
+          search = ThinkingSphinx::Search.new :rank_mode => :fieldmask
+          search.first.matching_fields.should == ['one', 'three', 'five']
         end
       end
     end
