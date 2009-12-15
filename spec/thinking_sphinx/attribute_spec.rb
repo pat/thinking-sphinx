@@ -548,7 +548,7 @@ describe ThinkingSphinx::Attribute do
         stub('column', :__stack => [:assoc_name], :__name => :id)
       ]
       @instance.stub!(:assoc_name => nil)
-      @attribute.live_value(@instance).should be_nil
+      @attribute.live_value(@instance).should == 0
     end
     
     it "should handle association chains" do
