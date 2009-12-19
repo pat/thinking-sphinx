@@ -34,6 +34,8 @@ class ThinkingSphinx::Context
   private
   
   def cached?
+    return true if defined?(Merb)
+    
     defined?(Rails)                   &&
     Rails::VERSION::STRING.to_f > 2.1 &&
     Rails.configuration.cache_classes
