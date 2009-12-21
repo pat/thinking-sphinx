@@ -93,8 +93,6 @@ module ThinkingSphinx
       end
       
       @configuration = Riddle::Configuration.new
-      @configuration.searchd.address    = "127.0.0.1"
-      @configuration.searchd.port       = 9312
       @configuration.searchd.pid_file   = "#{self.app_root}/log/searchd.#{environment}.pid"
       @configuration.searchd.log        = "#{self.app_root}/log/searchd.log"
       @configuration.searchd.query_log  = "#{self.app_root}/log/searchd.query.log"
@@ -102,6 +100,8 @@ module ThinkingSphinx
       @controller = Riddle::Controller.new @configuration,
         "#{self.app_root}/config/#{environment}.sphinx.conf"
       
+      self.address              = "127.0.0.1"
+      self.port                 = 9312
       self.database_yml_file    = "#{self.app_root}/config/database.yml"
       self.searchd_file_path    = "#{self.app_root}/db/sphinx/#{environment}"
       self.allow_star           = false
@@ -150,18 +150,20 @@ module ThinkingSphinx
     end
     
     def address
-      @configuration.searchd.address
+      @address
     end
     
     def address=(address)
+      @address = address
       @configuration.searchd.address = address
     end
     
     def port
-      @configuration.searchd.port
+      @port
     end
     
     def port=(port)
+      @port = port
       @configuration.searchd.port = port
     end
     
