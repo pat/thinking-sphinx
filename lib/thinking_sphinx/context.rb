@@ -7,7 +7,7 @@ class ThinkingSphinx::Context
   
   def prepare
     load_models
-    add_indexed_models if cached?
+    add_indexed_models
   end
   
   def define_indexes
@@ -32,14 +32,6 @@ class ThinkingSphinx::Context
   end
   
   private
-  
-  def cached?
-    return true if defined?(Merb)
-    
-    defined?(Rails)                   &&
-    Rails::VERSION::STRING.to_f > 2.1 &&
-    Rails.configuration.cache_classes
-  end
   
   def add_indexed_models
     Object.subclasses_of(ActiveRecord::Base).each do |klass|
