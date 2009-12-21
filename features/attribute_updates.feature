@@ -32,6 +32,7 @@ Feature: Update attributes directly to Sphinx
     Then I should get 1 result
     
     When I change the value of beta eight to 18
+    And I wait for Sphinx to catch up
     And I filter by 18 on value
     Then I should get 1 result
     

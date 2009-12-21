@@ -558,5 +558,13 @@ describe ThinkingSphinx::Attribute do
       @instance.stub!(:assoc_name => stub('object', :id => 42))
       @attribute.live_value(@instance).should == 42
     end
+    
+    it "should translate crc strings to their integer values" do
+      @attribute = ThinkingSphinx::Attribute.new @source, [
+        stub('column', :__stack => [], :__name => "col_name")
+      ], :crc => true, :type => :string
+      @instance.stub!(:col_name => 'foo')
+      @attribute.live_value(@instance).should == 'foo'.to_crc32
+    end
   end
 end

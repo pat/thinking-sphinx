@@ -352,6 +352,8 @@ block:
         value.to_i
       when Date
         value.to_time.to_i
+      when String
+        value.to_crc32
       else
         value
       end

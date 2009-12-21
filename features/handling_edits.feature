@@ -14,7 +14,7 @@ Feature: Keeping Sphinx in line with model changes when requested
     And I search for two
     Then I should get 1 result
   
-  Scenario: Not returing an instance from old data if there is a delta
+  Scenario: Not returning an instance from old data if there is a delta
     Given Sphinx is running
     And I am searching on betas
     When I search for two
