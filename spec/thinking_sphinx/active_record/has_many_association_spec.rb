@@ -21,7 +21,13 @@ describe 'ThinkingSphinx::ActiveRecord::HasManyAssociation' do
       end
       
       @person.friendships.search "test"
-    end    
+    end
+    
+    it "should define indexes for the reflection class" do
+      Friendship.should_receive(:define_indexes)
+      
+      @person.friendships.search 'test'
+    end
   end
   
   describe "search method for has_many :through" do

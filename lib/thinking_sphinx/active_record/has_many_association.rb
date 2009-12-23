@@ -6,6 +6,7 @@ module ThinkingSphinx
         stack = [@reflection.options[:through]].compact
         
         attribute   = nil
+        @reflection.klass.define_indexes
         (@reflection.klass.sphinx_indexes || []).each do |index|
           attribute = index.attributes.detect { |attrib|
             attrib.columns.length == 1 &&
