@@ -63,17 +63,25 @@ module ThinkingSphinx
   # The collection of indexed models. Keep in mind that Rails lazily loads
   # its classes, so this may not actually be populated with _all_ the models
   # that have Sphinx indexes.
+  @@sphinx_mutex = Mutex.new
+  @@context = nil
   def self.context
-    if Thread.current[:thinking_sphinx_context].nil?
-      Thread.current[:thinking_sphinx_context] = ThinkingSphinx::Context.new
-      Thread.current[:thinking_sphinx_context].prepare
+    if @@context.nil?
+      @@sphinx_mutex.synchronize do
+       if @@context.nil?
+         @@context = ThinkingSphinx::Context.new
+         @@context.prepare
+       end
+      end
     end
-    
-    Thread.current[:thinking_sphinx_context]
+
+    @@context
   end
-  
+
   def self.reset_context!
-    Thread.current[:thinking_sphinx_context] = nil
+    @@sphinx_mutex.synchronize do
+      @@context = nil
+    end
   end
 
   def self.unique_id_expression(offset = nil)
