@@ -114,14 +114,14 @@ describe ThinkingSphinx::ActiveRecord do
       end
       
       it "should add a update_attribute_values callback when defined" do
-        Alpha.should_receive(:after_commit).with(:update_attribute_values)
+        Alpha.should_receive(:after_save).with(:update_attribute_values)
       
         Alpha.define_index { indexes :name }
         Alpha.define_indexes
       end
     
       it "should not add update_attribute_values callback more than once" do
-        Alpha.should_receive(:after_commit).with(:update_attribute_values).once
+        Alpha.should_receive(:after_save).with(:update_attribute_values).once
       
         Alpha.define_index { indexes :name }
         Alpha.define_index { indexes :name }
@@ -171,8 +171,8 @@ describe ThinkingSphinx::ActiveRecord do
       end
       
       it "should add an index_delta callback if deltas are enabled" do
-        Beta.stub!(:after_commit => true)
-        Beta.should_receive(:after_commit).with(:index_delta)
+        Beta.stub!(:after_save => true)
+        Beta.should_receive(:after_save).with(:index_delta)
 
         Beta.define_index {
           indexes :name
@@ -182,15 +182,15 @@ describe ThinkingSphinx::ActiveRecord do
       end
       
       it "should not add an index_delta callback if deltas are disabled" do
-        Alpha.should_not_receive(:after_commit).with(:index_delta)
+        Alpha.should_not_receive(:after_save).with(:index_delta)
 
         Alpha.define_index { indexes :name }
         Alpha.define_indexes
       end
       
       it "should add the index_delta callback if deltas are disabled in other indexes" do
-        Beta.stub!(:after_commit => true)
-        Beta.should_receive(:after_commit).with(:index_delta).once
+        Beta.stub!(:after_save => true)
+        Beta.should_receive(:after_save).with(:index_delta).once
 
         Beta.define_index { indexes :name }
         Beta.define_index {
@@ -201,8 +201,8 @@ describe ThinkingSphinx::ActiveRecord do
       end
       
       it "should only add the index_delta callback once" do
-        Beta.stub!(:after_commit => true)
-        Beta.should_receive(:after_commit).with(:index_delta).once
+        Beta.stub!(:after_save => true)
+        Beta.should_receive(:after_save).with(:index_delta).once
 
         Beta.define_index {
           indexes :name

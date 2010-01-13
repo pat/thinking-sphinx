@@ -3,7 +3,7 @@ module ThinkingSphinx
     module AttributeUpdates
       def self.included(base)
         base.class_eval do
-          after_commit :update_attribute_values
+          after_save :update_attribute_values
         end
       end
       

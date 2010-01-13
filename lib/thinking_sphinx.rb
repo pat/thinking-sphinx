@@ -1,5 +1,4 @@
 require 'active_record'
-require 'after_commit'
 require 'yaml'
 require 'cgi'
 require 'riddle'

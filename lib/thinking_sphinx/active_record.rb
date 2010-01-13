@@ -303,8 +303,8 @@ module ThinkingSphinx
         if delta && !delta_indexed_by_sphinx?
           include ThinkingSphinx::ActiveRecord::Delta
           
-          before_save   :toggle_delta
-          after_commit  :index_delta
+          before_save :toggle_delta
+          after_save :index_delta
         end
       end
       
