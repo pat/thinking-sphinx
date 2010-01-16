@@ -120,9 +120,15 @@ module ThinkingSphinx
     end
     
     def self.environment
-      Thread.current[:thinking_sphinx_environment] ||= (
-        defined?(Merb) ? Merb.environment : ENV['RAILS_ENV']
-      ) || "development"
+      Thread.current[:thinking_sphinx_environment] ||= begin
+        if defined?(Merb)
+          Merb.environment
+        elsif defined?(RAILS_ENV)
+          RAILS_ENV
+        else
+          ENV['RAILS_ENV'] || 'development'
+        end
+      end
     end
     
     def environment
