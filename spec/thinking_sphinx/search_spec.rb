@@ -1172,6 +1172,26 @@ describe ThinkingSphinx::Search do
       }.should_not be_nil
     end
   end
+  
+  describe '#freeze' do
+    before :each do
+      @search = ThinkingSphinx::Search.new
+    end
+    
+    it "should populate the result set" do
+      @search.freeze
+      @search.should be_populated
+    end
+    
+    it "should freeze the underlying array" do
+      @search.freeze
+      @search.to_a.should be_frozen
+    end
+    
+    it "should return the Search object" do
+      @search.freeze.should be_a(ThinkingSphinx::Search)
+    end
+  end
 end
 
 describe ThinkingSphinx::Search, "playing nice with Search model" do

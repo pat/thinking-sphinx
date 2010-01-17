@@ -80,6 +80,12 @@ module ThinkingSphinx
       @array
     end
     
+    def freeze
+      populate
+      @array.freeze
+      self
+    end
+    
     # Indication of whether the request has been made to Sphinx for the search
     # query.
     # 
