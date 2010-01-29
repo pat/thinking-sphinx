@@ -74,7 +74,7 @@ module ThinkingSphinx
       clause = adapter.concatenate(clause)       if concat_ws?
       clause = adapter.group_concatenate(clause) if is_many?
       
-      "#{adapter.cast_to_string clause } AS #{quote_column(unique_name)}"
+      "#{clause} AS #{quote_column(unique_name)}"
     end
   end
 end
