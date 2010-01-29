@@ -33,6 +33,10 @@ module ThinkingSphinx
       "#{@model.quoted_table_name}.#{@model.connection.quote_column_name(column)}"
     end
     
+    def bigint_pattern
+      /bigint/i
+    end
+    
     protected
     
     def connection

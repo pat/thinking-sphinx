@@ -152,15 +152,15 @@ describe ThinkingSphinx::Attribute do
     
     it "should return the column type from the database if not :multi or more than one association" do
       @column.send(:instance_variable_set, :@name, "birthday")
-      @attribute.send(:type).should == :datetime
+      @attribute.type.should == :datetime
       
       @attribute.send(:instance_variable_set, :@type, nil)
       @column.send(:instance_variable_set, :@name, "first_name")
-      @attribute.send(:type).should == :string
+      @attribute.type.should == :string
       
       @attribute.send(:instance_variable_set, :@type, nil)
       @column.send(:instance_variable_set, :@name, "id")
-      @attribute.send(:type).should == :integer
+      @attribute.type.should == :integer
     end
     
     it "should return :multi if the columns return multiple datetimes" do
@@ -168,6 +168,15 @@ describe ThinkingSphinx::Attribute do
       @attribute.stub!(:all_datetimes? => true)
       
       @attribute.type.should == :multi
+    end
+    
+    it "should return :bigint for 64bit integers" do
+      Person.columns.detect { |col|
+        col.name == 'id'
+      }.stub!(:sql_type => 'BIGINT')
+      @column.send(:instance_variable_set, :@name, 'id')
+      
+      @attribute.type.should == :bigint
     end
   end
   

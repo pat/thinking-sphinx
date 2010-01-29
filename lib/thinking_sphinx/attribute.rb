@@ -122,7 +122,8 @@ module ThinkingSphinx
         :string   => :sql_attr_str2ordinal,
         :float    => :sql_attr_float,
         :boolean  => :sql_attr_bool,
-        :integer  => :sql_attr_uint
+        :integer  => :sql_attr_uint,
+        :bigint   => :sql_attr_bigint
       }[type]
     end
     
@@ -300,19 +301,11 @@ WHERE #{@source.index.delta_object.clause(model, true)})
       is_many? && all_strings?
     end
        
-    def type_from_database
-      klass = @associations.values.flatten.first ? 
-        @associations.values.flatten.first.reflection.klass : @model
-      
-      column = klass.columns.detect { |col|
-        @columns.collect { |c| c.__name.to_s }.include? col.name
-      }
-      column.nil? ? nil : column.type
-    end
-    
     def translated_type_from_database
       case type_from_db = type_from_database
-      when :datetime, :string, :float, :boolean, :integer
+      when :integer
+        integer_type_from_db
+      when :datetime, :string, :float, :boolean
         type_from_db
       when :decimal
         :float
@@ -328,6 +321,32 @@ block:
   has "CAST(column AS INT)", :type => :integer, :as => :column
         MESSAGE
       end
+    end
+    
+    def type_from_database
+      column = column_from_db
+      column.nil? ? nil : column.type
+    end
+    
+    def integer_type_from_db
+      column = column_from_db
+      return nil if column.nil?
+      
+      case column.sql_type
+      when adapter.bigint_pattern
+        :bigint
+      else
+        :integer
+      end
+    end
+    
+    def column_from_db
+      klass = @associations.values.flatten.first ? 
+        @associations.values.flatten.first.reflection.klass : @model
+      
+      klass.columns.detect { |col|
+        @columns.collect { |c| c.__name.to_s }.include? col.name
+      }
     end
     
     def all_of_type?(*column_types)
