@@ -47,47 +47,6 @@ describe ThinkingSphinx::Attribute do
     end
   end
   
-  describe '#column_with_prefix' do
-    before :each do
-      @attribute = ThinkingSphinx::Attribute.new @source, [
-        ThinkingSphinx::Index::FauxColumn.new(:col_name)
-      ]
-      @attribute.columns.each { |col| @attribute.associations[col] = [] }
-      @attribute.model = Person
-      
-      @first_join   = Object.new
-      @first_join.stub!(:aliased_table_name => "tabular")
-      @second_join  = Object.new
-      @second_join.stub!(:aliased_table_name => "data")
-      
-      @first_assoc  = ThinkingSphinx::Association.new nil, nil
-      @first_assoc.stub!(:join => @first_join, :has_column? => true)
-      @second_assoc = ThinkingSphinx::Association.new nil, nil
-      @second_assoc.stub!(:join => @second_join, :has_column? => true)
-    end
-    
-    it "should return the column name if the column is a string" do
-      @attribute.columns = [ThinkingSphinx::Index::FauxColumn.new("string")]
-      @attribute.send(:column_with_prefix, @attribute.columns.first).should == "string"
-    end
-    
-    it "should return the column with model's table prefix if there's no associations for the column" do
-      @attribute.send(:column_with_prefix, @attribute.columns.first).should == "`people`.`col_name`"
-    end
-    
-    it "should return the column with its join table prefix if an association exists" do
-      column = @attribute.columns.first
-      @attribute.associations[column] = [@first_assoc]
-      @attribute.send(:column_with_prefix, column).should == "`tabular`.`col_name`"
-    end
-    
-    it "should return multiple columns concatenated if more than one association exists" do
-      column = @attribute.columns.first
-      @attribute.associations[column] = [@first_assoc, @second_assoc]
-      @attribute.send(:column_with_prefix, column).should == "`tabular`.`col_name`, `data`.`col_name`"
-    end
-  end
-  
   describe '#to_select_sql' do
     it "should convert a mixture of dates and datetimes to timestamps" do
       attribute = ThinkingSphinx::Attribute.new(@source,
@@ -98,6 +57,16 @@ describe ThinkingSphinx::Attribute do
       attribute.model = Friendship
       
       attribute.to_select_sql.should == "CONCAT_WS(',', UNIX_TIMESTAMP(`friendships`.`created_at`), UNIX_TIMESTAMP(`friendships`.`created_on`)) AS `times`"
+    end
+    
+    it "should handle columns which don't exist for polymorphic joins" do
+      attribute = ThinkingSphinx::Attribute.new(@source,
+        [ ThinkingSphinx::Index::FauxColumn.new(:team, :name),
+          ThinkingSphinx::Index::FauxColumn.new(:team, :league) ],
+        :as => :team
+      )
+      
+      attribute.to_select_sql.should == "CONCAT_WS(' ', IFNULL(`cricket_teams`.`name`, ''), IFNULL(`football_teams`.`name`, ''), IFNULL(`football_teams`.`league`, '')) AS `team`"
     end
   end
   

@@ -38,6 +38,7 @@ CREATE TABLE `football_teams` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(50) NOT NULL,
   `state` varchar(50) NOT NULL,
+  `league` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

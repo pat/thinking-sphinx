@@ -77,47 +77,6 @@ describe ThinkingSphinx::Field do
     end
   end
   
-  describe "column_with_prefix method" do
-    before :each do
-      @field = ThinkingSphinx::Field.new @source, [
-        ThinkingSphinx::Index::FauxColumn.new(:col_name)
-      ]
-      @field.columns.each { |col| @field.associations[col] = [] }
-      @field.model = Person
-      
-      @first_join   = Object.new
-      @first_join.stub!(:aliased_table_name => "tabular")
-      @second_join  = Object.new
-      @second_join.stub!(:aliased_table_name => "data")
-      
-      @first_assoc  = ThinkingSphinx::Association.new nil, nil
-      @first_assoc.stub!(:join => @first_join, :has_column? => true)
-      @second_assoc = ThinkingSphinx::Association.new nil, nil
-      @second_assoc.stub!(:join => @second_join, :has_column? => true)
-    end
-    
-    it "should return the column name if the column is a string" do
-      @field.columns = [ThinkingSphinx::Index::FauxColumn.new("string")]
-      @field.send(:column_with_prefix, @field.columns.first).should == "string"
-    end
-    
-    it "should return the column with model's table prefix if there's no associations for the column" do
-      @field.send(:column_with_prefix, @field.columns.first).should == "`people`.`col_name`"
-    end
-    
-    it "should return the column with its join table prefix if an association exists" do
-      column = @field.columns.first
-      @field.associations[column] = [@first_assoc]
-      @field.send(:column_with_prefix, column).should == "`tabular`.`col_name`"
-    end
-    
-    it "should return multiple columns concatenated if more than one association exists" do
-      column = @field.columns.first
-      @field.associations[column] = [@first_assoc, @second_assoc]
-      @field.send(:column_with_prefix, column).should == "`tabular`.`col_name`, `data`.`col_name`"
-    end
-  end
-  
   describe "is_many? method" do
     before :each do
       @assoc_a = stub('assoc', :is_many? => true)

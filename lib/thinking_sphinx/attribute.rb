@@ -93,19 +93,18 @@ module ThinkingSphinx
       
       separator = all_ints? || all_datetimes? || @crc ? ',' : ' '
       
-      clause = @columns.collect { |column|
-        part = column_with_prefix(column)
+      clause = columns_with_prefixes.collect { |column|
         case type
         when :string
-          adapter.convert_nulls(part)
+          adapter.convert_nulls(column)
         when :datetime
-          adapter.cast_to_datetime(part)
+          adapter.cast_to_datetime(column)
         when :multi
-          part = adapter.cast_to_datetime(part)   if is_many_datetimes?
-          part = adapter.convert_nulls(part, '0') if is_many_ints?
-          part
+          column = adapter.cast_to_datetime(column)   if is_many_datetimes?
+          column = adapter.convert_nulls(column, '0') if is_many_ints?
+          column
         else
-          part
+          column
         end
       }.join(', ')
       
