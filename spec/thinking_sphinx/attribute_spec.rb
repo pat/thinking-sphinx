@@ -173,7 +173,7 @@ describe ThinkingSphinx::Attribute do
     it "should return :bigint for 64bit integers" do
       Person.columns.detect { |col|
         col.name == 'id'
-      }.stub!(:sql_type => 'BIGINT')
+      }.stub!(:sql_type => 'BIGINT(20)')
       @column.send(:instance_variable_set, :@name, 'id')
       
       @attribute.type.should == :bigint
