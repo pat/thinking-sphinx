@@ -52,4 +52,20 @@ describe 'ThinkingSphinx::ActiveRecord::HasManyAssociation' do
       @person.friends.search "test"
     end
   end
+  
+  describe 'filtering sphinx scopes' do
+    before :each do
+      Friendship.stub!(:search => Friendship)
+      
+      @person = Person.find(:first)
+    end
+    
+    it "should add a filter for the attribute in a sphinx scope call" do
+      Friendship.should_receive(:search).with do |options|
+        options[:with][:person_id].should == @person.id
+      end
+      
+      @person.friendships.reverse
+    end
+  end
 end
