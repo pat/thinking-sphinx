@@ -43,7 +43,12 @@ describe ThinkingSphinx::Search do
     
     it "should be true once the client request has been made" do
       @search.first
-      @search.populated?.should be_true
+      @search.should be_populated
+    end
+    
+    it "should be populated if :populate is set to true" do
+      search = ThinkingSphinx::Search.new(:populate => true)
+      search.should be_populated
     end
   end
   

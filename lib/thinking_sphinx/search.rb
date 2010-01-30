@@ -73,6 +73,8 @@ module ThinkingSphinx
       @array    = []
       @options  = args.extract_options!
       @args     = args
+      
+      populate if @options[:populate]
     end
     
     def to_a
