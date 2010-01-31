@@ -37,6 +37,34 @@ describe ThinkingSphinx::Configuration do
       ThinkingSphinx::Configuration.environment.should == "development"
     end
   end
+  
+  describe '#version' do
+    before :each do
+      @config = ThinkingSphinx::Configuration.instance
+      @config.reset
+    end
+    
+    it "should use the given version from sphinx.yml if there is one" do
+      open("#{RAILS_ROOT}/config/sphinx.yml", "w") do |f|
+        f.write  YAML.dump({'development' => {'version' => '0.9.7'}})
+      end
+      @config.reset
+      
+      @config.version.should == '0.9.7'
+      
+      FileUtils.rm "#{RAILS_ROOT}/config/sphinx.yml"
+    end
+    
+    it "should detect the version from Riddle otherwise" do
+      controller = @config.controller
+      controller.stub!(:sphinx_version => '0.9.6')
+      
+      Riddle::Controller.stub!(:new => controller)
+      @config.reset
+      
+      @config.version.should == '0.9.6'
+    end
+  end
 
   describe "parse_config method" do
     before :each do

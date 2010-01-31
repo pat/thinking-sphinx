@@ -1,7 +1,7 @@
 module ThinkingSphinx
   class AutoVersion
     def self.detect
-      version = ThinkingSphinx::Configuration.instance.controller.sphinx_version
+      version = ThinkingSphinx::Configuration.instance.version
       case version
       when '0.9.8', '0.9.9'
         require "riddle/#{version}"

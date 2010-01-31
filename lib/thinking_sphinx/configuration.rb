@@ -68,6 +68,7 @@ module ThinkingSphinx
       :app_root, :model_directories, :delayed_job_priority
     
     attr_accessor :source_options, :index_options
+    attr_accessor :version
     
     attr_reader :environment, :configuration, :controller
     
@@ -114,7 +115,9 @@ module ThinkingSphinx
         :charset_type => "utf-8"
       }
       
+      self.version = nil
       parse_config
+      self.version ||= @controller.sphinx_version
       
       self
     end
