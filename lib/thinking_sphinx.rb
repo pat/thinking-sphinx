@@ -64,17 +64,18 @@ module ThinkingSphinx
   # its classes, so this may not actually be populated with _all_ the models
   # that have Sphinx indexes.
   @@sphinx_mutex = Mutex.new
-  @@context = nil
+  @@context      = nil
+  
   def self.context
     if @@context.nil?
       @@sphinx_mutex.synchronize do
-       if @@context.nil?
-         @@context = ThinkingSphinx::Context.new
-         @@context.prepare
-       end
+        if @@context.nil?
+          @@context = ThinkingSphinx::Context.new
+          @@context.prepare
+        end
       end
     end
-
+    
     @@context
   end
 
