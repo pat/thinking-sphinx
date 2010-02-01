@@ -23,11 +23,11 @@ module Riddle
       
       # Append an integer
       def append_int(int)
-        @message << [int].pack('N')
+        @message << [int.to_i].pack('N')
       end
       
       def append_64bit_int(int)
-        @message << [int >> 32, int & 0xFFFFFFFF].pack('NN')
+        @message << [int.to_i >> 32, int.to_i & 0xFFFFFFFF].pack('NN')
       end
       
       # Append a float

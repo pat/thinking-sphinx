@@ -474,16 +474,14 @@ module Riddle
     # Connects to the Sphinx daemon, and yields a socket to use. The socket is
     # closed at the end of the block.
     def connect(&block)
-      if @socket && !@socket.closed?
-        yield @socket
-      else
+      if @socket.nil? || @socket.closed?
         @socket = nil
         open_socket
-        begin
-          yield @socket
-        ensure
-          close_socket
-        end
+      end
+      begin
+        yield @socket
+      ensure
+        close_socket
       end
     end
     
