@@ -126,8 +126,8 @@ module ThinkingSphinx
       Thread.current[:thinking_sphinx_environment] ||= begin
         if defined?(Merb)
           Merb.environment
-        elsif defined?(RAILS_ENV)
-          RAILS_ENV
+        elsif defined?(Rails)
+          Rails.env
         else
           ENV['RAILS_ENV'] || 'development'
         end
@@ -242,7 +242,7 @@ module ThinkingSphinx
       @models_by_crc ||= begin
         ThinkingSphinx.context.indexed_models.inject({}) do |hash, model|
           hash[model.constantize.to_crc32] = model
-          Object.subclasses_of(model.constantize).each { |subclass|
+          model.constantize.subclasses.each { |subclass|
             hash[subclass.to_crc32] = subclass.name
           }
           hash

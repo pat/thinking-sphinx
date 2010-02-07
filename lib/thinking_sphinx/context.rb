@@ -34,7 +34,7 @@ class ThinkingSphinx::Context
   private
   
   def add_indexed_models
-    Object.subclasses_of(ActiveRecord::Base).each do |klass|
+    ActiveRecord::Base.subclasses.each do |klass|
       add_indexed_model klass if klass.has_sphinx_indexes?
     end
   end
