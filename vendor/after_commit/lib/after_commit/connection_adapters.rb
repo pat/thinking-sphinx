@@ -10,21 +10,23 @@ module AfterCommit
         def commit_db_transaction_with_callback
           increment_transaction_pointer
           committed = false
+          result    = nil
           begin
             trigger_before_commit_callbacks
             trigger_before_commit_on_create_callbacks
             trigger_before_commit_on_update_callbacks
             trigger_before_commit_on_destroy_callbacks
             
-            commit_db_transaction_without_callback
+            result = commit_db_transaction_without_callback
             committed = true
             
             trigger_after_commit_callbacks
             trigger_after_commit_on_create_callbacks
             trigger_after_commit_on_update_callbacks
             trigger_after_commit_on_destroy_callbacks
+            result
           rescue
-            rollback_db_transaction unless committed
+            committed ? result : rollback_db_transaction
           ensure
             AfterCommit.cleanup(self)
             decrement_transaction_pointer
@@ -37,9 +39,11 @@ module AfterCommit
         # callback for each record that failed to be committed.
         def rollback_db_transaction_with_callback
           begin
+            result = nil
             trigger_before_rollback_callbacks
-            rollback_db_transaction_without_callback
+            result = rollback_db_transaction_without_callback
             trigger_after_rollback_callbacks
+            result
           ensure
             AfterCommit.cleanup(self)
           end

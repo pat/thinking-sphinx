@@ -4,8 +4,9 @@ module AfterCommit
       base.class_eval do
         class << self
           def establish_connection_with_after_commit(spec = nil)
-            establish_connection_without_after_commit spec
+            result = establish_connection_without_after_commit spec
             include_after_commit_extensions
+            result
           end
           alias_method_chain :establish_connection, :after_commit
           
