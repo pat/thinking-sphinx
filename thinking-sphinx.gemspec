@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{thinking-sphinx}
-  s.version = "1.3.15"
+  s.version = "1.3.16"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pat Allan"]
-  s.date = %q{2010-01-29}
+  s.date = %q{2010-02-16}
   s.description = %q{A concise and easy-to-use Ruby library that connects ActiveRecord to the Sphinx search daemon, managing configuration, indexing and searching.}
   s.email = %q{pat@freelancing-gods.com}
   s.extra_rdoc_files = [
@@ -200,17 +200,17 @@ http://freelancing-god.github.com/ts/en/upgrading.html
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<activerecord>, [">= 1.15.6"])
-      s.add_runtime_dependency(%q<riddle>, [">= 1.0.9"])
-      s.add_runtime_dependency(%q<after_commit>, [">= 1.0.5"])
+      s.add_runtime_dependency(%q<riddle>, [">= 1.0.10"])
+      s.add_runtime_dependency(%q<after_commit>, [">= 1.0.6"])
     else
       s.add_dependency(%q<activerecord>, [">= 1.15.6"])
-      s.add_dependency(%q<riddle>, [">= 1.0.9"])
-      s.add_dependency(%q<after_commit>, [">= 1.0.5"])
+      s.add_dependency(%q<riddle>, [">= 1.0.10"])
+      s.add_dependency(%q<after_commit>, [">= 1.0.6"])
     end
   else
     s.add_dependency(%q<activerecord>, [">= 1.15.6"])
-    s.add_dependency(%q<riddle>, [">= 1.0.9"])
-    s.add_dependency(%q<after_commit>, [">= 1.0.5"])
+    s.add_dependency(%q<riddle>, [">= 1.0.10"])
+    s.add_dependency(%q<after_commit>, [">= 1.0.6"])
   end
 end
 
