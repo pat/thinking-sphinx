@@ -21,7 +21,7 @@ module Riddle
       options = indexes.last.is_a?(Hash) ? indexes.pop : {}
       indexes << '--all' if indexes.empty?
       
-      cmd = "#{indexer} --config #{@path} #{indexes.join(' ')}"
+      cmd = "#{indexer} --config '#{@path}' #{indexes.join(' ')}"
       cmd << " --rotate" if running?
       options[:verbose] ? system(cmd) : `#{cmd}`
     end
@@ -29,7 +29,7 @@ module Riddle
     def start
       return if running?
       
-      cmd = "#{searchd} --pidfile --config #{@path}"
+      cmd = "#{searchd} --pidfile --config '#{@path}'"
       
       if RUBY_PLATFORM =~ /mswin/
         system("start /B #{cmd} 1> NUL 2>&1")

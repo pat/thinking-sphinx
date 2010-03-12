@@ -44,7 +44,7 @@ module ThinkingSphinx
         config = ThinkingSphinx::Configuration.instance
         rotate = ThinkingSphinx.sphinx_running? ? "--rotate" : ""
         
-        output = `#{config.bin_path}#{config.indexer_binary_name} --config #{config.config_file} #{rotate} #{model.delta_index_names.join(' ')}`
+        output = `#{config.bin_path}#{config.indexer_binary_name} --config '#{config.config_file}' #{rotate} #{model.delta_index_names.join(' ')}`
         puts(output) unless ThinkingSphinx.suppress_delta_output?
       end
       
