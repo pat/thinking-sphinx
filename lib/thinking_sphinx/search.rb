@@ -210,7 +210,9 @@ module ThinkingSphinx
       return options[:index] if options[:index]
       return '*' if classes.empty?
       
-      classes.collect { |klass| klass.sphinx_index_names }.flatten.join(',')
+      classes.collect { |klass|
+        klass.sphinx_index_names
+      }.flatten.uniq.join(',')
     end
     
     def each_with_groupby_and_count(&block)
