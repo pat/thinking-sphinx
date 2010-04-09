@@ -50,6 +50,10 @@ module ThinkingSphinx
         @name.is_a?(String) && @stack.empty?
       end
       
+      def to_ary
+        [self]
+      end
+      
       # This handles any 'invalid' method calls and sets them as the name,
       # and pushing the previous name into the stack. The object returns
       # itself.

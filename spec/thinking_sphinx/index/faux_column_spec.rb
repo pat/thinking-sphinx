@@ -27,4 +27,10 @@ describe ThinkingSphinx::Index::FauxColumn do
       ]
     end
   end
+  
+  describe '#to_ary' do
+    it "should return an array with the instance inside it" do
+      subject.to_ary.should == [subject]
+    end
+  end
 end
