@@ -119,13 +119,13 @@ module ThinkingSphinx
       # database.
       # 
       # Attributes are limited to the following types: integers, floats,
-      # datetimes (converted to timestamps), booleans and strings. Don't
-      # forget that Sphinx converts string attributes to integers, which are
-      # useful for sorting, but that's about it.
+      # datetimes (converted to timestamps), booleans, strings and MVAs
+      # (:multi). Don't forget that Sphinx converts string attributes to
+      # integers, which are useful for sorting, but that's about it.
       # 
-      # You can also have a collection of integers for multi-value attributes
-      # (MVAs). Generally these would be through a has_many relationship,
-      # like in this example:
+      # Collection of integers are known as multi-value attributes (MVAs).
+      # Generally these would be through a has_many relationship, like in this
+      # example:
       # 
       #   has posts(:id), :as => :post_ids
       # 
