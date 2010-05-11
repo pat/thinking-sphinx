@@ -150,7 +150,7 @@ EO_CREATE_DATABASE_FAILED
   end
 
   def check_mysql_is_working
-    require 'activerecord'
+    require 'active_record'
     colour_puts "<banner>check mysql is working</banner>"
     puts
 

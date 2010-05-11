@@ -19,7 +19,6 @@ Jeweler::Tasks.new do |gem|
     "LICENCE",
     "README.textile",
     "tasks/**/*.rb",
-    "tasks/**/*.rake",
     "VERSION"
   ]
   gem.test_files = FileList[
@@ -27,7 +26,7 @@ Jeweler::Tasks.new do |gem|
     "spec/**/*_spec.rb"
   ]
   
-  gem.add_dependency 'activerecord', '>= 1.15.6'
+  gem.add_dependency 'activerecord', '>= 3.0.0.beta3'
   gem.add_dependency 'riddle',       '>= 1.0.10'
   
   gem.post_install_message = <<-MESSAGE

@@ -1,4 +1,4 @@
-puts "LOADING TS/thinking_sphinx/railstie"
+puts "LOADING TS/thinking_sphinx/railtie"
 
 require 'thinking_sphinx'
 require 'rails'
@@ -32,9 +32,11 @@ module ThinkingSphinx
     end
     
     initializer :thinking_sphinx do |application|
-      puts application.inspect
-      puts application.config.root
-      #ThinkingSphinx::Configuration.new(application.config.root)
+      ThinkingSphinx::Configuration.new(application.config.root)
+    end
+
+    rake_tasks do
+      load File.expand_path('../tasks.rb', __FILE__)
     end
   end
 end

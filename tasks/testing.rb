@@ -1,11 +1,10 @@
 require 'rubygems'
-require 'spec/rake/spectask'
+require 'rspec/core/rake_task'
 require 'cucumber/rake/task'
 
 desc "Run the specs under spec"
-Spec::Rake::SpecTask.new do |t|
-  t.spec_files = FileList['spec/**/*_spec.rb']
-  t.spec_opts << "-c"
+Rspec::Core::RakeTask.new do |t|
+  t.pattern = 'spec/**/*_spec.rb'
 end
 
 desc "Run all feature-set configurations"
@@ -29,9 +28,8 @@ namespace :features do
 end
 
 desc "Generate RCov reports"
-Spec::Rake::SpecTask.new(:rcov) do |t|
-  t.libs << 'lib'
-  t.spec_files = FileList['spec/**/*_spec.rb']
+Rspec::Core::RakeTask.new(:rcov) do |t|
+  t.pattern = 'spec/**/*_spec.rb'
   t.rcov = true
   t.rcov_opts = [
     '--exclude', 'spec',

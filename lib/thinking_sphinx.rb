@@ -1,3 +1,5 @@
+puts "LOADING TS/thinking_sphinx"
+
 require 'active_record'
 require 'yaml'
 require 'cgi'
@@ -29,13 +31,7 @@ require 'thinking_sphinx/adapters/mysql_adapter'
 require 'thinking_sphinx/adapters/postgresql_adapter'
 
 # ActiveRecord::Base.send(:include, ThinkingSphinx::ActiveRecord)
-if defined?(Rails::Railtie)
-  require 'thinking_sphinx/railtie'
-end
-
-Merb::Plugins.add_rakefiles(
-  File.join(File.dirname(__FILE__), "thinking_sphinx", "tasks")
-) if defined?(Merb)
+require 'thinking_sphinx/railtie'
 
 module ThinkingSphinx
   # A ConnectionError will get thrown when a connection to Sphinx can't be
