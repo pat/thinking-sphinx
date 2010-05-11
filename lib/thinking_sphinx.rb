@@ -1,5 +1,3 @@
-puts "LOADING TS/thinking_sphinx"
-
 require 'active_record'
 require 'yaml'
 require 'cgi'
@@ -9,7 +7,7 @@ require 'thinking_sphinx/auto_version'
 require 'thinking_sphinx/core/array'
 require 'thinking_sphinx/core/string'
 require 'thinking_sphinx/property'
-# require 'thinking_sphinx/active_record'
+require 'thinking_sphinx/active_record'
 require 'thinking_sphinx/association'
 require 'thinking_sphinx/attribute'
 require 'thinking_sphinx/configuration'
@@ -30,7 +28,7 @@ require 'thinking_sphinx/adapters/abstract_adapter'
 require 'thinking_sphinx/adapters/mysql_adapter'
 require 'thinking_sphinx/adapters/postgresql_adapter'
 
-# ActiveRecord::Base.send(:include, ThinkingSphinx::ActiveRecord)
+ActiveRecord::Base.send(:include, ThinkingSphinx::ActiveRecord)
 require 'thinking_sphinx/railtie'
 
 module ThinkingSphinx

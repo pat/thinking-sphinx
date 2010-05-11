@@ -21,11 +21,12 @@ describe ThinkingSphinx::Configuration do
     end
     
     it "should use RAILS_ENV if set" do
-      RAILS_ENV = 'global_rails'
+      was = Rails.env
+      Rails.env = 'global_rails'
       
       ThinkingSphinx::Configuration.environment.should == 'global_rails'
       
-      Object.send :remove_const, :RAILS_ENV
+      Rails.env = was
     end
 
     it "should use the Rails environment value if set" do
@@ -45,14 +46,14 @@ describe ThinkingSphinx::Configuration do
     end
     
     it "should use the given version from sphinx.yml if there is one" do
-      open("#{RAILS_ROOT}/config/sphinx.yml", "w") do |f|
+      open("#{Rails.root}/config/sphinx.yml", "w") do |f|
         f.write  YAML.dump({'development' => {'version' => '0.9.7'}})
       end
       @config.reset
       
       @config.version.should == '0.9.7'
       
-      FileUtils.rm "#{RAILS_ROOT}/config/sphinx.yml"
+      FileUtils.rm "#{Rails.root}/config/sphinx.yml"
     end
     
     it "should detect the version from Riddle otherwise" do
@@ -91,7 +92,7 @@ describe ThinkingSphinx::Configuration do
         }
       }
 
-      open("#{RAILS_ROOT}/config/sphinx.yml", "w") do |f|
+      open("#{Rails.root}/config/sphinx.yml", "w") do |f|
         f.write  YAML.dump(@settings)
       end
     end
@@ -107,7 +108,7 @@ describe ThinkingSphinx::Configuration do
     end
 
     after :each do
-      FileUtils.rm "#{RAILS_ROOT}/config/sphinx.yml"
+      FileUtils.rm "#{Rails.root}/config/sphinx.yml"
     end
   end
 
@@ -132,14 +133,14 @@ describe ThinkingSphinx::Configuration do
         }
       }
 
-      open("#{RAILS_ROOT}/config/sphinx.yml", "w") do |f|
+      open("#{Rails.root}/config/sphinx.yml", "w") do |f|
         f.write  YAML.dump(@settings)
       end
 
       ThinkingSphinx::Configuration.instance.send(:parse_config)
       ThinkingSphinx::Configuration.instance.bin_path.should match(/\/$/)
 
-      FileUtils.rm "#{RAILS_ROOT}/config/sphinx.yml"
+      FileUtils.rm "#{Rails.root}/config/sphinx.yml"
     end
   end
 
@@ -149,7 +150,7 @@ describe ThinkingSphinx::Configuration do
         "development" => {"disable_range" => true}
       }
 
-      open("#{RAILS_ROOT}/config/sphinx.yml", "w") do |f|
+      open("#{Rails.root}/config/sphinx.yml", "w") do |f|
         f.write  YAML.dump(@settings)
       end
 
@@ -162,7 +163,7 @@ describe ThinkingSphinx::Configuration do
     end
 
     after :each do
-      FileUtils.rm "#{RAILS_ROOT}/config/sphinx.yml"
+      FileUtils.rm "#{Rails.root}/config/sphinx.yml"
     end
   end
 

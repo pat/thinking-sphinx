@@ -5,7 +5,7 @@ module ThinkingSphinx
   # This class both keeps track of the configuration settings for Sphinx and
   # also generates the resulting file for Sphinx to use.
   #
-  # Here are the default settings, relative to RAILS_ROOT where relevant:
+  # Here are the default settings, relative to Rails.root where relevant:
   #
   # config file::           config/#{environment}.sphinx.conf
   # searchd log file::      log/searchd.log
@@ -87,8 +87,10 @@ module ThinkingSphinx
     def reset(custom_app_root=nil)
       if custom_app_root
         self.app_root = custom_app_root
+      elsif defined?(::Rails)
+        self.app_root = ::Rails.root
       else
-        self.app_root = Rails.root
+        self.app_root = Dir.pwd
       end
 
       @configuration = Riddle::Configuration.new

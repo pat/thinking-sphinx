@@ -7,6 +7,7 @@ require 'rubygems'
 require 'fileutils'
 require 'ginger'
 require 'jeweler'
+require "rspec"
 
 require "lib/thinking_sphinx"
 
@@ -16,12 +17,12 @@ require 'spec/sphinx_helper'
 
 ActiveRecord::Base.logger = Logger.new(StringIO.new)
 
-Spec::Runner.configure do |config|
+Rspec.configure do |config|
   %w( tmp tmp/config tmp/log tmp/db ).each do |path|
     FileUtils.mkdir_p "#{Dir.pwd}/#{path}"
   end
   
-  Kernel.const_set :RAILS_ROOT, "#{Dir.pwd}/tmp" unless defined?(RAILS_ROOT)
+  # FIXME Kernel.const_set :RAILS_ROOT, "#{Dir.pwd}/tmp" unless defined?(RAILS_ROOT)
   
   sphinx = SphinxHelper.new
   sphinx.setup_mysql
