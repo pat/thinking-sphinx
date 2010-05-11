@@ -22,7 +22,11 @@ Rspec.configure do |config|
     FileUtils.mkdir_p "#{Dir.pwd}/#{path}"
   end
   
-  # FIXME Kernel.const_set :RAILS_ROOT, "#{Dir.pwd}/tmp" unless defined?(RAILS_ROOT)
+  module ::Rails
+    def self.root
+      "#{Dir.pwd}/tmp"
+    end
+  end
   
   sphinx = SphinxHelper.new
   sphinx.setup_mysql
