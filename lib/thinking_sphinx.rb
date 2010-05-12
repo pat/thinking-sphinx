@@ -1,7 +1,6 @@
 require 'active_record'
 require 'after_commit'
 require 'yaml'
-require 'cgi'
 require 'riddle'
 
 require 'thinking_sphinx/auto_version'
