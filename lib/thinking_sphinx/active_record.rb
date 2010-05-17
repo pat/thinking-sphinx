@@ -2,6 +2,7 @@ require 'thinking_sphinx/active_record/attribute_updates'
 require 'thinking_sphinx/active_record/delta'
 require 'thinking_sphinx/active_record/has_many_association'
 require 'thinking_sphinx/active_record/scopes'
+require 'thinking_sphinx/active_record/arel'
 
 module ThinkingSphinx
   # Core additions to ActiveRecord models - define_index for creating indexes

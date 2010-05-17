@@ -1,5 +1,3 @@
-puts "LOADING TS/thinking_sphinx/railtie"
-
 require 'thinking_sphinx'
 require 'rails'
 
@@ -7,7 +5,10 @@ module ThinkingSphinx
   class Railtie < Rails::Railtie
 
     initializer "thinking_sphinx.active_record" do
-      ActiveRecord::Base.send(:include, ThinkingSphinx::ActiveRecord) if defined?(ActiveRecord)
+      if defined?(ActiveRecord)
+        ActiveRecord::Base.send(:include, ThinkingSphinx::ActiveRecord)
+        ThinkingSphinx::Source.send(:include, ThinkingSphinx::ActiveRecord::Arel)
+      end
     end
 
     initializer "thinking_sphinx.set_app_root" do |app|

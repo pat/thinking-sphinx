@@ -31,6 +31,8 @@ Rspec.configure do |config|
   sphinx = SphinxHelper.new
   sphinx.setup_mysql
   
+  ActiveRecord::Base.send(:include, ThinkingSphinx::ActiveRecord)
+
   require 'spec/fixtures/models'
   ThinkingSphinx.context.define_indexes
   
@@ -45,8 +47,6 @@ Rspec.configure do |config|
     
     ThinkingSphinx::Configuration.instance.reset
     ThinkingSphinx::Configuration.instance.database_yml_file = "spec/fixtures/sphinx/database.yml"
-
-    ActiveRecord::Base.send(:include, ThinkingSphinx::ActiveRecord)
   end
   
   config.after :all do
