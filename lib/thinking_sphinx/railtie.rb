@@ -7,32 +7,16 @@ module ThinkingSphinx
   class Railtie < Rails::Railtie
 
     initializer "thinking_sphinx.active_record" do
-      # require 'active_record'
-      if defined? ::ActiveRecord
-        # require 'after_commit'
-        require 'thinking_sphinx/active_record'
-        ::ActiveRecord::Base.send(:include, ThinkingSphinx::ActiveRecord)
-        # WillPaginate::Finders::ActiveRecord.enable!
-      end
+      ActiveRecord::Base.send(:include, ThinkingSphinx::ActiveRecord) if defined?(ActiveRecord)
     end
 
-    initializer "thinking_sphinx.action_dispatch" do
-      ActionController::Dispatcher.to_prepare :thinking_sphinx do
-        # Force internationalisation to be loaded.
-        I18n.backend.reload!
-        I18n.backend.available_locales
-        
-        # if Rails::VERSION::STRING.to_f > 2.2
-        #   I18n.backend.reload!
-        #   I18n.backend.available_locales
-        # elsif Rails::VERSION::STRING.to_f > 2.1
-        #   I18n.backend.load_translations(*I18n.load_path)
-        # end
-      end
+    initializer "thinking_sphinx.set_app_root" do |app|
+      ThinkingSphinx::Configuration.instance.reset # Rails has setup app now
     end
-    
-    initializer :thinking_sphinx do |application|
-      ThinkingSphinx::Configuration.new(application.config.root)
+
+    config.to_prepare do
+      I18n.backend.reload!
+      I18n.backend.available_locales
     end
 
     rake_tasks do

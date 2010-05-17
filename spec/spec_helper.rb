@@ -45,6 +45,8 @@ Rspec.configure do |config|
     
     ThinkingSphinx::Configuration.instance.reset
     ThinkingSphinx::Configuration.instance.database_yml_file = "spec/fixtures/sphinx/database.yml"
+
+    ActiveRecord::Base.send(:include, ThinkingSphinx::ActiveRecord)
   end
   
   config.after :all do
