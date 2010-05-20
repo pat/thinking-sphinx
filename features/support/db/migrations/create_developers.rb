@@ -1,5 +1,3 @@
-require 'faker'
-
 ActiveRecord::Base.connection.create_table :developers, :force => true do |t|
   t.column :name,     :string,  :null => false
   t.column :city,     :string

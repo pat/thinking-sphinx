@@ -1,3 +1,5 @@
+require 'faker'
+
 Developer.create :name => "Pat Allan", :city => "Melbourne", :state => "Victoria", :country => "Australia", :age => 26
 
 2.times do
