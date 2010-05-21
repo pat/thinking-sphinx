@@ -29,6 +29,13 @@ Jeweler::Tasks.new do |gem|
   gem.add_dependency 'activerecord', '>= 3.0.0.beta3'
   gem.add_dependency 'riddle',       '>= 1.0.10'
   
+  gem.add_development_dependency "yard",          ">= 0"
+  gem.add_development_dependency "rspec",         ">= 1.2.9"
+  gem.add_development_dependency "cucumber",      ">= 0"
+  gem.add_development_dependency "will_paginate", "2.3.11"
+  gem.add_development_dependency "ginger",        "1.2.0"
+  gem.add_development_dependency "faker",         "0.3.1"
+  
   gem.post_install_message = <<-MESSAGE
 If you're upgrading, you should read this:
 http://freelancing-god.github.com/ts/en/upgrading.html

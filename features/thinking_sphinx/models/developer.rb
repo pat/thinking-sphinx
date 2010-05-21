@@ -1,5 +1,5 @@
-require 'features/support/models/tag'
-require 'features/support/models/tagging'
+require 'features/thinking_sphinx/models/tag'
+require 'features/thinking_sphinx/models/tagging'
 
 class Developer < ActiveRecord::Base
   has_many :taggings, :as => :taggable

@@ -149,7 +149,7 @@ describe ThinkingSphinx::ActiveRecord do
         Beta.should_receive(:before_save).with(:toggle_delta).once
 
         Beta.define_index { indexes :name }
-        Beta.define_index {
+        Beta.define_index('foo') {
           indexes :name
           set_property :delta => true
         }
@@ -193,7 +193,7 @@ describe ThinkingSphinx::ActiveRecord do
         Beta.should_receive(:after_save).with(:index_delta).once
 
         Beta.define_index { indexes :name }
-        Beta.define_index {
+        Beta.define_index('foo') {
           indexes :name
           set_property :delta => true
         }
@@ -541,11 +541,9 @@ describe ThinkingSphinx::ActiveRecord do
   
   describe '.core_index_names' do
     it "should return each index's core name" do
-      Alpha.define_index { indexes :name }
-      Alpha.define_index { indexes :name }
+      Alpha.define_index('foo') { indexes :name }
+      Alpha.define_index('bar') { indexes :name }
       Alpha.define_indexes
-      Alpha.sphinx_indexes.first.name = 'foo'
-      Alpha.sphinx_indexes.last.name = 'bar'
       
       Alpha.core_index_names.should == ['foo_core', 'bar_core']
     end
@@ -553,12 +551,10 @@ describe ThinkingSphinx::ActiveRecord do
   
   describe '.delta_index_names' do
     it "should return index delta names, for indexes with deltas enabled" do
-      Alpha.define_index { indexes :name }
-      Alpha.define_index { indexes :name }
+      Alpha.define_index('foo') { indexes :name }
+      Alpha.define_index('bar') { indexes :name }
       Alpha.define_indexes
-      Alpha.sphinx_indexes.first.name = 'foo'
       Alpha.sphinx_indexes.first.delta_object = stub('delta')
-      Alpha.sphinx_indexes.last.name = 'bar'
       
       Alpha.delta_index_names.should == ['foo_delta']
     end
