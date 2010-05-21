@@ -47,12 +47,12 @@ class ThinkingSphinx::Context
     ThinkingSphinx::Configuration.instance.model_directories.each do |base|
       Dir["#{base}**/*.rb"].each do |file|
         model_name = file.gsub(/^#{base}([\w_\/\\]+)\.rb/, '\1')
-      
+        
         next if model_name.nil?
         next if ::ActiveRecord::Base.send(:subclasses).detect { |model|
-          model.name == model_name
+          model.name == model_name.camelize
         }
-      
+        
         begin
           model_name.camelize.constantize
         rescue LoadError

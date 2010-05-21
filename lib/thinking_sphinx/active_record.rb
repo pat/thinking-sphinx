@@ -154,9 +154,7 @@ module ThinkingSphinx
         end
         
         self.sphinx_index_blocks << lambda {
-          index = ThinkingSphinx::Index::Builder.generate self, name, &block
-          add_sphinx_callbacks_and_extend(index.delta?)
-          add_sphinx_index index
+          add_sphinx_index name, &block
         }
         
         include ThinkingSphinx::ActiveRecord::Scopes
@@ -188,9 +186,18 @@ module ThinkingSphinx
         end
       end
       
-      def add_sphinx_index(index)
+      def add_sphinx_index(name, &block)
+        index = ThinkingSphinx::Index::Builder.generate self, name, &block
+
+        unless sphinx_indexes.any? { |i| i.name == index.name }
+          add_sphinx_callbacks_and_extend(index.delta?)
+          insert_sphinx_index index
+        end
+      end
+      
+      def insert_sphinx_index(index)
         self.sphinx_indexes << index
-        subclasses.each { |klass| klass.add_sphinx_index(index) }
+        subclasses.each { |klass| klass.insert_sphinx_index(index) }
       end
       
       def has_sphinx_indexes?
