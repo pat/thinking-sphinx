@@ -21,5 +21,7 @@ module ThinkingSphinx::ActiveRecord::Arel
     relation = relation.group(sql_group_clause)
     relation = relation.order('NULL') if adapter.sphinx_identifier == "mysql"
     relation.to_sql
+  rescue
+    ""
   end
 end
