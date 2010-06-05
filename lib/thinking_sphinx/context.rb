@@ -1,8 +1,11 @@
 class ThinkingSphinx::Context
   attr_reader :indexed_models
   
-  def initialize
+  def initialize(*models)
     @indexed_models = []
+    models.each do |model|
+      add_indexed_model model
+    end
   end
   
   def prepare
