@@ -71,6 +71,11 @@ When /^I filter by (\w+) on (\w+)$/ do |filter, attribute|
   @with[attribute.to_sym] = filter.to_i
 end
 
+When /^I filter by (\d\d\d\d)\-(\d\d)\-(\d\d) on (\w+)$/ do |y, m, d, attribute|
+  @results = nil
+  @with[attribute.to_sym] = Time.local(y.to_i, m.to_i, d.to_i).to_i
+end
+
 When /^I filter by (\d+) and (\d+) on (\w+)$/ do |value_one, value_two, attribute|
   @results = nil
   @with[attribute.to_sym] = [value_one.to_i, value_two.to_i]

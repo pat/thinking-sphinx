@@ -4,7 +4,7 @@ Comment.create(
   :content      => "+1",
   :post_id      => 1,
   :category_id  => 1
-).update_attribute(:created_at, Time.utc(2001, 01, 01).getlocal)
+).update_attribute(:created_at, Time.local(2001, 01, 01).getutc)
 
 Comment.create(
   :name         => "Menno",
