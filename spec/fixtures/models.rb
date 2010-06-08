@@ -110,10 +110,6 @@ class Alpha < ActiveRecord::Base
     name.upcase
   end
   
-  def string_to_escape
-    'test "escaping" <characters>'
-  end
-  
   def sphinx_attributes
     :existing
   end
