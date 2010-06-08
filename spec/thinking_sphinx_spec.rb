@@ -16,22 +16,6 @@ describe ThinkingSphinx do
     end
   end
   
-  describe '.set_context' do
-    before :each do
-      ThinkingSphinx.reset_context!
-    end
-    
-    it "should set the context instance" do
-      ThinkingSphinx.set_context
-      ThinkingSphinx.context.should be_a(ThinkingSphinx::Context)
-    end
-    
-    it "should pass through any given arguments to the initialiser" do
-      ThinkingSphinx::Context.should_receive(:new).with(Alpha, Beta)
-      ThinkingSphinx.set_context Alpha, Beta
-    end
-  end
-  
   describe '.reset_context!' do
     it "should remove the existing Context instance" do
       existing = ThinkingSphinx.context
@@ -42,18 +26,7 @@ describe ThinkingSphinx do
       Thread.current[:thinking_sphinx_context] = existing
     end
   end
-  
-  describe '.indexed_models=' do
-    before :each do
-      ThinkingSphinx.reset_context!
-    end
     
-    it "should set the indexed models for the context" do
-      ThinkingSphinx.indexed_models = [Alpha, Beta]
-      ThinkingSphinx.context.indexed_models.should == ['Alpha', 'Beta']
-    end
-  end
-  
   describe '.define_indexes?' do
     it "should define indexes by default" do
       ThinkingSphinx.define_indexes?.should be_true

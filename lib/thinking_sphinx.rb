@@ -70,7 +70,7 @@ module ThinkingSphinx
     if @@context.nil?
       @@sphinx_mutex.synchronize do
         if @@context.nil?
-          set_context
+          @@context = ThinkingSphinx::Context.new
           @@context.prepare
         end
       end
@@ -79,19 +79,9 @@ module ThinkingSphinx
     @@context
   end
   
-  def self.set_context(*classes)    
-    @@context = ThinkingSphinx::Context.new(*classes)
-  end
-
   def self.reset_context!
     @@sphinx_mutex.synchronize do
       @@context = nil
-    end
-  end
-  
-  def self.indexed_models=(classes = [])
-    @@sphinx_mutex.synchronize do
-      set_context *classes
     end
   end
 
