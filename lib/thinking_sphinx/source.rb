@@ -6,7 +6,7 @@ module ThinkingSphinx
     include ThinkingSphinx::Source::InternalProperties
     include ThinkingSphinx::Source::SQL
     
-    attr_accessor :model, :fields, :attributes, :conditions, :groupings,
+    attr_accessor :model, :fields, :attributes, :joins, :conditions, :groupings,
       :options
     attr_reader :base, :index, :database_configuration
     
@@ -15,6 +15,7 @@ module ThinkingSphinx
       @model        = index.model
       @fields       = []
       @attributes   = []
+      @joins        = []
       @conditions   = []
       @groupings    = []
       @options      = options
@@ -140,7 +141,11 @@ module ThinkingSphinx
         # attribute associations
         @attributes.collect { |attrib|
           attrib.associations.values if attrib.include_as_association?
-        }.compact.flatten
+        }.compact.flatten +
+        # explicit joins
+        @joins.collect { |join|
+          join.associations
+        }.flatten
       ).uniq.collect { |assoc|
         # get ancestors as well as column-level associations
         assoc.ancestors

@@ -49,6 +49,10 @@ describe ThinkingSphinx::Source do
         :as => :contact_ids, :source => :query
       )
       
+      ThinkingSphinx::Join.new(
+        @source, ThinkingSphinx::Index::FauxColumn.new(:links)
+      )
+      
       @source.conditions << "`birthday` <= NOW()"
       @source.groupings  << "`first_name`"
       
@@ -134,6 +138,10 @@ describe ThinkingSphinx::Source do
       
       it "should not include joins for the sourced MVA attribute" do
         @query.should_not match(/LEFT OUTER JOIN `contacts`/)
+      end
+      
+      it "should include explicitly requested joins" do
+        @query.should match(/LEFT OUTER JOIN `links`/)
       end
       
       it "should include any defined conditions" do

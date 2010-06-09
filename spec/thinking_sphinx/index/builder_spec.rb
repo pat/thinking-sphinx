@@ -109,6 +109,22 @@ describe ThinkingSphinx::Index::Builder do
     end
   end
   
+  describe '#join' do
+    before :each do
+      @index = ThinkingSphinx::Index::Builder.generate(Person) do
+        indexes first_name
+        
+        join contacts
+      end
+      
+      @source = @index.sources.first
+    end
+    
+    it "should include the explicit join" do
+      @source.joins.length.should == 1
+    end
+  end
+  
   describe "faceted field" do
     before :each do
       @index = ThinkingSphinx::Index::Builder.generate(Person) do

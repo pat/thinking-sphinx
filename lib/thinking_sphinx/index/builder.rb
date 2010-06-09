@@ -164,6 +164,12 @@ module ThinkingSphinx
         end
       end
       
+      def join(*args)
+        args.each do |association|
+          Join.new(source, association)
+        end
+      end
+      
       # Use this method to add some manual SQL conditions for your index
       # request. You can pass in as many strings as you like, they'll get
       # joined together with ANDs later on.
