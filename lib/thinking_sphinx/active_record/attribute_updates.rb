@@ -13,9 +13,6 @@ module ThinkingSphinx
         return true unless ThinkingSphinx.updates_enabled? &&
           ThinkingSphinx.sphinx_running?
         
-        config = ThinkingSphinx::Configuration.instance
-        client = config.client
-        
         self.class.sphinx_indexes.each do |index|
           attribute_pairs  = attribute_values_for_index(index)
           attribute_names  = attribute_pairs.keys
@@ -23,9 +20,9 @@ module ThinkingSphinx
             attribute_pairs[key]
           }
           
-          client.update "#{index.core_name}", attribute_names, {
-            sphinx_document_id => attribute_values
-          } if self.class.search_for_id(sphinx_document_id, index.core_name)
+          update_index index.core_name, attribute_names, attribute_values
+          next unless index.delta?
+          update_index index.delta_name, attribute_names, attribute_values
         end
         
         true
@@ -40,6 +37,13 @@ module ThinkingSphinx
           hash[attrib.unique_name.to_s] = attrib.live_value self
           hash
         }
+      end
+      
+      def update_index(index_name, attribute_names, attribute_values)
+        config = ThinkingSphinx::Configuration.instance
+        config.client.update index_name, attribute_names, {
+          sphinx_document_id => attribute_values
+        } if self.class.search_for_id(sphinx_document_id, index_name)
       end
     end
   end
