@@ -38,7 +38,33 @@ Feature: Update attributes directly to Sphinx
     
     When I search for the document id of beta eight in the beta_delta index
     Then it should not exist
-
+  
+  Scenario: Updating attributes in a delta index
+    Given Sphinx is running
+    And I am searching on betas
+    
+    When I change the name of beta nine to nineteen
+    And I change the value of beta nineteen to 19
+    And I wait for Sphinx to catch up
+    
+    When I filter by 19 on value
+    And I use index beta_delta
+    Then I should get 1 result
+    
+  Scenario: Updating attributes in a delta index with deltas disabled
+    Given Sphinx is running
+    And I am searching on betas
+  
+    When I change the name of beta eleven to twentyone
+    And I disable delta updates
+    And I change the value of beta twentyone to 21
+    And I wait for Sphinx to catch up
+  
+    When I filter by 21 on value
+    And I use index beta_delta
+    Then I should get 1 result
+    And I enable delta updates
+  
   Scenario: Updating boolean attribute in Sphinx
     Given Sphinx is running
     And I am searching on alphas

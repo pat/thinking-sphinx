@@ -67,6 +67,10 @@ module ThinkingSphinx
       "current_timestamp - interval '#{diff} seconds'"
     end
     
+    def utc_query_pre
+      'SET TIME ZONE UTC'
+    end
+    
     private
     
     def execute(command, output_error = false)

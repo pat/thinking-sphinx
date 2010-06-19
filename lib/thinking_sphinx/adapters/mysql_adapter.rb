@@ -50,5 +50,9 @@ module ThinkingSphinx
     def time_difference(diff)
       "DATE_SUB(NOW(), INTERVAL #{diff} SECOND)"
     end
+    
+    def utc_query_pre
+      "SET TIME_ZONE = '+0:00'"
+    end
   end
 end

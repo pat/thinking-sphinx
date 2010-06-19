@@ -59,6 +59,13 @@ describe ThinkingSphinx::Context do
         @context.prepare
       }.should_not raise_error
     end
+    
+    it "should not load models if they're explicitly set in the configuration" do
+      @config.indexed_models = ['Alpha', 'Beta']
+      @context.prepare
+      
+      @context.indexed_models.should == ['Alpha', 'Beta']
+    end
   end
   
   describe '#define_indexes' do

@@ -65,8 +65,8 @@ module ThinkingSphinx
     CustomOptions = %w( disable_range )
 
     attr_accessor :searchd_file_path, :allow_star, :database_yml_file,
-      :app_root, :model_directories, :delayed_job_priority
-
+      :app_root, :model_directories, :delayed_job_priority, :indexed_models
+    
     attr_accessor :source_options, :index_options
     attr_accessor :version
 
@@ -109,7 +109,8 @@ module ThinkingSphinx
       self.model_directories    = ["#{app_root}/app/models/"] +
         Dir.glob("#{app_root}/vendor/plugins/*/app/models/")
       self.delayed_job_priority = 0
-
+      self.indexed_models       = []
+      
       self.source_options  = {}
       self.index_options   = {
         :charset_type => "utf-8"

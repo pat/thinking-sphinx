@@ -8,3 +8,4 @@ Beta.create :name => "seven", :value => 7
 Beta.create :name => "eight", :value => 8
 Beta.create :name => "nine", :value => 9
 Beta.create :name => "ten", :value => 10
+Beta.create :name => "eleven", :value => 11

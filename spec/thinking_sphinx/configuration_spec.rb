@@ -76,7 +76,8 @@ describe ThinkingSphinx::Configuration do
           "ignore_chars"      => "e",
           "searchd_binary_name" => "sphinx-searchd",
           "indexer_binary_name" => "sphinx-indexer",
-          "index_exact_words" => true
+          "index_exact_words" => true,
+          "indexed_models"    => ['Alpha', 'Beta']
         }
       }
 
