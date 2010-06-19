@@ -7,7 +7,6 @@ module ThinkingSphinx
     initializer "thinking_sphinx.active_record" do
       if defined?(ActiveRecord)
         ActiveRecord::Base.send(:include, ThinkingSphinx::ActiveRecord)
-        ThinkingSphinx::Source.send(:include, ThinkingSphinx::ActiveRecord::Arel)
       end
     end
 

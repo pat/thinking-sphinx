@@ -71,7 +71,7 @@ module ThinkingSphinx
     # join conditions avoid column name collisions.
     # 
     def to_sql
-      @join.association_join.to_s.gsub(/::ts_join_alias::/,
+      @join.to_sql.gsub(/::ts_join_alias::/,
         "#{@reflection.klass.connection.quote_table_name(@join.parent.aliased_table_name)}"
       )
     end

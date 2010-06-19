@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'cucumber'
-require 'spec'
+require 'rspec'
 require 'fileutils'
 require 'ginger'
 require 'will_paginate'
@@ -17,5 +17,7 @@ world = Cucumber::ThinkingSphinx::InternalWorld.new
 world.configure_database
 
 require "thinking_sphinx"
+
+ActiveRecord::Base.send(:include, ThinkingSphinx::ActiveRecord)
 
 world.setup

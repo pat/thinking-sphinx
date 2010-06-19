@@ -32,8 +32,7 @@ Rspec.configure do |config|
   sphinx.setup_mysql
   
   ActiveRecord::Base.send(:include, ThinkingSphinx::ActiveRecord)
-  ThinkingSphinx::Source.send(:include, ThinkingSphinx::ActiveRecord::Arel)
-
+  
   require 'spec/fixtures/models'
   ThinkingSphinx.context.define_indexes
   

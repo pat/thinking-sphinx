@@ -18,7 +18,7 @@ describe ThinkingSphinx::Configuration do
     end
 
     it "should use the Rails environment value if set" do
-      ENV["RAILS_ENV"] = "rails_production"
+      Rails.stub!(:env => "rails_production")
       ThinkingSphinx::Configuration.environment.should == "rails_production"
     end
 
@@ -203,6 +203,8 @@ describe ThinkingSphinx::Configuration do
   end
 
   it "should set any explicit prefixed or infixed fields" do
+    ThinkingSphinx::Configuration.instance.build
+    
     file = open(ThinkingSphinx::Configuration.instance.config_file) { |f|
       f.read
     }
@@ -211,6 +213,8 @@ describe ThinkingSphinx::Configuration do
   end
 
   it "should not have prefix fields in indexes where nothing is set" do
+    ThinkingSphinx::Configuration.instance.build
+    
     file = open(ThinkingSphinx::Configuration.instance.config_file) { |f|
       f.read
     }

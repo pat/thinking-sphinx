@@ -20,7 +20,7 @@ end
 namespace :features do
   def add_task(name, description)
     Cucumber::Rake::Task.new(name, description) do |t|
-      t.cucumber_opts = "--format pretty features/*.feature DATABASE=#{name}"
+      t.cucumber_opts = "--format pretty features/*.feature DATABASE=#{name} --exclude features/thinking_sphinx"
     end
   end
   

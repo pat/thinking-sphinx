@@ -2,7 +2,6 @@ require 'thinking_sphinx/active_record/attribute_updates'
 require 'thinking_sphinx/active_record/delta'
 require 'thinking_sphinx/active_record/has_many_association'
 require 'thinking_sphinx/active_record/scopes'
-require 'thinking_sphinx/active_record/arel'
 
 module ThinkingSphinx
   # Core additions to ActiveRecord models - define_index for creating indexes
@@ -312,7 +311,7 @@ module ThinkingSphinx
           include ThinkingSphinx::ActiveRecord::Delta
           
           before_save :toggle_delta
-          after_save :index_delta
+          after_commit :index_delta
         end
       end
       

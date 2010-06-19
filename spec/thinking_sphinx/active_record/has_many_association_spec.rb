@@ -63,6 +63,7 @@ describe 'ThinkingSphinx::ActiveRecord::HasManyAssociation' do
     it "should add a filter for the attribute in a sphinx scope call" do
       Friendship.should_receive(:search).with do |options|
         options[:with][:person_id].should == @person.id
+        Friendship
       end
       
       @person.friendships.reverse

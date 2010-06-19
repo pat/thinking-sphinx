@@ -107,7 +107,7 @@ end
 describe ThinkingSphinx::ActiveRecordStoreFullSTIClass do
   describe "store_full_sti_class method" do
     it 'returns false' do
-      Person.store_full_sti_class.should be_false
+      Person.store_full_sti_class.should be_true
     end
   end
   

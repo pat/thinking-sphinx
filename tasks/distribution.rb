@@ -32,7 +32,7 @@ Jeweler::Tasks.new do |gem|
   gem.add_development_dependency "yard",          ">= 0"
   gem.add_development_dependency "rspec",         ">= 1.2.9"
   gem.add_development_dependency "cucumber",      ">= 0"
-  gem.add_development_dependency "will_paginate", "2.3.11"
+  gem.add_development_dependency "will_paginate", "3.0.pre"
   gem.add_development_dependency "ginger",        "1.2.0"
   gem.add_development_dependency "faker",         "0.3.1"
   
