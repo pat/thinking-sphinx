@@ -46,7 +46,7 @@ module ThinkingSphinx
           @sphinx_scopes ||= []
           @sphinx_scopes << method
           
-          metaclass.instance_eval do
+          singleton_class.instance_eval do
             define_method(method) do |*args|
               options = {:classes => classes_option}
               options.merge! block.call(*args)
@@ -64,7 +64,7 @@ module ThinkingSphinx
         
         def remove_sphinx_scopes
           sphinx_scopes.each do |scope|
-            metaclass.send(:undef_method, scope)
+            singleton_class.send(:undef_method, scope)
           end
           
           sphinx_scopes.clear

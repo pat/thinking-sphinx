@@ -136,8 +136,8 @@ Class.extend(
 ) unless Class.respond_to?(:cattr_reader)
 
 module ThinkingSphinx
-  module MetaClass
-    def metaclass
+  module SingletonClass
+    def singleton_class
       class << self
         self
       end
@@ -145,6 +145,6 @@ module ThinkingSphinx
   end
 end
 
-unless Object.new.respond_to?(:metaclass)
-  Object.send(:include, ThinkingSphinx::MetaClass)
+unless Object.new.respond_to?(:singleton_class)
+  Object.send(:include, ThinkingSphinx::SingletonClass)
 end

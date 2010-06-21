@@ -118,14 +118,14 @@ describe ThinkingSphinx::ActiveRecordStoreFullSTIClass do
   end
 end
 
-describe ThinkingSphinx::MetaClass do
-  describe 'metaclass' do
+describe ThinkingSphinx::SingletonClass do
+  describe 'singleton_class' do
     it "should exist as an instance method in Object" do
-      Object.new.should respond_to('metaclass')
+      Object.new.should respond_to('singleton_class')
     end
     
     it "should return the meta/eigen/singleton class" do
-      Object.new.metaclass.should be_a(Class)
+      Object.new.singleton_class.should be_a(Class)
     end
   end
 end
