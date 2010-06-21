@@ -41,7 +41,7 @@ module ThinkingSphinx
           end
           
           def to_crc32s
-            (subclasses << self).collect { |klass| klass.to_crc32 }
+            (descendants << self).collect { |klass| klass.to_crc32 }
           end
           
           def sphinx_database_adapter
@@ -53,19 +53,23 @@ module ThinkingSphinx
             self.name.underscore.tr(':/\\', '_')
           end
           
-          #
-          # The above method to_crc32s is dependant on the subclasses being loaded consistently
-          # After a reset_subclasses is called (during a Dispatcher.cleanup_application in development)
-          # Our subclasses will be lost but our context will not reload them for us.
-          #
-          # We reset the context which causes the subclasses to be reloaded next time the context is called.
-          #
-          def reset_subclasses_with_thinking_sphinx
-            reset_subclasses_without_thinking_sphinx
-            ThinkingSphinx.reset_context!
-          end
           
-          alias_method_chain :reset_subclasses, :thinking_sphinx
+          # Deprecated by descendants_tracker
+          # http://github.com/rails/rails/commit/033e0a041f10ef4d4aa8ebb576560df20b971026
+          
+          # #
+          # # The above method to_crc32s is dependant on the subclasses being loaded consistently
+          # # After a reset_subclasses is called (during a Dispatcher.cleanup_application in development)
+          # # Our subclasses will be lost but our context will not reload them for us.
+          # #
+          # # We reset the context which causes the subclasses to be reloaded next time the context is called.
+          # #
+          # def reset_subclasses_with_thinking_sphinx
+          #   reset_subclasses_without_thinking_sphinx
+          #   ThinkingSphinx.reset_context!
+          # end
+          
+          # alias_method_chain :reset_subclasses, :thinking_sphinx
           
           private
           
@@ -197,7 +201,7 @@ module ThinkingSphinx
       
       def insert_sphinx_index(index)
         self.sphinx_indexes << index
-        subclasses.each { |klass| klass.insert_sphinx_index(index) }
+        descendants.each { |klass| klass.insert_sphinx_index(index) }
       end
       
       def has_sphinx_indexes?
