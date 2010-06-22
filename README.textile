@@ -175,3 +175,4 @@ Since I first released this library, there's been quite a few people who have su
 * Jan De Poorter
 * Tom Stuart
 * James Brooks
+* Andrew Coldham
