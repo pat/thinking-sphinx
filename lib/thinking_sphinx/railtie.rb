@@ -17,6 +17,15 @@ module ThinkingSphinx
     config.to_prepare do
       I18n.backend.reload!
       I18n.backend.available_locales
+      
+      # ActiveRecord::Base.to_crc32s is dependant on the subclasses being loaded
+      # consistently. When the environment is reset, subclasses/descendants will
+      # be lost but our context will not reload them for us.
+      #
+      # We reset the context which causes the subclasses/descendants to be
+      # reloaded next time the context is called.
+      # 
+      ThinkingSphinx.reset_context!
     end
 
     rake_tasks do
