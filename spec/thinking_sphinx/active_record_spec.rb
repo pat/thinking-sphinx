@@ -607,12 +607,4 @@ describe ThinkingSphinx::ActiveRecord do
       Alpha.should_not have_sphinx_indexes
     end
   end
-  
-  describe '.reset_subclasses' do
-    it "should reset the stored context" do
-      ThinkingSphinx.should_receive(:reset_context!)
-      
-      ActiveRecord::Base.reset_subclasses
-    end
-  end
 end
