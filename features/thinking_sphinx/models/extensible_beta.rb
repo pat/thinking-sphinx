@@ -1,4 +1,4 @@
-require 'features/support/lib/generic_delta_handler'
+require "#{Dir.pwd}/features/support/lib/generic_delta_handler"
 
 class ExtensibleBeta < ActiveRecord::Base
   define_index do

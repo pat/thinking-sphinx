@@ -1,4 +1,4 @@
-require 'spec/spec_helper'
+require 'spec_helper'
 
 describe "ThinkingSphinx::ActiveRecord::Delta" do
   it "should call the toggle_delta method after a save" do

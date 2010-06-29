@@ -1,4 +1,4 @@
-require 'spec/spec_helper'
+require 'spec_helper'
 
 describe ThinkingSphinx::Facet do
   describe ".name_for" do
