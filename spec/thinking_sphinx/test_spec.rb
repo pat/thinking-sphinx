@@ -1,7 +1,5 @@
-require "spec/spec_helper"
-require "thinking_sphinx/test"
-
-class FakeError < StandardError; end
+require 'spec_helper'
+require "#{File.dirname(__FILE__)}/../../lib/thinking_sphinx/test"
 
 describe ThinkingSphinx::Test do
   describe ".run" do
