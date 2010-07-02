@@ -166,3 +166,4 @@ Since I first released this library, there's been quite a few people who have su
 * Tom Stuart
 * James Brooks
 * Mark Dodwell
+* Frédéric Malamitsas
