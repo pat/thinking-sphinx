@@ -12,7 +12,8 @@ module ThinkingSphinx
     def self.detect(model)
       case model.connection.class.name
       when "ActiveRecord::ConnectionAdapters::MysqlAdapter",
-           "ActiveRecord::ConnectionAdapters::MysqlplusAdapter"
+           "ActiveRecord::ConnectionAdapters::MysqlplusAdapter",
+           "ActiveRecord::ConnectionAdapters::Mysql2Adapter"
         ThinkingSphinx::MysqlAdapter.new model
       when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
         ThinkingSphinx::PostgreSQLAdapter.new model
