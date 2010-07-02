@@ -27,9 +27,12 @@ class ThinkingSphinx::Test
   end
   
   def self.run(&block)
-    start
-    yield
-    stop
+    begin
+      start
+      yield
+    ensure
+      stop
+    end
   end
   
   def self.config

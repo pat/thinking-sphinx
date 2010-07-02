@@ -1,4 +1,4 @@
-require 'spec/spec_helper'
+require 'spec_helper'
 
 describe 'ThinkingSphinx::ActiveRecord::HasManyAssociation' do
   describe "search method" do

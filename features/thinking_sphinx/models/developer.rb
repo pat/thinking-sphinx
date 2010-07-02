@@ -1,5 +1,5 @@
-require 'features/thinking_sphinx/models/tag'
-require 'features/thinking_sphinx/models/tagging'
+require "#{File.dirname(__FILE__)}/tag"
+require "#{File.dirname(__FILE__)}/tagging"
 
 class Developer < ActiveRecord::Base
   has_many :taggings, :as => :taggable

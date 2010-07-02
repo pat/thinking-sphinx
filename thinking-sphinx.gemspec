@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new("> 1.3.1") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pat Allan"]
-  s.date = %q{2010-06-23}
+  s.date = %q{2010-07-02}
   s.description = %q{A concise and easy-to-use Ruby library that connects ActiveRecord to the Sphinx search daemon, managing configuration, indexing and searching.}
   s.email = %q{pat@freelancing-gods.com}
   s.extra_rdoc_files = [
@@ -181,6 +181,7 @@ http://freelancing-god.github.com/ts/en/upgrading.html
      "spec/thinking_sphinx/search_methods_spec.rb",
      "spec/thinking_sphinx/search_spec.rb",
      "spec/thinking_sphinx/source_spec.rb",
+     "spec/thinking_sphinx/test_spec.rb",
      "spec/thinking_sphinx_spec.rb"
   ]
 

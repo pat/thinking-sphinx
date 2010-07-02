@@ -3,7 +3,7 @@ require 'rspec/core/rake_task'
 require 'cucumber/rake/task'
 
 desc "Run the specs under spec"
-Rspec::Core::RakeTask.new do |t|
+RSpec::Core::RakeTask.new do |t|
   t.pattern = 'spec/**/*_spec.rb'
 end
 task :spec => :check_dependencies
@@ -32,7 +32,7 @@ namespace :features do
 end
 
 desc "Generate RCov reports"
-Rspec::Core::RakeTask.new(:rcov) do |t|
+RSpec::Core::RakeTask.new(:rcov) do |t|
   t.pattern = 'spec/**/*_spec.rb'
   t.rcov = true
   t.rcov_opts = [
