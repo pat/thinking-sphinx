@@ -130,7 +130,17 @@ module ThinkingSphinx
     end
     
     def facet_from_object(object, name)
-      object.sphinx_facets.detect { |facet| facet.attribute_name == name }
+      facet = nil
+      klass = object.class
+      
+      while klass != ::ActiveRecord::Base && facet.nil?
+        facet = klass.sphinx_facets.detect { |facet|
+          facet.attribute_name == name
+        }
+        klass = klass.superclass
+      end
+      
+      facet
     end
   end
 end
