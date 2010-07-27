@@ -167,3 +167,4 @@ Since I first released this library, there's been quite a few people who have su
 * James Brooks
 * Mark Dodwell
 * Frédéric Malamitsas
+* Jon Gubman
