@@ -21,7 +21,7 @@ module Riddle
             conf = "  #{setting} = "
           else
             conf = setting_to_array(setting).collect { |set|
-              "  #{setting} = #{set}"
+              "  #{setting} = #{rendered_setting set}"
             }
           end
           conf.length == 0 ? nil : conf
@@ -37,6 +37,20 @@ module Riddle
         else
           [value]
         end
+      end
+      
+      def rendered_setting(setting)
+        return setting unless setting.is_a?(String)
+        
+        index  = 8100
+        output = setting.clone
+        
+        while index < output.length
+          output.insert(index, "\\\n")
+          index += 8100
+        end
+        
+        output
       end
     end
   end

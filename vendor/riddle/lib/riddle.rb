@@ -37,6 +37,8 @@ lines after "require 'riddle'" to avoid this warning.
   require 'riddle/0.9.8'
   # or
   require 'riddle/0.9.9'
+  # or
+  require 'riddle/1.10'
 
     }
   end
