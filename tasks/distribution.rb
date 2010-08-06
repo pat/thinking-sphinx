@@ -23,7 +23,9 @@ Jeweler::Tasks.new do |gem|
     "VERSION"
   ]
   gem.test_files = FileList[
-    "features/**/*",
+    "features/**/*.rb",
+    "features/**/*.feature",
+    "features/**/*.example.yml",
     "spec/**/*_spec.rb"
   ]
   
