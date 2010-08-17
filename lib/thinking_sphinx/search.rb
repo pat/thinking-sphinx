@@ -186,6 +186,17 @@ module ThinkingSphinx
     # Compatibility with older versions of will_paginate
     alias_method :page_count, :total_pages
     
+    # Query time taken
+    # 
+    # @return [Integer]
+    #
+    def query_time
+      populate
+      return 0 if @results[:time].nil?
+
+      @query_time ||= @results[:time]
+    end
+
     # The total number of search results available.
     # 
     # @return [Integer]
