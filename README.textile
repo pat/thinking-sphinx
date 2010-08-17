@@ -168,3 +168,4 @@ Since I first released this library, there's been quite a few people who have su
 * Mark Dodwell
 * Frédéric Malamitsas
 * Jon Gubman
+* Michael Schuerig
