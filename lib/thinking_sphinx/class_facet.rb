@@ -8,8 +8,9 @@ module ThinkingSphinx
       "class_crc"
     end
     
-    def value(object, attribute_value)
-      object.class.name
+    def value(object, attribute_hash)
+      crc = attribute_hash['class_crc']
+      ThinkingSphinx::Configuration.instance.models_by_crc[crc]
     end
   end
 end

@@ -61,8 +61,8 @@ describe ThinkingSphinx::FacetSearch do
       before :each do
         @person = Person.find(:first)
         @people = [@person]
-        @people.stub!(:each_with_groupby_and_count).
-          and_yield(@person, @person.city.to_crc32, 1)
+        @people.stub!(:each_with_match).
+          and_yield(@person, {:attributes => {'@groupby' => @person.city.to_crc32, '@count' => 1}})
         ThinkingSphinx.stub!(:search => @people)
         
         @facets = ThinkingSphinx::FacetSearch.new(
@@ -155,8 +155,8 @@ describe ThinkingSphinx::FacetSearch do
     before do
       @person = Person.find(:first)
       @people = [@person]
-      @people.stub!(:each_with_groupby_and_count).
-        and_yield(@person, @person.city.to_crc32, 1)
+      @people.stub!(:each_with_match).
+        and_yield(@person, {:attributes => {'@groupby' => @person.city.to_crc32, '@count' => 1}})
       ThinkingSphinx.stub!(:search => @people)
       
       @facets = ThinkingSphinx::FacetSearch.new(

@@ -232,6 +232,13 @@ module ThinkingSphinx
       end
     end
     
+    def each_with_match(&block)
+      populate
+      results[:matches].each_with_index do |match, index|
+        yield self[index], match
+      end
+    end
+    
     def excerpt_for(string, model = nil)
       if model.nil? && one_class
         model ||= one_class

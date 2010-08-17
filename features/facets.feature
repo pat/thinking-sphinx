@@ -27,7 +27,7 @@ Feature: Search and browse models by their defined facets
     And I should have the facet State
     And I should have the facet Age
   
-  Scenario: Requseting float facets
+  Scenario: Requesting float facets
     Given Sphinx is running
     And I am searching on alphas
     When I am requesting facet results
