@@ -248,7 +248,7 @@ module ThinkingSphinx
       client.excerpts(
         :docs   => [string],
         :words  => results[:words].keys.join(' '),
-        :index  => "#{options[:index] || model.source_of_sphinx_index.sphinx_name}_core"
+        :index  => options[:index] || "#{model.source_of_sphinx_index.sphinx_name}_core"
       ).first
     end
     

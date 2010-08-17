@@ -1112,6 +1112,15 @@ describe ThinkingSphinx::Search do
       @search.excerpt_for('string')
     end
     
+    it "should respect the provided index option" do
+      @search = ThinkingSphinx::Search.new(:classes => [Alpha], :index => 'foo')
+      @client.should_receive(:excerpts) do |options|
+        options[:index].should == 'foo'
+      end
+      
+      @search.excerpt_for('string')
+    end
+    
     it "should optionally take a second argument to allow for multi-model searches" do
       @client.should_receive(:excerpts) do |options|
         options[:index].should == 'beta_core'
