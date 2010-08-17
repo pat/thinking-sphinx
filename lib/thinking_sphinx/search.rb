@@ -269,6 +269,29 @@ module ThinkingSphinx
       self
     end
     
+    def append_to(client)
+      prepare client
+      client.append_query query, indexes, comment
+      client.reset
+    end
+    
+    def populate_from_queue(results)
+      return if @populated
+      @populated = true
+      @results   = results
+      
+      if options[:ids_only]
+        replace @results[:matches].collect { |match|
+          match[:attributes]["sphinx_internal_id"]
+        }
+      else
+        replace instances_from_matches
+        add_excerpter
+        add_sphinx_attributes
+        add_matching_fields if client.rank_mode == :fieldmask
+      end
+    end
+    
     private
     
     def config
@@ -370,6 +393,10 @@ module ThinkingSphinx
     def client
       client = config.client
       
+      prepare client
+    end
+    
+    def prepare(client)
       index_options = one_class ?
         one_class.sphinx_indexes.first.local_options : {}
       

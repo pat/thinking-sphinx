@@ -44,11 +44,22 @@ module ThinkingSphinx
     end
     
     def populate
-      facet_names.each do |name|
-        add_from_results name, ThinkingSphinx.search(
-          *(args + [facet_search_options(name)])
-        )
+      client = config.client
+      
+      searches.each do |search|
+        search.append_to client
       end
+      
+      client.run.each_with_index do |results, index|
+        searches[index].populate_from_queue results
+        add_from_results facet_names[index], searches[index]
+      end
+    end
+    
+    def searches
+      @searches ||= facet_names.collect { |name|
+        ThinkingSphinx.search *(args + [facet_search_options(name)])
+      }
     end
     
     def facet_search_options(facet_name)
