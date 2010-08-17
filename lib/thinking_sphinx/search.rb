@@ -595,14 +595,6 @@ MSG
     end
     
     # When passed a Time instance, returns the integer timestamp.
-    # 
-    # If using Rails 2.1+, need to handle timezones to translate them back to
-    # UTC, as that's what datetimes will be stored as by MySQL.
-    # 
-    # in_time_zone is a method that was added for the timezone support in
-    # Rails 2.1, which is why it's used for testing. I'm sure there's better
-    # ways, but this does the job.
-    # 
     def filter_value(value)
       case value
       when Range
@@ -610,7 +602,7 @@ MSG
       when Array
         value.collect { |v| filter_value(v) }.flatten
       when Time
-        value.respond_to?(:in_time_zone) ? [value.utc.to_i] : [value.to_i]
+        [value.to_i]
       when NilClass
         0
       else
