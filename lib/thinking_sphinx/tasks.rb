@@ -4,7 +4,12 @@ namespace :thinking_sphinx do
   task :app_env do
     if defined?(RAILS_ROOT)
       Rake::Task[:environment].invoke
-      Rails.configuration.cache_classes = false
+      
+      if defined?(Rails.configuration)
+        Rails.configuration.cache_classes = false
+      else
+        Rails::Initializer.run { |config| config.cache_classes = false }
+      end
     end
     
     Rake::Task[:merb_env].invoke    if defined?(Merb)
