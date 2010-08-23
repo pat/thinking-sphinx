@@ -57,6 +57,22 @@ module ThinkingSphinx
       ThinkingSphinx.facets *args
     end
     
+    def self.bundle_searches(enum)
+      client = ThinkingSphinx::Configuration.instance.client
+      
+      searches = enum.collect { |item|
+        search = yield ThinkingSphinx, item
+        search.append_to client
+        search
+      }
+      
+      client.run.each_with_index.collect { |results, index|
+        searches[index].populate_from_queue results
+      }
+      
+      searches
+    end
+    
     def self.matching_fields(fields, bitmask)
       matches   = []
       bitstring = bitmask.to_s(2).rjust(32, '0').reverse
