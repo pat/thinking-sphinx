@@ -71,7 +71,12 @@ module ThinkingSphinx
       @property.is_a?(Field) ? :string : @property.type
     end
     
-    def value(object, attribute_value)
+    def float?
+      @property.type == :float
+    end
+    
+    def value(object, attribute_hash)
+      attribute_value = attribute_hash['@groupby']
       return translate(object, attribute_value) if translate? || float?
       
       case @property.type
@@ -116,10 +121,6 @@ module ThinkingSphinx
     
     def column
       @property.columns.first
-    end
-    
-    def float?
-      @property.type == :float
     end
   end
 end

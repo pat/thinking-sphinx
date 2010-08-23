@@ -106,7 +106,7 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
     
     it "should call indexer for the delta index" do
       Person.sphinx_indexes.first.delta_object.should_receive(:`).with(
-        "#{ThinkingSphinx::Configuration.instance.bin_path}indexer --config '#{ThinkingSphinx::Configuration.instance.config_file}' --rotate person_delta"
+        "#{ThinkingSphinx::Configuration.instance.bin_path}indexer --config \"#{ThinkingSphinx::Configuration.instance.config_file}\" --rotate person_delta"
       )
       
       @person.send(:index_delta)

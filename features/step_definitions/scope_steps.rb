@@ -13,3 +13,7 @@ end
 When /^I am retrieving the scoped result count$/ do
   @results = results.search_count
 end
+
+When /^I am retrieving the scoped result count for "([^"]*)"$/ do |query|
+  @results = results.search_count query
+end

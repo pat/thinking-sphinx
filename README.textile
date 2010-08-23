@@ -177,3 +177,9 @@ Since I first released this library, there's been quite a few people who have su
 * James Brooks
 * Andrew Coldham
 * Mark Dodwell
+* Frédéric Malamitsas
+* Jon Gubman
+* Michael Schuerig
+* Ben Hutton
+* Alfonso Jiménez
+* Szymon Nowak

@@ -57,6 +57,22 @@ module ThinkingSphinx
       ThinkingSphinx.facets *args
     end
     
+    def self.bundle_searches(enum)
+      client = ThinkingSphinx::Configuration.instance.client
+      
+      searches = enum.collect { |item|
+        search = yield ThinkingSphinx, item
+        search.append_to client
+        search
+      }
+      
+      client.run.each_with_index.collect { |results, index|
+        searches[index].populate_from_queue results
+      }
+      
+      searches
+    end
+    
     def self.matching_fields(fields, bitmask)
       matches   = []
       bitstring = bitmask.to_s(2).rjust(32, '0').reverse
@@ -111,6 +127,7 @@ module ThinkingSphinx
         add_scope(method, *args, &block)
         return self
       elsif method == :search_count
+        merge_search one_class.search(*args)
         return scoped_count
       elsif method.to_s[/^each_with_.*/].nil? && !@array.respond_to?(method)
         super
@@ -186,6 +203,17 @@ module ThinkingSphinx
     # Compatibility with older versions of will_paginate
     alias_method :page_count, :total_pages
     
+    # Query time taken
+    # 
+    # @return [Integer]
+    #
+    def query_time
+      populate
+      return 0 if @results[:time].nil?
+
+      @query_time ||= @results[:time]
+    end
+
     # The total number of search results available.
     # 
     # @return [Integer]
@@ -232,6 +260,13 @@ module ThinkingSphinx
       end
     end
     
+    def each_with_match(&block)
+      populate
+      results[:matches].each_with_index do |match, index|
+        yield self[index], match
+      end
+    end
+    
     def excerpt_for(string, model = nil)
       if model.nil? && one_class
         model ||= one_class
@@ -241,7 +276,7 @@ module ThinkingSphinx
       client.excerpts(
         :docs   => [string],
         :words  => results[:words].keys.join(' '),
-        :index  => "#{model.source_of_sphinx_index.sphinx_name}_core"
+        :index  => options[:index] || "#{model.source_of_sphinx_index.sphinx_name}_core"
       ).first
     end
     
@@ -249,6 +284,29 @@ module ThinkingSphinx
       add_default_scope
       merge_search ThinkingSphinx::Search.new(*args)
       self
+    end
+    
+    def append_to(client)
+      prepare client
+      client.append_query query, indexes, comment
+      client.reset
+    end
+    
+    def populate_from_queue(results)
+      return if @populated
+      @populated = true
+      @results   = results
+      
+      if options[:ids_only]
+        replace @results[:matches].collect { |match|
+          match[:attributes]["sphinx_internal_id"]
+        }
+      else
+        replace instances_from_matches
+        add_excerpter
+        add_sphinx_attributes
+        add_matching_fields if client.rank_mode == :fieldmask
+      end
     end
     
     private
@@ -289,43 +347,32 @@ module ThinkingSphinx
     
     def add_excerpter
       each do |object|
-        next if object.respond_to?(:excerpts)
+        next if object.nil?
         
-        excerpter = ThinkingSphinx::Excerpter.new self, object
-        block = lambda { excerpter }
-        
-        object.singleton_class.instance_eval do
-          define_method(:excerpts, &block)
-        end
+        object.excerpts = ThinkingSphinx::Excerpter.new self, object
       end
     end
     
     def add_sphinx_attributes
       each do |object|
-        next if object.nil? || object.respond_to?(:sphinx_attributes)
+        next if object.nil?
         
         match = match_hash object
         next if match.nil?
         
-        object.singleton_class.instance_eval do
-          define_method(:sphinx_attributes) { match[:attributes] }
-        end
+        object.sphinx_attributes = match[:attributes]
       end
     end
     
     def add_matching_fields
       each do |object|
-        next if object.nil? || object.respond_to?(:matching_fields)
+        next if object.nil?
         
         match = match_hash object
         next if match.nil?
-        fields = ThinkingSphinx::Search.matching_fields(
+        object.matching_fields = ThinkingSphinx::Search.matching_fields(
           @results[:fields], match[:weight]
         )
-        
-        object.singleton_class.instance_eval do
-          define_method(:matching_fields) { fields }
-        end
       end
     end
     
@@ -352,6 +399,10 @@ module ThinkingSphinx
     def client
       client = config.client
       
+      prepare client
+    end
+    
+    def prepare(client)
       index_options = one_class ?
         one_class.sphinx_indexes.first.local_options : {}
       
@@ -588,14 +639,6 @@ MSG
     end
     
     # When passed a Time instance, returns the integer timestamp.
-    # 
-    # If using Rails 2.1+, need to handle timezones to translate them back to
-    # UTC, as that's what datetimes will be stored as by MySQL.
-    # 
-    # in_time_zone is a method that was added for the timezone support in
-    # Rails 2.1, which is why it's used for testing. I'm sure there's better
-    # ways, but this does the job.
-    # 
     def filter_value(value)
       case value
       when Range
@@ -603,7 +646,7 @@ MSG
       when Array
         value.collect { |v| filter_value(v) }.flatten
       when Time
-        value.respond_to?(:in_time_zone) ? [value.utc.to_i] : [value.to_i]
+        [value.to_i]
       when NilClass
         0
       else

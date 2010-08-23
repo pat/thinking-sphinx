@@ -135,6 +135,10 @@ describe ThinkingSphinx::SearchMethods do
   end
   
   describe '.facets' do
+    before :each do
+      ThinkingSphinx::Search.stub!(:bundle_searches => [])
+    end
+    
     it "should return a FacetSearch instance" do
       Alpha.facets.should be_a(ThinkingSphinx::FacetSearch)
     end

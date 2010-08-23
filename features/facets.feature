@@ -27,7 +27,7 @@ Feature: Search and browse models by their defined facets
     And I should have the facet State
     And I should have the facet Age
   
-  Scenario: Requseting float facets
+  Scenario: Requesting float facets
     Given Sphinx is running
     And I am searching on alphas
     When I am requesting facet results
@@ -80,3 +80,11 @@ Feature: Search and browse models by their defined facets
     And I am searching on posts
     When I am requesting facet results
     Then the Comment Ids facet should have 9 keys
+  
+  Scenario: Requesting facets from a subclass
+    Given Sphinx is running
+    And I am searching on animals
+    When I am requesting facet results
+    And I want classes included
+    Then I should have the facet Class
+  
