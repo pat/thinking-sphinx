@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{thinking-sphinx}
-  s.version = "2.0.0.rc1"
+  s.version = "2.0.0.rc2"
 
   s.required_rubygems_version = Gem::Requirement.new("> 1.3.1") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pat Allan"]
-  s.date = %q{2010-07-02}
+  s.date = %q{2010-08-23}
   s.description = %q{A concise and easy-to-use Ruby library that connects ActiveRecord to the Sphinx search daemon, managing configuration, indexing and searching.}
   s.email = %q{pat@freelancing-gods.com}
   s.extra_rdoc_files = [
@@ -190,33 +190,15 @@ http://freelancing-god.github.com/ts/en/upgrading.html
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<activerecord>, [">= 3.0.0.beta3"])
-      s.add_runtime_dependency(%q<riddle>, [">= 1.0.10"])
-      s.add_development_dependency(%q<yard>, [">= 0"])
-      s.add_development_dependency(%q<rspec>, [">= 1.2.9"])
-      s.add_development_dependency(%q<cucumber>, [">= 0"])
-      s.add_development_dependency(%q<will_paginate>, ["= 3.0.pre"])
-      s.add_development_dependency(%q<ginger>, ["= 1.2.0"])
-      s.add_development_dependency(%q<faker>, ["= 0.3.1"])
+      s.add_runtime_dependency(%q<activerecord>, [">= 3.0.0.rc"])
+      s.add_runtime_dependency(%q<riddle>, [">= 1.0.12"])
     else
-      s.add_dependency(%q<activerecord>, [">= 3.0.0.beta3"])
-      s.add_dependency(%q<riddle>, [">= 1.0.10"])
-      s.add_dependency(%q<yard>, [">= 0"])
-      s.add_dependency(%q<rspec>, [">= 1.2.9"])
-      s.add_dependency(%q<cucumber>, [">= 0"])
-      s.add_dependency(%q<will_paginate>, ["= 3.0.pre"])
-      s.add_dependency(%q<ginger>, ["= 1.2.0"])
-      s.add_dependency(%q<faker>, ["= 0.3.1"])
+      s.add_dependency(%q<activerecord>, [">= 3.0.0.rc"])
+      s.add_dependency(%q<riddle>, [">= 1.0.12"])
     end
   else
-    s.add_dependency(%q<activerecord>, [">= 3.0.0.beta3"])
-    s.add_dependency(%q<riddle>, [">= 1.0.10"])
-    s.add_dependency(%q<yard>, [">= 0"])
-    s.add_dependency(%q<rspec>, [">= 1.2.9"])
-    s.add_dependency(%q<cucumber>, [">= 0"])
-    s.add_dependency(%q<will_paginate>, ["= 3.0.pre"])
-    s.add_dependency(%q<ginger>, ["= 1.2.0"])
-    s.add_dependency(%q<faker>, ["= 0.3.1"])
+    s.add_dependency(%q<activerecord>, [">= 3.0.0.rc"])
+    s.add_dependency(%q<riddle>, [">= 1.0.12"])
   end
 end
 

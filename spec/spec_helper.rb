@@ -3,29 +3,20 @@ Dir[File.join(File.dirname(__FILE__), '../vendor/*/lib')].each do |path|
   $:.unshift path
 end
 
-require 'rubygems'
 require 'fileutils'
-require 'ginger'
-require 'jeweler'
-require "rspec"
+require 'logger'
+require 'bundler'
+
+Bundler.require :default
 
 require "#{File.dirname(__FILE__)}/../lib/thinking_sphinx"
-
-require 'will_paginate'
-
 require "#{File.dirname(__FILE__)}/sphinx_helper"
 
 ActiveRecord::Base.logger = Logger.new(StringIO.new)
 
-Rspec.configure do |config|
+RSpec.configure do |config|
   %w( tmp tmp/config tmp/log tmp/db ).each do |path|
     FileUtils.mkdir_p "#{Dir.pwd}/#{path}"
-  end
-  
-  module ::Rails
-    def self.root
-      "#{Dir.pwd}/tmp"
-    end
   end
   
   sphinx = SphinxHelper.new

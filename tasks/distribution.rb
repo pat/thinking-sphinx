@@ -28,15 +28,8 @@ Jeweler::Tasks.new do |gem|
     "spec/**/*_spec.rb"
   ]
   
-  gem.add_dependency 'activerecord', '>= 3.0.0.beta3'
-  gem.add_dependency 'riddle',       '>= 1.0.10'
-  
-  gem.add_development_dependency "yard",          ">= 0"
-  gem.add_development_dependency "rspec",         ">= 1.2.9"
-  gem.add_development_dependency "cucumber",      ">= 0"
-  gem.add_development_dependency "will_paginate", "3.0.pre"
-  gem.add_development_dependency "ginger",        "1.2.0"
-  gem.add_development_dependency "faker",         "0.3.1"
+  gem.add_dependency 'activerecord', '>= 3.0.0.rc'
+  gem.add_dependency 'riddle',       '>= 1.0.12'
   
   gem.post_install_message = <<-MESSAGE
 If you're upgrading, you should read this:

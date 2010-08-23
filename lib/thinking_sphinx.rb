@@ -27,7 +27,7 @@ require 'thinking_sphinx/adapters/abstract_adapter'
 require 'thinking_sphinx/adapters/mysql_adapter'
 require 'thinking_sphinx/adapters/postgresql_adapter'
 
-require 'thinking_sphinx/railtie'
+require 'thinking_sphinx/railtie' if defined?(Rails)
 
 module ThinkingSphinx
   # A ConnectionError will get thrown when a connection to Sphinx can't be
