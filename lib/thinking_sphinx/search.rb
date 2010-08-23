@@ -346,43 +346,32 @@ module ThinkingSphinx
     
     def add_excerpter
       each do |object|
-        next if object.respond_to?(:excerpts)
+        next if object.nil?
         
-        excerpter = ThinkingSphinx::Excerpter.new self, object
-        block = lambda { excerpter }
-        
-        object.singleton_class.instance_eval do
-          define_method(:excerpts, &block)
-        end
+        object.excerpts = ThinkingSphinx::Excerpter.new self, object
       end
     end
     
     def add_sphinx_attributes
       each do |object|
-        next if object.nil? || object.respond_to?(:sphinx_attributes)
+        next if object.nil?
         
         match = match_hash object
         next if match.nil?
         
-        object.singleton_class.instance_eval do
-          define_method(:sphinx_attributes) { match[:attributes] }
-        end
+        object.sphinx_attributes = match[:attributes]
       end
     end
     
     def add_matching_fields
       each do |object|
-        next if object.nil? || object.respond_to?(:matching_fields)
+        next if object.nil?
         
         match = match_hash object
         next if match.nil?
-        fields = ThinkingSphinx::Search.matching_fields(
+        object.matching_fields = ThinkingSphinx::Search.matching_fields(
           @results[:fields], match[:weight]
         )
-        
-        object.singleton_class.instance_eval do
-          define_method(:matching_fields) { fields }
-        end
       end
     end
     

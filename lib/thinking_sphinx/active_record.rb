@@ -322,6 +322,10 @@ module ThinkingSphinx
       end
     end
     
+    attr_accessor :excerpts
+    attr_accessor :sphinx_attributes
+    attr_accessor :matching_fields
+    
     def in_index?(suffix)
       self.class.search_for_id self.sphinx_document_id, sphinx_index_name(suffix)
     end
