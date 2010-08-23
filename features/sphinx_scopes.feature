@@ -40,3 +40,11 @@ Feature: Sphinx Scopes
     When I use the with_first_name scope set to "Andrew"
     And I am retrieving the scoped result count
     Then I should get a value of 7
+
+  Scenario: Counts with scopes and additional query terms
+    Given Sphinx is running
+    And I am searching on people
+    When I use the with_first_name scope set to "Andrew"
+    And I am retrieving the scoped result count for "Byrne"
+    Then I should get a value of 1
+  
