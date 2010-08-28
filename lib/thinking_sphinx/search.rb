@@ -57,20 +57,16 @@ module ThinkingSphinx
       ThinkingSphinx.facets *args
     end
     
-    def self.bundle_searches(enum)
-      client = ThinkingSphinx::Configuration.instance.client
+    def self.bundle_searches(enum = nil)
+      bundle = ThinkingSphinx::BundledSearch.new
       
-      searches = enum.collect { |item|
-        search = yield ThinkingSphinx, item
-        search.append_to client
-        search
-      }
+      if enum.nil?
+        yield bundle
+      else
+        enum.each { |item| yield bundle, item }
+      end
       
-      client.run.each_with_index.collect { |results, index|
-        searches[index].populate_from_queue results
-      }
-      
-      searches
+      bundle.searches
     end
     
     def self.matching_fields(fields, bitmask)
