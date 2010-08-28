@@ -529,6 +529,8 @@ module Riddle
           self.connection.call(self)
         elsif self.class.connection
           self.class.connection.call(self)
+        elsif @server.index('/') == 0
+          UNIXSocket.new @server
         else
           TCPSocket.new @server, @port
         end
