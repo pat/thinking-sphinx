@@ -5,6 +5,7 @@ require 'riddle/client/response'
 module Riddle
   class VersionError < StandardError;  end
   class ResponseError < StandardError; end
+  class OutOfBoundsError < StandardError; end
   
   # This class was heavily based on the existing Client API by Dmytro Shteflyuk
   # and Alexy Kovyrin. Their code worked fine, I just wanted something a bit
@@ -600,7 +601,9 @@ module Riddle
         puts response[4, length]
         response[4 + length, response.length - 4 - length]
       when Statuses[:error], Statuses[:retry]
-        raise ResponseError, "searchd error (status: #{status}): #{response[4, response.length - 4]}"
+        message = response[4, response.length - 4]
+        klass = message[/out of bounds/] ? OutOfBoundsError : ResponseError
+        raise klass, "searchd error (status: #{status}): #{message}"
       else
         raise ResponseError, "Unknown searchd error (status: #{status})"
       end
