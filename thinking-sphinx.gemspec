@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{thinking-sphinx}
-  s.version = "1.3.19"
+  s.version = "1.3.20"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pat Allan"]
-  s.date = %q{2010-08-23}
+  s.date = %q{2010-09-03}
   s.description = %q{A concise and easy-to-use Ruby library that connects ActiveRecord to the Sphinx search daemon, managing configuration, indexing and searching.}
   s.email = %q{pat@freelancing-gods.com}
   s.extra_rdoc_files = [
@@ -34,6 +34,7 @@ Gem::Specification.new do |s|
      "lib/thinking_sphinx/association.rb",
      "lib/thinking_sphinx/attribute.rb",
      "lib/thinking_sphinx/auto_version.rb",
+     "lib/thinking_sphinx/bundled_search.rb",
      "lib/thinking_sphinx/class_facet.rb",
      "lib/thinking_sphinx/configuration.rb",
      "lib/thinking_sphinx/context.rb",
@@ -193,7 +194,7 @@ http://freelancing-god.github.com/ts/en/upgrading.html
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<activerecord>, [">= 1.15.6"])
+      s.add_runtime_dependency(%q<activerecord>, [">= 1.15.6", "< 3.0.0"])
       s.add_runtime_dependency(%q<riddle>, [">= 1.0.10"])
       s.add_runtime_dependency(%q<after_commit>, [">= 1.0.6"])
       s.add_development_dependency(%q<yard>, [">= 0"])
@@ -203,7 +204,7 @@ http://freelancing-god.github.com/ts/en/upgrading.html
       s.add_development_dependency(%q<ginger>, ["= 1.2.0"])
       s.add_development_dependency(%q<faker>, ["= 0.3.1"])
     else
-      s.add_dependency(%q<activerecord>, [">= 1.15.6"])
+      s.add_dependency(%q<activerecord>, [">= 1.15.6", "< 3.0.0"])
       s.add_dependency(%q<riddle>, [">= 1.0.10"])
       s.add_dependency(%q<after_commit>, [">= 1.0.6"])
       s.add_dependency(%q<yard>, [">= 0"])
@@ -214,7 +215,7 @@ http://freelancing-god.github.com/ts/en/upgrading.html
       s.add_dependency(%q<faker>, ["= 0.3.1"])
     end
   else
-    s.add_dependency(%q<activerecord>, [">= 1.15.6"])
+    s.add_dependency(%q<activerecord>, [">= 1.15.6", "< 3.0.0"])
     s.add_dependency(%q<riddle>, [">= 1.0.10"])
     s.add_dependency(%q<after_commit>, [">= 1.0.6"])
     s.add_dependency(%q<yard>, [">= 0"])

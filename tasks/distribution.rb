@@ -29,7 +29,7 @@ Jeweler::Tasks.new do |gem|
     "spec/**/*_spec.rb"
   ]
   
-  gem.add_dependency 'activerecord', '>= 1.15.6'
+  gem.add_dependency 'activerecord', '>= 1.15.6', '< 3.0.0'
   gem.add_dependency 'riddle',       '>= 1.0.10'
   gem.add_dependency 'after_commit', '>= 1.0.6'
   
