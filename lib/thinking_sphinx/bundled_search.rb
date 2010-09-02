@@ -11,6 +11,11 @@ module ThinkingSphinx
       @searches.last.append_to client
     end
     
+    def search_for_ids(*args)
+      @searches << ThinkingSphinx.search_for_ids(*args)
+      @searches.last.append_to client
+    end
+    
     def searches
       populate
       @searches
