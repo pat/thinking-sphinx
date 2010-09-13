@@ -53,8 +53,9 @@ describe ThinkingSphinx::Context do
 
     it "should catch database errors with a warning" do
       @class_name.should_receive(:constantize).and_raise(Mysql::Error)
-      STDERR.should_receive(:puts).with('Warning: Error loading a.rb')
-
+      STDERR.stub!(:puts => '')
+      STDERR.should_receive(:puts).with('Warning: Error loading a.rb:')
+      
       lambda {
         @context.prepare
       }.should_not raise_error
