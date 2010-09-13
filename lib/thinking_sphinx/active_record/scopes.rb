@@ -53,6 +53,13 @@ module ThinkingSphinx
               
               ThinkingSphinx::Search.new(options)
             end
+            
+            define_method("#{method}_without_default".to_sym) do |*args|
+              options = {:classes => classes_option, :ignore_default => true}
+              options.merge! block.call(*args)
+              
+              ThinkingSphinx::Search.new(options)
+            end
           end
         end
 

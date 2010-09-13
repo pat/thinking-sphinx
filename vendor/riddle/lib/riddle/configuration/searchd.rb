@@ -6,7 +6,9 @@ module Riddle
         :seamless_rotate, :preopen_indexes, :unlink_old, :attr_flush_period,
         :ondisk_dict_default, :max_packet_size, :mva_updates_pool,
         :crash_log_path, :max_filters, :max_filter_values, :listen_backlog,
-        :read_buffer, :read_unhinted]
+        :read_buffer, :read_unhinted, :max_batch_queries, :subtree_docs_cache,
+        :subtree_hits_cache, :workers, :dist_threads, :binlog_path,
+        :binlog_flush, :binlog_max_log_size]
       
       attr_accessor *self.settings
             

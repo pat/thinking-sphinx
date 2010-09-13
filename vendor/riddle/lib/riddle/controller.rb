@@ -45,10 +45,12 @@ module Riddle
     end
     
     def stop
-      return unless running?
+      return true unless running?
       Process.kill('SIGTERM', pid.to_i)
     rescue Errno::EINVAL
       Process.kill('SIGKILL', pid.to_i)
+    ensure
+      return !running?
     end
     
     def pid
