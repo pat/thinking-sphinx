@@ -86,6 +86,8 @@ module ThinkingSphinx
       @options  = args.extract_options!
       @args     = args
       
+      add_default_scope unless options[:ignore_default]
+      
       populate if @options[:populate]
     end
     
@@ -277,7 +279,7 @@ module ThinkingSphinx
     end
     
     def search(*args)
-      add_default_scope
+      args << args.extract_options!.merge(:ignore_default => true)
       merge_search ThinkingSphinx::Search.new(*args)
       self
     end
@@ -786,10 +788,12 @@ MSG
     
     # Adds the default_sphinx_scope if set.
     def add_default_scope
-      add_scope(one_class.get_default_sphinx_scope) if one_class && one_class.has_default_sphinx_scope?
+      return unless one_class && one_class.has_default_sphinx_scope?
+      add_scope(one_class.get_default_sphinx_scope.to_sym)
     end
     
     def add_scope(method, *args, &block)
+      method = "#{method}_without_default".to_sym
       merge_search one_class.send(method, *args, &block)
     end
     
