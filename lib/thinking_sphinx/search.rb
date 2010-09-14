@@ -284,6 +284,12 @@ module ThinkingSphinx
       self
     end
     
+    def client
+      client = options[:client] || config.client
+      
+      prepare client
+    end
+    
     def append_to(client)
       prepare client
       client.append_query query, indexes, comment
@@ -392,12 +398,6 @@ module ThinkingSphinx
     
     def log(*args)
       self.class.log(*args)
-    end
-    
-    def client
-      client = config.client
-      
-      prepare client
     end
     
     def prepare(client)

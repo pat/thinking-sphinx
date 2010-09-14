@@ -1202,6 +1202,19 @@ describe ThinkingSphinx::Search do
       @search.freeze.should be_a(ThinkingSphinx::Search)
     end
   end
+  
+  describe '#client' do
+    let(:client) { Riddle::Client.new }
+    it "should respect the client in options" do
+      search = ThinkingSphinx::Search.new :client => client
+      search.client.should == client
+    end
+    
+    it "should get a new client from the configuration singleton by default" do
+      ThinkingSphinx::Configuration.instance.stub!(:client => client)
+      ThinkingSphinx::Search.new.client.should == client
+    end
+  end
 end
 
 describe ThinkingSphinx::Search, "playing nice with Search model" do
