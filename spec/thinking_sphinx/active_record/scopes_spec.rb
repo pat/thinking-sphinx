@@ -87,10 +87,9 @@ describe ThinkingSphinx::ActiveRecord::Scopes do
       search.by_foo('foo').search.options[:conditions].should == {:foo => 'foo', :name => 'foo'}
     end
 
-    # FIXME: Probably the other way around is more logical? How to do this?
-    it "should apply the default scope options after other scope options to the underlying search object" do
+    it "should apply the default scope options before other scope options to the underlying search object" do
       search = ThinkingSphinx::Search.new(:classes => [Alpha])
-      search.by_name('bar').search.options[:conditions].should == {:name => 'foo'}
+      search.by_name('bar').search.options[:conditions].should == {:name => 'bar'}
     end
   end
 
