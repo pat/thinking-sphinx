@@ -28,9 +28,6 @@ Jeweler::Tasks.new do |gem|
     "spec/**/*_spec.rb"
   ]
   
-  gem.add_dependency 'activerecord', '>= 3.0.0.rc'
-  gem.add_dependency 'riddle',       '>= 1.0.12'
-  
   gem.post_install_message = <<-MESSAGE
 If you're upgrading, you should read this:
 http://freelancing-god.github.com/ts/en/upgrading.html
