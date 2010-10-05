@@ -234,9 +234,12 @@ module ThinkingSphinx
       @controller.indexer_binary_name = name
     end
     
+    attr_accessor :timeout
+
     def client
       client = Riddle::Client.new address, port
       client.max_matches = configuration.searchd.max_matches || 1000
+      client.timeout = timeout || 0
       client
     end
     
