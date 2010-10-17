@@ -7,7 +7,7 @@ Feature: Searching across multiple model
     Given Sphinx is running
     When I search for James
     And I am retrieving the result count
-    Then I should get a value of 3
+    Then I should get a value of 6
   
   Scenario: Confirming existance of a document id in a given index
     Given Sphinx is running
