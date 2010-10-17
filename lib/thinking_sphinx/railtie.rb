@@ -5,8 +5,8 @@ module ThinkingSphinx
   class Railtie < Rails::Railtie
 
     initializer "thinking_sphinx.active_record" do
-      if defined?(ActiveRecord)
-        ::ActiveRecord::Base.send(:include, ThinkingSphinx::ActiveRecord)
+      ActiveSupport.on_load :active_record do
+        include ThinkingSphinx::ActiveRecord
       end
     end
 
