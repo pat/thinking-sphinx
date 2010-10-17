@@ -7,10 +7,12 @@ require 'fileutils'
 require 'logger'
 require 'bundler'
 
-Bundler.require :default
+Bundler.require :default, :development
 
 require "#{File.dirname(__FILE__)}/../lib/thinking_sphinx"
 require "#{File.dirname(__FILE__)}/sphinx_helper"
+
+Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 ActiveRecord::Base.logger = Logger.new(StringIO.new)
 

@@ -107,6 +107,8 @@ describe ThinkingSphinx::Configuration do
         config.app_root = "/here/somewhere"
       end
       ThinkingSphinx::Configuration.instance.app_root.should == "/here/somewhere"
+      
+      ThinkingSphinx::Configuration.instance.reset
     end
   end
 
@@ -123,9 +125,9 @@ describe ThinkingSphinx::Configuration do
       }
 
       open("#{Rails.root}/config/sphinx.yml", "w") do |f|
-        f.write  YAML.dump(@settings)
+        f.write YAML.dump(@settings)
       end
-
+      
       ThinkingSphinx::Configuration.instance.send(:parse_config)
       ThinkingSphinx::Configuration.instance.bin_path.should match(/\/$/)
 
