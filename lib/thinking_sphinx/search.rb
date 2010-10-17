@@ -390,9 +390,16 @@ module ThinkingSphinx
     
     def self.log(message, method = :debug, identifier = 'Sphinx')
       return if ::ActiveRecord::Base.logger.nil?
-      identifier_color, message_color = "4;32;1", "0" # 0;1 = Bold
-      info = "  \e[#{identifier_color}m#{identifier}\e[0m   "
-      info << "\e[#{message_color}m#{message}\e[0m"
+      
+      info = ''
+      if ::ActiveRecord::Base.colorize_logging
+        identifier_color, message_color = "4;32;1", "0" # 0;1 = Bold
+        info << "  \e[#{identifier_color}m#{identifier}\e[0m   "
+        info << "\e[#{message_color}m#{message}\e[0m"
+      else
+        info = "#{identifier}   #{message}"
+      end
+      
       ::ActiveRecord::Base.logger.send method, info
     end
     
