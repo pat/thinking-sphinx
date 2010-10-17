@@ -110,29 +110,6 @@ describe ThinkingSphinx::Association do
     end
   end
   
-  describe '#to_sql' do
-    before :each do
-      @reflection = stub('reflection', :klass => Person)
-      @association = ThinkingSphinx::Association.new(nil, @reflection)
-      @parent = stub('parent', :aliased_table_name => "ALIAS TABLE NAME")
-      @join = stub('join assoc',
-        :to_sql => "full association join SQL",
-        :parent => @parent
-      )
-      @association.join = @join
-    end
-    
-    it "should return the join's association join value" do
-      @association.to_sql.should == "full association join SQL"
-    end
-    
-    it "should replace ::ts_join_alias:: with the aliased table name" do
-      @join.stub!(:to_sql => "text with ::ts_join_alias:: gone")
-      
-      @association.to_sql.should == "text with `ALIAS TABLE NAME` gone"
-    end
-  end
-  
   describe '#is_many?' do
     before :each do
       @parent = stub('assoc', :is_many? => :parent_is_many)

@@ -63,14 +63,13 @@ module ThinkingSphinx
       )
     end
     
-    # Returns the association's join SQL statements - and it replaces
-    # ::ts_join_alias:: with the aliased table name so the generated reflection
-    # join conditions avoid column name collisions.
-    # 
-    def to_sql
-      @join.to_sql.gsub(/::ts_join_alias::/,
+    def arel_join
+      arel_join = @join.with_join_class(Arel::OuterJoin)
+      arel_join.options[:conditions].gsub!(/::ts_join_alias::/,
         "#{@reflection.klass.connection.quote_table_name(@join.parent.aliased_table_name)}"
-      )
+      ) unless arel_join.options[:conditions].nil?
+      
+      arel_join
     end
     
     # Returns true if the association - or a parent - is a has_many or

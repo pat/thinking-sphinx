@@ -20,7 +20,7 @@ module ThinkingSphinx
         )
 
         all_associations.each do |assoc|
-          relation = relation.joins(assoc.join.with_join_class(Arel::OuterJoin))
+          relation = relation.joins(assoc.arel_join)
         end
 
         relation = relation.where(sql_where_clause(options))
