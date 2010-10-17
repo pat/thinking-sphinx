@@ -188,7 +188,7 @@ describe ThinkingSphinx::Configuration do
       config.source_options.delete option.to_sym
     end
     
-    config.source_options[:sql_query_pre] = nil  
+    config.source_options[:sql_query_pre] = []  
   end
   
   it "should not blow away delta or utf options if sql pre is specified in config" do
@@ -202,7 +202,7 @@ describe ThinkingSphinx::Configuration do
     file.should match(/sql_query_pre = a pre query\n\s*sql_query_pre = UPDATE `\w+` SET `delta` = 0 WHERE `delta` = 1/im)
     file.should match(/sql_query_pre = a pre query\n\s*sql_query_pre = \n/im)
     
-    config.source_options[:sql_query_pre] = nil
+    config.source_options[:sql_query_pre] = []
   end
 
   it "should set any explicit prefixed or infixed fields" do
