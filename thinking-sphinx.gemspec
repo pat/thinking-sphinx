@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new("> 1.3.1") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pat Allan"]
-  s.date = %q{2010-09-20}
+  s.date = %q{2010-10-19}
   s.description = %q{A concise and easy-to-use Ruby library that connects ActiveRecord to the Sphinx search daemon, managing configuration, indexing and searching.}
   s.email = %q{pat@freelancing-gods.com}
   s.extra_rdoc_files = [
@@ -191,48 +191,54 @@ http://freelancing-god.github.com/ts/en/upgrading.html
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<activerecord>, [">= 3.0.0.rc"])
+      s.add_runtime_dependency(%q<activerecord>, [">= 3.0.0"])
       s.add_runtime_dependency(%q<riddle>, [">= 1.0.12"])
       s.add_development_dependency(%q<mysql>, ["= 2.8.1"])
-      s.add_development_dependency(%q<jeweler>, ["= 1.4.0"])
+      s.add_development_dependency(%q<pg>, ["= 0.9.0"])
+      s.add_development_dependency(%q<jeweler>, ["= 1.5.0.pre3"])
       s.add_development_dependency(%q<yard>, ["= 0.5.4"])
-      s.add_development_dependency(%q<rspec>, ["= 2.0.0.beta.19"])
-      s.add_development_dependency(%q<rspec-core>, ["= 2.0.0.beta.19"])
-      s.add_development_dependency(%q<rspec-expectations>, ["= 2.0.0.beta.19"])
-      s.add_development_dependency(%q<rspec-mocks>, ["= 2.0.0.beta.19"])
+      s.add_development_dependency(%q<rspec>, ["= 2.0.0.beta.22"])
+      s.add_development_dependency(%q<rspec-core>, ["= 2.0.0.beta.22"])
+      s.add_development_dependency(%q<rspec-expectations>, ["= 2.0.0.beta.22"])
+      s.add_development_dependency(%q<rspec-mocks>, ["= 2.0.0.beta.22"])
       s.add_development_dependency(%q<cucumber>, ["= 0.8.5"])
       s.add_development_dependency(%q<will_paginate>, ["= 3.0.pre"])
       s.add_development_dependency(%q<ginger>, ["= 1.2.0"])
       s.add_development_dependency(%q<faker>, ["= 0.3.1"])
+      s.add_development_dependency(%q<json_pure>, ["= 1.4.3"])
     else
-      s.add_dependency(%q<activerecord>, [">= 3.0.0.rc"])
+      s.add_dependency(%q<activerecord>, [">= 3.0.0"])
       s.add_dependency(%q<riddle>, [">= 1.0.12"])
       s.add_dependency(%q<mysql>, ["= 2.8.1"])
-      s.add_dependency(%q<jeweler>, ["= 1.4.0"])
+      s.add_dependency(%q<pg>, ["= 0.9.0"])
+      s.add_dependency(%q<jeweler>, ["= 1.5.0.pre3"])
       s.add_dependency(%q<yard>, ["= 0.5.4"])
-      s.add_dependency(%q<rspec>, ["= 2.0.0.beta.19"])
-      s.add_dependency(%q<rspec-core>, ["= 2.0.0.beta.19"])
-      s.add_dependency(%q<rspec-expectations>, ["= 2.0.0.beta.19"])
-      s.add_dependency(%q<rspec-mocks>, ["= 2.0.0.beta.19"])
+      s.add_dependency(%q<rspec>, ["= 2.0.0.beta.22"])
+      s.add_dependency(%q<rspec-core>, ["= 2.0.0.beta.22"])
+      s.add_dependency(%q<rspec-expectations>, ["= 2.0.0.beta.22"])
+      s.add_dependency(%q<rspec-mocks>, ["= 2.0.0.beta.22"])
       s.add_dependency(%q<cucumber>, ["= 0.8.5"])
       s.add_dependency(%q<will_paginate>, ["= 3.0.pre"])
       s.add_dependency(%q<ginger>, ["= 1.2.0"])
       s.add_dependency(%q<faker>, ["= 0.3.1"])
+      s.add_dependency(%q<json_pure>, ["= 1.4.3"])
     end
   else
-    s.add_dependency(%q<activerecord>, [">= 3.0.0.rc"])
+    s.add_dependency(%q<activerecord>, [">= 3.0.0"])
     s.add_dependency(%q<riddle>, [">= 1.0.12"])
     s.add_dependency(%q<mysql>, ["= 2.8.1"])
-    s.add_dependency(%q<jeweler>, ["= 1.4.0"])
+    s.add_dependency(%q<pg>, ["= 0.9.0"])
+    s.add_dependency(%q<jeweler>, ["= 1.5.0.pre3"])
     s.add_dependency(%q<yard>, ["= 0.5.4"])
-    s.add_dependency(%q<rspec>, ["= 2.0.0.beta.19"])
-    s.add_dependency(%q<rspec-core>, ["= 2.0.0.beta.19"])
-    s.add_dependency(%q<rspec-expectations>, ["= 2.0.0.beta.19"])
-    s.add_dependency(%q<rspec-mocks>, ["= 2.0.0.beta.19"])
+    s.add_dependency(%q<rspec>, ["= 2.0.0.beta.22"])
+    s.add_dependency(%q<rspec-core>, ["= 2.0.0.beta.22"])
+    s.add_dependency(%q<rspec-expectations>, ["= 2.0.0.beta.22"])
+    s.add_dependency(%q<rspec-mocks>, ["= 2.0.0.beta.22"])
     s.add_dependency(%q<cucumber>, ["= 0.8.5"])
     s.add_dependency(%q<will_paginate>, ["= 3.0.pre"])
     s.add_dependency(%q<ginger>, ["= 1.2.0"])
     s.add_dependency(%q<faker>, ["= 0.3.1"])
+    s.add_dependency(%q<json_pure>, ["= 1.4.3"])
   end
 end
 
