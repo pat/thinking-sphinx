@@ -392,7 +392,7 @@ module ThinkingSphinx
       return if ::ActiveRecord::Base.logger.nil?
       
       info = ''
-      if ::Rails::LogSubscriber.colorize_logging
+      if ::ActiveRecord::LogSubscriber.colorize_logging
         identifier_color, message_color = "4;32;1", "0" # 0;1 = Bold
         info << "  \e[#{identifier_color}m#{identifier}\e[0m   "
         info << "\e[#{message_color}m#{message}\e[0m"
