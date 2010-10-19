@@ -8,28 +8,17 @@ describe ThinkingSphinx::Configuration do
       ENV["RAILS_ENV"] = nil
     end
 
-    it "should use the Merb environment value if set" do
-      unless defined?(Merb)
-        module ::Merb; end
-      end
-
-      ThinkingSphinx::Configuration.stub!(:defined? => true)
-      Merb.stub!(:environment => "merb_production")
-      ThinkingSphinx::Configuration.environment.should == "merb_production"
-
-      Object.send :remove_const, :Merb
-    end
-    
-    it "should use RAILS_ENV if set" do
-      RAILS_ENV = 'global_rails'
+    it "should use Rails.env if set" do
+      was = Rails.env
+      Rails.env = 'global_rails'
       
       ThinkingSphinx::Configuration.environment.should == 'global_rails'
       
-      Object.send :remove_const, :RAILS_ENV
+      Rails.env = was
     end
 
     it "should use the Rails environment value if set" do
-      ENV["RAILS_ENV"] = "rails_production"
+      Rails.stub!(:env => "rails_production")
       ThinkingSphinx::Configuration.environment.should == "rails_production"
     end
 
@@ -45,14 +34,14 @@ describe ThinkingSphinx::Configuration do
     end
     
     it "should use the given version from sphinx.yml if there is one" do
-      open("#{RAILS_ROOT}/config/sphinx.yml", "w") do |f|
+      open("#{Rails.root}/config/sphinx.yml", "w") do |f|
         f.write  YAML.dump({'development' => {'version' => '0.9.7'}})
       end
       @config.reset
       
       @config.version.should == '0.9.7'
       
-      FileUtils.rm "#{RAILS_ROOT}/config/sphinx.yml"
+      FileUtils.rm "#{Rails.root}/config/sphinx.yml"
     end
     
     it "should detect the version from Riddle otherwise" do
@@ -92,7 +81,7 @@ describe ThinkingSphinx::Configuration do
         }
       }
 
-      open("#{RAILS_ROOT}/config/sphinx.yml", "w") do |f|
+      open("#{Rails.root}/config/sphinx.yml", "w") do |f|
         f.write  YAML.dump(@settings)
       end
     end
@@ -108,7 +97,7 @@ describe ThinkingSphinx::Configuration do
     end
 
     after :each do
-      FileUtils.rm "#{RAILS_ROOT}/config/sphinx.yml"
+      FileUtils.rm "#{Rails.root}/config/sphinx.yml"
     end
   end
 
@@ -118,6 +107,8 @@ describe ThinkingSphinx::Configuration do
         config.app_root = "/here/somewhere"
       end
       ThinkingSphinx::Configuration.instance.app_root.should == "/here/somewhere"
+      
+      ThinkingSphinx::Configuration.instance.reset
     end
   end
 
@@ -133,14 +124,14 @@ describe ThinkingSphinx::Configuration do
         }
       }
 
-      open("#{RAILS_ROOT}/config/sphinx.yml", "w") do |f|
-        f.write  YAML.dump(@settings)
+      open("#{Rails.root}/config/sphinx.yml", "w") do |f|
+        f.write YAML.dump(@settings)
       end
-
+      
       ThinkingSphinx::Configuration.instance.send(:parse_config)
       ThinkingSphinx::Configuration.instance.bin_path.should match(/\/$/)
 
-      FileUtils.rm "#{RAILS_ROOT}/config/sphinx.yml"
+      FileUtils.rm "#{Rails.root}/config/sphinx.yml"
     end
   end
 
@@ -150,7 +141,7 @@ describe ThinkingSphinx::Configuration do
         "development" => {"disable_range" => true}
       }
 
-      open("#{RAILS_ROOT}/config/sphinx.yml", "w") do |f|
+      open("#{Rails.root}/config/sphinx.yml", "w") do |f|
         f.write  YAML.dump(@settings)
       end
 
@@ -163,7 +154,7 @@ describe ThinkingSphinx::Configuration do
     end
 
     after :each do
-      FileUtils.rm "#{RAILS_ROOT}/config/sphinx.yml"
+      FileUtils.rm "#{Rails.root}/config/sphinx.yml"
     end
   end
 
@@ -197,7 +188,7 @@ describe ThinkingSphinx::Configuration do
       config.source_options.delete option.to_sym
     end
     
-    config.source_options[:sql_query_pre] = nil  
+    config.source_options[:sql_query_pre] = []  
   end
   
   it "should not blow away delta or utf options if sql pre is specified in config" do
@@ -211,10 +202,12 @@ describe ThinkingSphinx::Configuration do
     file.should match(/sql_query_pre = a pre query\n\s*sql_query_pre = UPDATE `\w+` SET `delta` = 0 WHERE `delta` = 1/im)
     file.should match(/sql_query_pre = a pre query\n\s*sql_query_pre = \n/im)
     
-    config.source_options[:sql_query_pre] = nil
+    config.source_options[:sql_query_pre] = []
   end
 
   it "should set any explicit prefixed or infixed fields" do
+    ThinkingSphinx::Configuration.instance.build
+    
     file = open(ThinkingSphinx::Configuration.instance.config_file) { |f|
       f.read
     }
@@ -223,6 +216,8 @@ describe ThinkingSphinx::Configuration do
   end
 
   it "should not have prefix fields in indexes where nothing is set" do
+    ThinkingSphinx::Configuration.instance.build
+    
     file = open(ThinkingSphinx::Configuration.instance.config_file) { |f|
       f.read
     }

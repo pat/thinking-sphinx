@@ -114,14 +114,14 @@ describe ThinkingSphinx::ActiveRecord do
       end
       
       it "should add a update_attribute_values callback when defined" do
-        Alpha.should_receive(:after_commit).with(:update_attribute_values)
+        Alpha.should_receive(:after_save).with(:update_attribute_values)
       
         Alpha.define_index { indexes :name }
         Alpha.define_indexes
       end
     
       it "should not add update_attribute_values callback more than once" do
-        Alpha.should_receive(:after_commit).with(:update_attribute_values).once
+        Alpha.should_receive(:after_save).with(:update_attribute_values).once
       
         Alpha.define_index { indexes :name }
         Alpha.define_index { indexes :name }
@@ -171,7 +171,7 @@ describe ThinkingSphinx::ActiveRecord do
       end
       
       it "should add an index_delta callback if deltas are enabled" do
-        Beta.stub!(:after_commit => true)
+        Beta.stub!(:after_save => true)
         Beta.should_receive(:after_commit).with(:index_delta)
 
         Beta.define_index {
@@ -605,14 +605,6 @@ describe ThinkingSphinx::ActiveRecord do
       Alpha.sphinx_index_blocks.clear
       
       Alpha.should_not have_sphinx_indexes
-    end
-  end
-  
-  describe '.reset_subclasses' do
-    it "should reset the stored context" do
-      ThinkingSphinx.should_receive(:reset_context!)
-      
-      ActiveRecord::Base.reset_subclasses
     end
   end
 end

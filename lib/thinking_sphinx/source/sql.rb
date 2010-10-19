@@ -3,8 +3,8 @@ module ThinkingSphinx
     module SQL
       # Generates the big SQL statement to get the data back for all the fields
       # and attributes, using all the relevant association joins. If you want
-      # the version filtered for delta values, send through :delta => true in the
-      # options. Won't do much though if the index isn't set up to support a
+      # the version filtered for delta values, send through :delta => true in
+      # the options. Won't do much though if the index isn't set up to support a
       # delta sibling.
       # 
       # Examples:
@@ -13,18 +13,20 @@ module ThinkingSphinx
       #   source.to_sql(:delta => true)
       #
       def to_sql(options={})
-        sql = "SELECT "
-        sql += "SQL_NO_CACHE " if adapter.sphinx_identifier == "mysql"
-        sql += <<-SQL
-#{ sql_select_clause options[:offset] }
-FROM #{ @model.quoted_table_name }
-  #{ all_associations.collect { |assoc| assoc.to_sql }.join(' ') }
-#{ sql_where_clause(options) }
-GROUP BY #{ sql_group_clause }
-        SQL
+        relation    = @model.unscoped
+        pre_select  = 'SQL_NO_CACHE ' if adapter.sphinx_identifier == "mysql"
+        relation    = relation.select(
+          pre_select.to_s + sql_select_clause(options[:offset])
+        )
 
-        sql += " ORDER BY NULL" if adapter.sphinx_identifier == "mysql"
-        sql
+        all_associations.each do |assoc|
+          relation = relation.joins(assoc.arel_join)
+        end
+
+        relation = relation.where(sql_where_clause(options))
+        relation = relation.group(sql_group_clause)
+        relation = relation.order('NULL') if adapter.sphinx_identifier == "mysql"
+        relation.to_sql
       end
 
       # Simple helper method for the query range SQL - which is a statement that
@@ -80,7 +82,7 @@ GROUP BY #{ sql_group_clause }
         end
 
         logic += (@conditions || [])
-        logic.empty? ? "" : "WHERE #{logic.join(' AND ')}"
+        logic.join(' AND ')
       end
 
       def sql_group_clause

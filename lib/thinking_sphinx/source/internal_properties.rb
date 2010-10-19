@@ -37,7 +37,7 @@ module ThinkingSphinx
       end
 
       def subclasses_to_s
-        "'" + (@model.send(:subclasses).collect { |klass|
+        "'" + (@model.send(:descendants).collect { |klass|
           klass.to_crc32.to_s
         } << @model.to_crc32.to_s).join(",") + "'"
       end

@@ -13,7 +13,7 @@ describe ThinkingSphinx::Association do
         :name           => 'polly',
         :active_record  => 'AR'
       )
-      @non_poly_reflection = stub('reflection')
+      @non_poly_reflection = stub('reflection', :name => 'non_polly')
       
       Person.stub!(:reflect_on_association => @normal_reflection)
       ThinkingSphinx::Association.stub!(
@@ -107,29 +107,6 @@ describe ThinkingSphinx::Association do
       
       @assoc.join_to(@base_join).should == @join
       @assoc.join.should == @join
-    end
-  end
-  
-  describe '#to_sql' do
-    before :each do
-      @reflection = stub('reflection', :klass => Person)
-      @association = ThinkingSphinx::Association.new(nil, @reflection)
-      @parent = stub('parent', :aliased_table_name => "ALIAS TABLE NAME")
-      @join = stub('join assoc',
-        :association_join => "full association join SQL",
-        :parent           => @parent
-      )
-      @association.join = @join
-    end
-    
-    it "should return the join's association join value" do
-      @association.to_sql.should == "full association join SQL"
-    end
-    
-    it "should replace ::ts_join_alias:: with the aliased table name" do
-      @join.stub!(:association_join => "text with ::ts_join_alias:: gone")
-      
-      @association.to_sql.should == "text with `ALIAS TABLE NAME` gone"
     end
   end
   

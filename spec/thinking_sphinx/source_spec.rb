@@ -114,7 +114,7 @@ describe ThinkingSphinx::Source do
       end
       
       it "should select data from the model table" do
-        @query.should match(/FROM `people`/)
+        @query.should match(/FROM\s+`people`/)
       end
       
       it "should select each of the fields" do

@@ -40,7 +40,7 @@ class ThinkingSphinx::Context
   private
   
   def add_indexed_models
-    Object.subclasses_of(ActiveRecord::Base).each do |klass|
+    ActiveRecord::Base.descendants.each do |klass|
       add_indexed_model klass if klass.has_sphinx_indexes?
     end
   end
@@ -55,7 +55,7 @@ class ThinkingSphinx::Context
         model_name = file.gsub(/^#{base}([\w_\/\\]+)\.rb/, '\1')
         
         next if model_name.nil?
-        next if ::ActiveRecord::Base.send(:subclasses).detect { |model|
+        next if ::ActiveRecord::Base.send(:descendants).detect { |model|
           model.name == model_name.camelize
         }
         

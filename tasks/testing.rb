@@ -1,11 +1,10 @@
 require 'rubygems'
-require 'spec/rake/spectask'
+require 'rspec/core/rake_task'
 require 'cucumber/rake/task'
 
 desc "Run the specs under spec"
-Spec::Rake::SpecTask.new do |t|
-  t.spec_files = FileList['spec/**/*_spec.rb']
-  t.spec_opts << "-c"
+RSpec::Core::RakeTask.new do |t|
+  t.pattern = 'spec/**/*_spec.rb'
 end
 task :spec => :check_dependencies
 
@@ -21,7 +20,7 @@ end
 namespace :features do
   def add_task(name, description)
     Cucumber::Rake::Task.new(name, description) do |t|
-      t.cucumber_opts = "--format pretty features/*.feature DATABASE=#{name}"
+      t.cucumber_opts = "--format pretty features/*.feature DATABASE=#{name} --exclude features/thinking_sphinx"
     end
   end
   
@@ -33,9 +32,8 @@ namespace :features do
 end
 
 desc "Generate RCov reports"
-Spec::Rake::SpecTask.new(:rcov) do |t|
-  t.libs << 'lib'
-  t.spec_files = FileList['spec/**/*_spec.rb']
+RSpec::Core::RakeTask.new(:rcov) do |t|
+  t.pattern = 'spec/**/*_spec.rb'
   t.rcov = true
   t.rcov_opts = [
     '--exclude', 'spec',

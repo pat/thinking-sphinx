@@ -1,5 +1,9 @@
 h1. Thinking Sphinx
 
+Please note: this is the branch for Rails 3. At some point in the near future, it will be released as Thinking Sphinx 2.0. It does not work with versions of Rails before v3 - I'm not sure if that'll happen in the future, but was just too much hassle right now.
+
+If you want to give this a spin, clone the repo, check out the rails3 branch, and run @rake build@ to generate the gem.
+
 h2. Usage
 
 First, if you haven't done so already, check out the main "usage":http://ts.freelancing-gods.com/usage.html page. Once you've done that, the next place to look for information is the specific method docs - ThinkingSphinx::Search and ThinkingSphinx::Index::Builder in particular.
@@ -163,8 +167,15 @@ Since I first released this library, there's been quite a few people who have su
 * Edgars Beigarts
 * Ivan Ukhov
 * Tomáš Pospíšek
+* Jeffrey Hardy
+* David Heinemeier Hansson
+* Jimmy Hsu
+* Bruno Michel
+* Joren De Groof
+* Jan De Poorter
 * Tom Stuart
 * James Brooks
+* Andrew Coldham
 * Mark Dodwell
 * Frédéric Malamitsas
 * Jon Gubman

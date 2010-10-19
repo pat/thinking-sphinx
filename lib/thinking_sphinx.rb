@@ -1,5 +1,4 @@
 require 'active_record'
-require 'after_commit'
 require 'yaml'
 require 'riddle'
 
@@ -21,7 +20,6 @@ require 'thinking_sphinx/field'
 require 'thinking_sphinx/index'
 require 'thinking_sphinx/join'
 require 'thinking_sphinx/source'
-require 'thinking_sphinx/rails_additions'
 require 'thinking_sphinx/search'
 require 'thinking_sphinx/search_methods'
 require 'thinking_sphinx/deltas'
@@ -30,11 +28,7 @@ require 'thinking_sphinx/adapters/abstract_adapter'
 require 'thinking_sphinx/adapters/mysql_adapter'
 require 'thinking_sphinx/adapters/postgresql_adapter'
 
-ActiveRecord::Base.send(:include, ThinkingSphinx::ActiveRecord)
-
-Merb::Plugins.add_rakefiles(
-  File.join(File.dirname(__FILE__), "thinking_sphinx", "tasks")
-) if defined?(Merb)
+require 'thinking_sphinx/railtie' if defined?(Rails)
 
 module ThinkingSphinx
   # A ConnectionError will get thrown when a connection to Sphinx can't be

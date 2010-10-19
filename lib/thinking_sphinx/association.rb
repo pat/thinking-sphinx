@@ -45,13 +45,10 @@ module ThinkingSphinx
       
       # association is polymorphic - create associations for each
       # non-polymorphic reflection.
-      polymorphic_classes(ref).collect { |klass|
-        Association.new parent, ::ActiveRecord::Reflection::AssociationReflection.new(
-          ref.macro,
-          "#{ref.name}_#{klass.name}".to_sym,
-          casted_options(klass, ref),
-          ref.active_record
-        )
+      polymorphic_classes(ref).collect { |poly_class|
+        reflection = depolymorphic_reflection(ref, poly_class)
+        klass.reflections[reflection.name] = reflection
+        Association.new parent, reflection
       }
     end
     
@@ -66,14 +63,13 @@ module ThinkingSphinx
       )
     end
     
-    # Returns the association's join SQL statements - and it replaces
-    # ::ts_join_alias:: with the aliased table name so the generated reflection
-    # join conditions avoid column name collisions.
-    # 
-    def to_sql
-      @join.association_join.gsub(/::ts_join_alias::/,
+    def arel_join
+      arel_join = @join.with_join_class(Arel::OuterJoin)
+      arel_join.options[:conditions].gsub!(/::ts_join_alias::/,
         "#{@reflection.klass.connection.quote_table_name(@join.parent.aliased_table_name)}"
-      )
+      ) unless arel_join.options[:conditions].nil?
+      
+      arel_join
     end
     
     # Returns true if the association - or a parent - is a has_many or
@@ -120,6 +116,15 @@ module ThinkingSphinx
     end
     
     private
+    
+    def self.depolymorphic_reflection(reflection, klass)
+      ::ActiveRecord::Reflection::AssociationReflection.new(
+        reflection.macro,
+        "#{reflection.name}_#{klass.name}".to_sym,
+        casted_options(klass, reflection),
+        reflection.active_record
+      )
+    end
     
     # Returns all the objects that could be currently instantiated from a
     # polymorphic association. This is pretty damn fast if there's an index on
