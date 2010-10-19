@@ -183,3 +183,5 @@ Since I first released this library, there's been quite a few people who have su
 * Ben Hutton
 * Alfonso Jiménez
 * Szymon Nowak
+* Matthew Higgins
+* Anton Sozontov
