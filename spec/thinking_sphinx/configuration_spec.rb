@@ -230,6 +230,7 @@ describe ThinkingSphinx::Configuration do
       @config.address     = 'domain.url'
       @config.port        = 3333
       @config.configuration.searchd.max_matches = 100
+      @config.timeout = 1
     end
     
     it "should return an instance of Riddle::Client" do
@@ -246,6 +247,10 @@ describe ThinkingSphinx::Configuration do
     
     it "should use the configuration max matches" do
       @config.client.max_matches.should == 100
+    end
+
+    it "should use the configuration timeout" do
+      @config.client.timeout.should == 1
     end
   end
   

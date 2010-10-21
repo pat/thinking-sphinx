@@ -115,7 +115,7 @@ module Riddle
       :float_range  => 2  # SPH_FILTER_FLOATRANGE
     }
     
-    attr_accessor :server, :port, :offset, :limit, :max_matches,
+    attr_accessor :servers, :port, :offset, :limit, :max_matches,
       :match_mode, :sort_mode, :sort_by, :weights, :id_range, :filters,
       :group_by, :group_function, :group_clause, :group_distinct, :cut_off,
       :retry_count, :retry_delay, :anchor, :index_weights, :rank_mode,
@@ -134,11 +134,11 @@ module Riddle
     # Can instantiate with a specific server and port - otherwise it assumes
     # defaults of localhost and 3312 respectively. All other settings can be
     # accessed and changed via the attribute accessors.
-    def initialize(server=nil, port=nil)
+    def initialize(servers=nil, port=nil)
       Riddle.version_warning
       
-      @server = server || "localhost"
-      @port   = port   || 9312
+      @servers = (servers || ["localhost"] ).to_a.shuffle
+      @port   = port     || 9312
       @socket = nil
       
       reset
@@ -177,6 +177,17 @@ module Riddle
       @select         = "*"
     end
     
+    # The searchd server to query.  Servers are removed from @server after a
+    # Timeout::Error is hit to allow for fail-over.
+    def server
+      @servers.first
+    end
+
+    # Backwards compatible writer to the @servers array.
+    def server=(server)
+      @servers = server.to_a
+    end
+
     # Set the geo-anchor point - with the names of the attributes that contain
     # the latitude and longitude (in radians), and the reference position.
     # Note that for geocoding to work properly, you must also set
@@ -475,9 +486,18 @@ module Riddle
       else
         begin
           Timeout.timeout(@timeout) { @socket = initialise_connection }
-        rescue Timeout::Error
-          raise Riddle::ConnectionError,
-            "Connection to #{@server} on #{@port} timed out after #{@timeout} seconds"
+        rescue Timeout::Error, Riddle::ConnectionError => e
+          failed_servers ||= []
+          failed_servers << servers.shift
+          retry if !servers.empty?
+
+          case e
+          when Timeout::Error
+            raise Riddle::ConnectionError,
+              "Connection to #{failed_servers.inspect} on #{@port} timed out after #{@timeout} seconds"
+          else
+            raise e
+          end
         end
       end
       
@@ -499,11 +519,13 @@ module Riddle
       if @socket.nil? || @socket.closed?
         @socket = nil
         open_socket
-      end
-      begin
+        begin
+          yield @socket
+        ensure
+          close_socket
+        end
+      else
         yield @socket
-      ensure
-        close_socket
       end
     end
     
@@ -530,15 +552,15 @@ module Riddle
           self.connection.call(self)
         elsif self.class.connection
           self.class.connection.call(self)
-        elsif @server.index('/') == 0
-          UNIXSocket.new @server
+        elsif server.index('/') == 0
+          UNIXSocket.new server
         else
-          TCPSocket.new @server, @port
+          TCPSocket.new server, @port
         end
       rescue Errno::ECONNREFUSED => e
         retry if (tries += 1) < 5
         raise Riddle::ConnectionError,
-          "Connection to #{@server} on #{@port} failed. #{e.message}"
+          "Connection to #{server} on #{@port} failed. #{e.message}"
       end
       
       socket
