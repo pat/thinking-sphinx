@@ -68,7 +68,7 @@ module ThinkingSphinx
     end
     
     def utc_query_pre
-      'SET TIME ZONE UTC'
+      "SET TIME ZONE 'UTC'"
     end
     
     private
