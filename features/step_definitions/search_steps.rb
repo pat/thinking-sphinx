@@ -87,3 +87,8 @@ end
 Then /^the first result should have a (\w+\s?\w*) of (\d+)$/ do |attribute, value|
   results.first.sphinx_attributes[attribute.gsub(/\s+/, '_')].should == value.to_i
 end
+
+Given /^I provide excerpt option "([a-z_]*)" with value "([^"]*)"$/ do |k, v|
+  @options[:excerpt_options] ||= {}
+  @options[:excerpt_options][k.to_sym] = v
+end
