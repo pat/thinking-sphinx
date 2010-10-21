@@ -272,9 +272,11 @@ module ThinkingSphinx
       
       populate
       client.excerpts(
-        :docs   => [string],
-        :words  => results[:words].keys.join(' '),
-        :index  => options[:index] || "#{model.source_of_sphinx_index.sphinx_name}_core"
+        {
+          :docs   => [string],
+          :words  => results[:words].keys.join(' '),
+          :index  => options[:index] || "#{model.source_of_sphinx_index.sphinx_name}_core"
+        }.merge(options[:excerpt_options] || {})
       ).first
     end
     
