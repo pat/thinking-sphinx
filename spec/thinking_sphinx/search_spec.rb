@@ -218,6 +218,34 @@ describe ThinkingSphinx::Search do
       ThinkingSphinx::Search.new(:classes => [Alpha, Beta]).first
     end
     
+    it "should restrict includes to the relevant classes" do
+      Alpha.should_receive(:find) do |type, options|
+        options[:include].should == [:betas]
+        [@alpha_a, @alpha_b]
+      end
+      
+      Beta.should_receive(:find) do |type, options|
+        options[:include].should == [:gammas]
+        [@beta_a, @beta_b]
+      end
+      
+      ThinkingSphinx::Search.new(:include => [:betas, :gammas]).first
+    end
+    
+    it "should restrict single includes to the relevant classes" do
+      Alpha.should_receive(:find) do |type, options|
+        options[:include].should == :betas
+        [@alpha_a, @alpha_b]
+      end
+      
+      Beta.should_receive(:find) do |type, options|
+        options[:include].should be_nil
+        [@beta_a, @beta_b]
+      end
+      
+      ThinkingSphinx::Search.new(:include => :betas).first
+    end
+    
     describe 'query' do
       it "should concatenate arguments with spaces" do
         @client.should_receive(:query) do |query, index, comment|

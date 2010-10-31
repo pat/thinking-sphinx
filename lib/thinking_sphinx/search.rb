@@ -719,6 +719,21 @@ MSG
       end
     end
     
+    def include_for_class(klass)
+      includes = options[:include] || klass.sphinx_index_options[:include]
+      
+      case includes
+      when NilClass
+        nil
+      when Array
+        includes.select { |inc| klass.reflections[inc] }
+      when Symbol
+        klass.reflections[includes].nil? ? nil : includes
+      else
+        includes
+      end
+    end
+    
     def instances_from_class(klass, matches)
       index_options = klass.sphinx_index_options
 
@@ -727,7 +742,7 @@ MSG
         :all,
         :joins      => options[:joins],
         :conditions => {klass.primary_key_for_sphinx.to_sym => ids},
-        :include    => (options[:include] || index_options[:include]),
+        :include    => include_for_class(klass),
         :select     => (options[:select]  || index_options[:select]),
         :order      => (options[:sql_order] || index_options[:sql_order])
       ) : []
