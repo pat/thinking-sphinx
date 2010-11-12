@@ -37,6 +37,8 @@ Merb::Plugins.add_rakefiles(
 ) if defined?(Merb)
 
 module ThinkingSphinx
+  mattr_accessor :database_adapter
+  
   # A ConnectionError will get thrown when a connection to Sphinx can't be
   # made.
   class ConnectionError < StandardError
