@@ -509,7 +509,8 @@ module ThinkingSphinx
       query.gsub(/("#{token}(.*?#{token})?"|(?![!-])#{token})/u) do
         pre, proper, post = $`, $&, $'
         # E.g. "@foo", "/2", "~3", but not as part of a token
-        is_operator = pre.match(%r{(\W|^)[@~/]\Z})
+        is_operator = pre.match(%r{(\W|^)[@~/]\Z}) ||
+                      pre.match(%r{(\W|^)@\([^\)]*$})
         # E.g. "foo bar", with quotes
         is_quote    = proper.starts_with?('"') && proper.ends_with?('"')
         has_star    = pre.ends_with?("*") || post.starts_with?("*")

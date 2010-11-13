@@ -304,6 +304,32 @@ describe ThinkingSphinx::Search do
           'foo@bar.com -foo-bar', :star => /[\w@.-]+/u
         ).first
       end
+      
+      it "should ignore multi-field limitations" do
+        @client.should_receive(:query) do |query, index, comment|
+          query.should == '@(foo,bar) *baz*'
+        end
+        
+        ThinkingSphinx::Search.new('@(foo,bar) baz', :star => true).first
+      end
+      
+      it "should ignore multi-field limitations with spaces" do
+        @client.should_receive(:query) do |query, index, comment|
+          query.should == '@(foo bar) *baz*'
+        end
+        
+        ThinkingSphinx::Search.new('@(foo bar) baz', :star => true).first
+      end
+      
+      it "should ignore multi-field limitations in the middle of queries" do
+        @client.should_receive(:query) do |query, index, comment|
+          query.should == '*baz* @foo *bar* @(foo,bar) *baz*'
+        end
+        
+        ThinkingSphinx::Search.new(
+          'baz @foo bar @(foo,bar) baz', :star => true
+        ).first
+      end
     end
     
     describe 'comment' do
