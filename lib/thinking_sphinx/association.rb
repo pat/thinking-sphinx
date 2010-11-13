@@ -67,7 +67,7 @@ module ThinkingSphinx
       arel_join = @join.with_join_class(Arel::OuterJoin)
       arel_join.options[:conditions].gsub!(/::ts_join_alias::/,
         "#{@reflection.klass.connection.quote_table_name(@join.parent.aliased_table_name)}"
-      ) unless arel_join.options[:conditions].nil?
+      ) unless arel_join.options[:conditions].nil? || arel_join.options[:conditions].is_a?(String)
       
       arel_join
     end
