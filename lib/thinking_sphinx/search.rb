@@ -125,7 +125,7 @@ module ThinkingSphinx
         add_scope(method, *args, &block)
         return self
       elsif method == :search_count
-        merge_search one_class.search(*args)
+        merge_search one_class.search(*args), self.args, options
         return scoped_count
       elsif method.to_s[/^each_with_.*/].nil? && !@array.respond_to?(method)
         super
@@ -282,7 +282,7 @@ module ThinkingSphinx
     
     def search(*args)
       args << args.extract_options!.merge(:ignore_default => true)
-      merge_search ThinkingSphinx::Search.new(*args)
+      merge_search ThinkingSphinx::Search.new(*args), self.args, options
       self
     end
     
@@ -291,8 +291,16 @@ module ThinkingSphinx
         :ignore_default => true,
         :ids_only       => true
       )
-      merge_search ThinkingSphinx::Search.new(*args)
+      merge_search ThinkingSphinx::Search.new(*args), self.args, options
       self
+    end
+    
+    def facets(*args)
+      options = args.extract_options!
+      merge_search self, args, options
+      args << options
+      
+      ThinkingSphinx::FacetSearch.new *args
     end
     
     def client
@@ -828,10 +836,10 @@ MSG
     
     def add_scope(method, *args, &block)
       method = "#{method}_without_default".to_sym
-      merge_search one_class.send(method, *args, &block)
+      merge_search one_class.send(method, *args, &block), self.args, options
     end
     
-    def merge_search(search)
+    def merge_search(search, args, options)
       search.args.each { |arg| args << arg }
       
       search.options.keys.each do |key|
