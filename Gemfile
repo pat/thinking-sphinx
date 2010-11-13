@@ -13,6 +13,7 @@ group :development do
   gem 'rspec-core',         '2.0.1'
   gem 'rspec-expectations', '2.0.1'
   gem 'rspec-mocks',        '2.0.1'
+  gem 'rcov',               '0.9.8'
   gem 'cucumber',           '0.9.4'
   gem 'will_paginate',      '2.3.15'
   gem 'ginger',             '1.2.0'
