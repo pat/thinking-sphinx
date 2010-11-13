@@ -286,6 +286,15 @@ module ThinkingSphinx
       self
     end
     
+    def search_for_ids(*args)
+      args << args.extract_options!.merge(
+        :ignore_default => true,
+        :ids_only       => true
+      )
+      merge_search ThinkingSphinx::Search.new(*args)
+      self
+    end
+    
     def client
       client = options[:client] || config.client
       
