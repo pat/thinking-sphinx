@@ -1,6 +1,3 @@
-require 'yard'
-require 'jeweler'
-
 desc 'Generate documentation'
 YARD::Rake::YardocTask.new
 

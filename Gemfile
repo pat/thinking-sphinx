@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
  
-gem 'activerecord', '>= 1.15.6', '< 2.3.6'
+gem 'activerecord', '>= 1.15.6', '< 3.0.0'
 gem 'riddle',       '>= 1.0.10'
 gem 'after_commit', '>= 1.0.7'
 
