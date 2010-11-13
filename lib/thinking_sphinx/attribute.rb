@@ -111,6 +111,7 @@ module ThinkingSphinx
       clause = adapter.crc(clause)                          if @crc
       clause = adapter.concatenate(clause, separator)       if concat_ws?
       clause = adapter.group_concatenate(clause, separator) if is_many?
+      clause = adapter.downcase(clause)                     if insensitive?
       
       "#{clause} AS #{quote_column(unique_name)}"
     end
@@ -375,6 +376,10 @@ block:
       else
         value
       end
+    end
+    
+    def insensitive?
+      @sortable == :insensitive
     end
   end
 end

@@ -13,6 +13,7 @@ module ThinkingSphinx
       @alias    = options[:as]
       @faceted  = options[:facet]
       @admin    = options[:admin]
+      @sortable = options[:sortable] || false
       
       @alias    = @alias.to_sym unless @alias.blank?
       

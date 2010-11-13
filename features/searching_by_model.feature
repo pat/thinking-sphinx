@@ -97,13 +97,6 @@ Feature: Searching on a single model
     Then I should get 10 results
     And the value of each result should indicate order
   
-  Scenario: Searching with ordering on a sortable field
-    Given Sphinx is running
-    And I am searching on people
-    And I order by first_name
-    Then I should get 20 results
-    And the first_name of each result should indicate order
-  
   Scenario: Intepreting Sphinx Internal Identifiers
     Given Sphinx is running
     And I am searching on people

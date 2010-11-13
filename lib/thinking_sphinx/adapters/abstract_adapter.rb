@@ -65,6 +65,10 @@ module ThinkingSphinx
       /bigint/i
     end
     
+    def downcase(clause)
+      "LOWER(#{clause})"
+    end
+    
     protected
     
     def connection
