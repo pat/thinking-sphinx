@@ -118,6 +118,8 @@ describe ThinkingSphinx::Configuration do
         config.app_root = "/here/somewhere"
       end
       ThinkingSphinx::Configuration.instance.app_root.should == "/here/somewhere"
+      
+      ThinkingSphinx::Configuration.instance.reset
     end
   end
 
