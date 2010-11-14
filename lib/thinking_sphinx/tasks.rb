@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'timeout'
 
 namespace :thinking_sphinx do
   task :app_env do
@@ -47,6 +48,12 @@ namespace :thinking_sphinx do
       config = ThinkingSphinx::Configuration.instance
       pid    = sphinx_pid
       config.controller.stop
+      
+      # Ensure searchd is stopped, but don't try too hard
+      Timeout.timeout(5) do
+        sleep(1) until config.controller.stop
+      end
+      
       puts "Stopped search daemon (pid #{pid})."
     end
   end

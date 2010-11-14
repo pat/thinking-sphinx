@@ -46,9 +46,16 @@ module Riddle
     
     def stop
       return true unless running?
-      Process.kill('SIGTERM', pid.to_i)
-    rescue Errno::EINVAL
-      Process.kill('SIGKILL', pid.to_i)
+      
+      stop_flag = 'stopwait'
+      stop_flag = 'stop' if Riddle.loaded_version.split('.').first == '0'
+      cmd = %(#{searchd} --pidfile --config "#{@path}" --#{stop_flag})
+      
+      if RUBY_PLATFORM =~ /mswin/
+        system("start /B #{cmd} 1> NUL 2>&1")
+      else
+        `#{cmd}`
+      end
     ensure
       return !running?
     end
