@@ -1,6 +1,7 @@
 class Person < ActiveRecord::Base
   define_index do
-    indexes first_name, last_name, :sortable => true
+    indexes first_name, :sortable => true
+    indexes last_name,  :sortable => :insensitive
     
     has [first_name, middle_initial, last_name], :as => :name_sort
     has birthday

@@ -125,7 +125,7 @@ module ThinkingSphinx
         add_scope(method, *args, &block)
         return self
       elsif method == :search_count
-        merge_search one_class.search(*args)
+        merge_search one_class.search(*args), self.args, options
         return scoped_count
       elsif method.to_s[/^each_with_.*/].nil? && !@array.respond_to?(method)
         super
@@ -282,8 +282,25 @@ module ThinkingSphinx
     
     def search(*args)
       args << args.extract_options!.merge(:ignore_default => true)
-      merge_search ThinkingSphinx::Search.new(*args)
+      merge_search ThinkingSphinx::Search.new(*args), self.args, options
       self
+    end
+    
+    def search_for_ids(*args)
+      args << args.extract_options!.merge(
+        :ignore_default => true,
+        :ids_only       => true
+      )
+      merge_search ThinkingSphinx::Search.new(*args), self.args, options
+      self
+    end
+    
+    def facets(*args)
+      options = args.extract_options!
+      merge_search self, args, options
+      args << options
+      
+      ThinkingSphinx::FacetSearch.new *args
     end
     
     def client
@@ -500,7 +517,8 @@ module ThinkingSphinx
       query.gsub(/("#{token}(.*?#{token})?"|(?![!-])#{token})/u) do
         pre, proper, post = $`, $&, $'
         # E.g. "@foo", "/2", "~3", but not as part of a token
-        is_operator = pre.match(%r{(\W|^)[@~/]\Z})
+        is_operator = pre.match(%r{(\W|^)[@~/]\Z}) ||
+                      pre.match(%r{(\W|^)@\([^\)]*$})
         # E.g. "foo bar", with quotes
         is_quote    = proper.starts_with?('"') && proper.ends_with?('"')
         has_star    = pre.ends_with?("*") || post.starts_with?("*")
@@ -614,24 +632,8 @@ module ThinkingSphinx
       filters
     end
     
-    def condition_filters
-      (options[:conditions] || {}).collect { |attrib, value|
-        if attributes.include?(attrib.to_sym)
-          puts <<-MSG
-Deprecation Warning: filters on attributes should be done using the :with
-option, not :conditions. For example:
-  :with => {:#{attrib} => #{value.inspect}}
-MSG
-          Riddle::Client::Filter.new attrib.to_s, filter_value(value)
-        else
-          nil
-        end
-      }.compact
-    end
-    
     def filters
       internal_filters +
-      condition_filters +
       (options[:with] || {}).collect { |attrib, value|
         Riddle::Client::Filter.new attrib.to_s, filter_value(value)
       } +
@@ -818,10 +820,10 @@ MSG
     
     def add_scope(method, *args, &block)
       method = "#{method}_without_default".to_sym
-      merge_search one_class.send(method, *args, &block)
+      merge_search one_class.send(method, *args, &block), self.args, options
     end
     
-    def merge_search(search)
+    def merge_search(search, args, options)
       search.args.each { |arg| args << arg }
       
       search.options.keys.each do |key|

@@ -119,6 +119,10 @@ module ThinkingSphinx
           DECLARE j int;
           DECLARE word_array bytea;
           BEGIN
+            IF COALESCE(word, '') = '' THEN
+              return 0;
+            END IF;
+          
             i = 0;
             tmp = 4294967295;
             word_array = decode(replace(word, E'\\\\', E'\\\\\\\\'), 'escape');
@@ -139,7 +143,7 @@ module ThinkingSphinx
             END LOOP;
             return (tmp # 4294967295);
           END
-        $$ IMMUTABLE STRICT LANGUAGE plpgsql;
+        $$ IMMUTABLE LANGUAGE plpgsql;
       SQL
       execute function, true
     end

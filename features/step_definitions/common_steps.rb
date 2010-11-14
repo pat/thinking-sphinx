@@ -155,6 +155,10 @@ Then /^the (\w+) of each result should indicate order$/ do |attribute|
   end
 end
 
+Then /^the first result's "([^"]*)" should be "([^"]*)"$/ do |attribute, value|
+  results.first.send(attribute.to_sym).should == value
+end
+
 Then /^I can iterate by result and (\w+)$/ do |attribute|
   iteration = lambda { |result, attr_value|
     result.should be_kind_of(@model)

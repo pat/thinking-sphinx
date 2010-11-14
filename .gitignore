@@ -1,7 +1,9 @@
+.bundle
 Gemfile.lock
 gem_deploy.rake
 pkg
 coverage
+coverage.data
 *.tmproj
 rdoc
 database.yml
