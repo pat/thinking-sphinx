@@ -6,7 +6,7 @@ gem 'riddle',       '>= 1.0.12'
 group :development do
   gem 'mysql',              '2.8.1'
   gem 'pg',                 '0.9.0'
-  gem 'jeweler',            '1.5.0.pre3'
+  gem 'jeweler',            '1.5.0.pre5'
   gem 'yard',               '0.5.4'
   gem 'rspec',              '2.0.1'
   gem 'rspec-core',         '2.0.1'
