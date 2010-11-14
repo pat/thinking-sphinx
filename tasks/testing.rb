@@ -4,8 +4,7 @@ require 'cucumber/rake/task'
 
 desc "Run the specs under spec"
 RSpec::Core::RakeTask.new do |t|
-  t.pattern    = 'spec/**/*_spec.rb'
-  t.rspec_opts = "-c"
+  t.pattern = 'spec/**/*_spec.rb'
 end
 task :spec => :check_dependencies
 
