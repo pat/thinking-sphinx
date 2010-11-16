@@ -64,12 +64,12 @@ module ThinkingSphinx
     end
     
     def arel_join
-      arel_join = @join.with_join_class(Arel::OuterJoin)
-      arel_join.options[:conditions].gsub!(/::ts_join_alias::/,
+      @join.join_type = Arel::OuterJoin
+      @join.options[:conditions].gsub!(/::ts_join_alias::/,
         "#{@reflection.klass.connection.quote_table_name(@join.parent.aliased_table_name)}"
-      ) if arel_join.options[:conditions].is_a?(String)
+      ) if @join.options[:conditions].is_a?(String)
       
-      arel_join
+      @join
     end
     
     # Returns true if the association - or a parent - is a has_many or
