@@ -9,6 +9,7 @@ require 'bundler'
 
 Bundler.require :default, :development
 
+require 'active_support/core_ext/module/attribute_accessors'
 require "#{File.dirname(__FILE__)}/../lib/thinking_sphinx"
 require "#{File.dirname(__FILE__)}/sphinx_helper"
 
