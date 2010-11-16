@@ -224,7 +224,7 @@ module ThinkingSphinx
       end_assoc  = end_association_for_mva
       raise "Could not determine SQL for MVA" if base_assoc.nil?
       
-      relation = Table(base_assoc.table)
+      relation = Arel::Table.new(base_assoc.table)
       
       association_joins.each do |join|
         relation = relation.join(join.relation, Arel::OuterJoin).
