@@ -1,6 +1,7 @@
 source 'http://rubygems.org'
 
 gem 'activerecord', '>= 3.0.2'
+gem 'actionpack',   '>= 3.0.2'
 gem 'riddle',       '>= 1.2.1'
 
 group :development do

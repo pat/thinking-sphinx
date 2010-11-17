@@ -29,34 +29,38 @@ module ThinkingSphinx
     
     # Deprecated. Use ThinkingSphinx.search
     def self.search(*args)
-      log 'ThinkingSphinx::Search.search is deprecated. Please use ThinkingSphinx.search instead.'
+      warn 'ThinkingSphinx::Search.search is deprecated. Please use ThinkingSphinx.search instead.'
       ThinkingSphinx.search *args
     end
     
     # Deprecated. Use ThinkingSphinx.search_for_ids
     def self.search_for_ids(*args)
-      log 'ThinkingSphinx::Search.search_for_ids is deprecated. Please use ThinkingSphinx.search_for_ids instead.'
+      warn 'ThinkingSphinx::Search.search_for_ids is deprecated. Please use ThinkingSphinx.search_for_ids instead.'
       ThinkingSphinx.search_for_ids *args
     end
     
     # Deprecated. Use ThinkingSphinx.search_for_ids
     def self.search_for_id(*args)
-      log 'ThinkingSphinx::Search.search_for_id is deprecated. Please use ThinkingSphinx.search_for_id instead.'
+      warn 'ThinkingSphinx::Search.search_for_id is deprecated. Please use ThinkingSphinx.search_for_id instead.'
       ThinkingSphinx.search_for_id *args
     end
     
     # Deprecated. Use ThinkingSphinx.count
     def self.count(*args)
-      log 'ThinkingSphinx::Search.count is deprecated. Please use ThinkingSphinx.count instead.'
+      warn 'ThinkingSphinx::Search.count is deprecated. Please use ThinkingSphinx.count instead.'
       ThinkingSphinx.count *args
     end
     
     # Deprecated. Use ThinkingSphinx.facets
     def self.facets(*args)
-      log 'ThinkingSphinx::Search.facets is deprecated. Please use ThinkingSphinx.facets instead.'
+      warn 'ThinkingSphinx::Search.facets is deprecated. Please use ThinkingSphinx.facets instead.'
       ThinkingSphinx.facets *args
     end
-    
+
+    def self.warn(message)
+      ::ActiveSupport::Deprecation.warn message
+    end
+
     def self.bundle_searches(enum = nil)
       bundle = ThinkingSphinx::BundledSearch.new
       
@@ -344,12 +348,10 @@ module ThinkingSphinx
       
       retry_on_stale_index do
         begin
-          log "Querying: '#{query}'"
-          runtime = Benchmark.realtime {
+          log query do
             @results = client.query query, indexes, comment
-          }
-          log "Found #{@results[:total_found]} results", :debug,
-            "Sphinx (#{sprintf("%f", runtime)}s)"
+          end
+          log "Found #{@results[:total_found].to_i} results"
         rescue Errno::ECONNREFUSED => err
           raise ThinkingSphinx::ConnectionError,
             'Connection to Sphinx Daemon (searchd) failed.'
@@ -406,30 +408,27 @@ module ThinkingSphinx
         match[:attributes]['class_crc'] == object.class.to_crc32
       }
     end
-    
-    def self.log(message, method = :debug, identifier = 'Sphinx')
-      return if ::ActiveRecord::Base.logger.nil?
-      
-      info = ''
-      if ::ActiveRecord::LogSubscriber.colorize_logging
-        identifier_color, message_color = "4;32;1", "0" # 0;1 = Bold
-        info << "  \e[#{identifier_color}m#{identifier}\e[0m   "
-        info << "\e[#{message_color}m#{message}\e[0m"
+
+    def self.log(message, &block)
+      return if ThinkingSphinx::ActiveRecord::LogSubscriber.logger.nil?
+
+      if block_given?
+        ::ActiveSupport::Notifications.
+          instrument('query.thinking_sphinx', :query => message, &block)
       else
-        info = "#{identifier}   #{message}"
+        ::ActiveSupport::Notifications.
+          instrument('message.thinking_sphinx', :message => message)
       end
-      
-      ::ActiveRecord::Base.logger.send method, info
     end
-    
-    def log(*args)
-      self.class.log(*args)
+
+    def log(query, &block)
+      self.class.log(query, &block)
     end
-    
+
     def prepare(client)
       index_options = one_class ?
         one_class.sphinx_indexes.first.local_options : {}
-      
+
       [
         :max_matches, :group_by, :group_function, :group_clause,
         :group_distinct, :id_range, :cut_off, :retry_count, :retry_delay,
@@ -475,8 +474,8 @@ module ThinkingSphinx
         stale_ids |= err.ids
         # ID exclusion
         options[:without_ids] = Array(options[:without_ids]) | err.ids
-        
-        log 'Sphinx Stale Ids (%s %s left): %s' % [
+
+        log 'Stale Ids (%s %s left): %s' % [
           retries, (retries == 1 ? 'try' : 'tries'), stale_ids.join(', ')
         ]
         retry
