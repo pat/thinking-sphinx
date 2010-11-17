@@ -10,6 +10,12 @@ module ThinkingSphinx
       end
     end
 
+    initializer "thinking_sphinx.action_controller" do
+      ActiveSupport.on_load :action_controller do
+        include ThinkingSphinx::ActionController
+      end
+    end
+
     initializer "thinking_sphinx.set_app_root" do |app|
       ThinkingSphinx::Configuration.instance.reset # Rails has setup app now
     end

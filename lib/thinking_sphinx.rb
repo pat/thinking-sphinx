@@ -1,4 +1,5 @@
 require 'active_record'
+require 'action_controller'
 require 'yaml'
 require 'riddle'
 
@@ -7,6 +8,7 @@ require 'thinking_sphinx/core/array'
 require 'thinking_sphinx/core/string'
 require 'thinking_sphinx/property'
 require 'thinking_sphinx/active_record'
+require 'thinking_sphinx/action_controller'
 require 'thinking_sphinx/association'
 require 'thinking_sphinx/attribute'
 require 'thinking_sphinx/bundled_search'
