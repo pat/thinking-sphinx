@@ -1,12 +1,12 @@
 source 'http://rubygems.org'
 
-gem 'activerecord', '>= 3.0.2'
-gem 'actionpack',   '>= 3.0.2'
+gem 'activerecord', '>= 3.0.3'
 gem 'riddle',       '>= 1.2.1'
 
 group :development do
   gem 'mysql',              '2.8.1'
   gem 'pg',                 '0.9.0'
+  gem 'actionpack',         '>= 3.0.3'
   gem 'jeweler',            '1.5.0.pre5'
   gem 'yard',               '0.6.1'
   gem 'rspec',              '2.0.1'

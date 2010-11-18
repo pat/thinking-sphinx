@@ -191,3 +191,4 @@ Since I first released this library, there's been quite a few people who have su
 * Artem Orlov
 * Matt Todd
 * Ivan Ukhov
+* Stephen Celis
