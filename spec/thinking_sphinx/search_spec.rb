@@ -115,8 +115,10 @@ describe ThinkingSphinx::Search do
     it "return the output of ThinkingSphinx.search" do
       @results = [] # to confirm same object
       ThinkingSphinx.stub!(:search => @results)
-      
-      ThinkingSphinx::Search.search.object_id.should == @results.object_id
+
+      ActiveSupport::Deprecation.silence do
+        ThinkingSphinx::Search.search.object_id.should == @results.object_id
+      end
     end
   end
   
@@ -124,9 +126,11 @@ describe ThinkingSphinx::Search do
     it "return the output of ThinkingSphinx.search_for_ids" do
       @results = [] # to confirm same object
       ThinkingSphinx.stub!(:search_for_ids => @results)
-      
-      ThinkingSphinx::Search.search_for_ids.object_id.
-        should == @results.object_id
+
+      ActiveSupport::Deprecation.silence do
+        ThinkingSphinx::Search.search_for_ids.object_id.
+          should == @results.object_id
+      end
     end
   end
   
@@ -134,9 +138,11 @@ describe ThinkingSphinx::Search do
     it "return the output of ThinkingSphinx.search_for_ids" do
       @results = [] # to confirm same object
       ThinkingSphinx.stub!(:search_for_id => @results)
-      
-      ThinkingSphinx::Search.search_for_id.object_id.
-        should == @results.object_id
+
+      ActiveSupport::Deprecation.silence do
+        ThinkingSphinx::Search.search_for_id.object_id.
+          should == @results.object_id
+      end
     end
   end
   
@@ -144,8 +150,10 @@ describe ThinkingSphinx::Search do
     it "return the output of ThinkingSphinx.search" do
       @results = [] # to confirm same object
       ThinkingSphinx.stub!(:count => @results)
-      
-      ThinkingSphinx::Search.count.object_id.should == @results.object_id
+
+      ActiveSupport::Deprecation.silence do
+        ThinkingSphinx::Search.count.object_id.should == @results.object_id
+      end
     end
   end
   
@@ -153,8 +161,10 @@ describe ThinkingSphinx::Search do
     it "return the output of ThinkingSphinx.facets" do
       @results = [] # to confirm same object
       ThinkingSphinx.stub!(:facets => @results)
-      
-      ThinkingSphinx::Search.facets.object_id.should == @results.object_id
+
+      ActiveSupport::Deprecation.silence do
+        ThinkingSphinx::Search.facets.object_id.should == @results.object_id
+      end
     end
   end
   
