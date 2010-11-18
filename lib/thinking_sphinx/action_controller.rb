@@ -23,7 +23,7 @@ module ThinkingSphinx
     module ClassMethods
       def log_process_action(payload)
         messages, query_runtime = super, payload[:query_runtime]
-        messages << ("Sphinx: %.3fms" % query_runtime.to_f) if query_runtime
+        messages << ("Sphinx: %.1fms" % query_runtime.to_f) if query_runtime
         messages
       end
     end

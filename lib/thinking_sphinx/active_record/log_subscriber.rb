@@ -25,7 +25,7 @@ module ThinkingSphinx
         self.class.runtime += event.duration
         return unless logger.debug?
 
-        identifier = color('Sphinx Query (%.3fms)' % event.duration, GREEN, true)
+        identifier = color('Sphinx Query (%.1fms)' % event.duration, GREEN, true)
         query = event.payload[:query]
         query = color query, nil, true if odd?
 
