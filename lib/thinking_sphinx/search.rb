@@ -727,7 +727,7 @@ module ThinkingSphinx
       when NilClass
         nil
       when Array
-        includes.select { |inc| klass.reflections[inc] }
+        include_from_array includes, klass
       when Symbol
         klass.reflections[includes].nil? ? nil : includes
       when Hash
@@ -736,13 +736,26 @@ module ThinkingSphinx
         includes
       end
     end
+
+    def include_from_array(array, klass)
+      scoped_array = []
+      array.each do |value|
+        case value
+        when Hash
+          scoped_hash = include_from_hash(value, klass)
+          scoped_array << scoped_hash unless scoped_hash.nil?
+        else
+          scoped_array << value unless klass.reflections[value].nil?
+        end
+      end
+      scoped_array.empty? ? nil : scoped_array
+    end
     
     def include_from_hash(hash, klass)
       scoped_hash = {}
       hash.keys.each do |key|
         scoped_hash[key] = hash[key] unless klass.reflections[key].nil?
       end
-      
       scoped_hash.empty? ? nil : scoped_hash
     end
     
