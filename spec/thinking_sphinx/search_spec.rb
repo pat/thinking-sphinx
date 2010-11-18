@@ -245,8 +245,22 @@ describe ThinkingSphinx::Search do
       
       ThinkingSphinx::Search.new(:include => :betas).first
     end
-    
+
     it "should respect complex includes" do
+      Alpha.should_receive(:find) do |type, options|
+        options[:include].should == [:thetas, {:betas => :gammas}]
+        [@alpha_a, @alpha_b]
+      end
+
+      Beta.should_receive(:find) do |type, options|
+        options[:include].should be_nil
+        [@beta_a, @beta_b]
+      end
+
+      ThinkingSphinx::Search.new(:include => [:thetas, {:betas => :gammas}]).first
+    end
+    
+    it "should respect hash includes" do
       Alpha.should_receive(:find) do |type, options|
         options[:include].should == {:betas => :gammas}
         [@alpha_a, @alpha_b]

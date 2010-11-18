@@ -90,6 +90,16 @@ CREATE TABLE `gammas` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `thetas`;
+
+CREATE TABLE `thetas` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(50) NOT NULL,
+  `value` int(11),
+  `alpha_id` int(11),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 DROP TABLE IF EXISTS `searches`;
 
 CREATE TABLE `searches` (
