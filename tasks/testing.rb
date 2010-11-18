@@ -6,7 +6,6 @@ desc "Run the specs under spec"
 RSpec::Core::RakeTask.new do |t|
   t.pattern = 'spec/**/*_spec.rb'
 end
-task :spec => :check_dependencies
 
 desc "Run all feature-set configurations"
 task :features do |t|
@@ -26,9 +25,6 @@ namespace :features do
   
   add_task :mysql,      "Run feature-set against MySQL"
   add_task :postgresql, "Run feature-set against PostgreSQL"
-  
-  task :mysql      => :check_dependencies
-  task :postgresql => :check_dependencies
 end
 
 namespace :rcov do
