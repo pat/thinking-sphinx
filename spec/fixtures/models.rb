@@ -96,6 +96,7 @@ end
 
 class Alpha < ActiveRecord::Base
   has_many :betas
+  has_many :thetas
   
   define_index do
     indexes :name, :sortable => true
@@ -137,6 +138,10 @@ class Beta < ActiveRecord::Base
 end
 
 class Gamma < ActiveRecord::Base
+  #
+end
+
+class Theta < ActiveRecord::Base
   #
 end
 

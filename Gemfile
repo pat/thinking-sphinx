@@ -7,7 +7,7 @@ group :development do
   gem 'mysql',              '2.8.1'
   gem 'pg',                 '0.9.0'
   gem 'actionpack',         '>= 3.0.3'
-  gem 'jeweler',            '1.5.0.pre5'
+  gem 'jeweler',            '1.5.1'
   gem 'yard',               '0.6.1'
   gem 'rspec',              '2.0.1'
   gem 'rspec-core',         '2.0.1'
