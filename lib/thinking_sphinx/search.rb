@@ -731,9 +731,20 @@ module ThinkingSphinx
         includes.select { |inc| klass.reflections[inc] }
       when Symbol
         klass.reflections[includes].nil? ? nil : includes
+      when Hash
+        include_from_hash includes, klass
       else
         includes
       end
+    end
+    
+    def include_from_hash(hash, klass)
+      scoped_hash = {}
+      hash.keys.each do |key|
+        scoped_hash[key] = hash[key] unless klass.reflections[key].nil?
+      end
+      
+      scoped_hash.empty? ? nil : scoped_hash
     end
     
     def instances_from_class(klass, matches)
