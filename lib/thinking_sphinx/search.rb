@@ -106,6 +106,11 @@ module ThinkingSphinx
       self
     end
     
+    def as_json(*args)
+      populate
+      @array.as_json(*args)
+    end
+    
     # Indication of whether the request has been made to Sphinx for the search
     # query.
     # 
