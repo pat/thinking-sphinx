@@ -940,6 +940,22 @@ describe ThinkingSphinx::Search do
         end
       end
     end
+    
+    context 'Sphinx errors' do
+      describe '#error?' do
+        before :each do
+          @client.stub! :query => {
+            :error => @warning = "Not good"
+          }
+          # @search.should_receive(:error).and_return(nil)
+        end
+        it "should raise an error" do
+          lambda{
+            ThinkingSphinx::Search.new.first
+          }.should raise_error(ThinkingSphinx::SphinxError)
+        end
+      end
+    end
   end
   
   describe '#current_page' do

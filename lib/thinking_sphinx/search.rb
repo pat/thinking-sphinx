@@ -384,6 +384,13 @@ module ThinkingSphinx
           }
           log "Found #{@results[:total_found]} results", :debug,
             "Sphinx (#{sprintf("%f", runtime)}s)"
+          
+          log "Sphinx Daemon returned warning: #{warning}", :error if warning?
+          
+          if error?
+            log "Sphinx Daemon returned error: #{error}", :error
+            raise ThinkingSphinx::SphinxError.new(error, @results)
+          end
         rescue Errno::ECONNREFUSED => err
           raise ThinkingSphinx::ConnectionError,
             'Connection to Sphinx Daemon (searchd) failed.'
