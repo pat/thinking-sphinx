@@ -389,7 +389,7 @@ module ThinkingSphinx
           
           if error?
             log "Sphinx Daemon returned error: #{error}", :error
-            raise ThinkingSphinx::SphinxError.new(error, @results)
+            raise SphinxError.new(error, @results) unless options[:ignore_errors]
           end
         rescue Errno::ECONNREFUSED => err
           raise ThinkingSphinx::ConnectionError,

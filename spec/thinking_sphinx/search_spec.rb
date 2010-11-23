@@ -954,6 +954,11 @@ describe ThinkingSphinx::Search do
             ThinkingSphinx::Search.new.first
           }.should raise_error(ThinkingSphinx::SphinxError)
         end
+        it "should not raise an error when ignore_errors is true" do
+          lambda{
+            ThinkingSphinx::Search.new(:ignore_errors => true).first
+          }.should_not raise_error(ThinkingSphinx::SphinxError)
+        end
       end
     end
   end
