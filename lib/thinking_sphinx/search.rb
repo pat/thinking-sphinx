@@ -111,6 +111,40 @@ module ThinkingSphinx
       !!@populated
     end
     
+    # Indication of whether the request resulted in an error from Sphinx.
+    # 
+    # @return [Boolean] true if Sphinx reports query error
+    # 
+    def error?
+      !!error
+    end
+    
+    # The Sphinx-reported error, if any.
+    # 
+    # @return [String, nil]
+    # 
+    def error
+      populate
+      @results[:error]
+    end
+    
+    # Indication of whether the request resulted in a warning from Sphinx.
+    # 
+    # @return [Boolean] true if Sphinx reports query warning
+    # 
+    def warning?
+      !!warning
+    end
+    
+    # The Sphinx-reported warning, if any.
+    # 
+    # @return [String, nil]
+    # 
+    def warning
+      populate
+      @results[:warning]
+    end
+    
     # The query result hash from Riddle.
     # 
     # @return [Hash] Raw Sphinx results

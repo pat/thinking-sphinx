@@ -52,6 +52,38 @@ describe ThinkingSphinx::Search do
     end
   end
   
+  describe '#error?' do
+    before :each do
+      @search = ThinkingSphinx::Search.new
+    end
+    
+    it "should be false if client requests have not resulted in an error" do
+      @search.should_receive(:error).and_return(nil)
+      @search.error?.should_not be_true
+    end
+    
+    it "should be true when client requests result in an error" do
+      @search.should_receive(:error).and_return("error message")
+      @search.error?.should be_true
+    end
+  end
+  
+  describe '#warning?' do
+    before :each do
+      @search = ThinkingSphinx::Search.new
+    end
+    
+    it "should be false if client requests have not resulted in a warning" do
+      @search.should_receive(:warning).and_return(nil)
+      @search.warning?.should_not be_true
+    end
+    
+    it "should be true when client requests result in an error" do
+      @search.should_receive(:warning).and_return("warning message")
+      @search.warning?.should be_true
+    end
+  end
+  
   describe '#results' do
     it "should populate search results before returning" do
       @search = ThinkingSphinx::Search.new
