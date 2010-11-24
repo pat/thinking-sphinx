@@ -12,7 +12,7 @@ module Riddle
     end
     
     def sphinx_version
-      `#{indexer} 2>&1`[/^Sphinx (\d+\.\d+(\.\d+|\-beta))/, 1]
+      `#{indexer} 2>&1`[/^Sphinx (\d+\.\d+(\.\d+|(\-id64)?\-beta))/, 1]
     rescue
       nil
     end
