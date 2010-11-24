@@ -137,7 +137,7 @@ module Riddle
     def initialize(servers=nil, port=nil)
       Riddle.version_warning
       
-      @servers = (servers || ["localhost"] ).to_a.shuffle
+      @servers = Array(servers || "localhost").shuffle
       @port   = port     || 9312
       @socket = nil
       
