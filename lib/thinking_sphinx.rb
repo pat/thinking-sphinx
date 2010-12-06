@@ -47,6 +47,16 @@ module ThinkingSphinx
     end
   end
   
+  # A SphinxError occurs when Sphinx responds with an error due to problematic
+  # queries or indexes.
+  class SphinxError < RuntimeError
+    attr_accessor :results
+    def initialize(message = nil, results = nil)
+      super(message)
+      self.results = results
+    end
+  end
+  
   # The current version of Thinking Sphinx.
   # 
   # @return [String] The version number as a string

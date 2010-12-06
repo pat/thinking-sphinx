@@ -52,6 +52,38 @@ describe ThinkingSphinx::Search do
     end
   end
   
+  describe '#error?' do
+    before :each do
+      @search = ThinkingSphinx::Search.new
+    end
+    
+    it "should be false if client requests have not resulted in an error" do
+      @search.should_receive(:error).and_return(nil)
+      @search.error?.should_not be_true
+    end
+    
+    it "should be true when client requests result in an error" do
+      @search.should_receive(:error).and_return("error message")
+      @search.error?.should be_true
+    end
+  end
+  
+  describe '#warning?' do
+    before :each do
+      @search = ThinkingSphinx::Search.new
+    end
+    
+    it "should be false if client requests have not resulted in a warning" do
+      @search.should_receive(:warning).and_return(nil)
+      @search.warning?.should_not be_true
+    end
+    
+    it "should be true when client requests result in an error" do
+      @search.should_receive(:warning).and_return("warning message")
+      @search.warning?.should be_true
+    end
+  end
+  
   describe '#results' do
     it "should populate search results before returning" do
       @search = ThinkingSphinx::Search.new
@@ -915,6 +947,27 @@ describe ThinkingSphinx::Search do
         it "should return the fields that the bitmask match" do
           search = ThinkingSphinx::Search.new :rank_mode => :fieldmask
           search.first.matching_fields.should == ['one', 'three', 'five']
+        end
+      end
+    end
+    
+    context 'Sphinx errors' do
+      describe '#error?' do
+        before :each do
+          @client.stub! :query => {
+            :error => @warning = "Not good"
+          }
+          # @search.should_receive(:error).and_return(nil)
+        end
+        it "should raise an error" do
+          lambda{
+            ThinkingSphinx::Search.new.first
+          }.should raise_error(ThinkingSphinx::SphinxError)
+        end
+        it "should not raise an error when ignore_errors is true" do
+          lambda{
+            ThinkingSphinx::Search.new(:ignore_errors => true).first
+          }.should_not raise_error(ThinkingSphinx::SphinxError)
         end
       end
     end
