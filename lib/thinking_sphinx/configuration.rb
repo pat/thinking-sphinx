@@ -139,14 +139,8 @@ module ThinkingSphinx
     def environment
       self.class.environment
     end
-
-    # Generate the config file for Sphinx by using all the settings defined and
-    # looping through all the models with indexes to build the relevant
-    # indexer and searchd configuration, and sources and indexes details.
-    #
-    def build(file_path=nil)
-      file_path ||= "#{self.config_file}"
-
+    
+    def generate
       @configuration.indexes.clear
 
       ThinkingSphinx.context.indexed_models.each do |model|
@@ -154,7 +148,17 @@ module ThinkingSphinx
         model.define_indexes
         @configuration.indexes.concat model.to_riddle
       end
-
+    end
+    
+    # Generate the config file for Sphinx by using all the settings defined and
+    # looping through all the models with indexes to build the relevant
+    # indexer and searchd configuration, and sources and indexes details.
+    #
+    def build(file_path=nil)
+      file_path ||= "#{self.config_file}"
+      
+      generate
+      
       open(file_path, "w") do |file|
         file.write @configuration.render
       end
