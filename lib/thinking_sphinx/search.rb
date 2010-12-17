@@ -602,7 +602,7 @@ module ThinkingSphinx
     def sort_by
       case @sort_by = (options[:sort_by] || options[:order])
       when String
-        sorted_fields_to_attributes(@sort_by)
+        sorted_fields_to_attributes(@sort_by.clone)
       when Symbol
         field_names.include?(@sort_by) ?
           @sort_by.to_s.concat('_sort') : @sort_by.to_s
