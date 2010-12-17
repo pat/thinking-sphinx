@@ -542,12 +542,7 @@ module ThinkingSphinx
     def conditions_as_query
       return '' if @options[:conditions].blank?
       
-      # Soon to be deprecated.
-      keys = @options[:conditions].keys.reject { |key|
-        attributes.include?(key.to_sym)
-      }
-      
-      ' ' + keys.collect { |key|
+      ' ' + @options[:conditions].keys.collect { |key|
         "@#{key} #{options[:conditions][key]}"
       }.join(' ')
     end
