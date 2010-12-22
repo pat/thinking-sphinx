@@ -20,13 +20,13 @@ module ThinkingSphinx
       end
       
       def toggle(instance)
-        instance.delta = true
+        instance.send "#{@column}=", true
       end
-      
+
       def toggled(instance)
-        instance.delta
+        instance.send "#{@column}"
       end
-      
+
       def reset_query(model)
         "UPDATE #{model.quoted_table_name} SET " +
         "#{model.connection.quote_column_name(@column.to_s)} = #{adapter.boolean(false)} " +
