@@ -1,5 +1,9 @@
 require 'spec_helper'
 
+class CustomAdapter < ThinkingSphinx::AbstractAdapter
+  #
+end
+
 describe ThinkingSphinx::AbstractAdapter do
   describe '.detect' do
     let(:model) { stub('model') }
@@ -16,6 +20,13 @@ describe ThinkingSphinx::AbstractAdapter do
       
       adapter = ThinkingSphinx::AbstractAdapter.detect(model)
       adapter.should be_a(ThinkingSphinx::PostgreSQLAdapter)
+    end
+    
+    it "instantiates the provided class if one is provided" do
+      ThinkingSphinx::AbstractAdapter.stub(:adapter_for_model => CustomAdapter)
+      CustomAdapter.should_receive(:new).and_return(stub('adapter'))
+      
+      ThinkingSphinx::AbstractAdapter.detect(model)
     end
     
     it "raises an exception for other responses" do
