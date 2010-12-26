@@ -16,6 +16,8 @@ module ThinkingSphinx
         ThinkingSphinx::MysqlAdapter.new model
       when :postgresql
         ThinkingSphinx::PostgreSQLAdapter.new model
+      when Class
+        adapter.new model
       else
         raise "Invalid Database Adapter: Sphinx only supports MySQL and PostgreSQL, not #{adapter}"
       end
