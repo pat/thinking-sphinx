@@ -84,9 +84,10 @@ DESC
       start
     end
   
-    desc "Add the shared folder for sphinx files for the production environment"
+    desc "Add the shared folder for sphinx files"
     task :shared_sphinx_folder, :roles => :web do
-      run "mkdir -p #{shared_path}/db/sphinx/production"
+      rails_env = fetch(:rails_env, "production")
+      run "mkdir -p #{shared_path}/sphinx/#{rails_env}"
     end
 
     def rake(*tasks)
