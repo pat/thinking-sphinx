@@ -44,6 +44,8 @@ module ThinkingSphinx
     end
     
     def populate
+      return if facet_names.empty?
+      
       ThinkingSphinx::Search.bundle_searches(facet_names) { |sphinx, name|
         sphinx.search *(args + [facet_search_options(name)])
       }.each_with_index { |search, index|
