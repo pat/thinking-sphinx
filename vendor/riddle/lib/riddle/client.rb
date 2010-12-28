@@ -136,8 +136,9 @@ module Riddle
     # accessed and changed via the attribute accessors.
     def initialize(servers=nil, port=nil)
       Riddle.version_warning
-      
-      @servers = Array(servers || "localhost").shuffle
+
+      servers = Array(servers || "localhost")
+      @servers = servers.respond_to?(:shuffle) ? servers.shuffle : servers.sort_by{ rand }
       @port   = port     || 9312
       @socket = nil
       
