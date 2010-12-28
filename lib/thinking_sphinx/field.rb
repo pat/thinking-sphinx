@@ -69,6 +69,8 @@ module ThinkingSphinx
     # multiple data values (has_many or has_and_belongs_to_many associations).
     # 
     def to_select_sql
+      return nil unless available?
+      
       clause = columns_with_prefixes.join(', ')
       
       clause = adapter.concatenate(clause)       if concat_ws?

@@ -44,6 +44,17 @@ describe ThinkingSphinx::Field do
       @field.unique_name.should == "col_name"
     end
   end
+  
+  describe '#to_select_sql' do
+    it "should return nil if polymorphic association data does not exist" do
+      field = ThinkingSphinx::Field.new(@source,
+        [ThinkingSphinx::Index::FauxColumn.new(:source, :name)],
+        :as => :source_name
+      )
+      
+      field.to_select_sql.should be_nil
+    end
+  end
 
   describe "prefixes method" do
     it "should default to false" do

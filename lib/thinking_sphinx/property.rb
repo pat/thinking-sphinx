@@ -77,6 +77,10 @@ module ThinkingSphinx
       !admin
     end
     
+    def available?
+      columns.any? { |column| column_available?(column) }
+    end
+    
     private
     
     # Could there be more than one value related to the parent record? If so,
@@ -128,9 +132,11 @@ module ThinkingSphinx
     # figure out how to correctly reference a column in SQL.
     # 
     def column_with_prefix(column)
+      return nil unless column_available?(column)
+      
       if column.is_string?
         column.__name
-      elsif associations[column].empty?
+      elsif column.__stack.empty?
         "#{@model.quoted_table_name}.#{quote_column(column.__name)}"
       else
         associations[column].collect { |assoc|
@@ -144,7 +150,17 @@ module ThinkingSphinx
     def columns_with_prefixes
       @columns.collect { |column|
         column_with_prefix column
-      }.flatten
+      }.flatten.compact
+    end
+    
+    def column_available?(column)
+      if column.is_string?
+        true
+      elsif column.__stack.empty?
+        @model.column_names.include?(column.__name.to_s)
+      else
+        associations[column].any? { |assoc| assoc.has_column?(column.__name) }
+      end
     end
     
     # Gets a stack of associations for a specific path.

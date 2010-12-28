@@ -48,6 +48,10 @@ describe ThinkingSphinx::Source do
         @source, ThinkingSphinx::Index::FauxColumn.new(:contacts, :id),
         :as => :contact_ids, :source => :query
       )
+      ThinkingSphinx::Attribute.new(
+        @source, ThinkingSphinx::Index::FauxColumn.new(:source, :id),
+        :as => :source_id, :type => :integer
+      )
       
       ThinkingSphinx::Join.new(
         @source, ThinkingSphinx::Index::FauxColumn.new(:links)
@@ -101,6 +105,12 @@ describe ThinkingSphinx::Source do
       
       @riddle.sql_attr_timestamp.length.should == 1
       @riddle.sql_attr_timestamp.first.should == :birthday
+    end
+    
+    it "should not include an attribute definition for polymorphic references without data" do
+      @riddle.sql_attr_uint.select { |uint|
+        uint == :source_id
+      }.should be_empty
     end
     
     it "should set Sphinx Source options" do

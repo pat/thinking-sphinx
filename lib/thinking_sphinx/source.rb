@@ -82,6 +82,10 @@ module ThinkingSphinx
       @adapter ||= @model.sphinx_database_adapter
     end
     
+    def available_attributes
+      attributes.select { |attrib| attrib.available? }
+    end
+    
     def set_source_database_settings(source)
       config = @database_configuration
       
@@ -94,7 +98,7 @@ module ThinkingSphinx
     end
     
     def set_source_attributes(source, offset, delta = false)
-      attributes.each do |attrib|
+      available_attributes.each do |attrib|
         source.send(attrib.type_to_config) << attrib.config_value(offset, delta)
       end
     end

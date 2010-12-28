@@ -68,6 +68,15 @@ describe ThinkingSphinx::Attribute do
       
       attribute.to_select_sql.should == "CONCAT_WS(' ', IFNULL(`cricket_teams`.`name`, ''), IFNULL(`football_teams`.`name`, ''), IFNULL(`football_teams`.`league`, '')) AS `team`"
     end
+    
+    it "should return nil if polymorphic association data does not exist" do
+      attribute = ThinkingSphinx::Attribute.new(@source,
+        [ThinkingSphinx::Index::FauxColumn.new(:source, :id)],
+        :as => :source_id, :type => :integer
+      )
+      
+      attribute.to_select_sql.should be_nil
+    end
   end
   
   describe '#is_many?' do
