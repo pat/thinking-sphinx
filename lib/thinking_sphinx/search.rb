@@ -468,9 +468,8 @@ module ThinkingSphinx
     end
     
     def prepare(client)
-      index_options = one_class ?
-        one_class.sphinx_indexes.first.local_options : {}
-      
+      index_options = one_class && one_class.sphinx_indexes && one_class.sphinx_indexes.first ?
+        one_class.sphinx_indexes.first.local_options : {}      
       [
         :max_matches, :group_by, :group_function, :group_clause,
         :group_distinct, :id_range, :cut_off, :retry_count, :retry_delay,
