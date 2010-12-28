@@ -4,7 +4,7 @@ require 'timeout'
 namespace :thinking_sphinx do
   task :app_env do
     if defined?(Rails)
-      Rake::Task[:environment].invoke
+      Rails.application.require_environment!
       Rails.configuration.cache_classes = false
     end
     
