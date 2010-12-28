@@ -42,6 +42,7 @@ end
 
 class Person < ActiveRecord::Base
   belongs_to :team, :polymorphic => :true
+  belongs_to :source, :polymorphic => :true
   has_many :contacts
   
   has_many :friendships

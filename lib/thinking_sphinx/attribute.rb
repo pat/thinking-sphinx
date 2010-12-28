@@ -89,7 +89,7 @@ module ThinkingSphinx
     # datetimes to timestamps, as needed.
     # 
     def to_select_sql
-      return nil unless include_as_association?
+      return nil unless include_as_association? && available?
       
       separator = all_ints? || all_datetimes? || @crc ? ',' : ' '
       

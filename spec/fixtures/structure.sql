@@ -16,6 +16,8 @@ CREATE TABLE `people` (
   `team_type` varchar(50) NULL,
   `type` varchar(50) NULL,
   `parent_id` varchar(50) NULL,
+  `source_id` int(11) NULL,
+  `source_type` varchar(50) NULL,
   `delta` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
