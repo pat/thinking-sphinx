@@ -1,9 +1,10 @@
 module ThinkingSphinx
   class Facet
-    attr_reader :property
+    attr_reader :property, :value_source
     
-    def initialize(property)
-      @property = property
+    def initialize(property, value_source = nil)
+      @property     = property
+      @value_source = value_source
       
       if property.columns.length != 1
         raise "Can't translate Facets on multiple-column field or attribute"
@@ -104,7 +105,8 @@ module ThinkingSphinx
           item.to_crc32 == attribute_value
         }
       else
-        objects.first.send(column.__name)
+        method = value_source || column.__name
+        objects.first.send(method)
       end
     end
     

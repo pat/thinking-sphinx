@@ -329,5 +329,19 @@ describe ThinkingSphinx::Facet do
         @facet.value(alpha, {'cost' => 1093140480}).should == 10.5
       end
     end
+    
+    context 'manual value source' do
+      let(:index)  { ThinkingSphinx::Index.new(Alpha) }
+      let(:source) { ThinkingSphinx::Source.new(index) }
+      let(:column) { ThinkingSphinx::Index::FauxColumn.new('LOWER(name)') }
+      let(:field)  { ThinkingSphinx::Field.new(source, column) }
+      let(:facet)  { ThinkingSphinx::Facet.new(field, :name) }
+      
+      it "should use the given value source to figure out the value" do
+        alpha = Alpha.new(:name => 'Foo')
+        
+        facet.value(alpha, {'foo_facet' => 'foo'.to_crc32}).should == 'Foo'
+      end
+    end
   end
 end
