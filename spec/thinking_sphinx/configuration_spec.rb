@@ -224,6 +224,23 @@ describe ThinkingSphinx::Configuration do
     file.should_not match(/index alpha_core\s+\{\s+[^\}]*prefix_fields\s+=[^\}]*\}/m)
   end
   
+  describe '#generate' do
+    let(:config) { ThinkingSphinx::Configuration.instance }
+    
+    it "should set all sphinx_internal_id attributes to bigints if one is" do
+      config.reset
+      config.generate
+      
+      config.configuration.indexes.each do |index|
+        next if index.is_a? Riddle::Configuration::DistributedIndex
+        
+        index.sources.each do |source|
+          source.sql_attr_bigint.should include(:sphinx_internal_id)
+        end
+      end
+    end
+  end
+  
   describe '#client' do
     before :each do
       @config = ThinkingSphinx::Configuration.instance

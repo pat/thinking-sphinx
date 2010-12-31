@@ -9,8 +9,10 @@ class Developer < ActiveRecord::Base
     indexes country,                      :facet => true
     indexes state,                        :facet => true
     indexes tags.text,  :as => :tags,     :facet => true
+    
     has age,                              :facet => true
     has tags(:id),      :as => :tag_ids,  :facet => true
-    facet city
+    
+    facet "LOWER(city)", :as => :city, :type => :string, :value => :city
   end
 end

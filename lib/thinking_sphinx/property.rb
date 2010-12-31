@@ -10,10 +10,11 @@ module ThinkingSphinx
 
       raise "Cannot define a field or attribute in #{source.model.name} with no columns. Maybe you are trying to index a field with a reserved name (id, name). You can fix this error by using a symbol rather than a bare name (:id instead of id)." if @columns.empty? || @columns.any? { |column| !column.respond_to?(:__stack) }
       
-      @alias    = options[:as]
-      @faceted  = options[:facet]
-      @admin    = options[:admin]
-      @sortable = options[:sortable] || false
+      @alias        = options[:as]
+      @faceted      = options[:facet]
+      @admin        = options[:admin]
+      @sortable     = options[:sortable] || false
+      @value_source = options[:value]
       
       @alias    = @alias.to_sym unless @alias.blank?
       
@@ -40,7 +41,7 @@ module ThinkingSphinx
     def to_facet
       return nil unless @faceted
       
-      ThinkingSphinx::Facet.new(self)
+      ThinkingSphinx::Facet.new(self, @value_source)
     end
     
     # Get the part of the GROUP BY clause related to this attribute - if one is

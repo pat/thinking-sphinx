@@ -136,3 +136,11 @@ CREATE TABLE `links_people` (
   `link_id` int(11) NOT NULL,
   `person_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `big_foos`;
+
+CREATE TABLE `big_foos` (
+  `id` bigint NOT NULL auto_increment,
+  `name` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
