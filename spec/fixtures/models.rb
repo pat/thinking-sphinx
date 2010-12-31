@@ -149,3 +149,9 @@ end
 class Search < ActiveRecord::Base
   #
 end
+
+class BigFoo < ActiveRecord::Base
+  define_index do
+    indexes name
+  end
+end

@@ -147,6 +147,8 @@ module ThinkingSphinx
         model = model.constantize
         model.define_indexes
         @configuration.indexes.concat model.to_riddle
+        
+        enforce_common_attribute_types
       end
     end
     
@@ -295,6 +297,27 @@ module ThinkingSphinx
         object.send("#{key}=", value) if object.respond_to?("#{key}")
         send("#{key}=", value) if self.respond_to?("#{key}")
       end
+    end
+    
+    def enforce_common_attribute_types
+      sql_indexes = configuration.indexes.reject { |index|
+        index.is_a? Riddle::Configuration::DistributedIndex
+      }
+      
+      return unless sql_indexes.any? { |index|
+        index.sources.any? { |source|
+          source.sql_attr_bigint.include? :sphinx_internal_id
+        }
+      }
+      
+      sql_indexes.each { |index|
+        index.sources.each { |source|
+          next if source.sql_attr_bigint.include? :sphinx_internal_id
+          
+          source.sql_attr_bigint << :sphinx_internal_id
+          source.sql_attr_uint.delete :sphinx_internal_id
+        }
+      }
     end
   end
 end
