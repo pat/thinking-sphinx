@@ -1,7 +1,7 @@
 source 'http://rubygems.org'
  
 gem 'activerecord', '>= 1.15.6', '< 3.0.0'
-gem 'riddle',       '>= 1.2.0'
+gem 'riddle',       '>= 1.2.2'
 gem 'after_commit', '>= 1.0.7'
 
 group :development do
