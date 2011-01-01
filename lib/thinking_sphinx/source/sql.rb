@@ -119,13 +119,29 @@ module ThinkingSphinx
         if @model.table_exists? &&
           @model.column_names.include?(@model.inheritance_column)
           
-          adapter.cast_to_unsigned(adapter.convert_nulls(
-            adapter.crc(adapter.quote_with_table(@model.inheritance_column), true),
-            @model.to_crc32
-          ))
+          types = types_to_crcs
+          return @model.to_crc32.to_s if types.empty?
+          
+          adapter.case(adapter.convert_nulls(
+            adapter.quote_with_table(@model.inheritance_column)),
+            types_to_crcs, @model.to_crc32)
         else
           @model.to_crc32.to_s
         end
+      end
+      
+      def type_values
+        @model.connection.select_values <<-SQL
+SELECT DISTINCT #{@model.inheritance_column}
+FROM #{@model.table_name}
+        SQL
+      end
+      
+      def types_to_crcs
+        type_values.compact.inject({}) { |hash, type|
+          hash[type] = type.to_crc32
+          hash
+        }
       end
     end
   end

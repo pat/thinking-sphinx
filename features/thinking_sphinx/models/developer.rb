@@ -14,5 +14,7 @@ class Developer < ActiveRecord::Base
     has tags(:id),      :as => :tag_ids,  :facet => true
     
     facet "LOWER(city)", :as => :city, :type => :string, :value => :city
+    
+    group_by 'city'
   end
 end

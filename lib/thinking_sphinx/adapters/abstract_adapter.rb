@@ -71,6 +71,13 @@ module ThinkingSphinx
       "LOWER(#{clause})"
     end
     
+    def case(expression, pairs, default)
+      "CASE #{expression} " +
+      pairs.keys.inject('') { |string, key|
+        string + "WHEN '#{key}' THEN #{pairs[key]} "
+      } + "ELSE #{default} END"
+    end
+    
     protected
     
     def connection

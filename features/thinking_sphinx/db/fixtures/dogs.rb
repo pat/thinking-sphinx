@@ -1,3 +1,3 @@
 %w( rover lassie gaspode ).each do |name|
-  Dog.create :name => name
+  Dog.new(:name => name).save(false)
 end
