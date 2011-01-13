@@ -245,7 +245,7 @@ module ThinkingSphinx
         ThinkingSphinx::Configuration.instance.client.update(
           index, ['sphinx_deleted'], {document_id => [1]}
         )
-      rescue Riddle::ConnectionError
+      rescue Riddle::ConnectionError, ThinkingSphinx::SphinxError
         # Not the end of the world if Sphinx isn't running.
       end
       
