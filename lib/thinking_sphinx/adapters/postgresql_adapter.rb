@@ -117,6 +117,7 @@ module ThinkingSphinx
           DECLARE tmp bigint;
           DECLARE i int;
           DECLARE j int;
+          DECLARE byte_length int;
           DECLARE word_array bytea;
           BEGIN
             IF COALESCE(word, '') = '' THEN
@@ -125,6 +126,7 @@ module ThinkingSphinx
           
             i = 0;
             tmp = 4294967295;
+            byte_length = bit_length(word) / 8;
             word_array = decode(replace(word, E'\\\\', E'\\\\\\\\'), 'escape');
             LOOP
               tmp = (tmp # get_byte(word_array, i))::bigint;
@@ -137,7 +139,7 @@ module ThinkingSphinx
                   EXIT;
                 END IF;
               END LOOP;
-              IF i >= char_length(word) THEN
+              IF i >= byte_length THEN
                 EXIT;
               END IF;
             END LOOP;
