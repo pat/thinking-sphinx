@@ -9,17 +9,7 @@ module ThinkingSphinx
         args << options
         @reflection.klass.search(*args)
       end
-      
-      def method_missing(method, *args, &block)
-        if responds_to_scope(method)
-          @reflection.klass.
-            search(:with => default_filter).
-            send(method, *args, &block)
-        else
-          super
-        end
-      end
-      
+
       private
       
       def attribute_for_foreign_key
@@ -40,11 +30,6 @@ module ThinkingSphinx
       
       def default_filter
         {attribute_for_foreign_key.unique_name => @owner.id}
-      end
-      
-      def responds_to_scope(scope)
-        @reflection.klass.respond_to?(:sphinx_scopes)   &&
-        @reflection.klass.sphinx_scopes.include?(scope)
       end
     end
   end

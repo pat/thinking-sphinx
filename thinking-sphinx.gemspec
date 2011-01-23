@@ -28,6 +28,7 @@ Gem::Specification.new do |s|
     "lib/thinking_sphinx/active_record/attribute_updates.rb",
     "lib/thinking_sphinx/active_record/delta.rb",
     "lib/thinking_sphinx/active_record/has_many_association.rb",
+    "lib/thinking_sphinx/active_record/has_many_association_with_scopes.rb",
     "lib/thinking_sphinx/active_record/scopes.rb",
     "lib/thinking_sphinx/adapters/abstract_adapter.rb",
     "lib/thinking_sphinx/adapters/mysql_adapter.rb",

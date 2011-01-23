@@ -17,6 +17,7 @@ module ThinkingSphinx
         # The scope is automatically applied when the search method is called. It
         # will only be applied if it is an existing sphinx_scope.
         def default_sphinx_scope(sphinx_scope_name)
+          add_sphinx_scopes_support_to_has_many_associations
           @default_sphinx_scope = sphinx_scope_name
         end
 
@@ -43,6 +44,8 @@ module ThinkingSphinx
         #   @articles =  Article.latest_first.search 'pancakes'
         #
         def sphinx_scope(method, &block)
+          add_sphinx_scopes_support_to_has_many_associations
+
           @sphinx_scopes ||= []
           @sphinx_scopes << method
           
@@ -76,6 +79,14 @@ module ThinkingSphinx
           
           sphinx_scopes.clear
         end
+
+        def add_sphinx_scopes_support_to_has_many_associations
+          scope_mixin = ::ThinkingSphinx::ActiveRecord::HasManyAssociationWithScopes
+
+          ::ActiveRecord::Associations::HasManyAssociation.send(:include, scope_mixin)
+          ::ActiveRecord::Associations::HasManyThroughAssociation.send(:include, scope_mixin)
+        end
+
       end
     end
   end
