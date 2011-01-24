@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pat Allan"]
-  s.date = %q{2011-01-13}
+  s.date = %q{2011-01-24}
   s.description = %q{A concise and easy-to-use Ruby library that connects ActiveRecord to the Sphinx search daemon, managing configuration, indexing and searching.}
   s.email = %q{pat@freelancing-gods.com}
   s.extra_rdoc_files = [
@@ -29,6 +29,7 @@ Gem::Specification.new do |s|
     "lib/thinking_sphinx/active_record/attribute_updates.rb",
     "lib/thinking_sphinx/active_record/delta.rb",
     "lib/thinking_sphinx/active_record/has_many_association.rb",
+    "lib/thinking_sphinx/active_record/has_many_association_with_scopes.rb",
     "lib/thinking_sphinx/active_record/log_subscriber.rb",
     "lib/thinking_sphinx/active_record/scopes.rb",
     "lib/thinking_sphinx/adapters/abstract_adapter.rb",
