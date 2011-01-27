@@ -911,7 +911,7 @@ module ThinkingSphinx
     end
     
     def scoped_count
-      return self.total_entries if @options[:ids_only]
+      return self.total_entries if(@options[:ids_only] || @options[:only])
       
       @options[:ids_only] = true
       results_count = self.total_entries
