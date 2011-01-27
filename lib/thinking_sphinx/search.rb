@@ -30,31 +30,31 @@ module ThinkingSphinx
     # Deprecated. Use ThinkingSphinx.search
     def self.search(*args)
       warn 'ThinkingSphinx::Search.search is deprecated. Please use ThinkingSphinx.search instead.'
-      ThinkingSphinx.search *args
+      ThinkingSphinx.search(*args)
     end
 
     # Deprecated. Use ThinkingSphinx.search_for_ids
     def self.search_for_ids(*args)
       warn 'ThinkingSphinx::Search.search_for_ids is deprecated. Please use ThinkingSphinx.search_for_ids instead.'
-      ThinkingSphinx.search_for_ids *args
+      ThinkingSphinx.search_for_ids(*args)
     end
 
     # Deprecated. Use ThinkingSphinx.search_for_ids
     def self.search_for_id(*args)
       warn 'ThinkingSphinx::Search.search_for_id is deprecated. Please use ThinkingSphinx.search_for_id instead.'
-      ThinkingSphinx.search_for_id *args
+      ThinkingSphinx.search_for_id(*args)
     end
 
     # Deprecated. Use ThinkingSphinx.count
     def self.count(*args)
       warn 'ThinkingSphinx::Search.count is deprecated. Please use ThinkingSphinx.count instead.'
-      ThinkingSphinx.count *args
+      ThinkingSphinx.count(*args)
     end
 
     # Deprecated. Use ThinkingSphinx.facets
     def self.facets(*args)
       warn 'ThinkingSphinx::Search.facets is deprecated. Please use ThinkingSphinx.facets instead.'
-      ThinkingSphinx.facets *args
+      ThinkingSphinx.facets(*args)
     end
 
     def self.warn(message)
@@ -343,7 +343,7 @@ module ThinkingSphinx
       merge_search self, args, options
       args << options
 
-      ThinkingSphinx::FacetSearch.new *args
+      ThinkingSphinx::FacetSearch.new(*args)
     end
 
     def client
