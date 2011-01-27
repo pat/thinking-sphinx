@@ -333,13 +333,8 @@ module ThinkingSphinx
       options = args.extract_options!
       merge_search self, args, options
       args << options
-<<<<<<< HEAD
       
-      ThinkingSphinx::FacetSearch.new *args
-=======
-
       ThinkingSphinx::FacetSearch.new(*args)
->>>>>>> 227ce32... enclose some arguments in brackets to avoid ruby ree warnings
     end
     
     def client
@@ -359,16 +354,7 @@ module ThinkingSphinx
       @populated = true
       @results   = results
       
-      if options[:ids_only]
-        replace @results[:matches].collect { |match|
-          match[:attributes]["sphinx_internal_id"]
-        }
-      else
-        replace instances_from_matches
-        add_excerpter
-        add_sphinx_attributes
-        add_matching_fields if client.rank_mode == :fieldmask
-      end
+      compose_results
     end
     
     private
@@ -400,17 +386,34 @@ module ThinkingSphinx
           raise ThinkingSphinx::ConnectionError,
             'Connection to Sphinx Daemon (searchd) failed.'
         end
-      
-        if options[:ids_only]
-          replace @results[:matches].collect { |match|
+        
+        compose_results
+      end
+    end
+
+    def compose_results
+      if options[:ids_only] || options[:only]
+        results = @results[:matches].map do |match|
+          fuu = if options[:ids_only]
             match[:attributes]["sphinx_internal_id"]
-          }
-        else
-          replace instances_from_matches
-          add_excerpter
-          add_sphinx_attributes
-          add_matching_fields if client.rank_mode == :fieldmask
+          elsif options[:only]
+            if options[:only].is_a? String
+              match[:attributes][options[:only]]
+            elsif options[:only].is_a? Array
+              {}.tap do |hash|
+                options[:only].each do |field|
+                  hash[field] = match[:attributes][field]
+                end
+              end
+            end
+          end
         end
+        replace(results)
+      else
+        replace instances_from_matches
+        add_excerpter
+        add_sphinx_attributes
+        add_matching_fields if client.rank_mode == :fieldmask
       end
     end
     
