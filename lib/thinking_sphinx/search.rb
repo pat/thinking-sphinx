@@ -29,32 +29,32 @@ module ThinkingSphinx
     
     # Deprecated. Use ThinkingSphinx.search
     def self.search(*args)
-      log 'ThinkingSphinx::Search.search is deprecated. Please use ThinkingSphinx.search instead.'
-      ThinkingSphinx.search *args
+      warn 'ThinkingSphinx::Search.search is deprecated. Please use ThinkingSphinx.search instead.'
+      ThinkingSphinx.search(*args)
     end
     
     # Deprecated. Use ThinkingSphinx.search_for_ids
     def self.search_for_ids(*args)
-      log 'ThinkingSphinx::Search.search_for_ids is deprecated. Please use ThinkingSphinx.search_for_ids instead.'
-      ThinkingSphinx.search_for_ids *args
+      warn 'ThinkingSphinx::Search.search_for_ids is deprecated. Please use ThinkingSphinx.search_for_ids instead.'
+      ThinkingSphinx.search_for_ids(*args)
     end
     
     # Deprecated. Use ThinkingSphinx.search_for_ids
     def self.search_for_id(*args)
-      log 'ThinkingSphinx::Search.search_for_id is deprecated. Please use ThinkingSphinx.search_for_id instead.'
-      ThinkingSphinx.search_for_id *args
+      warn 'ThinkingSphinx::Search.search_for_id is deprecated. Please use ThinkingSphinx.search_for_id instead.'
+      ThinkingSphinx.search_for_id(*args)
     end
     
     # Deprecated. Use ThinkingSphinx.count
     def self.count(*args)
-      log 'ThinkingSphinx::Search.count is deprecated. Please use ThinkingSphinx.count instead.'
-      ThinkingSphinx.count *args
+      warn 'ThinkingSphinx::Search.count is deprecated. Please use ThinkingSphinx.count instead.'
+      ThinkingSphinx.count(*args)
     end
     
     # Deprecated. Use ThinkingSphinx.facets
     def self.facets(*args)
-      log 'ThinkingSphinx::Search.facets is deprecated. Please use ThinkingSphinx.facets instead.'
-      ThinkingSphinx.facets *args
+      warn 'ThinkingSphinx::Search.facets is deprecated. Please use ThinkingSphinx.facets instead.'
+      ThinkingSphinx.facets(*args)
     end
     
     def self.bundle_searches(enum = nil)
@@ -333,8 +333,13 @@ module ThinkingSphinx
       options = args.extract_options!
       merge_search self, args, options
       args << options
+<<<<<<< HEAD
       
       ThinkingSphinx::FacetSearch.new *args
+=======
+
+      ThinkingSphinx::FacetSearch.new(*args)
+>>>>>>> 227ce32... enclose some arguments in brackets to avoid ruby ree warnings
     end
     
     def client
