@@ -47,8 +47,7 @@ module ThinkingSphinx
           end
           
           def sphinx_database_adapter
-            @sphinx_database_adapter ||=
-              ThinkingSphinx::AbstractAdapter.detect(self)
+            ThinkingSphinx::AbstractAdapter.detect(self)
           end
           
           def sphinx_name

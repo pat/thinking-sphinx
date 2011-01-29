@@ -30,31 +30,31 @@ module ThinkingSphinx
     # Deprecated. Use ThinkingSphinx.search
     def self.search(*args)
       warn 'ThinkingSphinx::Search.search is deprecated. Please use ThinkingSphinx.search instead.'
-      ThinkingSphinx.search *args
+      ThinkingSphinx.search(*args)
     end
     
     # Deprecated. Use ThinkingSphinx.search_for_ids
     def self.search_for_ids(*args)
       warn 'ThinkingSphinx::Search.search_for_ids is deprecated. Please use ThinkingSphinx.search_for_ids instead.'
-      ThinkingSphinx.search_for_ids *args
+      ThinkingSphinx.search_for_ids(*args)
     end
     
     # Deprecated. Use ThinkingSphinx.search_for_ids
     def self.search_for_id(*args)
       warn 'ThinkingSphinx::Search.search_for_id is deprecated. Please use ThinkingSphinx.search_for_id instead.'
-      ThinkingSphinx.search_for_id *args
+      ThinkingSphinx.search_for_id(*args)
     end
     
     # Deprecated. Use ThinkingSphinx.count
     def self.count(*args)
       warn 'ThinkingSphinx::Search.count is deprecated. Please use ThinkingSphinx.count instead.'
-      ThinkingSphinx.count *args
+      ThinkingSphinx.count(*args)
     end
     
     # Deprecated. Use ThinkingSphinx.facets
     def self.facets(*args)
       warn 'ThinkingSphinx::Search.facets is deprecated. Please use ThinkingSphinx.facets instead.'
-      ThinkingSphinx.facets *args
+      ThinkingSphinx.facets(*args)
     end
 
     def self.warn(message)
@@ -343,7 +343,7 @@ module ThinkingSphinx
       merge_search self, args, options
       args << options
       
-      ThinkingSphinx::FacetSearch.new *args
+      ThinkingSphinx::FacetSearch.new(*args)
     end
     
     def client
@@ -363,16 +363,7 @@ module ThinkingSphinx
       @populated = true
       @results   = results
       
-      if options[:ids_only]
-        replace @results[:matches].collect { |match|
-          match[:attributes]["sphinx_internal_id"]
-        }
-      else
-        replace instances_from_matches
-        add_excerpter
-        add_sphinx_attributes
-        add_matching_fields if client.rank_mode == :fieldmask
-      end
+      compose_results
     end
     
     private
@@ -403,18 +394,44 @@ module ThinkingSphinx
           raise ThinkingSphinx::ConnectionError,
             'Connection to Sphinx Daemon (searchd) failed.'
         end
-      
-        if options[:ids_only]
-          replace @results[:matches].collect { |match|
-            match[:attributes]["sphinx_internal_id"]
-          }
-        else
-          replace instances_from_matches
-          add_excerpter
-          add_sphinx_attributes
-          add_matching_fields if client.rank_mode == :fieldmask
-        end
+        
+        compose_results
       end
+    end
+
+    def compose_results
+      if options[:ids_only]
+        compose_ids_results
+      elsif options[:only]
+        compose_only_results
+      else
+        replace instances_from_matches
+        add_excerpter
+        add_sphinx_attributes
+        add_matching_fields if client.rank_mode == :fieldmask
+      end
+    end
+    
+    def compose_ids_results
+      replace @results[:matches].collect { |match|
+        match[:attributes]['sphinx_internal_id']
+      }
+    end
+    
+    def compose_only_results
+      replace @results[:matches].collect { |match|
+        case only = options[:only]
+        when String, Symbol
+          match[:attributes][only.to_s]
+        when Array
+          only.inject({}) do |hash, attribute|
+            hash[attribute.to_sym] = match[:attributes][attribute.to_s]
+            hash
+          end
+        else
+          raise "Unexpected object for :only argument. String or Array is expected, #{only.class} was received."
+        end
+      }
     end
     
     def add_excerpter
@@ -908,7 +925,7 @@ module ThinkingSphinx
     end
     
     def scoped_count
-      return self.total_entries if @options[:ids_only]
+      return self.total_entries if(@options[:ids_only] || @options[:only])
       
       @options[:ids_only] = true
       results_count = self.total_entries
