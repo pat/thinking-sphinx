@@ -867,6 +867,36 @@ describe ThinkingSphinx::Search do
       end
     end
     
+    describe ':only option' do
+      it "returns the requested attribute as an array" do
+        ThinkingSphinx::Search.new(:only => :class_crc).first.
+          should == Alpha.to_crc32
+      end
+      
+      it "returns multiple attributes as hashes with values" do
+        ThinkingSphinx::Search.new(
+          :only => [:class_crc, :sphinx_internal_id]
+        ).first.should == {
+          :class_crc          => Alpha.to_crc32,
+          :sphinx_internal_id => @alpha_a.id
+        }
+      end
+      
+      it "handles strings for a single attribute name" do
+        ThinkingSphinx::Search.new(:only => 'class_crc').first.
+          should == Alpha.to_crc32
+      end
+      
+      it "handles strings for multiple attribute names" do
+        ThinkingSphinx::Search.new(
+          :only => ['class_crc', 'sphinx_internal_id']
+        ).first.should == {
+          :class_crc          => Alpha.to_crc32,
+          :sphinx_internal_id => @alpha_a.id
+        }
+      end
+    end
+    
     context 'result objects' do
       describe '#excerpts' do
         before :each do

@@ -392,29 +392,38 @@ module ThinkingSphinx
     end
 
     def compose_results
-      if options[:ids_only] || options[:only]
-        results = @results[:matches].map do |match|
-          fuu = if options[:ids_only]
-            match[:attributes]["sphinx_internal_id"]
-          elsif options[:only]
-            if options[:only].is_a? String
-              match[:attributes][options[:only]]
-            elsif options[:only].is_a? Array
-              {}.tap do |hash|
-                options[:only].each do |field|
-                  hash[field] = match[:attributes][field]
-                end
-              end
-            end
-          end
-        end
-        replace(results)
+      if options[:ids_only]
+        compose_ids_results
+      elsif options[:only]
+        compose_only_results
       else
         replace instances_from_matches
         add_excerpter
         add_sphinx_attributes
         add_matching_fields if client.rank_mode == :fieldmask
       end
+    end
+    
+    def compose_ids_results
+      replace @results[:matches].collect { |match|
+        match[:attributes]['sphinx_internal_id']
+      }
+    end
+    
+    def compose_only_results
+      replace @results[:matches].collect { |match|
+        case only = options[:only]
+        when String, Symbol
+          match[:attributes][only.to_s]
+        when Array
+          only.inject({}) do |hash, attribute|
+            hash[attribute.to_sym] = match[:attributes][attribute.to_s]
+            hash
+          end
+        else
+          raise "Unexpected object for :only argument. String or Array is expected, #{only.class} was received."
+        end
+      }
     end
     
     def add_excerpter
