@@ -15,7 +15,7 @@ group :development do
   gem 'rspec-mocks',        '2.0.1'
   gem 'rcov',               '0.9.8'
   gem 'cucumber',           '0.9.4'
-  gem 'will_paginate',      '3.0.pre'
+  gem 'will_paginate',      '>= 3.0.pre'
   gem 'ginger',             '1.2.0'
   gem 'faker',              '0.3.1'
 end
