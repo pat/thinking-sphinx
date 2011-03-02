@@ -328,22 +328,12 @@ module ThinkingSphinx
     attr_accessor :sphinx_attributes
     attr_accessor :matching_fields
     
-    def in_index?(suffix)
-      self.class.search_for_id self.sphinx_document_id, sphinx_index_name(suffix)
+    def in_index?(index)
+      self.class.search_for_id self.sphinx_document_id, index
+    rescue Riddle::ResponseError
+      true
     end
-    
-    def in_core_index?
-      in_index? "core"
-    end
-    
-    def in_delta_index?
-      in_index? "delta"
-    end
-    
-    def in_both_indexes?
-      in_core_index? && in_delta_index?
-    end
-    
+        
     def toggle_deleted
       return unless ThinkingSphinx.updates_enabled?
       
