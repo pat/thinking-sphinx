@@ -25,7 +25,18 @@ module ThinkingSphinx
           end
           
           def primary_key_for_sphinx
-            @sphinx_primary_key_attribute || primary_key
+            if custom_primary_key_for_sphinx?
+              @sphinx_primary_key_attribute || superclass.primary_key_for_sphinx
+            else
+              primary_key
+            end
+          end
+          
+          def custom_primary_key_for_sphinx?
+            (
+              superclass.respond_to?(:custom_primary_key_for_sphinx?) &&
+              superclass.custom_primary_key_for_sphinx?
+            ) || !@sphinx_primary_key_attribute.nil?
           end
           
           def sphinx_index_options
@@ -315,22 +326,12 @@ module ThinkingSphinx
     attr_accessor :sphinx_attributes
     attr_accessor :matching_fields
     
-    def in_index?(suffix)
-      self.class.search_for_id self.sphinx_document_id, sphinx_index_name(suffix)
+    def in_index?(index)
+      self.class.search_for_id self.sphinx_document_id, index
+    rescue Riddle::ResponseError
+      true
     end
-    
-    def in_core_index?
-      in_index? "core"
-    end
-    
-    def in_delta_index?
-      in_index? "delta"
-    end
-    
-    def in_both_indexes?
-      in_core_index? && in_delta_index?
-    end
-    
+        
     def toggle_deleted
       return unless ThinkingSphinx.updates_enabled?
       
