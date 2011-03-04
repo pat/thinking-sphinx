@@ -406,6 +406,13 @@ describe ThinkingSphinx::ActiveRecord do
       @person.stub!(:id => 'unique_hash')
       @person.primary_key_for_sphinx.should == id
     end
+    
+    it "should be inherited by subclasses" do
+      Person.set_sphinx_primary_key :first_name
+      puts Parent.superclass.respond_to?(:custom_primary_key_for_sphinx?),
+      Parent.superclass.custom_primary_key_for_sphinx?
+      Parent.primary_key_for_sphinx.should == Person.primary_key_for_sphinx
+    end
   end
   
   describe '.sphinx_index_names' do
