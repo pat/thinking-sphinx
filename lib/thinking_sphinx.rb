@@ -1,3 +1,4 @@
+require 'thread'
 require 'active_record'
 require 'yaml'
 require 'riddle'
