@@ -1,3 +1,4 @@
+require 'thread'
 require 'active_record'
 require 'after_commit'
 require 'yaml'
