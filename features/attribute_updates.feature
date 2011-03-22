@@ -36,7 +36,7 @@ Feature: Update attributes directly to Sphinx
     And I filter by 18 on value
     Then I should get 1 result
     
-    When I search for the document id of beta eight in the beta_delta index
+    When I search for the document id of beta eight in the secondary_beta_delta index
     Then it should not exist
   
   Scenario: Updating attributes in a delta index
@@ -48,7 +48,7 @@ Feature: Update attributes directly to Sphinx
     And I wait for Sphinx to catch up
     
     When I filter by 19 on value
-    And I use index beta_delta
+    And I use index secondary_beta_delta
     Then I should get 1 result
     
   Scenario: Updating attributes in a delta index with deltas disabled
@@ -61,7 +61,7 @@ Feature: Update attributes directly to Sphinx
     And I wait for Sphinx to catch up
   
     When I filter by 21 on value
-    And I use index beta_delta
+    And I use index secondary_beta_delta
     Then I should get 1 result
     And I enable delta updates
   

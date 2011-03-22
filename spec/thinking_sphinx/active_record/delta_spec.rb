@@ -70,7 +70,7 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
       ThinkingSphinx.deltas_enabled   = true
       ThinkingSphinx.updates_enabled  = true
       ThinkingSphinx.stub!(:sphinx_running? => true)
-      Person.delta_object.stub!(:` => "", :toggled => true)
+      Person.delta_objects.first.stub!(:` => "", :toggled => true)
       
       @person = Person.new
       Person.stub!(:search_for_id => false)

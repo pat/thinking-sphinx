@@ -318,7 +318,7 @@ module ThinkingSphinx
         {
           :docs   => [string.to_s],
           :words  => results[:words].keys.join(' '),
-          :index  => options[:index] || "#{model.source_of_sphinx_index.sphinx_name}_core"
+          :index  => options[:index] || "#{model.core_index_names.first}"
         }.merge(options[:excerpt_options] || {})
       ).first
     end
