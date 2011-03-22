@@ -202,6 +202,12 @@ module ThinkingSphinx
       @options[:page].blank? ? 1 : @options[:page].to_i
     end
     
+    # Kaminari support
+    def page(page_number)
+      @options[:page] = page_number
+      self
+    end
+    
     # The next page number of the result set. If there are no more pages
     # available, nil is returned.
     # 
@@ -230,6 +236,14 @@ module ThinkingSphinx
       @options[:limit] ||= 20
       @options[:limit].to_i
     end
+    # Kaminari support
+    alias_method :limit_value, :per_page
+    
+    # Kaminari support
+    def per(limit)
+      @options[:limit] = limit
+      self
+    end
     
     # The total number of pages available if the results are paginated.
     # 
@@ -241,8 +255,9 @@ module ThinkingSphinx
       
       @total_pages ||= (@results[:total] / per_page.to_f).ceil
     end
-    # Compatibility with older versions of will_paginate
+    # Compatibility with kaminari and older versions of will_paginate
     alias_method :page_count, :total_pages
+    alias_method :num_pages,  :total_pages
     
     # Query time taken
     # 
