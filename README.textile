@@ -185,3 +185,4 @@ Since I first released this library, there's been quite a few people who have su
 * Robert Stern
 * George Anderson
 * Greg Weber
+* Javier Ramírez
