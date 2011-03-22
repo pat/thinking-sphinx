@@ -39,7 +39,7 @@ describe ThinkingSphinx::AutoVersion do
     end
     
     it "should output a warning if the detected version is something else" do
-      STDERR.should_receive(:puts)
+      STDERR.should_receive(:puts).twice
       
       @config.stub!(:version => '0.9.7')
       ThinkingSphinx::AutoVersion.detect
