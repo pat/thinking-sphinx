@@ -1,6 +1,7 @@
 module SearchAsArray
   def ===(object)
-    object.is_a?(ThinkingSphinx::Search) || super
+    (ThinkingSphinx::Search === object) || super
+    # object.is_a?(ThinkingSphinx::Search) || super
   end
 end
 
