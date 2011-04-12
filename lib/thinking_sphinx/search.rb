@@ -397,9 +397,26 @@ module ThinkingSphinx
             log "Sphinx Daemon returned error: #{error}", :error
             raise SphinxError.new(error, @results) unless options[:ignore_errors]
           end
+        rescue Riddle::ConnectionError => err
+          raise ThinkingSphinx::ConnectionError,
+            'Connection to Sphinx Daemon (searchd) failed.' unless options[:ignore_connection_error]
+           @results = {
+            :matches         => [],
+            :fields          => [],
+            :attributes      => {},
+            :attribute_names => [],
+            :words           => {},
+            :total_found => 0}
         rescue Errno::ECONNREFUSED => err
           raise ThinkingSphinx::ConnectionError,
-            'Connection to Sphinx Daemon (searchd) failed.'
+            'Connection to Sphinx Daemon (searchd) failed.' unless options[:ignore_connection_error]
+           @results = {
+            :matches         => [],
+            :fields          => [],
+            :attributes      => {},
+            :attribute_names => [],
+            :words           => {},
+            :total_found => 0}
         end
         
         compose_results

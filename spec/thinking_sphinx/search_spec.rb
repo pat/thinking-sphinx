@@ -989,6 +989,12 @@ describe ThinkingSphinx::Search do
             ThinkingSphinx::Search.new(:ignore_errors => true).first
           }.should_not raise_error(ThinkingSphinx::SphinxError)
         end
+        it "should not raise a connection error when ignore_connection_errors is true" do
+          @client.stub!(:query).and_raise(Riddle::ConnectionError)
+          lambda{
+            ThinkingSphinx::Search.new(:ignore_connection_errors => true).first
+          }.should_not raise_error(Riddle::ConnectionError)
+        end
       end
     end
   end
