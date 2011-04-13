@@ -43,9 +43,9 @@ DESC
         run commands.split(/\n\s+/).join(" && ")
       end
 
-      desc "Install Thinking Sphinx as a gem from GitHub"
+      desc "Install Thinking Sphinx as a gem"
       task :ts do
-        run "#{try_sudo} gem install thinking-sphinx --source http://gemcutter.org"
+        run "#{try_sudo} gem install thinking-sphinx"
       end
     end
 
