@@ -32,13 +32,13 @@ DESC
         args << fetch(:thinking_sphinx_configure_args, '')
 
         commands = <<-CMD
-        wget -q http://www.sphinxsearch.com/downloads/sphinx-0.9.8.1.tar.gz >> sphinx.log
-        tar xzvf sphinx-0.9.8.1.tar.gz
-        cd sphinx-0.9.8.1
+        wget -q http://sphinxsearch.com/downloads/sphinx-0.9.9.tar.gz >> sphinx.log
+        tar xzvf sphinx-0.9.9.tar.gz
+        cd sphinx-0.9.9
         ./configure #{args.join(" ")}
         make
         #{try_sudo} make install
-        rm -rf sphinx-0.9.8.1 sphinx-0.9.8.1.tar.gz
+        rm -rf sphinx-0.9.9 sphinx-0.9.9.tar.gz
         CMD
         run commands.split(/\n\s+/).join(" && ")
       end
