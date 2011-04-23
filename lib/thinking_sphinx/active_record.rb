@@ -25,10 +25,13 @@ module ThinkingSphinx
           end
           
           def primary_key_for_sphinx
-            if custom_primary_key_for_sphinx?
-              @sphinx_primary_key_attribute || superclass.primary_key_for_sphinx
-            else
-              primary_key
+            @primary_key_for_sphinx ||= begin
+              if custom_primary_key_for_sphinx?
+                @sphinx_primary_key_attribute ||
+                superclass.primary_key_for_sphinx
+              else
+                primary_key
+              end
             end
           end
           
@@ -37,6 +40,10 @@ module ThinkingSphinx
               superclass.respond_to?(:custom_primary_key_for_sphinx?) &&
               superclass.custom_primary_key_for_sphinx?
             ) || !@sphinx_primary_key_attribute.nil?
+          end
+          
+          def clear_primary_key_for_sphinx
+            @primary_key_for_sphinx = nil
           end
           
           def sphinx_index_options

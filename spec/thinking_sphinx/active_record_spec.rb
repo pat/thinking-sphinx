@@ -389,6 +389,10 @@ describe ThinkingSphinx::ActiveRecord do
     end
     
     after :each do
+      Person.clear_primary_key_for_sphinx
+    end
+    
+    after :each do
       Person.set_sphinx_primary_key nil
     end
     
