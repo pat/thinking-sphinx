@@ -251,6 +251,16 @@ module ThinkingSphinx
         FauxColumn.new(assoc, *args)
       end
       
+      # Use this method to generate SQL for your attributes, conditions, etc.
+      # You can pass in as whatever ActiveRecord::Base.sanitize_sql accepts.
+      # 
+      #   where sanitize_sql(["active = ?", true])
+      #   #=> WHERE active = 1
+      # 
+      def sanitize_sql(*args)
+        @index.model.send(:sanitize_sql, *args)
+      end
+      
       private
       
       def source
