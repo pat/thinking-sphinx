@@ -89,9 +89,10 @@ module ThinkingSphinx
       if custom_app_root
         self.app_root = custom_app_root
       else
-        self.app_root = Rails.root if defined?(Rails)
-        self.app_root = Merb.root if defined?(Merb)
-        self.app_root ||= Dir.pwd
+        self.app_root   = Rails.root                 if defined?(Rails)
+        self.app_root   = Merb.root                  if defined?(Merb)
+        self.app_root   = Sinatra::Application.root  if defined?(Sinatra)
+        self.app_root ||= app_root
       end
 
       @configuration = Riddle::Configuration.new
@@ -125,14 +126,14 @@ module ThinkingSphinx
     end
 
     def self.environment
-      Thread.current[:thinking_sphinx_environment] ||= begin
-        if defined?(Merb)
-          Merb.environment
-        elsif defined?(Rails)
-          Rails.env
-        else
-          ENV['RAILS_ENV'] || 'development'
-        end
+      Thread.current[:thinking_sphinx_environment] ||= if defined?(Merb)
+        Merb.environment
+      elsif defined?(Sinatra)
+        Sinatra::Application.environment.to_s
+      elsif defined?(Rails)
+        Rails.env
+      else
+        ENV['RAILS_ENV'] || 'development'
       end
     end
 

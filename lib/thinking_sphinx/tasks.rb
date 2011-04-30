@@ -6,9 +6,11 @@ namespace :thinking_sphinx do
     if defined?(Rails)
       Rails.application.require_environment!
       Rails.configuration.cache_classes = false
+    elsif defined?(Merb)
+      Rake::Task[:merb_env].invoke
+    elsif defined?(Sinatra)
+      Sinatra::Application.environment = ENV['RACK_ENV']
     end
-    
-    Rake::Task[:merb_env].invoke    if defined?(Merb)
   end
   
   desc "Output the current Thinking Sphinx version"
