@@ -489,7 +489,10 @@ module ThinkingSphinx
     end
 
     def self.log(message, &block)
-      return if ThinkingSphinx::ActiveRecord::LogSubscriber.logger.nil?
+      if ThinkingSphinx::ActiveRecord::LogSubscriber.logger.nil?
+        yield if block_given?
+        return
+      end
 
       if block_given?
         ::ActiveSupport::Notifications.
