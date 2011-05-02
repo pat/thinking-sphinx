@@ -492,4 +492,17 @@ describe ThinkingSphinx::Index::Builder do
       index.name.should == 'custom'
     end
   end
+  
+  describe "sanitize_sql" do
+    def index
+      @index ||= ThinkingSphinx::Index::Builder.generate(Person) do
+        indexes first_name, last_name
+        where sanitize_sql(["gender = ?", "female"])
+      end
+    end
+    
+    it "should be aliased to ActiveRecord::Base.sanitize_sql" do
+      index.sources.first.conditions.first.should == index.model.send(:sanitize_sql, ["gender = ?", "female"])
+    end
+  end
 end
