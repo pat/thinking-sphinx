@@ -102,7 +102,7 @@ module ThinkingSphinx
       
       if objects.length > 1
         objects.collect { |item| item.send(column.__name) }.detect { |item|
-          item.to_crc32 == attribute_value
+          !item.nil? && item.to_crc32 == attribute_value
         }
       else
         method = value_source || column.__name
