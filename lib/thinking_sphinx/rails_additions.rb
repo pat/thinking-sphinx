@@ -148,3 +148,34 @@ end
 unless Object.new.respond_to?(:singleton_class)
   Object.send(:include, ThinkingSphinx::SingletonClass)
 end
+
+module ThinkingSphinx
+  module ObjectTry
+    def try(*a, &b)
+      if a.empty? && block_given?
+        yield self
+      else
+        __send__(*a, &b)
+      end
+    end
+  end
+
+  module NilClassTry
+    def try(*args)
+      nil
+    end
+  end
+end
+
+Object.send(:include, ThinkingSphinx::ObjectTry) unless Object.new.respond_to?(:try)
+NilClass.send(:include, ThinkingSphinx::NilClassTry) unless nil.respond_to?(:try)
+
+module ThinkingSphinx
+  module EnumerableOne
+    def one?(&block)
+      select(&block).size == 1
+    end
+  end
+end
+
+Enumerable.send(:include, ThinkingSphinx::EnumerableOne) unless [].respond_to?(:one?)
