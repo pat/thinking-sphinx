@@ -311,6 +311,18 @@ describe ThinkingSphinx::Facet do
         ThinkingSphinx::Facet.new(field).value(friendship, {'name_facet' => 'buried'.to_crc32}).
           should == 'buried'
       end
+      
+      it "should not error with multi-level association values containing a nil value" do
+        person      = Person.find(:first)
+        tag         = person.tags.build(:name => nil)
+        tag         = person.tags.build(:name => "buried")
+        friendship  = Friendship.new(:person => person)
+        
+        field  = ThinkingSphinx::Field.new(
+          @source, ThinkingSphinx::Index::FauxColumn.new(:person, :tags, :name)
+        )
+        lambda{ThinkingSphinx::Facet.new(field).value(friendship, {'name_facet' => 'buried'.to_crc32})}.should_not raise_error
+      end
     end
     
     describe 'for float attributes' do
