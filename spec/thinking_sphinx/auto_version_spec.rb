@@ -38,15 +38,15 @@ describe ThinkingSphinx::AutoVersion do
       ThinkingSphinx::AutoVersion.detect
     end
     
-    it "should output a warning if the detected version is something else" do
-      STDERR.should_receive(:puts).twice
+    it "should output a warning if the detected version is unsupported" do
+      STDERR.should_receive(:puts).with(/unsupported/i)
       
       @config.stub!(:version => '0.9.7')
       ThinkingSphinx::AutoVersion.detect
     end
     
     it "should output a warning if the version cannot be determined" do
-      STDERR.should_receive(:puts)
+      STDERR.should_receive(:puts).at_least(:once)
       
       @config.stub!(:version => nil)
       ThinkingSphinx::AutoVersion.detect
