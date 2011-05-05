@@ -19,4 +19,9 @@ require "thinking_sphinx"
 
 ActiveRecord::Base.send(:include, ThinkingSphinx::ActiveRecord)
 
+ActiveSupport::Inflector.inflections do |inflect|
+  inflect.plural /^(.*)beta$/i, '\1betas'
+  inflect.singular /^(.*)betas$/i, '\1beta'
+end
+
 world.setup

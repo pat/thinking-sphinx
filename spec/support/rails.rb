@@ -11,3 +11,8 @@ module Rails
     @@environment = env
   end
 end
+
+ActiveSupport::Inflector.inflections do |inflect|
+  inflect.plural /^beta$/i, 'betas'
+  inflect.singular /^betas$/i, 'beta'
+end
