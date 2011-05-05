@@ -101,7 +101,7 @@ module ThinkingSphinx
       return if objects.blank?
 
       method = value_source || column.__name
-      object = objects.one? ? objects.first : objects.detect { |item| item.send(method).to_crc32 == attribute_value }
+      object = objects.one? ? objects.first : objects.detect { |item| item.send(method) && item.send(method).to_crc32 == attribute_value }
 
       object.try(method)
     end
