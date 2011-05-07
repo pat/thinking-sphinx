@@ -8,7 +8,7 @@ module Riddle
         :crash_log_path, :max_filters, :max_filter_values, :listen_backlog,
         :read_buffer, :read_unhinted, :max_batch_queries, :subtree_docs_cache,
         :subtree_hits_cache, :workers, :dist_threads, :binlog_path,
-        :binlog_flush, :binlog_max_log_size]
+        :binlog_flush, :binlog_max_log_size, :client_key]
       
       attr_accessor *self.settings
             

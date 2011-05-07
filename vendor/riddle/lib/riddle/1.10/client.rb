@@ -21,6 +21,10 @@ class Riddle::Client
     message.append_ints options[:start_passage_id]
     message.append_string options[:html_strip_mode]
     
+    if Versions[:excerpt] >= 0x103
+      message.append_string options[:passage_boundary]
+    end
+    
     message.append_array options[:docs]
     
     message.to_s

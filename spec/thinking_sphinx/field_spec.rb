@@ -90,15 +90,18 @@ describe ThinkingSphinx::Field do
   
   describe "is_many? method" do
     before :each do
-      @assoc_a = stub('assoc', :is_many? => true)
-      @assoc_b = stub('assoc', :is_many? => true)
-      @assoc_c = stub('assoc', :is_many? => true)
+      @assoc_a = ThinkingSphinx::Association.new(nil, nil)
+      @assoc_b = ThinkingSphinx::Association.new(nil, nil)
+      @assoc_c = ThinkingSphinx::Association.new(nil, nil)
       
       @field = ThinkingSphinx::Field.new(
         @source, [ThinkingSphinx::Index::FauxColumn.new(:col_name)]
       )
       @field.associations = {
         :a => @assoc_a, :b => @assoc_b, :c => @assoc_c
+      }
+      @field.associations.values.each { |assoc|
+        assoc.stub!(:is_many? => true)
       }
     end
     

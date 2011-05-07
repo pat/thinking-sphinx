@@ -1,6 +1,7 @@
 module ThinkingSphinx
   class Excerpter
-    CoreMethods = %w( kind_of? object_id respond_to? should should_not stub! )
+    CoreMethods = %w( kind_of? object_id respond_to? respond_to_missing? should
+      should_not stub! )
     # Hide most methods, to allow them to be passed through to the instance.
     instance_methods.select { |method|
       method.to_s[/^__/].nil? && !CoreMethods.include?(method.to_s)
