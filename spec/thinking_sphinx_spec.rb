@@ -49,7 +49,6 @@ describe ThinkingSphinx do
   
   describe '.deltas_enabled?' do
     it "should index deltas by default" do
-      ThinkingSphinx.deltas_enabled = nil
       ThinkingSphinx.deltas_enabled?.should be_true
     end
   end

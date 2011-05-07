@@ -80,6 +80,7 @@ module ThinkingSphinx
   @@sphinx_mutex          = Mutex.new
   @@context               = nil
   @@define_indexes        = true
+  @@deltas_enabled        = nil
   @@updates_enabled       = nil
   @@suppress_delta_output = false
   @@remote_sphinx         = false
@@ -127,25 +128,39 @@ module ThinkingSphinx
       @@define_indexes = value
     end
   end
-
-  # Check if delta indexing is enabled.
+  
+  # Check if delta indexing is enabled/disabled.
   #
   def self.deltas_enabled?
-    if Thread.current[:thinking_sphinx_deltas_enabled].nil?
-      Thread.current[:thinking_sphinx_deltas_enabled] = (
-        ThinkingSphinx::Configuration.environment != "test"
-      )
-    end
-    
-    Thread.current[:thinking_sphinx_deltas_enabled]
+    @@deltas_enabled && !deltas_suspended?
   end
-
-  # Enable/disable all delta indexing.
+  
+  # Enable/disable delta indexing.
   #
   #   ThinkingSphinx.deltas_enabled = false
   #
   def self.deltas_enabled=(value)
-    Thread.current[:thinking_sphinx_deltas_enabled] = value
+    mutex.synchronize do
+      @@deltas_enabled = value
+    end
+  end
+
+  # Check if delta indexing is suspended.
+  #
+  def self.deltas_suspended?
+    if Thread.current[:thinking_sphinx_deltas_suspended].nil?
+      Thread.current[:thinking_sphinx_deltas_suspended] = false
+    end
+    
+    Thread.current[:thinking_sphinx_deltas_suspended]
+  end
+
+  # Suspend/resume delta indexing.
+  #
+  #   ThinkingSphinx.deltas_suspended = false
+  #
+  def self.deltas_suspended=(value)
+    Thread.current[:thinking_sphinx_deltas_suspended] = value
   end
 
   # Check if updates are enabled. True by default, unless within the test

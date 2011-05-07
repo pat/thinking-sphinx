@@ -17,27 +17,27 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
   
   describe "suspended_delta method" do
     before :each do
-      ThinkingSphinx.deltas_enabled = true
+      ThinkingSphinx.deltas_suspended = false
       Person.sphinx_indexes.first.delta_object.stub!(:` => "")
     end
 
     it "should execute the argument block with deltas disabled" do
-      ThinkingSphinx.should_receive(:deltas_enabled=).once.with(false)
-      ThinkingSphinx.should_receive(:deltas_enabled=).once.with(true)
+      ThinkingSphinx.should_receive(:deltas_suspended=).once.with(true)
+      ThinkingSphinx.should_receive(:deltas_suspended=).once.with(false)
       lambda { Person.suspended_delta { raise 'i was called' } }.should(
         raise_error(Exception)
       )
     end
 
     it "should restore deltas_enabled to its original setting" do
-      ThinkingSphinx.deltas_enabled = false
-      ThinkingSphinx.should_receive(:deltas_enabled=).twice.with(false)
+      ThinkingSphinx.deltas_suspended = true
+      ThinkingSphinx.should_receive(:deltas_suspended=).twice.with(true)
       Person.suspended_delta { 'no-op' }
     end
 
     it "should restore deltas_enabled to its original setting even if there was an exception" do
-      ThinkingSphinx.deltas_enabled = false
-      ThinkingSphinx.should_receive(:deltas_enabled=).twice.with(false)
+      ThinkingSphinx.deltas_suspended = true
+      ThinkingSphinx.should_receive(:deltas_suspended=).twice.with(true)
       lambda { Person.suspended_delta { raise 'bad error' } }.should(
         raise_error(Exception)
       )
