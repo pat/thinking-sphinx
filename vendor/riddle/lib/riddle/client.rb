@@ -123,12 +123,16 @@ module Riddle
       :connection, :key
     attr_reader :queue
     
+    @@connection = nil
+    
     def self.connection=(value)
-      Thread.current[:riddle_connection] = value
+      Riddle.mutex.synchronize do
+        @@connection = value
+      end
     end
 
     def self.connection
-      Thread.current[:riddle_connection]
+      @@connection
     end
     
     # Can instantiate with a specific server and port - otherwise it assumes

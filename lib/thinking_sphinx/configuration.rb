@@ -72,7 +72,9 @@ module ThinkingSphinx
     attr_accessor :version
 
     attr_reader :environment, :configuration, :controller
-
+    
+    @@environment = nil
+    
     # Load in the configuration settings - this will look for config/sphinx.yml
     # and parse it according to the current environment.
     #
@@ -126,14 +128,26 @@ module ThinkingSphinx
     end
 
     def self.environment
-      Thread.current[:thinking_sphinx_environment] ||= if defined?(Merb)
-        Merb.environment
-      elsif defined?(Sinatra)
-        Sinatra::Application.environment.to_s
-      elsif defined?(Rails)
-        Rails.env
-      else
-        ENV['RAILS_ENV'] || 'development'
+      if @@environment.nil?
+        ThinkingSphinx.mutex.synchronize do
+          @@environment ||= if defined?(Merb)
+            Merb.environment
+          elsif defined?(Sinatra)
+            Sinatra::Application.environment.to_s
+          elsif defined?(Rails)
+            Rails.env
+          else
+            ENV['RAILS_ENV'] || 'development'
+          end
+        end
+      end
+      
+      @@environment
+    end
+    
+    def self.reset_environment
+      ThinkingSphinx.mutex.synchronize do
+        @@environment = nil
       end
     end
 
