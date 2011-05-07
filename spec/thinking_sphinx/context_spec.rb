@@ -41,6 +41,7 @@ describe ThinkingSphinx::Context do
       }.should_not raise_error
     end
 
+    # Fails in Ruby 1.9 (or maybe it's an RSpec update). Not sure why.
     it "should retry if the first pass fails and contains a directory" do
       @model_name_lower.stub!(:gsub!).and_return(true, nil)
       @class_name.stub(:constantize).and_raise(LoadError)

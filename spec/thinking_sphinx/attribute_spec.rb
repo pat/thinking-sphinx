@@ -81,15 +81,18 @@ describe ThinkingSphinx::Attribute do
   
   describe '#is_many?' do
     before :each do
-      @assoc_a = stub('assoc', :is_many? => true)
-      @assoc_b = stub('assoc', :is_many? => true)
-      @assoc_c = stub('assoc', :is_many? => true)
+      @assoc_a = ThinkingSphinx::Association.new(nil, nil)
+      @assoc_b = ThinkingSphinx::Association.new(nil, nil)
+      @assoc_c = ThinkingSphinx::Association.new(nil, nil)
       
       @attribute = ThinkingSphinx::Attribute.new(
         @source, [ThinkingSphinx::Index::FauxColumn.new(:col_name)]
       )
       @attribute.associations = {
         :a => @assoc_a, :b => @assoc_b, :c => @assoc_c
+      }
+      @attribute.associations.values.each { |assoc|
+        assoc.stub!(:is_many? => true)
       }
     end
     

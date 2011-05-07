@@ -914,7 +914,8 @@ describe ThinkingSphinx::Search do
         it "should not add excerpts method if objects already have one" do
           @search.last.excerpts.should_not be_a(ThinkingSphinx::Excerpter)
         end
-      
+        
+        # Fails in Ruby 1.9 (or maybe it's an RSpec update). Not sure why.
         it "should set up the excerpter with the instances and search" do
           [@alpha_a, @beta_b, @alpha_b, @beta_a].each do |object|
             ThinkingSphinx::Excerpter.should_receive(:new).with(@search, object)
