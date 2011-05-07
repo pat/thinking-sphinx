@@ -30,11 +30,19 @@ describe ThinkingSphinx::AutoVersion do
       ThinkingSphinx::AutoVersion.detect
     end
     
-    it "should require 1.10-beta if that is the detected version" do
+    it "should require 1.10-beta if using 1.10-beta compiled with id64 support" do
       ThinkingSphinx::AutoVersion.should_receive(:require).
         with('riddle/1.10')
       
       @config.stub!(:version => '1.10-id64-beta')
+      ThinkingSphinx::AutoVersion.detect
+    end
+    
+    it "should require 2.0.1 if using Sphinx 2.0.1 beta" do
+      ThinkingSphinx::AutoVersion.should_receive(:require).
+        with('riddle/2.0.1')
+      
+      @config.stub!(:version => '2.0.1-beta')
       ThinkingSphinx::AutoVersion.detect
     end
     
