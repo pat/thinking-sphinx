@@ -77,12 +77,21 @@ module ThinkingSphinx
   # The collection of indexed models. Keep in mind that Rails lazily loads
   # its classes, so this may not actually be populated with _all_ the models
   # that have Sphinx indexes.
-  @@sphinx_mutex = Mutex.new
-  @@context      = nil
+  @@sphinx_mutex          = Mutex.new
+  @@context               = nil
+  @@define_indexes        = true
+  @@updates_enabled       = nil
+  @@suppress_delta_output = false
+  @@remote_sphinx         = false
+  @@use_group_by_shortcut = nil
+  
+  def self.mutex
+    @@sphinx_mutex
+  end
   
   def self.context
     if @@context.nil?
-      @@sphinx_mutex.synchronize do
+      mutex.synchronize do
         if @@context.nil?
           @@context = ThinkingSphinx::Context.new
           @@context.prepare
@@ -93,9 +102,9 @@ module ThinkingSphinx
     @@context
   end
   
-  def self.reset_context!
-    @@sphinx_mutex.synchronize do
-      @@context = nil
+  def self.reset_context!(context = nil)
+    mutex.synchronize do
+      @@context = context
     end
   end
 
@@ -106,11 +115,7 @@ module ThinkingSphinx
   # Check if index definition is disabled.
   #
   def self.define_indexes?
-    if Thread.current[:thinking_sphinx_define_indexes].nil?
-      Thread.current[:thinking_sphinx_define_indexes] = true
-    end
-    
-    Thread.current[:thinking_sphinx_define_indexes]
+    @@define_indexes
   end
 
   # Enable/disable indexes - you may want to do this while migrating data.
@@ -118,7 +123,9 @@ module ThinkingSphinx
   #   ThinkingSphinx.define_indexes = false
   #
   def self.define_indexes=(value)
-    Thread.current[:thinking_sphinx_define_indexes] = value
+    mutex.synchronize do
+      @@define_indexes = value
+    end
   end
 
   # Check if delta indexing is enabled.
@@ -145,13 +152,17 @@ module ThinkingSphinx
   # environment.
   #
   def self.updates_enabled?
-    if Thread.current[:thinking_sphinx_updates_enabled].nil?
-      Thread.current[:thinking_sphinx_updates_enabled] = (
-        ThinkingSphinx::Configuration.environment != "test"
-      )
+    if @@updates_enabled.nil?
+      mutex.synchronize do
+        if @@updates_enabled.nil?
+          @@updates_enabled = (
+            ThinkingSphinx::Configuration.environment != "test"
+          )
+        end
+      end
     end
     
-    Thread.current[:thinking_sphinx_updates_enabled]
+    @@updates_enabled
   end
 
   # Enable/disable updates to Sphinx
@@ -159,37 +170,53 @@ module ThinkingSphinx
   #   ThinkingSphinx.updates_enabled = false
   #
   def self.updates_enabled=(value)
-    Thread.current[:thinking_sphinx_updates_enabled] = value
+    mutex.synchronize do
+      @@updates_enabled = value
+    end
   end
 
   def self.suppress_delta_output?
-    Thread.current[:thinking_sphinx_suppress_delta_output] ||= false
+    @@suppress_delta_output
   end
 
   def self.suppress_delta_output=(value)
-    Thread.current[:thinking_sphinx_suppress_delta_output] = value
+    mutex.synchronize do
+      @@suppress_delta_output = value
+    end
   end
   
   # Checks to see if MySQL will allow simplistic GROUP BY statements. If not,
   # or if not using MySQL, this will return false.
   #
   def self.use_group_by_shortcut?
-    if Thread.current[:thinking_sphinx_use_group_by_shortcut].nil?
-      Thread.current[:thinking_sphinx_use_group_by_shortcut] = !!(
-        mysql? && ::ActiveRecord::Base.connection.select_all(
-          "SELECT @@global.sql_mode, @@session.sql_mode;"
-        ).all? { |key,value| value.nil? || value[/ONLY_FULL_GROUP_BY/].nil? }
-      )
+    if @@use_group_by_shortcut.nil?
+      mutex.synchronize do
+        if @@use_group_by_shortcut.nil?
+          @@use_group_by_shortcut = !!(
+            mysql? && ::ActiveRecord::Base.connection.select_all(
+              "SELECT @@global.sql_mode, @@session.sql_mode;"
+            ).all? { |key, value|
+              value.nil? || value[/ONLY_FULL_GROUP_BY/].nil?
+            }
+          )
+        end
+      end
     end
     
-    Thread.current[:thinking_sphinx_use_group_by_shortcut]
+    @@use_group_by_shortcut
+  end
+  
+  def self.reset_use_group_by_shortcut
+    mutex.synchronize do
+      @@use_group_by_shortcut = nil
+    end
   end
 
   # An indication of whether Sphinx is running on a remote machine instead of
   # the same machine.
   #
   def self.remote_sphinx?
-    Thread.current[:thinking_sphinx_remote_sphinx] ||= false
+    @@remote_sphinx
   end
 
   # Tells Thinking Sphinx that Sphinx is running on a different machine, and
@@ -201,7 +228,9 @@ module ThinkingSphinx
   #   ThinkingSphinx.remote_sphinx = true
   #
   def self.remote_sphinx=(value)
-    Thread.current[:thinking_sphinx_remote_sphinx] = value
+    mutex.synchronize do
+      @@remote_sphinx = value
+    end
   end
 
   # Check if Sphinx is running. If remote_sphinx is set to true (indicating

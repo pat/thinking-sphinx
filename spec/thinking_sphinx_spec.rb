@@ -23,7 +23,7 @@ describe ThinkingSphinx do
       ThinkingSphinx.reset_context!
       ThinkingSphinx.context.should_not == existing
       
-      Thread.current[:thinking_sphinx_context] = existing
+      ThinkingSphinx.reset_context! existing
     end
   end
     
@@ -134,7 +134,7 @@ describe ThinkingSphinx do
         :connection => @connection
       )
       
-      Thread.current[:thinking_sphinx_use_group_by_shortcut] = nil
+      ThinkingSphinx.reset_use_group_by_shortcut
     end
     
     it "should return true if no ONLY_FULL_GROUP_BY" do

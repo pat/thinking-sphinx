@@ -3,7 +3,7 @@ require 'spec_helper'
 describe ThinkingSphinx::Configuration do
   describe "environment class method" do
     before :each do
-      Thread.current[:thinking_sphinx_environment] = nil
+      ThinkingSphinx::Configuration.reset_environment
       
       ENV["RAILS_ENV"] = nil
     end
