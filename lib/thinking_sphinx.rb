@@ -5,7 +5,6 @@ require 'yaml'
 require 'riddle'
 
 require 'thinking_sphinx/auto_version'
-require 'thinking_sphinx/core/array'
 require 'thinking_sphinx/core/string'
 require 'thinking_sphinx/property'
 require 'thinking_sphinx/active_record'
