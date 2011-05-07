@@ -2,16 +2,25 @@ require 'socket'
 require 'timeout'
 
 module Riddle #:nodoc:
+  @@mutex          = Mutex.new
+  @@escape_pattern = /[\(\)\|\-!@~"&\/]/
+  
   class ConnectionError < StandardError #:nodoc:
     #
   end
   
+  def self.mutex
+    @@mutex
+  end
+  
   def self.escape_pattern
-    Thread.current[:riddle_escape_pattern] ||= /[\(\)\|\-!@~"&\/]/
+    @@escape_pattern
   end
   
   def self.escape_pattern=(pattern)
-    Thread.current[:riddle_escape_pattern] = pattern
+    mutex.synchronize do
+      @@escape_pattern = pattern
+    end
   end
   
   def self.escape(string)
