@@ -120,7 +120,7 @@ module Riddle
       :group_by, :group_function, :group_clause, :group_distinct, :cut_off,
       :retry_count, :retry_delay, :anchor, :index_weights, :rank_mode,
       :max_query_time, :field_weights, :timeout, :overrides, :select,
-      :connection
+      :connection, :key
     attr_reader :queue
     
     def self.connection=(value)
@@ -134,13 +134,14 @@ module Riddle
     # Can instantiate with a specific server and port - otherwise it assumes
     # defaults of localhost and 3312 respectively. All other settings can be
     # accessed and changed via the attribute accessors.
-    def initialize(servers=nil, port=nil)
+    def initialize(servers = nil, port = nil, key = nil)
       Riddle.version_warning
 
       servers = Array(servers || "localhost")
       @servers = servers.respond_to?(:shuffle) ? servers.shuffle : servers.sort_by{ rand }
       @port   = port     || 9312
       @socket = nil
+      @key    = key
       
       reset
       
@@ -390,6 +391,8 @@ module Riddle
       options[:load_files]       ||= false
       options[:html_strip_mode]  ||= 'index'
       options[:allow_empty]      ||= false
+      options[:passage_boundary] ||= 'none'
+      options[:emit_zones]       ||= false
       
       response = Response.new request(:excerpt, excerpts_message(options))
       
@@ -514,8 +517,9 @@ module Riddle
       true
     end
     
-    # Connects to the Sphinx daemon, and yields a socket to use. The socket is
-    # closed at the end of the block.
+    # If there's an active connection to the Sphinx daemon, this will yield the
+    # socket. If there's no active connection, then it will connect, yield the
+    # new socket, then close it.
     def connect(&block)
       if @socket.nil? || @socket.closed?
         @socket = nil
@@ -575,8 +579,15 @@ module Riddle
       version  = 0
       length   = 0
       message  = Array(messages).join("")
+      
       if message.respond_to?(:force_encoding)
         message = message.force_encoding('ASCII-8BIT')
+      end
+      
+      if key
+        prefix = Message.new
+        prefix.append_string key
+        message = prefix.to_s + message
       end
       
       connect do |socket|
@@ -584,10 +595,17 @@ module Riddle
         when :search
           # Message length is +4 to account for the following count value for
           # the number of messages (well, that's what I'm assuming).
-          socket.send [
-            Commands[command], Versions[command],
-            4+message.length,  messages.length
-          ].pack("nnNN") + message, 0
+          if Versions[command] >= 0x118
+            socket.send [
+              Commands[command], Versions[command],
+              8+message.length,  messages.length, 0
+            ].pack("nnNNN") + message, 0
+          else
+            socket.send [
+              Commands[command], Versions[command],
+              4+message.length,  messages.length
+            ].pack("nnNN") + message, 0
+          end
         when :status
           socket.send [
             Commands[command], Versions[command], 4, 1
@@ -795,6 +813,7 @@ module Riddle
       flags |= 64  if options[:force_all_words]
       flags |= 128 if options[:load_files]
       flags |= 256 if options[:allow_empty]
+      flags |= 512 if options[:emit_zones]
       flags
     end
   end
