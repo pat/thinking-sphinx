@@ -244,7 +244,8 @@ module ThinkingSphinx
     attr_accessor :timeout
 
     def client
-      client = Riddle::Client.new address, port
+      client = Riddle::Client.new address, port,
+        configuration.searchd.client_key
       client.max_matches = configuration.searchd.max_matches || 1000
       client.timeout = timeout || 0
       client
