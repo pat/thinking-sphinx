@@ -40,7 +40,6 @@ Gem::Specification.new do |s|
     "lib/thinking_sphinx/class_facet.rb",
     "lib/thinking_sphinx/configuration.rb",
     "lib/thinking_sphinx/context.rb",
-    "lib/thinking_sphinx/core/array.rb",
     "lib/thinking_sphinx/core/string.rb",
     "lib/thinking_sphinx/deltas.rb",
     "lib/thinking_sphinx/deltas/default_delta.rb",
