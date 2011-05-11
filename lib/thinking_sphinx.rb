@@ -289,5 +289,3 @@ module ThinkingSphinx
   
   extend ThinkingSphinx::SearchMethods::ClassMethods
 end
-
-ThinkingSphinx::AutoVersion.detect

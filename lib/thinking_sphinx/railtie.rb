@@ -3,6 +3,10 @@ require 'rails'
 
 module ThinkingSphinx
   class Railtie < Rails::Railtie
+    
+    initializer 'thinking_sphinx.sphinx' do
+      ThinkingSphinx::AutoVersion.detect
+    end
 
     initializer "thinking_sphinx.active_record" do
       ActiveSupport.on_load :active_record do
