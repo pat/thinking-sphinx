@@ -131,6 +131,16 @@ module ThinkingSphinx
   # Check if delta indexing is enabled/disabled.
   #
   def self.deltas_enabled?
+    if @@deltas_enabled.nil?
+      mutex.synchronize do
+        if @@deltas_enabled.nil?
+          @@deltas_enabled = (
+            ThinkingSphinx::Configuration.environment != "test"
+          )
+        end
+      end
+    end
+    
     @@deltas_enabled && !deltas_suspended?
   end
   
