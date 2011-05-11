@@ -493,16 +493,16 @@ describe ThinkingSphinx::Index::Builder do
     end
   end
   
-  describe "sanitize_sql" do
+  describe "sanitize_sql_for_conditions" do
     def index
       @index ||= ThinkingSphinx::Index::Builder.generate(Person) do
         indexes first_name, last_name
-        where sanitize_sql(["gender = ?", "female"])
+        where sanitize_sql_for_conditions(:gender => "female")
       end
     end
     
-    it "should be aliased to ActiveRecord::Base.sanitize_sql" do
-      index.sources.first.conditions.first.should == index.model.send(:sanitize_sql, ["gender = ?", "female"])
+    it "should be aliased to ActiveRecord::Base.sanitize_sql_for_conditions" do
+      index.sources.first.conditions.first.should == index.model.send(:sanitize_sql_for_conditions, {:gender => "female"})
     end
   end
 end
