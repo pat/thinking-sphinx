@@ -252,15 +252,17 @@ module ThinkingSphinx
       end
       
       # Use this method to generate SQL for your attributes, conditions, etc.
-      # You can pass in as whatever ActiveRecord::Base.sanitize_sql accepts.
+      # You can pass in whatever
+      # ActiveRecord::Base.sanitize_sql_for_conditions accepts.
       # 
-      #   where sanitize_sql(["active = ?", true])
+      #   where sanitize_sql_for_conditions(:active => true)
       #   #=> WHERE active = 1
       # 
-      def sanitize_sql(*args)
-        @index.model.send(:sanitize_sql, *args)
+      def sanitize_sql_for_conditions(condition)
+        @index.model.send(:sanitize_sql_for_conditions, condition)
       end
-      
+      alias_method :sanitize_sql, :sanitize_sql_for_conditions
+
       private
       
       def source
