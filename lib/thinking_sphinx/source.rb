@@ -23,8 +23,8 @@ module ThinkingSphinx
       @database_configuration = @model.connection.
         instance_variable_get(:@config).clone
       
-      @base = ::ActiveRecord::Associations::ClassMethods::JoinDependency.new(
-        @model, [], nil
+      @base = join_dependency_class.new(
+        @model, [], initial_joins
       )
       
       unless @model.descends_from_active_record?
@@ -158,6 +158,22 @@ module ThinkingSphinx
     
     def utf8?
       @index.options[:charset_type] =~ /utf-8|zh_cn.utf-8/
+    end
+    
+    def join_dependency_class
+      if ::ActiveRecord::Associations.constants.include?(:JoinDependency)
+        ::ActiveRecord::Associations::JoinDependency
+      else
+        ::ActiveRecord::Associations::ClassMethods::JoinDependency
+      end
+    end
+    
+    def initial_joins
+      if ::ActiveRecord::Associations.constants.include?(:JoinDependency)
+        []
+      else
+        nil
+      end
     end
   end
 end

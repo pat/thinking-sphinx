@@ -13,7 +13,11 @@ module ThinkingSphinx
   module ActiveRecord
     def self.included(base)
       base.class_eval do
-        class_inheritable_array :sphinx_indexes, :sphinx_facets
+        if defined?(class_attribute)
+          class_attribute :sphinx_indexes, :sphinx_facets
+        else
+          class_inheritable_array :sphinx_indexes, :sphinx_facets
+        end
         
         extend ThinkingSphinx::ActiveRecord::ClassMethods
         
@@ -202,7 +206,6 @@ module ThinkingSphinx
       
       def insert_sphinx_index(index)
         self.sphinx_indexes << index
-        descendants.each { |klass| klass.insert_sphinx_index(index) }
       end
       
       def has_sphinx_indexes?

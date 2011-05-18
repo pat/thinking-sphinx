@@ -10,11 +10,13 @@ require 'bundler'
 Bundler.require :default, :development
 
 require 'active_support/core_ext/module/attribute_accessors'
+require 'active_support/core_ext/class/inheritable_attributes'
 require "#{File.dirname(__FILE__)}/../lib/thinking_sphinx"
 require "#{File.dirname(__FILE__)}/sphinx_helper"
 
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
+ThinkingSphinx::Configuration.instance
 ThinkingSphinx::ActiveRecord::LogSubscriber.logger = Logger.new(StringIO.new)
 
 RSpec.configure do |config|
