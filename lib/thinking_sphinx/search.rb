@@ -22,7 +22,7 @@ module ThinkingSphinx
       undef_method method
     }
     
-    HashOptions   = [:conditions, :with, :without, :with_all]
+    HashOptions   = [:conditions, :with, :without, :with_all, :without_any]
     ArrayOptions  = [:classes, :without_ids]
     
     attr_reader :args, :options
@@ -713,6 +713,11 @@ module ThinkingSphinx
       (options[:with_all] || {}).collect { |attrib, values|
         Array(values).collect { |value|
           Riddle::Client::Filter.new attrib.to_s, filter_value(value)
+        }
+      }.flatten +
+      (options[:without_any] || {}).collect { |attrib, values|
+        Array(values).collect { |value|
+          Riddle::Client::Filter.new attrib.to_s, filter_value(value), true
         }
       }.flatten
     end
