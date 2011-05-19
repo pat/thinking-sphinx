@@ -46,6 +46,14 @@ describe ThinkingSphinx::AutoVersion do
       ThinkingSphinx::AutoVersion.detect
     end
     
+    it "should require 2.0.1 if using Sphinx 2.0.2 dev" do
+      ThinkingSphinx::AutoVersion.should_receive(:require).
+        with('riddle/2.0.1')
+      
+      @config.stub!(:version => '2.0.2-dev')
+      ThinkingSphinx::AutoVersion.detect
+    end
+    
     it "should output a warning if the detected version is unsupported" do
       STDERR.should_receive(:puts).with(/unsupported/i)
       
