@@ -161,7 +161,7 @@ module ThinkingSphinx
     end
     
     def join_dependency_class
-      if ::ActiveRecord::Associations.constants.include?(:JoinDependency)
+      if rails_3_1?
         ::ActiveRecord::Associations::JoinDependency
       else
         ::ActiveRecord::Associations::ClassMethods::JoinDependency
@@ -169,11 +169,16 @@ module ThinkingSphinx
     end
     
     def initial_joins
-      if ::ActiveRecord::Associations.constants.include?(:JoinDependency)
+      if rails_3_1?
         []
       else
         nil
       end
+    end
+    
+    def rails_3_1?
+      ::ActiveRecord::Associations.constants.include?(:JoinDependency) ||
+      ::ActiveRecord::Associations.constants.include?('JoinDependency')
     end
   end
 end

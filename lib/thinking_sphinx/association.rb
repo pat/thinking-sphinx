@@ -167,7 +167,7 @@ module ThinkingSphinx
     end
     
     def join_association_class
-      if ::ActiveRecord::Associations.constants.include?(:JoinDependency)
+      if rails_3_1?
         ::ActiveRecord::Associations::JoinDependency::JoinAssociation
       else
         ::ActiveRecord::Associations::ClassMethods::JoinDependency::JoinAssociation
@@ -175,11 +175,16 @@ module ThinkingSphinx
     end
     
     def join_parent(join)
-      if ::ActiveRecord::Associations.constants.include?(:JoinDependency)
+      if rails_3_1?
         join.join_parts.first
       else
         join.joins.first
       end
+    end
+    
+    def rails_3_1?
+      ::ActiveRecord::Associations.constants.include?(:JoinDependency) ||
+      ::ActiveRecord::Associations.constants.include?('JoinDependency')
     end
   end
 end
