@@ -132,10 +132,10 @@ module ThinkingSphinx
         ThinkingSphinx.mutex.synchronize do
           @@environment ||= if defined?(Merb)
             Merb.environment
-          elsif defined?(Sinatra)
-            Sinatra::Application.environment.to_s
           elsif defined?(RAILS_ENV)
             RAILS_ENV
+          elsif defined?(Sinatra)
+            Sinatra::Application.environment.to_s
           else
             ENV['RAILS_ENV'] || 'development'
           end
