@@ -91,10 +91,10 @@ module ThinkingSphinx
       if custom_app_root
         self.app_root = custom_app_root
       else
-        self.app_root          = Merb.root                  if defined?(Merb)
-        self.app_root          = Sinatra::Application.root  if defined?(Sinatra)
-        self.app_root          = RAILS_ROOT                 if defined?(RAILS_ROOT)
-        self.app_root        ||= app_root
+        self.app_root   = Merb.root                  if defined?(Merb)
+        self.app_root   = Sinatra::Application.root  if defined?(Sinatra)
+        self.app_root   = RAILS_ROOT                 if defined?(RAILS_ROOT)
+        self.app_root ||= app_root
       end
       
       @configuration = Riddle::Configuration.new
