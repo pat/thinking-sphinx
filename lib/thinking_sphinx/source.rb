@@ -101,7 +101,9 @@ module ThinkingSphinx
     
     def set_source_fields(source)
       fields.each do |field|
-        source.sql_file_field << field.unique_name if field.file?
+        source.sql_file_field   << field.unique_name if field.file?
+        source.sql_field_string << field.unique_name if field.with_attribute?
+        source.sql_field_str2wordcount << field.unique_name if field.with_wordcount?
       end
     end
     

@@ -20,6 +20,7 @@ module ThinkingSphinx
     # - :infixes  => true
     # - :prefixes => true
     # - :file     => true
+    # - :with     => :attribute # or :wordcount
     #
     # Alias is only required in three circumstances: when there's
     # another attribute or field with the same name, when the column name is
@@ -60,6 +61,7 @@ module ThinkingSphinx
       @infixes  = options[:infixes]  || false
       @prefixes = options[:prefixes] || false
       @file     = options[:file]     || false
+      @with     = options[:with]
       
       source.fields << self
     end
@@ -83,6 +85,14 @@ module ThinkingSphinx
     
     def file?
       @file
+    end
+    
+    def with_attribute?
+      @with == :attribute
+    end
+    
+    def with_wordcount?
+      @with == :wordcount
     end
   end
 end
