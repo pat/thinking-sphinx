@@ -254,18 +254,23 @@ module Riddle
           result[:attribute_names] << attribute_name
         end
 
+        result_attribute_names_and_types = result[:attribute_names].
+          inject([]) { |array, attr| array.push([ attr, result[:attributes][attr] ]) }
+
         matches   = response.next_int
         is_64_bit = response.next_int
-        for i in 0...matches
+        
+        result[:matches] = (0...matches).map do |i|
           doc = is_64_bit > 0 ? response.next_64bit_int : response.next_int
           weight = response.next_int
 
-          result[:matches] << {:doc => doc, :weight => weight, :index => i, :attributes => {}}
-          result[:attribute_names].each do |attr|
-            result[:matches].last[:attributes][attr] = attribute_from_type(
-              result[:attributes][attr], response
-            )
+          current_match_attributes = {}
+
+          result_attribute_names_and_types.each do |attr, type|
+            current_match_attributes[attr] = attribute_from_type(type, response)
           end
+          
+          {:doc => doc, :weight => weight, :index => i, :attributes => current_match_attributes}
         end
 
         result[:total] = response.next_int.to_i || 0
@@ -575,6 +580,34 @@ module Riddle
       socket
     end
     
+    def request_header(command, length = 0)
+      length += key_message.length if key
+      core_header = case command
+      when :search
+        # Message length is +4/+8 to account for the following count value for
+        # the number of messages.
+        if Versions[command] >= 0x118
+          [Commands[command], Versions[command], 8 + length].pack("nnN")
+        else
+          [Commands[command], Versions[command], 4 + length].pack("nnN")
+        end
+      when :status
+        [Commands[command], Versions[command], 4, 1].pack("nnNN")
+      else
+        [Commands[command], Versions[command], length].pack("nnN")
+      end
+      
+      key ? core_header + key_message : core_header
+    end
+    
+    def key_message
+      @key_message ||= begin
+        message = Message.new
+        message.append_string key
+        message.to_s
+      end
+    end
+    
     # Send a collection of messages, for a command type (eg, search, excerpts,
     # update), to the Sphinx daemon.
     def request(command, messages)
@@ -588,36 +621,20 @@ module Riddle
         message = message.force_encoding('ASCII-8BIT')
       end
       
-      if key
-        prefix = Message.new
-        prefix.append_string key
-        message = prefix.to_s + message
-      end
-      
       connect do |socket|
         case command
         when :search
-          # Message length is +4 to account for the following count value for
-          # the number of messages (well, that's what I'm assuming).
           if Versions[command] >= 0x118
-            socket.send [
-              Commands[command], Versions[command],
-              8+message.length,  messages.length, 0
-            ].pack("nnNNN") + message, 0
+            socket.send request_header(command, message.length) + 
+              [0, messages.length].pack('NN') + message, 0
           else
-            socket.send [
-              Commands[command], Versions[command],
-              4+message.length,  messages.length
-            ].pack("nnNN") + message, 0
+            socket.send request_header(command, message.length) +
+              [messages.length].pack('N') + message, 0
           end
         when :status
-          socket.send [
-            Commands[command], Versions[command], 4, 1
-          ].pack("nnNN"), 0
+          socket.send request_header(command, message.length), 0
         else
-          socket.send [
-            Commands[command], Versions[command], message.length
-          ].pack("nnN") + message, 0
+          socket.send request_header(command, message.length) + message, 0
         end
         
         header = socket.recv(8)
@@ -791,20 +808,28 @@ module Riddle
       
       message.to_s
     end
+
+    AttributeHandlers = {
+      AttributeTypes[:integer] =>           :next_int,
+      AttributeTypes[:timestamp] =>         :next_int,
+      AttributeTypes[:ordinal] =>           :next_int,
+      AttributeTypes[:bool] =>              :next_int,
+      AttributeTypes[:float] =>             :next_float,
+      AttributeTypes[:bigint] =>            :next_64bit_int,
+      AttributeTypes[:string] =>            :next,
+
+      AttributeTypes[:multi] + AttributeTypes[:integer]   => :next_int_array,
+      AttributeTypes[:multi] + AttributeTypes[:timestamp] => :next_int_array,
+      AttributeTypes[:multi] + AttributeTypes[:ordinal]   => :next_int_array,
+      AttributeTypes[:multi] + AttributeTypes[:bool]      => :next_int_array,
+      AttributeTypes[:multi] + AttributeTypes[:float]     => :next_float_array,
+      AttributeTypes[:multi] + AttributeTypes[:bigint]    => :next_64bit_int_array,
+      AttributeTypes[:multi] + AttributeTypes[:string]    => :next_array
+    }
     
     def attribute_from_type(type, response)
-      type -= AttributeTypes[:multi] if is_multi = type > AttributeTypes[:multi]
-      
-      case type
-      when AttributeTypes[:float]
-        is_multi ? response.next_float_array    : response.next_float
-      when AttributeTypes[:bigint]
-        is_multi ? response.next_64bit_int_arry : response.next_64bit_int
-      when AttributeTypes[:string]
-        is_multi ? response.next_array          : response.next
-      else
-        is_multi ? response.next_int_array      : response.next_int
-      end
+      handler = AttributeHandlers[type]
+      response.send handler
     end
     
     def excerpt_flags(options)
