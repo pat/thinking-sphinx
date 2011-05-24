@@ -66,6 +66,12 @@ Feature: Searching on a single model
     When I filter by 2001-01-01 on comments_created_at
     Then I should get 1 result
   
+  Scenario: Filtering on a wordcount attribute
+    Given Sphinx is running
+    And I am searching on developers
+    When I filter between 0 and 1 on state_wordcount
+    Then I should get 5 results
+  
   Scenario: Searching by NULL/0 values in MVAs
     Given Sphinx is running
     And I am searching on boxes

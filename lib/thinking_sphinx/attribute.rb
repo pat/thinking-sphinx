@@ -118,13 +118,14 @@ module ThinkingSphinx
     
     def type_to_config
       {
-        :multi    => :sql_attr_multi,
-        :datetime => :sql_attr_timestamp,
-        :string   => :sql_attr_str2ordinal,
-        :float    => :sql_attr_float,
-        :boolean  => :sql_attr_bool,
-        :integer  => :sql_attr_uint,
-        :bigint   => :sql_attr_bigint
+        :multi     => :sql_attr_multi,
+        :datetime  => :sql_attr_timestamp,
+        :string    => :sql_attr_str2ordinal,
+        :float     => :sql_attr_float,
+        :boolean   => :sql_attr_bool,
+        :integer   => :sql_attr_uint,
+        :bigint    => :sql_attr_bigint,
+        :wordcount => :sql_attr_str2wordcount
       }[type]
     end
     
