@@ -29,7 +29,7 @@ module ThinkingSphinx
         names = options[:all_facets] ?
           facet_names_for_all_classes : facet_names_common_to_all_classes
         
-        names.delete "class_crc" unless options[:class_facet]
+        names.delete class_facet unless options[:class_facet]
         names
       end
     end
@@ -161,6 +161,10 @@ module ThinkingSphinx
       all_facets.detect { |facet|
         facet.name == name
       }
+    end
+    
+    def class_facet
+      Riddle.loaded_version.to_i < 2 ? 'class_crc' : 'sphinx_internal_class'
     end
   end
 end

@@ -4,10 +4,15 @@ module ThinkingSphinx
       def add_internal_attributes_and_facets
         add_internal_attribute :sphinx_internal_id, nil,
           @model.primary_key_for_sphinx.to_sym
-        add_internal_attribute :class_crc,          :integer, crc_column, true
         add_internal_attribute :sphinx_deleted,     :integer, "0"
-
-        add_internal_facet :class_crc
+        add_internal_attribute :class_crc,          :integer, crc_column, true
+        
+        unless Riddle.loaded_version.to_i < 2
+          add_internal_attribute :sphinx_internal_class, :string, internal_class_column, true
+          add_internal_facet :sphinx_internal_class
+        else
+          add_internal_facet :class_crc
+        end
       end
 
       def add_internal_attribute(name, type, contents, facet = false)

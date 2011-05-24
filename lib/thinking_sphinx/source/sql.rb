@@ -128,6 +128,15 @@ GROUP BY #{ sql_group_clause }
         end
       end
       
+      def internal_class_column
+        if @model.table_exists? &&
+          @model.column_names.include?(@model.inheritance_column)
+          adapter.quote_with_table(@model.inheritance_column)
+        else
+          "'#{@model.name}'"
+        end
+      end
+      
       def type_values
         @model.connection.select_values <<-SQL
 SELECT DISTINCT #{@model.inheritance_column}
