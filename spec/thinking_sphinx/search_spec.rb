@@ -1145,10 +1145,11 @@ describe ThinkingSphinx::Search do
       @client.stub! :query => {
         :matches => [{
           :attributes => {
-            'sphinx_internal_id' => @alpha.id,
-            'class_crc'          => Alpha.to_crc32,
-            '@groupby'           => 101,
-            '@count'             => 5
+            'sphinx_internal_id'    => @alpha.id,
+            'sphinx_internal_class' => 'Alpha',
+            'class_crc'             => Alpha.to_crc32,
+            '@groupby'              => 101,
+            '@count'                => 5
           }
         }]
       }
@@ -1182,8 +1183,9 @@ describe ThinkingSphinx::Search do
       @client.stub! :query => {
         :matches => [{
           :attributes => {
-            'sphinx_internal_id' => @alpha.id,
-            'class_crc'          => Alpha.to_crc32
+            'sphinx_internal_id'    => @alpha.id,
+            'sphinx_internal_class' => 'Alpha',
+            'class_crc'             => Alpha.to_crc32
           }, :weight => 12
         }]
       }
@@ -1207,11 +1209,12 @@ describe ThinkingSphinx::Search do
       @client.stub! :query => {
         :matches => [{
           :attributes => {
-            'sphinx_internal_id' => @alpha.id,
-            'class_crc'          => Alpha.to_crc32,
-            '@geodist'           => 101,
-            '@groupby'           => 102,
-            '@count'             => 103
+            'sphinx_internal_id'    => @alpha.id,
+            'sphinx_internal_class' => 'Alpha',
+            'class_crc'             => Alpha.to_crc32,
+            '@geodist'              => 101,
+            '@groupby'              => 102,
+            '@count'                => 103
           }, :weight => 12
         }]
       }

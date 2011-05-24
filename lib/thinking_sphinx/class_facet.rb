@@ -5,12 +5,16 @@ module ThinkingSphinx
     end
     
     def attribute_name
-      "class_crc"
+      Riddle.loaded_version.to_i < 2 ? 'class_crc' : 'sphinx_internal_class'
     end
     
     def value(object, attribute_hash)
-      crc = attribute_hash['class_crc']
-      ThinkingSphinx::Configuration.instance.models_by_crc[crc]
+      if Riddle.loaded_version.to_i < 2
+        crc = attribute_hash['class_crc']
+        ThinkingSphinx::Configuration.instance.models_by_crc[crc]
+      else
+        attribute_hash['sphinx_internal_class']
+      end
     end
   end
 end

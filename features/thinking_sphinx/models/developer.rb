@@ -12,6 +12,7 @@ class Developer < ActiveRecord::Base
     
     has age,                              :facet => true
     has tags(:id),      :as => :tag_ids,  :facet => true
+    has state,          :as => :state_wordcount, :type => :wordcount
     
     facet "LOWER(city)", :as => :city, :type => :string, :value => :city
     

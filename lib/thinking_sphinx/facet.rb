@@ -16,6 +16,7 @@ module ThinkingSphinx
       when Facet
         facet.name
       when String, Symbol
+        return :class if facet.to_s == 'sphinx_internal_class'
         facet.to_s.gsub(/(_facet|_crc)$/,'').to_sym
       end
     end

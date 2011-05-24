@@ -55,8 +55,9 @@ def minimal_result_hashes(*instances)
     {
       :weight     => 21,
       :attributes => {
-        'sphinx_internal_id' => instance.id,
-        'class_crc'          => instance.class.name.to_crc32
+        'sphinx_internal_id'    => instance.id,
+        'sphinx_internal_class' => instance.class.name,
+        'class_crc'             => instance.class.name.to_crc32
       }
     }
   end

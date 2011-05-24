@@ -16,16 +16,22 @@ describe ThinkingSphinx::FacetSearch do
         
     it "should request all shared facets in a multi-model request by default" do
       ThinkingSphinx.stub!(:search => search)
-      ThinkingSphinx::FacetSearch.new.facet_names.should == ['class_crc']
+      if Riddle.loaded_version.to_i < 2
+        ThinkingSphinx::FacetSearch.new.facet_names.should == ['class_crc']
+      else
+        ThinkingSphinx::FacetSearch.new.facet_names.should == ['sphinx_internal_class']
+      end
     end
     
     it "should request all facets in a multi-model request if specified" do
       ThinkingSphinx.stub!(:search => search)
-      ThinkingSphinx::FacetSearch.new(
-        :all_facets => true
-      ).facet_names.should == [
-        'class_crc', 'city_facet', 'state_facet', 'birthday'
-      ]
+      names = ThinkingSphinx::FacetSearch.new(:all_facets => true).facet_names
+      
+      if Riddle.loaded_version.to_i < 2
+        names.should == ['class_crc', 'city_facet', 'state_facet', 'birthday']
+      else
+        names.should == ['sphinx_internal_class', 'city_facet', 'state_facet', 'birthday']
+      end
     end
     
     it "should use the system-set max_matches for limit on facet calls" do

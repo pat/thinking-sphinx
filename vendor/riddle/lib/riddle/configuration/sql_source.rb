@@ -8,10 +8,10 @@ module Riddle
         :sql_query_killlist, :sql_attr_uint, :sql_attr_bool, :sql_attr_bigint,
         :sql_attr_timestamp, :sql_attr_str2ordinal, :sql_attr_float,
         :sql_attr_multi, :sql_attr_string, :sql_attr_str2wordcount,
-        :sql_field_string, :sql_field_str2wordcount, :sql_query_post,
-        :sql_query_post_index, :sql_ranged_throttle, :sql_query_info,
-        :mssql_winauth, :mssql_unicode, :unpack_zlib, :unpack_mysqlcompress,
-        :unpack_mysqlcompress_maxsize]
+        :sql_column_buffers, :sql_field_string, :sql_field_str2wordcount,
+        :sql_query_post, :sql_query_post_index, :sql_ranged_throttle,
+        :sql_query_info, :mssql_winauth, :mssql_unicode, :unpack_zlib,
+        :unpack_mysqlcompress, :unpack_mysqlcompress_maxsize]
       
       attr_accessor *self.settings
       

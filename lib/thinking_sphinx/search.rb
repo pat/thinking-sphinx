@@ -482,9 +482,12 @@ module ThinkingSphinx
     
     def match_hash(object)
       @results[:matches].detect { |match|
+        class_crc = object.class.name
+        class_crc = object.class.to_crc32 if Riddle.loaded_version.to_i < 2
+        
         match[:attributes]['sphinx_internal_id'] == object.
           primary_key_for_sphinx &&
-        match[:attributes]['class_crc'] == object.class.to_crc32
+        match[:attributes][crc_attribute] == class_crc
       }
     end
 
@@ -882,7 +885,7 @@ module ThinkingSphinx
       return single_class_results if one_class
       
       groups = results[:matches].group_by { |match|
-        match[:attributes]["class_crc"]
+        match[:attributes][crc_attribute]
       }
       groups.each do |crc, group|
         group.replace(
@@ -892,7 +895,7 @@ module ThinkingSphinx
       
       results[:matches].collect do |match|
         groups.detect { |crc, group|
-          crc == match[:attributes]["class_crc"]
+          crc == match[:attributes][crc_attribute]
         }[1].compact.detect { |obj|
           obj.primary_key_for_sphinx == match[:attributes]["sphinx_internal_id"]
         }
@@ -904,7 +907,11 @@ module ThinkingSphinx
     end
     
     def class_from_crc(crc)
-      config.models_by_crc[crc].constantize
+      if Riddle.loaded_version.to_i < 2
+        config.models_by_crc[crc].constantize
+      else
+        crc.constantize
+      end
     end
     
     def each_with_attribute(attribute, &block)
@@ -956,6 +963,10 @@ module ThinkingSphinx
       @populated = false
       
       results_count
+    end
+    
+    def crc_attribute
+      Riddle.loaded_version.to_i < 2 ? 'class_crc' : 'sphinx_internal_class'
     end
   end
 end

@@ -1,6 +1,9 @@
 require 'spec_helper'
 
 describe ThinkingSphinx::Index::Builder do
+  let(:internal_attribute_count) {
+    Riddle.loaded_version.to_i < 2 ? 3 : 4
+  }
   describe ".generate without source scope" do
     before :each do
       @index = ThinkingSphinx::Index::Builder.generate(Person) do
@@ -31,10 +34,10 @@ describe ThinkingSphinx::Index::Builder do
       @source.fields[1].unique_name.should == :last_name
     end
     
-    it "should have two attributes alongside the three internal ones" do
-      @source.attributes.length.should == 5
-      @source.attributes[3].unique_name.should == :birthday
-      @source.attributes[4].unique_name.should == :internal_id
+    it "should have two attributes alongside the internal ones" do
+      @source.attributes.length.should == 2 + internal_attribute_count
+      @source.attributes[internal_attribute_count].unique_name.should == :birthday
+      @source.attributes[1 + internal_attribute_count].unique_name.should == :internal_id
     end
     
     it "should have one condition" do
@@ -95,8 +98,8 @@ describe ThinkingSphinx::Index::Builder do
       @source.fields.length.should == 1
     end
     
-    it "should have one attribute alongside the three internal ones" do
-      @source.attributes.length.should == 4
+    it "should have one attribute alongside the internal ones" do
+      @source.attributes.length.should == 1 + internal_attribute_count
     end
     
     it "should set the attribute name to have the _sort suffix" do
@@ -142,8 +145,8 @@ describe ThinkingSphinx::Index::Builder do
       @source.fields.length.should == 1
     end
     
-    it "should have one attribute alongside the three internal ones" do
-      @source.attributes.length.should == 4
+    it "should have one attribute alongside the internal ones" do
+      @source.attributes.length.should == 1 + internal_attribute_count
     end
     
     it "should set the attribute name to have the _facet suffix" do
@@ -174,8 +177,8 @@ describe ThinkingSphinx::Index::Builder do
       Alpha.sphinx_facets.delete_at(-1)
     end
     
-    it "should have just one attribute alongside the three internal ones" do
-      @source.attributes.length.should == 4
+    it "should have just one attribute alongside the internal ones" do
+      @source.attributes.length.should == 1 + internal_attribute_count
     end
   end
   
@@ -193,8 +196,8 @@ describe ThinkingSphinx::Index::Builder do
       Person.sphinx_facets.delete_at(-1)
     end
     
-    it "should have just one attribute alongside the three internal ones" do
-      @source.attributes.length.should == 4
+    it "should have just one attribute alongside the internal ones" do
+      @source.attributes.length.should == 1 + internal_attribute_count
     end
   end
   
@@ -212,8 +215,8 @@ describe ThinkingSphinx::Index::Builder do
       Beta.sphinx_facets.delete_at(-1)
     end
     
-    it "should have just one attribute alongside the three internal ones" do
-      @source.attributes.length.should == 4
+    it "should have just one attribute alongside the internal ones" do
+      @source.attributes.length.should == 1 + internal_attribute_count
     end
   end
   
@@ -231,8 +234,8 @@ describe ThinkingSphinx::Index::Builder do
       Alpha.sphinx_facets.delete_at(-1)
     end
     
-    it "should have just one attribute alongside the three internal ones" do
-      @source.attributes.length.should == 4
+    it "should have just one attribute alongside the internal ones" do
+      @source.attributes.length.should == 1 + internal_attribute_count
     end
   end
   
@@ -250,8 +253,8 @@ describe ThinkingSphinx::Index::Builder do
       Person.sphinx_facets.delete_at(-1)
     end
     
-    it "should have two attributes alongside the three internal ones" do
-      @source.attributes.length.should == 5
+    it "should have two attributes alongside the internal ones" do
+      @source.attributes.length.should == 2 + internal_attribute_count
     end
     
     it "should set the facet attribute name to have the _facet suffix" do
@@ -282,8 +285,8 @@ describe ThinkingSphinx::Index::Builder do
       Person.sphinx_facets.delete_at(-1)
     end
     
-    it "should have two attributes alongside the three internal ones" do
-      @source.attributes.length.should == 5
+    it "should have two attributes alongside the internal ones" do
+      @source.attributes.length.should == 2 + internal_attribute_count
     end
     
     it "should set the facet attribute name to have the _facet suffix" do
@@ -321,8 +324,8 @@ describe ThinkingSphinx::Index::Builder do
       @source.fields.length.should == 1
     end
     
-    it "should have one attribute alongside the three internal ones" do
-      @source.attributes.length.should == 4
+    it "should have one attribute alongside the internal ones" do
+      @source.attributes.length.should == 1 + internal_attribute_count
     end
     
     it "should set the attribute name to have the _facet suffix" do
@@ -381,10 +384,10 @@ describe ThinkingSphinx::Index::Builder do
       @source.fields[1].unique_name.should == :last_name
     end
     
-    it "should have two attributes alongside the three internal ones" do
-      @source.attributes.length.should == 5
-      @source.attributes[3].unique_name.should == :birthday
-      @source.attributes[4].unique_name.should == :internal_id
+    it "should have two attributes alongside the internal ones" do
+      @source.attributes.length.should == 2 + internal_attribute_count
+      @source.attributes[internal_attribute_count].unique_name.should == :birthday
+      @source.attributes[1 + internal_attribute_count].unique_name.should == :internal_id
     end
   end
   
@@ -418,12 +421,12 @@ describe ThinkingSphinx::Index::Builder do
     end
     
     it "should have two attributes alongside the six internal ones" do
-      @index.attributes.length.should == 8
+      @index.attributes.length.should == 2 + (internal_attribute_count * 2)
     end
     
-    it "should have one attribute in each source alongside the three internal ones" do
+    it "should have one attribute in each source alongside the internal ones" do
       @index.sources.each do |source|
-        source.attributes.length.should == 4
+        source.attributes.length.should == 1 + internal_attribute_count
       end
     end
   end

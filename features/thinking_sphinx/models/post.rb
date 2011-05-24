@@ -11,6 +11,7 @@ class Post < ActiveRecord::Base
     indexes tags.text, :as => :tags
     indexes comments.content, :as => :comments
     indexes authors.name, :as => :authors
+    indexes keywords_file, :as => :keywords, :file => true
     
     has comments(:id), :as => :comment_ids, :source => :ranged_query,
       :facet => true
