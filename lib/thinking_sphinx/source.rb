@@ -45,6 +45,7 @@ module ThinkingSphinx
       )
       
       set_source_database_settings  source
+      set_source_fields             source
       set_source_attributes         source, offset
       set_source_settings           source
       set_source_sql                source, offset
@@ -59,6 +60,7 @@ module ThinkingSphinx
       source.parent = "#{index.core_name}_#{position}"
       
       set_source_database_settings  source
+      set_source_fields             source
       set_source_attributes         source, offset, true
       set_source_settings           source
       set_source_sql                source, offset, true
@@ -95,6 +97,12 @@ module ThinkingSphinx
       source.sql_db   = config[:database]
       source.sql_port = config[:port]
       source.sql_sock = config[:socket]
+    end
+    
+    def set_source_fields(source)
+      fields.each do |field|
+        source.sql_file_field << field.unique_name if field.file?
+      end
     end
     
     def set_source_attributes(source, offset, delta = false)

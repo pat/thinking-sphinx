@@ -172,3 +172,10 @@ Feature: Searching on a single model
     And I am searching on posts
     When I search for "Shakespeare"
     Then I should get 1 result
+  
+  Scenario: Searching on content from file field
+    Given Sphinx is running
+    And I am searching on posts
+    When I search for "foo bar baz"
+    Then I should get 1 result
+  
