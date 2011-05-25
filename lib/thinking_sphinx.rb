@@ -102,8 +102,8 @@ module ThinkingSphinx
     end
   end
 
-  def self.unique_id_expression(offset = nil)
-    "* #{context.indexed_models.size} + #{offset || 0}"
+  def self.unique_id_expression(adapter, offset = nil)
+    "* #{adapter.cast_to_int context.indexed_models.size} + #{offset || 0}"
   end
 
   # Check if index definition is disabled.

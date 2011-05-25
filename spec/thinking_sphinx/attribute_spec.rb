@@ -298,184 +298,176 @@ describe ThinkingSphinx::Attribute do
   end
   
   describe "MVA with source query" do
-    before :each do
-      @attribute = ThinkingSphinx::Attribute.new(@source,
-        [ThinkingSphinx::Index::FauxColumn.new(:tags, :id)],
-        :as => :tag_ids, :source => :query
-      )
-    end
+    let(:attribute) { ThinkingSphinx::Attribute.new(@source,
+      [ThinkingSphinx::Index::FauxColumn.new(:tags, :id)],
+      :as => :tag_ids, :source => :query)
+    }
+    let(:adapter)   { attribute.send(:adapter) }
     
     it "should use a query" do
-      @attribute.type_to_config.should == :sql_attr_multi
+      attribute.type_to_config.should == :sql_attr_multi
       
-      declaration, query = @attribute.config_value.split('; ')
+      declaration, query = attribute.config_value.split('; ')
       declaration.should == "uint tag_ids from query"
-      query.should       == "SELECT `tags`.`person_id` #{ThinkingSphinx.unique_id_expression} AS `id`, `tags`.`id` AS `tag_ids` FROM `tags`"
+      query.should       == "SELECT `tags`.`person_id` #{ThinkingSphinx.unique_id_expression adapter} AS `id`, `tags`.`id` AS `tag_ids` FROM `tags`"
     end
   end
   
   describe "MVA with source query for a delta source" do
-    before :each do
-      @attribute = ThinkingSphinx::Attribute.new(@source,
-        [ThinkingSphinx::Index::FauxColumn.new(:tags, :id)],
-        :as => :tag_ids, :source => :query
-      )
-    end
+    let(:attribute) { ThinkingSphinx::Attribute.new(@source,
+      [ThinkingSphinx::Index::FauxColumn.new(:tags, :id)],
+      :as => :tag_ids, :source => :query)
+    }
+    let(:adapter)   { attribute.send(:adapter) }
     
     it "should use a query" do
-      @attribute.type_to_config.should == :sql_attr_multi
+      attribute.type_to_config.should == :sql_attr_multi
       
-      declaration, query = @attribute.config_value(nil, true).split('; ')
+      declaration, query = attribute.config_value(nil, true).split('; ')
       declaration.should == "uint tag_ids from query"
-      query.should       == "SELECT `tags`.`person_id` #{ThinkingSphinx.unique_id_expression} AS `id`, `tags`.`id` AS `tag_ids` FROM `tags` WHERE `tags`.`person_id` IN (SELECT `id` FROM `people` WHERE `people`.`delta` = 1)"
+      query.should       == "SELECT `tags`.`person_id` #{ThinkingSphinx.unique_id_expression adapter} AS `id`, `tags`.`id` AS `tag_ids` FROM `tags` WHERE `tags`.`person_id` IN (SELECT `id` FROM `people` WHERE `people`.`delta` = 1)"
     end
   end
   
   describe "MVA via a HABTM association with a source query" do
-    before :each do
-      @attribute = ThinkingSphinx::Attribute.new(@source,
-        [ThinkingSphinx::Index::FauxColumn.new(:links, :id)],
-        :as => :link_ids, :source => :query
-      )
-    end
+    let(:attribute) { ThinkingSphinx::Attribute.new(@source,
+      [ThinkingSphinx::Index::FauxColumn.new(:links, :id)],
+      :as => :link_ids, :source => :query)
+    }
+    let(:adapter)   { attribute.send(:adapter) }
     
     it "should use a ranged query" do
-      @attribute.type_to_config.should == :sql_attr_multi
+      attribute.type_to_config.should == :sql_attr_multi
       
-      declaration, query = @attribute.config_value.split('; ')
+      declaration, query = attribute.config_value.split('; ')
       declaration.should == "uint link_ids from query"
-      query.should       == "SELECT `links_people`.`person_id` #{ThinkingSphinx.unique_id_expression} AS `id`, `links_people`.`link_id` AS `link_ids` FROM `links_people`"
+      query.should       == "SELECT `links_people`.`person_id` #{ThinkingSphinx.unique_id_expression adapter} AS `id`, `links_people`.`link_id` AS `link_ids` FROM `links_people`"
     end
   end
   
   describe "MVA with ranged source query" do
-    before :each do
-      @attribute = ThinkingSphinx::Attribute.new(@source,
-        [ThinkingSphinx::Index::FauxColumn.new(:tags, :id)],
-        :as => :tag_ids, :source => :ranged_query
-      )
-    end
+    let(:attribute) { ThinkingSphinx::Attribute.new(@source,
+      [ThinkingSphinx::Index::FauxColumn.new(:tags, :id)],
+      :as => :tag_ids, :source => :ranged_query)
+    }
+    let(:adapter)   { attribute.send(:adapter) }
     
     it "should use a ranged query" do
-      @attribute.type_to_config.should == :sql_attr_multi
+      attribute.type_to_config.should == :sql_attr_multi
       
-      declaration, query, range_query = @attribute.config_value.split('; ')
+      declaration, query, range_query = attribute.config_value.split('; ')
       declaration.should == "uint tag_ids from ranged-query"
-      query.should       == "SELECT `tags`.`person_id` #{ThinkingSphinx.unique_id_expression} AS `id`, `tags`.`id` AS `tag_ids` FROM `tags` WHERE `tags`.`person_id` >= $start AND `tags`.`person_id` <= $end"
+      query.should       == "SELECT `tags`.`person_id` #{ThinkingSphinx.unique_id_expression adapter} AS `id`, `tags`.`id` AS `tag_ids` FROM `tags` WHERE `tags`.`person_id` >= $start AND `tags`.`person_id` <= $end"
       range_query.should == "SELECT MIN(`tags`.`person_id`), MAX(`tags`.`person_id`) FROM `tags`"
     end
   end
   
   describe "MVA with ranged source query for a delta source" do
-    before :each do
-      @attribute = ThinkingSphinx::Attribute.new(@source,
-        [ThinkingSphinx::Index::FauxColumn.new(:tags, :id)],
-        :as => :tag_ids, :source => :ranged_query
-      )
-    end
+    let(:attribute) { ThinkingSphinx::Attribute.new(@source,
+      [ThinkingSphinx::Index::FauxColumn.new(:tags, :id)],
+      :as => :tag_ids, :source => :ranged_query)
+    }
+    let(:adapter)   { attribute.send(:adapter) }
     
     it "should use a ranged query" do
-      @attribute.type_to_config.should == :sql_attr_multi
+      attribute.type_to_config.should == :sql_attr_multi
       
-      declaration, query, range_query = @attribute.config_value(nil, true).split('; ')
+      declaration, query, range_query = attribute.config_value(nil, true).split('; ')
       declaration.should == "uint tag_ids from ranged-query"
-      query.should       == "SELECT `tags`.`person_id` #{ThinkingSphinx.unique_id_expression} AS `id`, `tags`.`id` AS `tag_ids` FROM `tags` WHERE `tags`.`person_id` >= $start AND `tags`.`person_id` <= $end AND `tags`.`person_id` IN (SELECT `id` FROM `people` WHERE `people`.`delta` = 1)"
+      query.should       == "SELECT `tags`.`person_id` #{ThinkingSphinx.unique_id_expression adapter} AS `id`, `tags`.`id` AS `tag_ids` FROM `tags` WHERE `tags`.`person_id` >= $start AND `tags`.`person_id` <= $end AND `tags`.`person_id` IN (SELECT `id` FROM `people` WHERE `people`.`delta` = 1)"
       range_query.should == "SELECT MIN(`tags`.`person_id`), MAX(`tags`.`person_id`) FROM `tags`"
     end
   end
   
   describe "MVA via a has-many :through with a ranged source query" do
-    before :each do
-      @attribute = ThinkingSphinx::Attribute.new(@source,
-        [ThinkingSphinx::Index::FauxColumn.new(:football_teams, :id)],
-        :as => :football_team_ids, :source => :ranged_query
-      )
-    end
+    let(:attribute) { ThinkingSphinx::Attribute.new(@source,
+      [ThinkingSphinx::Index::FauxColumn.new(:football_teams, :id)],
+      :as => :football_team_ids, :source => :ranged_query)
+    }
+    let(:adapter)   { attribute.send(:adapter) }
     
     it "should use a ranged query" do
-      @attribute.type_to_config.should == :sql_attr_multi
+      attribute.type_to_config.should == :sql_attr_multi
       
-      declaration, query, range_query = @attribute.config_value.split('; ')
+      declaration, query, range_query = attribute.config_value.split('; ')
       declaration.should == "uint football_team_ids from ranged-query"
-      query.should       == "SELECT `tags`.`person_id` #{ThinkingSphinx.unique_id_expression} AS `id`, `tags`.`football_team_id` AS `football_team_ids` FROM `tags` WHERE `tags`.`person_id` >= $start AND `tags`.`person_id` <= $end"
+      query.should       == "SELECT `tags`.`person_id` #{ThinkingSphinx.unique_id_expression adapter} AS `id`, `tags`.`football_team_id` AS `football_team_ids` FROM `tags` WHERE `tags`.`person_id` >= $start AND `tags`.`person_id` <= $end"
       range_query.should == "SELECT MIN(`tags`.`person_id`), MAX(`tags`.`person_id`) FROM `tags`"
     end
   end
   
   describe "MVA via a has-many :through using a foreign key with a ranged source query" do
-    before :each do
-      @attribute = ThinkingSphinx::Attribute.new(@source,
-        [ThinkingSphinx::Index::FauxColumn.new(:friends, :id)],
-        :as => :friend_ids, :source => :ranged_query
-      )
-    end
+    let(:attribute) { ThinkingSphinx::Attribute.new(@source,
+      [ThinkingSphinx::Index::FauxColumn.new(:friends, :id)],
+      :as => :friend_ids, :source => :ranged_query)
+    }
+    let(:adapter)   { attribute.send(:adapter) }
     
     it "should use a ranged query" do
-      @attribute.type_to_config.should == :sql_attr_multi
+      attribute.type_to_config.should == :sql_attr_multi
       
-      declaration, query, range_query = @attribute.config_value.split('; ')
+      declaration, query, range_query = attribute.config_value.split('; ')
       declaration.should == "uint friend_ids from ranged-query"
-      query.should       == "SELECT `friendships`.`person_id` #{ThinkingSphinx.unique_id_expression} AS `id`, `friendships`.`friend_id` AS `friend_ids` FROM `friendships` WHERE `friendships`.`person_id` >= $start AND `friendships`.`person_id` <= $end"
+      query.should       == "SELECT `friendships`.`person_id` #{ThinkingSphinx.unique_id_expression adapter} AS `id`, `friendships`.`friend_id` AS `friend_ids` FROM `friendships` WHERE `friendships`.`person_id` >= $start AND `friendships`.`person_id` <= $end"
       range_query.should == "SELECT MIN(`friendships`.`person_id`), MAX(`friendships`.`person_id`) FROM `friendships`"
     end
   end
   
   describe "MVA via a HABTM with a ranged source query" do
-    before :each do
-      @attribute = ThinkingSphinx::Attribute.new(@source,
-        [ThinkingSphinx::Index::FauxColumn.new(:links, :id)],
-        :as => :link_ids, :source => :ranged_query
-      )
-    end
+    let(:attribute) { ThinkingSphinx::Attribute.new(@source,
+      [ThinkingSphinx::Index::FauxColumn.new(:links, :id)],
+      :as => :link_ids, :source => :ranged_query)
+    }
+    let(:adapter)   { attribute.send(:adapter) }
     
     it "should use a ranged query" do
-      @attribute.type_to_config.should == :sql_attr_multi
+      attribute.type_to_config.should == :sql_attr_multi
       
-      declaration, query, range_query = @attribute.config_value.split('; ')
+      declaration, query, range_query = attribute.config_value.split('; ')
       declaration.should == "uint link_ids from ranged-query"
-      query.should       == "SELECT `links_people`.`person_id` #{ThinkingSphinx.unique_id_expression} AS `id`, `links_people`.`link_id` AS `link_ids` FROM `links_people` WHERE `links_people`.`person_id` >= $start AND `links_people`.`person_id` <= $end"
+      query.should       == "SELECT `links_people`.`person_id` #{ThinkingSphinx.unique_id_expression adapter} AS `id`, `links_people`.`link_id` AS `link_ids` FROM `links_people` WHERE `links_people`.`person_id` >= $start AND `links_people`.`person_id` <= $end"
       range_query.should == "SELECT MIN(`links_people`.`person_id`), MAX(`links_people`.`person_id`) FROM `links_people`"
     end
   end
   
   describe "MVA via two has-many associations with a ranged source query" do
-    before :each do
-      @index  = ThinkingSphinx::Index.new(Alpha)
-      @source = ThinkingSphinx::Source.new(@index)
-      @attribute = ThinkingSphinx::Attribute.new(@source,
-        [ThinkingSphinx::Index::FauxColumn.new(:betas, :gammas, :value)],
-        :as => :gamma_values, :source => :ranged_query
-      )
-    end
+    let(:index)     { ThinkingSphinx::Index.new(Alpha) }
+    let(:source)    { ThinkingSphinx::Source.new(index) }
+    let(:attribute) { ThinkingSphinx::Attribute.new(source,
+      [ThinkingSphinx::Index::FauxColumn.new(:betas, :gammas, :value)],
+      :as => :gamma_values, :source => :ranged_query)
+    }
+    let(:adapter)   { attribute.send(:adapter) }
     
     it "should use a ranged query" do
-      @attribute.type_to_config.should == :sql_attr_multi
+      attribute.type_to_config.should == :sql_attr_multi
       
-      declaration, query, range_query = @attribute.config_value.split('; ')
+      declaration, query, range_query = attribute.config_value.split('; ')
       declaration.should == "uint gamma_values from ranged-query"
-      query.should       == "SELECT `betas`.`alpha_id` #{ThinkingSphinx.unique_id_expression} AS `id`, `gammas`.`value` AS `gamma_values` FROM `betas` LEFT OUTER JOIN `gammas` ON `gammas`.`beta_id` = `betas`.`id` WHERE `betas`.`alpha_id` >= $start AND `betas`.`alpha_id` <= $end"
+      query.should       == "SELECT `betas`.`alpha_id` #{ThinkingSphinx.unique_id_expression adapter} AS `id`, `gammas`.`value` AS `gamma_values` FROM `betas` LEFT OUTER JOIN `gammas` ON `gammas`.`beta_id` = `betas`.`id` WHERE `betas`.`alpha_id` >= $start AND `betas`.`alpha_id` <= $end"
       range_query.should == "SELECT MIN(`betas`.`alpha_id`), MAX(`betas`.`alpha_id`) FROM `betas`"
     end
   end
   
   describe "MVA via two has-many associations with a ranged source query for a delta source" do
-    before :each do
-      @index  = ThinkingSphinx::Index.new(Alpha)
-      @source = ThinkingSphinx::Source.new(@index)
-      @attribute = ThinkingSphinx::Attribute.new(@source,
-        [ThinkingSphinx::Index::FauxColumn.new(:betas, :gammas, :value)],
-        :as => :gamma_values, :source => :ranged_query
-      )
+    let(:index)     { ThinkingSphinx::Index.new(Alpha) }
+    let(:source)    { ThinkingSphinx::Source.new(index) }
+    let(:attribute) { ThinkingSphinx::Attribute.new(source,
+      [ThinkingSphinx::Index::FauxColumn.new(:betas, :gammas, :value)],
+      :as => :gamma_values, :source => :ranged_query)
+    }
+    let(:adapter)   { attribute.send(:adapter) }
       
-      @index.delta_object = ThinkingSphinx::Deltas::DefaultDelta.new @index, @index.local_options
+    before :each do
+      index.delta_object = ThinkingSphinx::Deltas::DefaultDelta.new index, index.local_options
     end
     
     it "should use a ranged query" do
-      @attribute.type_to_config.should == :sql_attr_multi
+      attribute.type_to_config.should == :sql_attr_multi
       
-      declaration, query, range_query = @attribute.config_value(nil, true).split('; ')
+      declaration, query, range_query = attribute.config_value(nil, true).split('; ')
       declaration.should == "uint gamma_values from ranged-query"
-      query.should       == "SELECT `betas`.`alpha_id` #{ThinkingSphinx.unique_id_expression} AS `id`, `gammas`.`value` AS `gamma_values` FROM `betas` LEFT OUTER JOIN `gammas` ON `gammas`.`beta_id` = `betas`.`id` WHERE `betas`.`alpha_id` >= $start AND `betas`.`alpha_id` <= $end AND `betas`.`alpha_id` IN (SELECT `id` FROM `alphas` WHERE `alphas`.`delta` = 1)"
+      query.should       == "SELECT `betas`.`alpha_id` #{ThinkingSphinx.unique_id_expression adapter} AS `id`, `gammas`.`value` AS `gamma_values` FROM `betas` LEFT OUTER JOIN `gammas` ON `gammas`.`beta_id` = `betas`.`id` WHERE `betas`.`alpha_id` >= $start AND `betas`.`alpha_id` <= $end AND `betas`.`alpha_id` IN (SELECT `id` FROM `alphas` WHERE `alphas`.`delta` = 1)"
       range_query.should == "SELECT MIN(`betas`.`alpha_id`), MAX(`betas`.`alpha_id`) FROM `betas`"
     end
   end

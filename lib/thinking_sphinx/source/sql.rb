@@ -61,7 +61,7 @@ module ThinkingSphinx
       end
 
       def sql_select_clause(offset)
-        unique_id_expr = ThinkingSphinx.unique_id_expression(offset)
+        unique_id_expr = ThinkingSphinx.unique_id_expression(adapter, offset)
 
         (
           ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key_for_sphinx)} #{unique_id_expr} AS #{quote_column(@model.primary_key_for_sphinx)} "] + 

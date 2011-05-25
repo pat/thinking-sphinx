@@ -28,6 +28,10 @@ module ThinkingSphinx
       "CAST(#{clause} AS UNSIGNED)"
     end
     
+    def cast_to_int(clause)
+      "CAST(#{clause} AS SIGNED)"
+    end
+    
     def convert_nulls(clause, default = '')
       default = "'#{default}'" if default.is_a?(String)
       

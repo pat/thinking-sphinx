@@ -238,7 +238,7 @@ module ThinkingSphinx
           on(*join.association_join)
       end
       
-      relation = relation.project "#{foreign_key_for_mva base_assoc} #{ThinkingSphinx.unique_id_expression(offset)} AS #{quote_column('id')}, #{primary_key_for_mva(end_assoc)} AS #{quote_column(unique_name)}"
+      relation = relation.project "#{foreign_key_for_mva base_assoc} #{ThinkingSphinx.unique_id_expression(adapter, offset)} AS #{quote_column('id')}, #{primary_key_for_mva(end_assoc)} AS #{quote_column(unique_name)}"
       
       relation.to_sql
     end
