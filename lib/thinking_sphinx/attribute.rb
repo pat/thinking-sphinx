@@ -233,7 +233,7 @@ module ThinkingSphinx
       
       <<-SQL
 SELECT #{foreign_key_for_mva base_assoc}
-  #{ThinkingSphinx.unique_id_expression(offset)} AS #{quote_column('id')},
+  #{ThinkingSphinx.unique_id_expression(adapter, offset)} AS #{quote_column('id')},
   #{primary_key_for_mva(end_assoc)} AS #{quote_column(unique_name)}
 FROM #{quote_table_name base_assoc.table} #{association_joins}
       SQL

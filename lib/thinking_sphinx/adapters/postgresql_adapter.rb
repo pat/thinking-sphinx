@@ -35,6 +35,10 @@ module ThinkingSphinx
       clause
     end
     
+    def cast_to_int(clause)
+      "#{clause}::INT8"
+    end
+    
     def convert_nulls(clause, default = '')
       default = case default
       when String
