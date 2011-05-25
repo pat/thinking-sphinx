@@ -71,9 +71,7 @@ module ThinkingSphinx
     # join conditions avoid column name collisions.
     # 
     def to_sql
-      @join.association_join.gsub(/::ts_join_alias::/,
-        "#{@reflection.klass.connection.quote_table_name(@join.parent.aliased_table_name)}"
-      )
+      rewrite_conditions
     end
     
     # Returns true if the association - or a parent - is a has_many or
@@ -159,6 +157,28 @@ module ThinkingSphinx
       end
       
       options
+    end
+    
+    def rewrite_conditions
+      rewrite_condition @join.association_join
+    end
+    
+    def rewrite_condition(condition)
+      return condition unless condition.is_a?(String)
+      
+      if defined?(ActsAsTaggableOn) &&
+        @reflection.klass == ActsAsTaggableOn::Tagging &&
+        @reflection.name.to_s[/_taggings$/]
+        condition = condition.gsub /taggings\./, "#{quoted_alias @join}."
+      end
+      
+      condition.gsub /::ts_join_alias::/, quoted_alias(@join.parent)
+    end
+    
+    def quoted_alias(join)
+      @reflection.klass.connection.quote_table_name(
+        join.aliased_table_name
+      )
     end
   end
 end
