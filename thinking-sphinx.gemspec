@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pat Allan"]
-  s.date = %q{2011-05-12}
+  s.date = %q{2011-05-25}
   s.description = %q{A concise and easy-to-use Ruby library that connects ActiveRecord to the Sphinx search daemon, managing configuration, indexing and searching.}
   s.email = %q{pat@freelancing-gods.com}
   s.extra_rdoc_files = [
@@ -196,7 +196,7 @@ http://freelancing-god.github.com/ts/en/upgrading.html
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<activerecord>, [">= 3.0.3"])
-      s.add_runtime_dependency(%q<riddle>, [">= 1.3.2"])
+      s.add_runtime_dependency(%q<riddle>, [">= 1.3.3"])
       s.add_development_dependency(%q<mysql>, ["= 2.8.1"])
       s.add_development_dependency(%q<pg>, ["= 0.9.0"])
       s.add_development_dependency(%q<actionpack>, [">= 3.0.3"])
@@ -213,7 +213,7 @@ http://freelancing-god.github.com/ts/en/upgrading.html
       s.add_development_dependency(%q<faker>, ["= 0.3.1"])
     else
       s.add_dependency(%q<activerecord>, [">= 3.0.3"])
-      s.add_dependency(%q<riddle>, [">= 1.3.2"])
+      s.add_dependency(%q<riddle>, [">= 1.3.3"])
       s.add_dependency(%q<mysql>, ["= 2.8.1"])
       s.add_dependency(%q<pg>, ["= 0.9.0"])
       s.add_dependency(%q<actionpack>, [">= 3.0.3"])
@@ -231,7 +231,7 @@ http://freelancing-god.github.com/ts/en/upgrading.html
     end
   else
     s.add_dependency(%q<activerecord>, [">= 3.0.3"])
-    s.add_dependency(%q<riddle>, [">= 1.3.2"])
+    s.add_dependency(%q<riddle>, [">= 1.3.3"])
     s.add_dependency(%q<mysql>, ["= 2.8.1"])
     s.add_dependency(%q<pg>, ["= 0.9.0"])
     s.add_dependency(%q<actionpack>, [">= 3.0.3"])
