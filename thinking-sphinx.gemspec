@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{thinking-sphinx}
-  s.version = "2.0.4"
+  s.version = "2.0.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pat Allan"]
@@ -58,6 +58,7 @@ Gem::Specification.new do |s|
     "lib/thinking_sphinx/railtie.rb",
     "lib/thinking_sphinx/search.rb",
     "lib/thinking_sphinx/search_methods.rb",
+    "lib/thinking_sphinx/sinatra.rb",
     "lib/thinking_sphinx/source.rb",
     "lib/thinking_sphinx/source/internal_properties.rb",
     "lib/thinking_sphinx/source/sql.rb",
