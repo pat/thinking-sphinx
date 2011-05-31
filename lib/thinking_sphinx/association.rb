@@ -46,9 +46,7 @@ module ThinkingSphinx
       # association is polymorphic - create associations for each
       # non-polymorphic reflection.
       polymorphic_classes(ref).collect { |poly_class|
-        reflection = depolymorphic_reflection(ref, poly_class)
-        klass.reflections[reflection.name] = reflection
-        Association.new parent, reflection
+        Association.new parent, depolymorphic_reflection(ref, klass, poly_class)
       }
     end
     
@@ -115,15 +113,16 @@ module ThinkingSphinx
     
     private
     
-    def self.depolymorphic_reflection(reflection, klass)
-      ::ActiveRecord::Reflection::AssociationReflection.new(
-        reflection.macro,
-        "#{reflection.name}_#{klass.name}".to_sym,
-        casted_options(klass, reflection),
-        reflection.active_record
-      )
+    def self.depolymorphic_reflection(reflection, source_class, poly_class)
+      name = "#{reflection.name}_#{poly_class.name}".to_sym
+      
+      source_class.reflections[new_ref.name] ||=
+        ::ActiveRecord::Reflection::AssociationReflection.new(
+          reflection.macro, name, casted_options(poly_class, reflection),
+          reflection.active_record
+        )
     end
-    
+        
     # Returns all the objects that could be currently instantiated from a
     # polymorphic association. This is pretty damn fast if there's an index on
     # the foreign type column - but if there isn't, it can take a while if you
