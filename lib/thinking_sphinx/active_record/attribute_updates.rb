@@ -44,7 +44,8 @@ module ThinkingSphinx
         config.client.update index_name, attribute_names, {
           sphinx_document_id => attribute_values
         } if in_index?(index_name)
-      rescue Riddle::ConnectionError, ThinkingSphinx::SphinxError
+      rescue Riddle::ConnectionError, ThinkingSphinx::SphinxError,
+        Errno::ETIMEDOUT
         # Not the end of the world if Sphinx isn't running.
       end
     end
