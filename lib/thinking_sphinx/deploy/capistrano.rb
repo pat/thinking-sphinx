@@ -61,27 +61,25 @@ DESC
 
     desc "Start the Sphinx daemon"
     task :start do
-      configure
-      rake "thinking_sphinx:start"
+      rake "thinking_sphinx:configure thinking_sphinx:start"
     end
 
     desc "Stop the Sphinx daemon"
     task :stop do
-      configure
-      rake "thinking_sphinx:stop"
+      rake "thinking_sphinx:configure thinking_sphinx:stop"
     end
 
     desc "Stop and then start the Sphinx daemon"
     task :restart do
-      stop
-      start
+      rake "thinking_sphinx:configure thinking_sphinx:stop \
+        thinking_sphinx:start"
     end
 
     desc "Stop, re-index and then start the Sphinx daemon"
     task :rebuild do
-      stop
-      index
-      start
+      rake "thinking_sphinx:configure thinking_sphinx:stop \
+        thinking_sphinx:reindex \
+        thinking_sphinx:start"
     end
 
     desc "Add the shared folder for sphinx files"
