@@ -28,7 +28,7 @@ module ThinkingSphinx
     end
     
     def cast_to_datetime(clause)
-      "cast(extract(epoch from #{clause}) as int)"
+      "cast(extract(epoch from #{clause}) as bigint)"
     end
     
     def cast_to_unsigned(clause)
