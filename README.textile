@@ -193,3 +193,4 @@ Since I first released this library, there's been quite a few people who have su
 * Alex Chee
 * Bruno Santschi
 * Lars Weiler
+* Andrey Deryabin
