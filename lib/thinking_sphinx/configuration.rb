@@ -116,21 +116,15 @@ module ThinkingSphinx
     end
     
     def self.environment
-      if @@environment.nil?
-        ThinkingSphinx.mutex.synchronize do
-          @@environment ||= if defined?(Merb)
-            Merb.environment
-          elsif defined?(RAILS_ENV)
-            RAILS_ENV
-          elsif defined?(Sinatra)
-            Sinatra::Application.environment.to_s
-          else
-            ENV['RAILS_ENV'] || 'development'
-          end
-        end
+      @@environment ||= if defined?(Merb)
+        Merb.environment
+      elsif defined?(RAILS_ENV)
+        RAILS_ENV
+      elsif defined?(Sinatra)
+        Sinatra::Application.environment.to_s
+      else
+        ENV['RAILS_ENV'] || 'development'
       end
-      
-      @@environment
     end
     
     def self.reset_environment
