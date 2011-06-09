@@ -20,7 +20,7 @@ module ThinkingSphinx
       "CAST(#{clause} AS CHAR)"
     end
     
-    def cast_to_datetime(clause, use_64_bit = false)
+    def cast_to_datetime(clause)
       "UNIX_TIMESTAMP(#{clause})"
     end
     

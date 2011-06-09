@@ -27,8 +27,8 @@ module ThinkingSphinx
       clause
     end
     
-    def cast_to_datetime(clause, use_64_bit = false)
-      if use_64_bit
+    def cast_to_datetime(clause)
+      if ThinkingSphinx::Configuration.instance.use_64_bit
         "cast(extract(epoch from #{clause}) as bigint)"
       else
         "cast(extract(epoch from #{clause}) as int)"

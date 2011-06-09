@@ -113,7 +113,7 @@ module ThinkingSphinx
         when :string
           adapter.convert_nulls(column)
         when :datetime
-          adapter.cast_to_datetime(column, ThinkingSphinx::Configuration.instance.use_64_bit)
+          adapter.cast_to_datetime(column)
         when :multi
           column = adapter.cast_to_datetime(column)   if is_many_datetimes?
           column = adapter.convert_nulls(column, '0') if is_many_ints?
