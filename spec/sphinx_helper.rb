@@ -1,6 +1,8 @@
 require 'active_record'
 prefix = defined?(JRUBY_VERSION) ? "jdbc" : ""
 require "active_record/connection_adapters/#{prefix}mysql_adapter"
+require "active_record/connection_adapters/mysql2_adapter"
+
 begin
   require "active_record/connection_adapters/#{prefix}postgresql_adapter"
 rescue LoadError

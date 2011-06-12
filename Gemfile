@@ -5,6 +5,7 @@ gem 'riddle',       '>= 1.3.3'
 
 group :development do
   gem 'mysql',              '2.8.1'
+  gem 'mysql2',             '0.2.7'
   gem 'pg',                 '0.9.0'
   gem 'actionpack',         '>= 3.0.3'
   gem 'jeweler',            '1.5.1'
