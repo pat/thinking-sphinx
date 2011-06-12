@@ -6,6 +6,7 @@ gem 'after_commit', '>= 1.0.7'
 
 group :development do
   gem 'mysql',              '2.8.1'
+  gem 'mysql2',             '0.2.7'
   gem 'pg',                 '0.9.0'
   gem 'jeweler',            '1.5.1'
   gem 'yard',               '0.6.8'
