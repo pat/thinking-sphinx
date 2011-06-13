@@ -86,7 +86,9 @@ namespace :thinking_sphinx do
   task :reindex => :app_env do
     config = ThinkingSphinx::Configuration.instance
     FileUtils.mkdir_p config.searchd_file_path
-    puts config.controller.index
+    output = config.controller.index
+    puts output
+    FileUtils.touch config.touched_reindex_file if config.touched_reindex_file and output =~ /succesfully sent SIGHUP to searchd/
   end
   
   desc "Stop Sphinx (if it's running), rebuild the indexes, and start Sphinx"
