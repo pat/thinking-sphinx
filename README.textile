@@ -126,7 +126,6 @@ Since I first released this library, there's been quite a few people who have su
 * Andrei Bocan
 * László Bácsi
 * Peter Wagenet
-* Max Lapshin
 * Martin Emde
 * David Wennergren
 * Mark Lane
@@ -212,3 +211,4 @@ Since I first released this library, there's been quite a few people who have su
 * Bruno Santschi
 * Lars Weiler
 * Andrey Deryabin
+* Andrew White

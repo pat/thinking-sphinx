@@ -151,6 +151,15 @@ describe ThinkingSphinx do
       
       ThinkingSphinx.use_group_by_shortcut?.should be_true
     end
+
+    it "should return true if using mysql2 gem" do
+      @connection.stub!(
+        :class => ActiveRecord::ConnectionAdapters::Mysql2Adapter,
+        :select_all => {:a => ""}
+      )
+
+      ThinkingSphinx.use_group_by_shortcut?.should be_true
+    end
   
     it "should return false if ONLY_FULL_GROUP_BY is set" do
       @connection.stub!(
