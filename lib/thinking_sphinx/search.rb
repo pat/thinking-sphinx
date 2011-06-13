@@ -193,6 +193,10 @@ module ThinkingSphinx
       @options[:page].blank? ? 1 : @options[:page].to_i
     end
     
+    def first_page?
+      current_page == 1
+    end
+    
     # Kaminari support
     def page(page_number)
       @options[:page] = page_number
@@ -206,6 +210,10 @@ module ThinkingSphinx
     # 
     def next_page
       current_page >= total_pages ? nil : current_page + 1
+    end
+    
+    def next_page?
+      !next_page.nil?
     end
     
     # The previous page number of the result set. If this is the first page,
