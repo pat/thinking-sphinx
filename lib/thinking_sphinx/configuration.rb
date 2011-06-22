@@ -258,14 +258,11 @@ module ThinkingSphinx
       end
     end
 
-<<<<<<< HEAD
-=======
     def touch_reindex_file(output)
       return FileUtils.touch(@touched_reindex_file) if @touched_reindex_file and output =~ /succesfully sent SIGHUP to searchd/
       false
     end
 
->>>>>>> master
     private
 
     # Parse the config/sphinx.yml file - if it exists - then use the attribute
