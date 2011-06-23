@@ -122,7 +122,7 @@ GROUP BY #{ sql_group_clause }
           
           adapter.case(adapter.convert_nulls(
             adapter.quote_with_table(@model.inheritance_column)),
-            types_to_crcs, @model.to_crc32)
+            types, @model.to_crc32)
         else
           @model.to_crc32.to_s
         end
