@@ -55,12 +55,12 @@ module ThinkingSphinx
     CustomOptions = %w( disable_range use_64_bit )
     
     attr_accessor :searchd_file_path, :allow_star, :database_yml_file,
-      :app_root, :model_directories, :delayed_job_priority, :indexed_models, :use_64_bit, :touched_reindex_file
+      :app_root, :model_directories, :delayed_job_priority, :indexed_models,
+      :use_64_bit, :touched_reindex_file, :stop_timeout, :version
     
     attr_accessor :source_options, :index_options
-    attr_accessor :version
     
-    attr_reader :environment, :configuration, :controller
+    attr_reader :configuration, :controller
     
     @@environment = nil
     
@@ -163,14 +163,6 @@ module ThinkingSphinx
       open(file_path, "w") do |file|
         file.write @configuration.render
       end
-    end
-
-    def stop_timeout
-      @stop_timeout
-    end
-    
-    def stop_timeout=(stop_timeout)
-      @stop_timeout = stop_timeout
     end
     
     def address
