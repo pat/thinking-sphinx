@@ -52,7 +52,7 @@ namespace :thinking_sphinx do
       config.controller.stop
       
       # Ensure searchd is stopped, but don't try too hard
-      Timeout.timeout(5) do
+      Timeout.timeout(config.stop_timeout) do
         sleep(1) until config.controller.stop
       end
       

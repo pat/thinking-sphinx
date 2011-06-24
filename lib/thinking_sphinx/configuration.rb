@@ -15,6 +15,7 @@ module ThinkingSphinx
   # address::               127.0.0.1
   # port::                  9312
   # allow star::            false
+  # stop timeout::          5
   # min prefix length::     1
   # min infix length::      1
   # mem limit::             64M
@@ -53,12 +54,12 @@ module ThinkingSphinx
     CustomOptions = %w( disable_range use_64_bit )
     
     attr_accessor :searchd_file_path, :allow_star, :database_yml_file,
-      :app_root, :model_directories, :delayed_job_priority, :indexed_models, :use_64_bit, :touched_reindex_file
+      :app_root, :model_directories, :delayed_job_priority, :indexed_models,
+      :use_64_bit, :touched_reindex_file, :stop_timeout, :version
     
     attr_accessor :source_options, :index_options
-    attr_accessor :version
-
-    attr_reader :environment, :configuration, :controller
+    
+    attr_reader :configuration, :controller
     
     @@environment = nil
     
@@ -97,6 +98,7 @@ module ThinkingSphinx
       self.database_yml_file    = "#{self.app_root}/config/database.yml"
       self.searchd_file_path    = "#{self.app_root}/db/sphinx/#{environment}"
       self.allow_star           = false
+      self.stop_timeout         = 5
       self.model_directories    = ["#{app_root}/app/models/"] +
         Dir.glob("#{app_root}/vendor/plugins/*/app/models/")
       self.delayed_job_priority = 0
