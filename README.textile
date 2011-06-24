@@ -195,3 +195,4 @@ Since I first released this library, there's been quite a few people who have su
 * Andrey Deryabin
 * Andrew White
 * Rémi Prévost
+* Justin Tanner
