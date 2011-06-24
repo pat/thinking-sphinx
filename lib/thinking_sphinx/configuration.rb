@@ -15,6 +15,7 @@ module ThinkingSphinx
   # address::               127.0.0.1
   # port::                  9312
   # allow star::            false
+  # stop timeout::          5
   # min prefix length::     1
   # min infix length::      1
   # mem limit::             64M
@@ -98,6 +99,7 @@ module ThinkingSphinx
       self.database_yml_file    = "#{self.app_root}/config/database.yml"
       self.searchd_file_path    = "#{self.app_root}/db/sphinx/#{environment}"
       self.allow_star           = false
+      self.stop_timeout         = 5
       self.model_directories    = ["#{app_root}/app/models/"] +
         Dir.glob("#{app_root}/vendor/plugins/*/app/models/")
       self.delayed_job_priority = 0
@@ -161,6 +163,14 @@ module ThinkingSphinx
       open(file_path, "w") do |file|
         file.write @configuration.render
       end
+    end
+
+    def stop_timeout
+      @stop_timeout
+    end
+    
+    def stop_timeout=(stop_timeout)
+      @stop_timeout = stop_timeout
     end
     
     def address
