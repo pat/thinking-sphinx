@@ -215,3 +215,4 @@ Since I first released this library, there's been quite a few people who have su
 * Rémi Prévost
 * Justin Tanner
 * Josh Goebel
+* Jonathan Viney
