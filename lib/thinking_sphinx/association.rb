@@ -130,11 +130,11 @@ module ThinkingSphinx
     # 
     def self.polymorphic_classes(ref)
       ref.active_record.connection.select_all(
-        "SELECT DISTINCT #{ref.options[:foreign_type]} " +
+        "SELECT DISTINCT #{foreign_type(ref)} " +
         "FROM #{ref.active_record.table_name} " +
-        "WHERE #{ref.options[:foreign_type]} IS NOT NULL"
+        "WHERE #{foreign_type(ref)} IS NOT NULL"
       ).collect { |row|
-        row[ref.options[:foreign_type]].constantize
+        row[foreign_type(ref)].constantize
       }
     end
     
@@ -148,14 +148,14 @@ module ThinkingSphinx
       options[:class_name]    = klass.name
       options[:foreign_key] ||= "#{ref.name}_id"
       
-      quoted_foreign_type = klass.connection.quote_column_name ref.options[:foreign_type]
+      quoted_foreign_type = klass.connection.quote_column_name foreign_type(ref)
       case options[:conditions]
       when nil
         options[:conditions] = "::ts_join_alias::.#{quoted_foreign_type} = '#{klass.name}'"
       when Array
         options[:conditions] << "::ts_join_alias::.#{quoted_foreign_type} = '#{klass.name}'"
       when Hash
-        options[:conditions].merge!(ref.options[:foreign_type] => klass.name)
+        options[:conditions].merge!(foreign_type(ref) => klass.name)
       else
         options[:conditions] << " AND ::ts_join_alias::.#{quoted_foreign_type} = '#{klass.name}'"
       end
@@ -164,7 +164,7 @@ module ThinkingSphinx
     end
     
     def join_association_class
-      if rails_3_1?
+      if self.class.rails_3_1?
         ::ActiveRecord::Associations::JoinDependency::JoinAssociation
       else
         ::ActiveRecord::Associations::ClassMethods::JoinDependency::JoinAssociation
@@ -172,14 +172,22 @@ module ThinkingSphinx
     end
     
     def join_parent(join)
-      if rails_3_1?
+      if self.class.rails_3_1?
         join.join_parts.first
       else
         join.joins.first
       end
     end
     
-    def rails_3_1?
+    def self.foreign_type(ref)
+      if rails_3_1?
+        ref.foreign_type
+      else
+        ref.options[:foreign_type]
+      end
+    end
+    
+    def self.rails_3_1?
       ::ActiveRecord::Associations.constants.include?(:JoinDependency) ||
       ::ActiveRecord::Associations.constants.include?('JoinDependency')
     end
