@@ -53,9 +53,9 @@ module ThinkingSphinx
     IndexOptions  = Riddle::Configuration::Index.settings.map     { |setting| setting.to_s }
     CustomOptions = %w( disable_range use_64_bit )
     
-    attr_accessor :searchd_file_path, :allow_star, :database_yml_file,
-      :app_root, :model_directories, :delayed_job_priority, :indexed_models,
-      :use_64_bit, :touched_reindex_file, :stop_timeout, :version
+    attr_accessor :searchd_file_path, :allow_star, :app_root,
+      :model_directories, :delayed_job_priority, :indexed_models, :use_64_bit,
+      :touched_reindex_file, :stop_timeout, :version
     
     attr_accessor :source_options, :index_options
     
@@ -95,7 +95,6 @@ module ThinkingSphinx
 
       self.address              = "127.0.0.1"
       self.port                 = 9312
-      self.database_yml_file    = "#{self.app_root}/config/database.yml"
       self.searchd_file_path    = "#{self.app_root}/db/sphinx/#{environment}"
       self.allow_star           = false
       self.stop_timeout         = 5

@@ -42,7 +42,6 @@ RSpec.configure do |config|
     ThinkingSphinx.suppress_delta_output = true
     
     ThinkingSphinx::Configuration.instance.reset
-    ThinkingSphinx::Configuration.instance.database_yml_file = "spec/fixtures/sphinx/database.yml"
   end
   
   config.after :all do

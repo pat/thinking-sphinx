@@ -70,7 +70,6 @@ class SphinxHelper
     end
     FileUtils.mkdir_p(@configuration.searchd_file_path)
 
-    @configuration.database_yml_file = "spec/fixtures/sphinx/database.yml"
     @configuration.build
 
     index
