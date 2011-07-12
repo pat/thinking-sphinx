@@ -299,7 +299,7 @@ module ThinkingSphinx
           yield
         ensure
           ThinkingSphinx.deltas_suspended = original_setting
-          self.index_delta if reindex_after
+          self.index_delta if reindex_after && !original_setting
         end
       end
       
