@@ -618,13 +618,15 @@ module ThinkingSphinx
         end
       end
     end
-    
+
+    if Regexp.instance_methods.include?(:encoding)
+      DefaultStarToken = Regexp.new('\p{Word}+', nil, 'u')
+    else
+      DefaultStarToken = Regexp.new('\w+', nil, 'u')
+    end
+
     def default_star_token
-      if Regexp.instance_methods.include?(:encoding)
-        /\p{Word}+/u
-      else
-        /\w+/u
-      end
+      DefaultStarToken
     end
     
     def comment
