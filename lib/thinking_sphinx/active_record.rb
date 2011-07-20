@@ -276,8 +276,8 @@ module ThinkingSphinx
         ThinkingSphinx::Configuration.instance.client.update(
           index, ['sphinx_deleted'], {document_id => [1]}
         )
-      rescue Riddle::ConnectionError, ThinkingSphinx::SphinxError,
-        Errno::ETIMEDOUT
+      rescue Riddle::ConnectionError, Riddle::ResponseError,
+        ThinkingSphinx::SphinxError, Errno::ETIMEDOUT
         # Not the end of the world if Sphinx isn't running.
       end
       
