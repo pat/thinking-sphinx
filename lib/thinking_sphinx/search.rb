@@ -726,7 +726,7 @@ module ThinkingSphinx
       
       filters << Riddle::Client::Filter.new(
         'sphinx_internal_id', filter_value(options[:without_ids]), true
-      ) if options[:without_ids]
+      ) unless options[:without_ids].nil?
       
       filters
     end

@@ -646,6 +646,13 @@ describe ThinkingSphinx::Search do
         filter.attribute.should == 'sphinx_internal_id'
         filter.exclude?.should be_true
       end
+
+      it "should not filter out any ids if :without_ids is an empty array" do
+        ThinkingSphinx::Search.new(:without_ids => []).first
+
+        filter = @client.filters.last
+        filter.attribute.should_not == 'sphinx_internal_id'
+      end
     end
     
     describe 'sort mode' do
