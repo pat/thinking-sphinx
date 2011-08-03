@@ -181,7 +181,9 @@ module ThinkingSphinx
     end
     
     def updatable?
-      [:integer, :datetime, :boolean].include?(type) && !is_string?
+      [:integer, :datetime, :boolean].include?(type) &&
+      unique_name != :sphinx_internal_id &&
+      !is_string?
     end
     
     def live_value(instance)
