@@ -612,7 +612,7 @@ module ThinkingSphinx
     end
 
     if Regexp.instance_methods.include?(:encoding)
-      DefaultStarToken = Regexp.new('\p{Word}+', nil, 'u')
+      DefaultStarToken = Regexp.new('\p{Word}+')
     else
       DefaultStarToken = Regexp.new('\w+', nil, 'u')
     end
