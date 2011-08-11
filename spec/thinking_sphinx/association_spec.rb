@@ -44,12 +44,30 @@ describe ThinkingSphinx::Association do
     end
     
     it "should generate non-polymorphic 'casted' associations for each polymorphic possibility" do
-      Person.stub!(:reflect_on_association => @poly_reflection)
+      Person.stub!(:reflect_on_association).exactly(3).times.
+        and_return(@poly_reflection, nil, nil)
       ThinkingSphinx::Association.should_receive(:casted_options).with(
         Person, @poly_reflection
       ).twice
       ::ActiveRecord::Reflection::AssociationReflection.should_receive(:new).
-        with(:has_many, :polly_Person, {:casted => :options}, "AR").twice
+        with(:has_many, :polly_Person, {:casted => :options}, "AR").twice.
+        and_return(@non_poly_reflection)
+      ThinkingSphinx::Association.should_receive(:new).with(
+        nil, @non_poly_reflection
+      ).twice
+      
+      ThinkingSphinx::Association.children(Person, :assoc)
+    end
+    
+    it "should use existing non-polymorphic 'casted' associations" do
+      Person.stub!(:reflect_on_association).exactly(3).times.
+        and_return(@poly_reflection, nil, @non_poly_reflection)
+      ThinkingSphinx::Association.should_receive(:casted_options).with(
+        Person, @poly_reflection
+      ).once
+      ::ActiveRecord::Reflection::AssociationReflection.should_receive(:new).
+        with(:has_many, :polly_Person, {:casted => :options}, "AR").once.
+        and_return(@non_poly_reflection)
       ThinkingSphinx::Association.should_receive(:new).with(
         nil, @non_poly_reflection
       ).twice
