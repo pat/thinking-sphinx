@@ -49,8 +49,17 @@ module ThinkingSphinx
   #
   class Configuration
     include Singleton
-    SourceOptions = Riddle::Configuration::SQLSource.settings.map { |setting| setting.to_s }
-    IndexOptions  = Riddle::Configuration::Index.settings.map     { |setting| setting.to_s }
+    
+    SourceOptions = Riddle::Configuration::SQLSource.settings.map { |setting|
+      setting.to_s
+    } - %w( type sql_query_pre sql_query sql_joined_field sql_file_field
+      sql_query_range sql_attr_uint sql_attr_bool sql_attr_bigint sql_query_info
+      sql_attr_timestamp sql_attr_str2ordinal sql_attr_float sql_attr_multi
+      sql_attr_string sql_attr_str2wordcount sql_column_buffers sql_field_string
+      sql_field_str2wordcount )
+    IndexOptions  = Riddle::Configuration::Index.settings.map     { |setting|
+      setting.to_s
+    } - %w( source prefix_fields infix_fields )
     CustomOptions = %w( disable_range use_64_bit )
     
     attr_accessor :searchd_file_path, :allow_star, :app_root,
