@@ -1,128 +1,125 @@
 require 'spec_helper'
 
 describe ThinkingSphinx::Context do
-  before :each do
-    @context = ThinkingSphinx::Context.new
-  end
+  let(:ts_context) { ThinkingSphinx::Context.new }
   
   describe '#prepare' do
+    let(:config)           { ThinkingSphinx::Configuration.instance }
+    let(:file_name)        { 'a.rb' }
+    let(:model_name_lower) { 'a' }
+    let(:class_name)       { 'A' }
+    
     before :each do
-      @config = ThinkingSphinx::Configuration.instance
-      @config.model_directories = ['']
+      config.model_directories = ['']
 
-      @file_name        = 'a.rb'
-      @model_name_lower = 'a'
-      @class_name       = 'A'
-
-      @file_name.stub!(:gsub).and_return(@model_name_lower)
-      @model_name_lower.stub!(:camelize).and_return(@class_name)
-      Dir.stub(:[]).and_return([@file_name])
+      file_name.stub!(:gsub).and_return(model_name_lower)
+      model_name_lower.stub!(:camelize).and_return(class_name)
+      Dir.stub(:[]).and_return([file_name])
     end
 
     it "should load the files by guessing the file name" do
-      @class_name.should_receive(:constantize).and_return(true)
+      class_name.should_receive(:constantize).and_return(true)
 
-      @context.prepare
+      ts_context.prepare
     end
 
     it "should not raise errors if the model name is nil" do
-      @file_name.stub!(:gsub).and_return(nil)
+      file_name.stub!(:gsub).and_return(nil)
 
       lambda {
-        @context.prepare
+        ts_context.prepare
       }.should_not raise_error
     end
 
     it "should not raise errors if the file name does not represent a class name" do
-      @class_name.should_receive(:constantize).and_raise(NameError)
+      class_name.should_receive(:constantize).and_raise(NameError)
 
       lambda {
-        @context.prepare
+        ts_context.prepare
       }.should_not raise_error
     end
 
     # Fails in Ruby 1.9 (or maybe it's an RSpec update). Not sure why.
     it "should retry if the first pass fails and contains a directory" do
-      @model_name_lower.stub!(:gsub!).and_return(true, nil)
-      @class_name.stub(:constantize).and_raise(LoadError)
-      @model_name_lower.should_receive(:camelize).twice
+      class_name.stub(:constantize).and_raise(LoadError)
+      model_name_lower.should_receive(:gsub!).twice.and_return(true, nil)
 
       lambda {
-        @context.prepare
+        ts_context.prepare
       }.should_not raise_error
     end
 
     it "should catch database errors with a warning" do
-      @class_name.should_receive(:constantize).and_raise(Mysql::Error)
+      class_name.should_receive(:constantize).and_raise(Mysql::Error)
       STDERR.stub!(:puts => '')
       STDERR.should_receive(:puts).with('Warning: Error loading a.rb:')
       
       lambda {
-        @context.prepare
+        ts_context.prepare
       }.should_not raise_error
     end
     
     it "should not load models if they're explicitly set in the configuration" do
-      @config.indexed_models = ['Alpha', 'Beta']
-      @context.prepare
+      config.indexed_models = ['Alpha', 'Beta']
+      ts_context.prepare
       
-      @context.indexed_models.should == ['Alpha', 'Beta']
+      ts_context.indexed_models.should == ['Alpha', 'Beta']
     end
   end
   
   describe '#define_indexes' do
     it "should call define_indexes on all known indexed models" do
-      @context.stub!(:indexed_models => ['Alpha', 'Beta'])
+      ts_context.stub!(:indexed_models => ['Alpha', 'Beta'])
       Alpha.should_receive(:define_indexes)
       Beta.should_receive(:define_indexes)
       
-      @context.define_indexes
+      ts_context.define_indexes
     end
   end
   
   describe '#add_indexed_model' do
     before :each do
-      @context.indexed_models.clear
+      ts_context.indexed_models.clear
     end
     
     it "should add the model to the collection" do
-      @context.add_indexed_model 'Alpha'
+      ts_context.add_indexed_model 'Alpha'
       
-      @context.indexed_models.should == ['Alpha']
+      ts_context.indexed_models.should == ['Alpha']
     end
     
     it "should not duplicate models in the collection" do
-      @context.add_indexed_model 'Alpha'
-      @context.add_indexed_model 'Alpha'
+      ts_context.add_indexed_model 'Alpha'
+      ts_context.add_indexed_model 'Alpha'
       
-      @context.indexed_models.should == ['Alpha']
+      ts_context.indexed_models.should == ['Alpha']
     end
     
     it "should keep the collection in alphabetical order" do
-      @context.add_indexed_model 'Beta'
-      @context.add_indexed_model 'Alpha'
+      ts_context.add_indexed_model 'Beta'
+      ts_context.add_indexed_model 'Alpha'
       
-      @context.indexed_models.should == ['Alpha', 'Beta']
+      ts_context.indexed_models.should == ['Alpha', 'Beta']
     end
     
     it "should translate classes to their names" do
-      @context.add_indexed_model Alpha
+      ts_context.add_indexed_model Alpha
       
-      @context.indexed_models.should == ['Alpha']
+      ts_context.indexed_models.should == ['Alpha']
     end
   end
   
   describe '#superclass_indexed_models' do
     it "should return indexed model names" do
-      @context.stub!(:indexed_models => ['Alpha', 'Beta'])
+      ts_context.stub!(:indexed_models => ['Alpha', 'Beta'])
       
-      @context.superclass_indexed_models.should == ['Alpha', 'Beta']
+      ts_context.superclass_indexed_models.should == ['Alpha', 'Beta']
     end
     
     it "should not include classes which have indexed superclasses" do
-      @context.stub!(:indexed_models => ['Parent', 'Person'])
+      ts_context.stub!(:indexed_models => ['Parent', 'Person'])
       
-      @context.superclass_indexed_models.should == ['Person']
+      ts_context.superclass_indexed_models.should == ['Person']
     end
   end
 end
