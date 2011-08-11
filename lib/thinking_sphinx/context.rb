@@ -55,12 +55,13 @@ class ThinkingSphinx::Context
         model_name = file.gsub(/^#{base}([\w_\/\\]+)\.rb/, '\1')
         
         next if model_name.nil?
+        camelized_model = model_name.camelize
         next if ::ActiveRecord::Base.send(:subclasses).detect { |model|
-          model.name == model_name.camelize
+          model.name == camelized_model
         }
         
         begin
-          model_name.camelize.constantize
+          camelized_model.constantize
         rescue LoadError
           model_name.gsub!(/.*[\/\\]/, '').nil? ? next : retry
         rescue NameError
