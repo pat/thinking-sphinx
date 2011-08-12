@@ -15,23 +15,19 @@ class SphinxHelper
   attr_reader   :path
 
   def initialize
-    @host     = "localhost"
-    @username = "thinking_sphinx"
-    @password = ""
+    @host     = 'localhost'
+    @username = 'root'
+    @password = ''
 
-    if File.exist?("spec/fixtures/database.yml")
-      config    = YAML.load(File.open("spec/fixtures/database.yml"))
-      @host     = config["host"]
-      @username = config["username"]
-      @password = config["password"]
-      @socket   = config["socket"]
+    if File.exist?('spec/fixtures/database.yml')
+      config    = YAML.load(File.open('spec/fixtures/database.yml'))
+      @host     = config['host']
+      @username = config['username']
+      @password = config['password']
+      @socket   = config['socket']
     end
 
     @path = File.expand_path(File.dirname(__FILE__))
-  end
-
-  def mysql_adapter
-    defined?(JRUBY_VERSION) ? 'jdbcmysql' : 'mysql2'
   end
 
   def setup_mysql
@@ -43,40 +39,23 @@ class SphinxHelper
       :host     => @host,
       :socket   => @socket
     )
-    ActiveRecord::Base.logger = Logger.new(File.open("tmp/activerecord.log", "a"))
+    ActiveRecord::Base.logger = Logger.new(File.open('tmp/activerecord.log', 'a'))
 
-    structure = File.open("spec/fixtures/structure.sql") { |f| f.read.chomp }
+    structure = File.open('spec/fixtures/structure.sql') { |f| f.read.chomp }
     structure.split(';').each { |table|
       ActiveRecord::Base.connection.execute table
     }
 
-    File.open("spec/fixtures/data.sql") { |f|
+    File.open('spec/fixtures/data.sql') { |f|
       while line = f.gets
         ActiveRecord::Base.connection.execute line unless line.blank?
       end
     }
   end
 
-  def setup_sphinx
-    @configuration = ThinkingSphinx::Configuration.instance.reset
-    File.open("spec/fixtures/sphinx/database.yml", "w") do |file|
-      YAML.dump({@configuration.environment => {
-        :adapter  => mysql_adapter,
-        :host     => @host,
-        :database => "thinking_sphinx",
-        :username => @username,
-        :password => @password
-      }}, file)
-    end
-    FileUtils.mkdir_p(@configuration.searchd_file_path)
+  private
 
-    @configuration.build
-
-    index
+  def mysql_adapter
+    defined?(JRUBY_VERSION) ? 'jdbcmysql' : 'mysql2'
   end
-
-  def reset
-    setup_mysql
-  end
-
 end
