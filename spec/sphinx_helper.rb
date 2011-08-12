@@ -31,7 +31,7 @@ class SphinxHelper
   end
 
   def mysql_adapter
-    defined?(JRUBY_VERSION) ? 'jdbcmysql' : 'mysql'
+    defined?(JRUBY_VERSION) ? 'jdbcmysql' : 'mysql2'
   end
 
   def setup_mysql
