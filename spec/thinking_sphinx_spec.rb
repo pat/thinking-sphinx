@@ -7,7 +7,7 @@ describe ThinkingSphinx do
     end
 
     it "should remember changes to the Context instance" do
-      models = ThinkingSphinx.context.indexed_models
+      models = ThinkingSphinx.context.indexed_models.clone
 
       ThinkingSphinx.context.indexed_models.replace([:model])
       ThinkingSphinx.context.indexed_models.should == [:model]
@@ -69,6 +69,8 @@ describe ThinkingSphinx do
 
   describe '.updates_enabled?' do
     it "should update indexes by default" do
+      ThinkingSphinx::Configuration.stub! :environment => 'development'
+
       ThinkingSphinx.updates_enabled = nil
       ThinkingSphinx.updates_enabled?.should be_true
     end
