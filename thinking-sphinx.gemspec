@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.rubyforge_project = 'thinking-sphinx'
 
   s.files         = `git ls-files -- {lib,rails}`.split("\n") +
-    %w( LICENCE README.textile VERSION tasks/rails.rake )
+    %w( LICENCE README.textile tasks/rails.rake )
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ['lib']
