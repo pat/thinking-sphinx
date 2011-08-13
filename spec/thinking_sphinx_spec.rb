@@ -69,6 +69,8 @@ describe ThinkingSphinx do
 
   describe '.updates_enabled?' do
     it "should update indexes by default" do
+      ThinkingSphinx::Configuration.stub! :environment => 'development'
+
       ThinkingSphinx.updates_enabled = nil
       ThinkingSphinx.updates_enabled?.should be_true
     end
