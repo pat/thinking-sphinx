@@ -279,6 +279,9 @@ module ThinkingSphinx
       
       @total_entries ||= @results[:total_found]
     end
+
+    # Compatibility with kaminari 
+    alias_method :total_count, :total_entries
     
     # The current page's offset, based on the number of records per page.
     # Or explicit :offset if given. 
