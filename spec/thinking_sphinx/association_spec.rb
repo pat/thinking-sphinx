@@ -103,7 +103,7 @@ describe ThinkingSphinx::Association do
       @parent.stub!(:join_to => true, :join => nil)
       @base_join = stub('base join', :joins => [:a, :b, :c])
 
-      if defined?(::ActiveRecord::Associations::JoinDependency)
+      if ThinkingSphinx.rails_3_1?
         ::ActiveRecord::Associations::JoinDependency::JoinAssociation.stub!(:new => @join)
       else
         ::ActiveRecord::Associations::ClassMethods::JoinDependency::JoinAssociation.stub!(:new => @join)

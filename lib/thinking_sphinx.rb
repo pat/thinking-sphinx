@@ -288,5 +288,9 @@ module ThinkingSphinx
     )
   end
 
+  def self.rails_3_1?
+    !!defined?(::ActiveRecord::Associations::CollectionProxy)
+  end
+
   extend ThinkingSphinx::SearchMethods::ClassMethods
 end

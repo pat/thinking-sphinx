@@ -273,7 +273,7 @@ WHERE #{@source.index.delta_object.clause(model, true)})
     end
 
     def foreign_key_for_mva(assoc)
-      if assoc.reflection.respond_to?(:foreign_key)
+      if ThinkingSphinx.rails_3_1?
         quote_with_table assoc.table, assoc.reflection.foreign_key
       else
         quote_with_table assoc.table, assoc.reflection.primary_key_name

@@ -81,7 +81,7 @@ module ThinkingSphinx
         end
 
         def add_sphinx_scopes_support_to_has_many_associations
-          if defined?(::ActiveRecord::Associations::CollectionProxy)
+          if ThinkingSphinx.rails_3_1?
             scope_mixin = ::ThinkingSphinx::ActiveRecord::CollectionProxyWithScopes
             ::ActiveRecord::Associations::CollectionProxy.send(:include, scope_mixin)
           else

@@ -93,7 +93,7 @@ module ThinkingSphinx
     
     def primary_key_from_reflection
       if @reflection.options[:through]
-        if @reflection.respond_to?(:foreign_key)
+        if ThinkingSphinx.rails_3_1?
           @reflection.source_reflection.foreign_key
         else
           @reflection.source_reflection.options[:foreign_key] ||
@@ -109,7 +109,7 @@ module ThinkingSphinx
     def table
       if @reflection.options[:through] ||
         @reflection.macro == :has_and_belongs_to_many
-        if @join.respond_to?(:tables)
+        if ThinkingSphinx.rails_3_1?
           @join.tables.first.name
         else
           @join.aliased_join_table_name
@@ -172,7 +172,7 @@ module ThinkingSphinx
     end
     
     def join_association_class
-      if self.class.rails_3_1?
+      if ThinkingSphinx.rails_3_1?
         ::ActiveRecord::Associations::JoinDependency::JoinAssociation
       else
         ::ActiveRecord::Associations::ClassMethods::JoinDependency::JoinAssociation
@@ -180,7 +180,7 @@ module ThinkingSphinx
     end
     
     def join_parent(join)
-      if self.class.rails_3_1?
+      if ThinkingSphinx.rails_3_1?
         join.join_parts.first
       else
         join.joins.first
@@ -188,16 +188,11 @@ module ThinkingSphinx
     end
     
     def self.foreign_type(ref)
-      if rails_3_1?
+      if ThinkingSphinx.rails_3_1?
         ref.foreign_type
       else
         ref.options[:foreign_type]
       end
-    end
-    
-    def self.rails_3_1?
-      ::ActiveRecord::Associations.constants.include?(:JoinDependency) ||
-      ::ActiveRecord::Associations.constants.include?('JoinDependency')
     end
     
     def rewrite_conditions

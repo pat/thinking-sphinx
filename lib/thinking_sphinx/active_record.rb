@@ -94,17 +94,13 @@ module ThinkingSphinx
         end
       end
 
-      if defined?(::ActiveRecord::Associations::CollectionProxy)
-        ::ActiveRecord::Associations::CollectionProxy.send(
-          :include, ThinkingSphinx::ActiveRecord::CollectionProxy
-        )
+      if ThinkingSphinx.rails_3_1?
+        assoc_mixin = ThinkingSphinx::ActiveRecord::CollectionProxy
+        ::ActiveRecord::Associations::CollectionProxy.send(:include, assoc_mixin)
       else
-        ::ActiveRecord::Associations::HasManyAssociation.send(
-          :include, ThinkingSphinx::ActiveRecord::HasManyAssociation
-        )
-        ::ActiveRecord::Associations::HasManyThroughAssociation.send(
-          :include, ThinkingSphinx::ActiveRecord::HasManyAssociation
-        )
+        assoc_mixin = ThinkingSphinx::ActiveRecord::HasManyAssociation
+        ::ActiveRecord::Associations::HasManyAssociation.send(:include, assoc_mixin)
+        ::ActiveRecord::Associations::HasManyThroughAssociation.send(:include, assoc_mixin)
       end
     end
 
