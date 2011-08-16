@@ -13,8 +13,11 @@ module ThinkingSphinx
       private
 
       def attribute_for_foreign_key
-        foreign_key = proxy_association.reflection.foreign_key
-        stack = [proxy_association.reflection.options[:through]].compact
+        if proxy_association.reflection.through_reflection
+          foreign_key = proxy_association.reflection.through_reflection.foreign_key
+        else
+          foreign_key = proxy_association.reflection.foreign_key
+        end
 
         proxy_association.klass.define_indexes
         (proxy_association.klass.sphinx_indexes || []).each do |index|
