@@ -178,7 +178,8 @@ describe ThinkingSphinx::Association do
         :active_record  => Person,
         :options        => {:foreign_type => "person_type"}
       )
-      
+      ref.stub!(:foreign_type => "person_type") if ThinkingSphinx.rails_3_1?
+
       ThinkingSphinx::Association.send(:polymorphic_classes, ref).should == [Person, Friendship]
     end
   end
@@ -191,6 +192,7 @@ describe ThinkingSphinx::Association do
         :polymorphic  => true
       }
       @reflection = stub('assoc reflection', :options => @options)
+      @reflection.stub!(:foreign_type => "thing_type") if ThinkingSphinx.rails_3_1?
     end
     
     it "should return a new options set for a specific class" do
