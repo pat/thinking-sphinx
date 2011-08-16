@@ -93,8 +93,12 @@ module ThinkingSphinx
     
     def primary_key_from_reflection
       if @reflection.options[:through]
-        @reflection.source_reflection.options[:foreign_key] ||
-        @reflection.source_reflection.primary_key_name
+        if @reflection.respond_to?(:foreign_key)
+          @reflection.source_reflection.foreign_key
+        else
+          @reflection.source_reflection.options[:foreign_key] ||
+          @reflection.source_reflection.primary_key_name
+        end
       elsif @reflection.macro == :has_and_belongs_to_many
         @reflection.association_foreign_key
       else
