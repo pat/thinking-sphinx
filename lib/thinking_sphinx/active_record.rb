@@ -1,5 +1,6 @@
 require 'thinking_sphinx/active_record/attribute_updates'
 require 'thinking_sphinx/active_record/collection_proxy'
+require 'thinking_sphinx/active_record/collection_proxy_with_scopes'
 require 'thinking_sphinx/active_record/delta'
 require 'thinking_sphinx/active_record/has_many_association'
 require 'thinking_sphinx/active_record/log_subscriber'

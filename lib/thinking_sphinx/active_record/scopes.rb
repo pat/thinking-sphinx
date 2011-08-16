@@ -81,10 +81,14 @@ module ThinkingSphinx
         end
 
         def add_sphinx_scopes_support_to_has_many_associations
-          scope_mixin = ::ThinkingSphinx::ActiveRecord::HasManyAssociationWithScopes
-
-          ::ActiveRecord::Associations::HasManyAssociation.send(:include, scope_mixin)
-          ::ActiveRecord::Associations::HasManyThroughAssociation.send(:include, scope_mixin)
+          if defined?(::ActiveRecord::Associations::CollectionProxy)
+            scope_mixin = ::ThinkingSphinx::ActiveRecord::CollectionProxyWithScopes
+            ::ActiveRecord::Associations::CollectionProxy.send(:include, scope_mixin)
+          else
+            scope_mixin = ::ThinkingSphinx::ActiveRecord::HasManyAssociationWithScopes
+            ::ActiveRecord::Associations::HasManyAssociation.send(:include, scope_mixin)
+            ::ActiveRecord::Associations::HasManyThroughAssociation.send(:include, scope_mixin)
+          end
         end
 
       end
