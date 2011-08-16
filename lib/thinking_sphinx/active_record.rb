@@ -1,4 +1,5 @@
 require 'thinking_sphinx/active_record/attribute_updates'
+require 'thinking_sphinx/active_record/collection_proxy'
 require 'thinking_sphinx/active_record/delta'
 require 'thinking_sphinx/active_record/has_many_association'
 require 'thinking_sphinx/active_record/log_subscriber'
@@ -92,12 +93,18 @@ module ThinkingSphinx
         end
       end
 
-      ::ActiveRecord::Associations::HasManyAssociation.send(
-        :include, ThinkingSphinx::ActiveRecord::HasManyAssociation
-      )
-      ::ActiveRecord::Associations::HasManyThroughAssociation.send(
-        :include, ThinkingSphinx::ActiveRecord::HasManyAssociation
-      )
+      if defined?(::ActiveRecord::Associations::CollectionProxy)
+        ::ActiveRecord::Associations::CollectionProxy.send(
+          :include, ThinkingSphinx::ActiveRecord::CollectionProxy
+        )
+      else
+        ::ActiveRecord::Associations::HasManyAssociation.send(
+          :include, ThinkingSphinx::ActiveRecord::HasManyAssociation
+        )
+        ::ActiveRecord::Associations::HasManyThroughAssociation.send(
+          :include, ThinkingSphinx::ActiveRecord::HasManyAssociation
+        )
+      end
     end
 
     module ClassMethods
