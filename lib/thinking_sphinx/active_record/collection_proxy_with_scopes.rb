@@ -13,7 +13,7 @@ module ThinkingSphinx
             search(:with => default_filter).
             send(method, *args, &block)
         else
-          method_missing_without_sphinx_scopes
+          method_missing_without_sphinx_scopes(method, *args, &block)
         end
       end
 
