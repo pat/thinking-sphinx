@@ -56,7 +56,7 @@ class ThinkingSphinx::Context
 
         next if model_name.nil?
         camelized_model = model_name.camelize
-        next if ::ActiveRecord::Base.send(:descendants).detect { |model|
+        next if ::ActiveRecord::Base.descendants.detect { |model|
           model.name == camelized_model
         }
 
