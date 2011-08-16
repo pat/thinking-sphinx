@@ -81,13 +81,26 @@ module ThinkingSphinx
         end
 
         def add_sphinx_scopes_support_to_has_many_associations
+          mixin = sphinx_scopes_support_mixin
+          sphinx_scopes_support_classes.each do |klass|
+            klass.send(:include, mixin) unless klass.ancestors.include?(mixin)
+          end
+        end
+
+        def sphinx_scopes_support_classes
           if ThinkingSphinx.rails_3_1?
-            scope_mixin = ::ThinkingSphinx::ActiveRecord::CollectionProxyWithScopes
-            ::ActiveRecord::Associations::CollectionProxy.send(:include, scope_mixin)
+            [::ActiveRecord::Associations::CollectionProxy]
           else
-            scope_mixin = ::ThinkingSphinx::ActiveRecord::HasManyAssociationWithScopes
-            ::ActiveRecord::Associations::HasManyAssociation.send(:include, scope_mixin)
-            ::ActiveRecord::Associations::HasManyThroughAssociation.send(:include, scope_mixin)
+            [::ActiveRecord::Associations::HasManyAssociation,
+             ::ActiveRecord::Associations::HasManyThroughAssociation]
+          end
+        end
+
+        def sphinx_scopes_support_mixin
+          if ThinkingSphinx.rails_3_1?
+            ::ThinkingSphinx::ActiveRecord::CollectionProxyWithScopes
+          else
+            ::ThinkingSphinx::ActiveRecord::HasManyAssociationWithScopes
           end
         end
 
