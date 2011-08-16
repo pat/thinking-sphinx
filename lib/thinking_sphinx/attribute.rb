@@ -273,7 +273,11 @@ WHERE #{@source.index.delta_object.clause(model, true)})
     end
 
     def foreign_key_for_mva(assoc)
-      quote_with_table assoc.table, assoc.reflection.primary_key_name
+      if assoc.reflection.respond_to?(:foreign_key)
+        quote_with_table assoc.table, assoc.reflection.foreign_key
+      else
+        quote_with_table assoc.table, assoc.reflection.primary_key_name
+      end
     end
 
     def end_association_for_mva
