@@ -109,7 +109,11 @@ module ThinkingSphinx
     def table
       if @reflection.options[:through] ||
         @reflection.macro == :has_and_belongs_to_many
-        @join.aliased_join_table_name
+        if @join.respond_to?(:tables)
+          @join.tables.first.name
+        else
+          @join.aliased_join_table_name
+        end
       else
         @join.aliased_table_name
       end
