@@ -1,4 +1,6 @@
 require 'thinking_sphinx/active_record/attribute_updates'
+require 'thinking_sphinx/active_record/collection_proxy'
+require 'thinking_sphinx/active_record/collection_proxy_with_scopes'
 require 'thinking_sphinx/active_record/delta'
 require 'thinking_sphinx/active_record/has_many_association'
 require 'thinking_sphinx/active_record/log_subscriber'
@@ -92,12 +94,14 @@ module ThinkingSphinx
         end
       end
 
-      ::ActiveRecord::Associations::HasManyAssociation.send(
-        :include, ThinkingSphinx::ActiveRecord::HasManyAssociation
-      )
-      ::ActiveRecord::Associations::HasManyThroughAssociation.send(
-        :include, ThinkingSphinx::ActiveRecord::HasManyAssociation
-      )
+      if ThinkingSphinx.rails_3_1?
+        assoc_mixin = ThinkingSphinx::ActiveRecord::CollectionProxy
+        ::ActiveRecord::Associations::CollectionProxy.send(:include, assoc_mixin)
+      else
+        assoc_mixin = ThinkingSphinx::ActiveRecord::HasManyAssociation
+        ::ActiveRecord::Associations::HasManyAssociation.send(:include, assoc_mixin)
+        ::ActiveRecord::Associations::HasManyThroughAssociation.send(:include, assoc_mixin)
+      end
     end
 
     module ClassMethods

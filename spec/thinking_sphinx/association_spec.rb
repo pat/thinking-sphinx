@@ -102,7 +102,12 @@ describe ThinkingSphinx::Association do
       @parent = ThinkingSphinx::Association.new(nil, nil)
       @parent.stub!(:join_to => true, :join => nil)
       @base_join = stub('base join', :joins => [:a, :b, :c])
-       ::ActiveRecord::Associations::ClassMethods::JoinDependency::JoinAssociation.stub!(:new => @join)
+
+      if ThinkingSphinx.rails_3_1?
+        ::ActiveRecord::Associations::JoinDependency::JoinAssociation.stub!(:new => @join)
+      else
+        ::ActiveRecord::Associations::ClassMethods::JoinDependency::JoinAssociation.stub!(:new => @join)
+      end
     end
     
     it "should call the parent's join_to if parent has no join" do
@@ -173,7 +178,8 @@ describe ThinkingSphinx::Association do
         :active_record  => Person,
         :options        => {:foreign_type => "person_type"}
       )
-      
+      ref.stub!(:foreign_type => "person_type") if ThinkingSphinx.rails_3_1?
+
       ThinkingSphinx::Association.send(:polymorphic_classes, ref).should == [Person, Friendship]
     end
   end
@@ -186,6 +192,7 @@ describe ThinkingSphinx::Association do
         :polymorphic  => true
       }
       @reflection = stub('assoc reflection', :options => @options)
+      @reflection.stub!(:foreign_type => "thing_type") if ThinkingSphinx.rails_3_1?
     end
     
     it "should return a new options set for a specific class" do

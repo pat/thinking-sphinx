@@ -68,5 +68,10 @@ describe 'ThinkingSphinx::ActiveRecord::HasManyAssociation' do
       
       @person.friendships.reverse
     end
+
+    it "should pass method_missing onto CollectionProxy" do
+      Friendship.stub!(:missing_method => true)
+      @person.friendships.missing_method.should == true
+    end
   end
 end
