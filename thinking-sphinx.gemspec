@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'faker',         '0.3.1'
   s.add_development_dependency 'ginger',        '1.2.0'
   s.add_development_dependency 'mysql',         '2.8.1'
-  s.add_development_dependency 'mysql2',        '>= 0.2.11'
+  s.add_development_dependency 'mysql2',        ['>= 0.2.11', '< 0.3.0']
   s.add_development_dependency 'pg',            '>= 0.11.0'
   s.add_development_dependency 'rake',          '>= 0.9.2'
   s.add_development_dependency 'rspec',         '2.6.0'
