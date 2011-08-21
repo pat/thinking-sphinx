@@ -209,7 +209,7 @@ module ThinkingSphinx
       end
 
       def insert_sphinx_index(index)
-        self.sphinx_indexes << index
+        self.sphinx_indexes += [index]
       end
 
       def has_sphinx_indexes?
