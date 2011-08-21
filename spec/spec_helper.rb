@@ -9,7 +9,6 @@ require 'bundler'
 
 Bundler.require :default, :development
 
-require "#{File.dirname(__FILE__)}/../lib/thinking_sphinx"
 require "#{File.dirname(__FILE__)}/sphinx_helper"
 
 ActiveRecord::Base.logger = Logger.new(StringIO.new)
