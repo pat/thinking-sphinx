@@ -57,7 +57,7 @@ describe ThinkingSphinx::Context do
       lambda {
         ts_context.prepare
       }.should_not raise_error
-    end
+    end unless RUBY_PLATFORM == 'java'
 
     it "should not load models if they're explicitly set in the configuration" do
       config.indexed_models = ['Alpha', 'Beta']

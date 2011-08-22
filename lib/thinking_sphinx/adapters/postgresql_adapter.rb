@@ -4,11 +4,11 @@ module ThinkingSphinx
       create_array_accum_function
       create_crc32_function
     end
-    
+
     def sphinx_identifier
       "pgsql"
     end
-    
+
     def concatenate(clause, separator = ' ')
       if clause[/^COALESCE/]
         clause.split('), ').join(") || '#{separator}' || ")
@@ -18,15 +18,15 @@ module ThinkingSphinx
         }.join(" || '#{separator}' || ")
       end
     end
-    
+
     def group_concatenate(clause, separator = ' ')
       "array_to_string(array_accum(COALESCE(#{clause}, '0')), '#{separator}')"
     end
-    
+
     def cast_to_string(clause)
       clause
     end
-    
+
     def cast_to_datetime(clause)
       if ThinkingSphinx::Configuration.instance.use_64_bit
         "cast(extract(epoch from #{clause}) as bigint)"
@@ -34,15 +34,15 @@ module ThinkingSphinx
         "cast(extract(epoch from #{clause}) as int)"
       end
     end
-    
+
     def cast_to_unsigned(clause)
       clause
     end
-    
+
     def cast_to_int(clause)
       "#{clause}::INT8"
     end
-    
+
     def convert_nulls(clause, default = '')
       default = case default
       when String
@@ -54,34 +54,44 @@ module ThinkingSphinx
       else
         default
       end
-      
+
       "COALESCE(#{clause}, #{default})"
     end
-    
+
     def boolean(value)
       value ? 'TRUE' : 'FALSE'
     end
-    
+
     def crc(clause, blank_to_null = false)
       clause = "NULLIF(#{clause},'')" if blank_to_null
       "crc32(#{clause})"
     end
-    
+
     def utf8_query_pre
       nil
     end
-    
+
     def time_difference(diff)
       "current_timestamp - interval '#{diff} seconds'"
     end
-    
+
     def utc_query_pre
       "SET TIME ZONE 'UTC'"
     end
-    
+
     private
-    
+
     def execute(command, output_error = false)
+      if RUBY_PLATFORM == 'java'
+        connection.transaction do
+          execute_command command, output_error
+        end
+      else
+        execute_command command, output_error
+      end
+    end
+
+    def execute_command(command, output_error = false)
       connection.execute "begin"
       connection.execute "savepoint ts"
       begin
@@ -93,7 +103,7 @@ module ThinkingSphinx
       connection.execute "release savepoint ts"
       connection.execute "commit"
     end
-    
+
     def create_array_accum_function
       if connection.raw_connection.respond_to?(:server_version) && connection.raw_connection.server_version > 80200
         execute <<-SQL
@@ -116,7 +126,7 @@ module ThinkingSphinx
         SQL
       end
     end
-    
+
     def create_crc32_function
       execute "CREATE LANGUAGE 'plpgsql';"
       function = <<-SQL
@@ -131,7 +141,7 @@ module ThinkingSphinx
             IF COALESCE(word, '') = '' THEN
               return 0;
             END IF;
-          
+
             i = 0;
             tmp = 4294967295;
             byte_length = bit_length(word) / 8;

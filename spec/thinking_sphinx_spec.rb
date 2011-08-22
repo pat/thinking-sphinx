@@ -151,7 +151,7 @@ describe ThinkingSphinx do
       )
 
       ThinkingSphinx.use_group_by_shortcut?.should be_true
-    end
+    end unless RUBY_PLATFORM == 'java'
 
     it "should return false if ONLY_FULL_GROUP_BY is set" do
       @connection.stub!(

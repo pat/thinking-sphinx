@@ -54,7 +54,7 @@ describe ThinkingSphinx::ActiveRecord do
       lambda {
         Alpha.define_indexes
       }.should_not raise_error
-    end
+    end unless RUBY_PLATFORM == 'java'
 
     it "should die noisily if there is a non-database error" do
       ThinkingSphinx::Index::Builder.stub(:generate) { raise StandardError }
