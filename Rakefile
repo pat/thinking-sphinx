@@ -10,13 +10,7 @@ require 'cucumber/rake/task'
 RSpec::Core::RakeTask.new
 
 desc 'Run all feature-set configurations'
-task :cucumber do |t|
-  databases = ENV['DATABASES'] || 'mysql,postgresql'
-  databases.split(',').each do |database|
-    puts   "rake cucumber:#{database}"
-    system "rake cucumber:#{database}"
-  end
-end
+task :cucumber => ['cucumber:mysql', 'cucumber:postgresql']
 
 namespace :cucumber do
   def add_task(name, description)
