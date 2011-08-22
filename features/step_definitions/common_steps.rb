@@ -1,6 +1,6 @@
 Before do
   $queries_executed = []
-  
+
   @model      = nil
   @method     = :search
   @query      = ""
@@ -10,7 +10,7 @@ Before do
   @with_all   = {}
   @options    = {}
   @results    = nil
-  
+
   Given "updates are enabled"
 end
 
@@ -73,7 +73,7 @@ end
 
 When /^I filter by (\d\d\d\d)\-(\d\d)\-(\d\d) on (\w+)$/ do |y, m, d, attribute|
   @results = nil
-  @with[attribute.to_sym] = Time.local(y.to_i, m.to_i, d.to_i).to_i
+  @with[attribute.to_sym] = Time.gm(y.to_i, m.to_i, d.to_i).to_i
 end
 
 When /^I filter by (\d+) and (\d+) on (\w+)$/ do |value_one, value_two, attribute|
@@ -150,7 +150,7 @@ Then /^the (\w+) of each result should indicate order$/ do |attribute|
     unless prev.nil?
       current.send(attribute.to_sym).should >= prev.send(attribute.to_sym)
     end
-    
+
     current
   end
 end
@@ -166,7 +166,7 @@ Then /^I can iterate by result and (\w+)$/ do |attribute|
       attr_value.should be_kind_of(Integer)
     end
   }
-  
+
   results.send("each_with_#{attribute}", &iteration)
 end
 
