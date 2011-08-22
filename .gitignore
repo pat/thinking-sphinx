@@ -9,3 +9,4 @@ rdoc
 database.yml
 tmp
 *.gem
+*.rbc
