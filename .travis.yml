@@ -7,3 +7,4 @@ branches:
     - rails3
 before_script:
   - "mysql -e 'create database thinking_sphinx;' > /dev/null"
+  - "psql -c 'create database thinking_sphinx;' -U postgres >/dev/null"

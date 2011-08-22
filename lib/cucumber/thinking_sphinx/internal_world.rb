@@ -18,7 +18,7 @@ module Cucumber
 
         @adapter  = (ENV['DATABASE'] || 'mysql').gsub /^mysql$/, 'mysql2'
         @database = 'thinking_sphinx'
-        @username = 'root'
+        @username = @adapter[/mysql/] ? 'root' : 'postgres'
         # @password = 'thinking_sphinx'
         @host     = 'localhost'
       end
