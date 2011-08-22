@@ -83,4 +83,4 @@ end if defined?(Rcov)
 desc 'Generate documentation'
 YARD::Rake::YardocTask.new
 
-task :default => :spec
+task :default => [:spec, :cucumber]
