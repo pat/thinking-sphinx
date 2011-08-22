@@ -3,12 +3,12 @@ module ThinkingSphinx
     def initialize(model)
       @model = model
     end
-    
+
     def setup
       # Deliberately blank - subclasses should do something though. Well, if
       # they need to.
     end
-      
+
     def self.detect(model)
       adapter = adapter_for_model model
       case adapter
@@ -22,7 +22,7 @@ module ThinkingSphinx
         raise "Invalid Database Adapter: Sphinx only supports MySQL and PostgreSQL, not #{adapter}"
       end
     end
-    
+
     def self.adapter_for_model(model)
       case ThinkingSphinx.database_adapter
       when String
@@ -35,7 +35,7 @@ module ThinkingSphinx
         ThinkingSphinx.database_adapter
       end
     end
-    
+
     def self.standard_adapter_for_model(model)
       case model.connection.class.name
       when "ActiveRecord::ConnectionAdapters::MysqlAdapter",
@@ -52,34 +52,34 @@ module ThinkingSphinx
         when "jdbcpostgresql"
           :postgresql
         else
-          model.connection.config[:adapter]
+          model.connection.config[:adapter].to_sym
         end
       else
         model.connection.class.name
       end
     end
-    
+
     def quote_with_table(column)
       "#{@model.quoted_table_name}.#{@model.connection.quote_column_name(column)}"
     end
-    
+
     def bigint_pattern
       /bigint/i
     end
-    
+
     def downcase(clause)
       "LOWER(#{clause})"
     end
-    
+
     def case(expression, pairs, default)
       "CASE #{expression} " +
       pairs.keys.inject('') { |string, key|
         string + "WHEN '#{key}' THEN #{pairs[key]} "
       } + "ELSE #{default} END"
     end
-    
+
     protected
-    
+
     def connection
       @connection ||= @model.connection
     end
