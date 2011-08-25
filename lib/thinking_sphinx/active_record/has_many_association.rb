@@ -20,7 +20,8 @@ module ThinkingSphinx
         (@reflection.klass.sphinx_indexes || []).each do |index|
           attribute = index.attributes.detect { |attrib|
             attrib.columns.length == 1 &&
-            attrib.columns.first.__name  == foreign_key.to_sym
+            attrib.columns.first.__name  == foreign_key.to_sym ||
+            attrib.alias == foreign_key.to_sym
           }
           return attribute unless attribute.nil?
         end
