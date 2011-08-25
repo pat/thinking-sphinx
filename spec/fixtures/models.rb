@@ -6,9 +6,12 @@ end
 
 class FootballTeam < ActiveRecord::Base
   has_many :tags
+  has_many :people, :through => :tags
 end
 
 class CricketTeam < ActiveRecord::Base
+  has_many :people, :foreign_key => :team_id
+
   define_index do
     indexes :name
     has "SELECT cricket_team_id, id FROM tags", :source => :query, :as => :tags
@@ -65,6 +68,7 @@ class Person < ActiveRecord::Base
 
     has [:id, :team_id], :as => :ids
     has team(:id), :as => :team_id
+    has football_teams(:id), :as => :football_team_id
 
     has contacts.phone_number, :as => :phone_number_sort
     has contacts(:id), :as => :contact_ids
