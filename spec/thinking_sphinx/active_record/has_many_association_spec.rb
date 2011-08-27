@@ -23,6 +23,17 @@ describe 'ThinkingSphinx::ActiveRecord::HasManyAssociation' do
       @person.friendships.search "test"
     end
     
+    it "should add a filter for an aliased attribute into a normal search call" do
+      @team = CricketTeam.new
+      @team.stub!(:id => 1)
+
+      Person.should_receive(:search).with do |query, options|
+        options[:with][:team_id].should == @team.id
+      end
+
+      @team.people.search "test"
+    end
+
     it "should define indexes for the reflection class" do
       Friendship.should_receive(:define_indexes)
       
@@ -50,6 +61,17 @@ describe 'ThinkingSphinx::ActiveRecord::HasManyAssociation' do
       end
       
       @person.friends.search "test"
+    end
+
+    it "should add a filter for an aliased attribute into a normal search call" do
+      @team = FootballTeam.new
+      @team.stub!(:id => 1)
+
+      Person.should_receive(:search).with do |query, options|
+        options[:with][:football_team_id].should == @team.id
+      end
+
+      @team.people.search "test"
     end
   end
   
