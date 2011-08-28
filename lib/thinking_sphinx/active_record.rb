@@ -347,12 +347,6 @@ module ThinkingSphinx
     attr_accessor :sphinx_attributes
     attr_accessor :matching_fields
 
-    def in_index?(index)
-      self.class.search_for_id self.sphinx_document_id, index
-    rescue Riddle::ResponseError
-      true
-    end
-
     def toggle_deleted
       return unless ThinkingSphinx.updates_enabled?
 
