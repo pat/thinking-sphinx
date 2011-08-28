@@ -1,4 +1,4 @@
-Edge
+1.4.7 - August 28th 2011
 * Don't search for objects when updating attributes on every save - if the object isn't there, then the error will be caught anyway.
 * Extra flexibility for association attribute references (Andrew White).
 * Setting up test suite for Travis, and fixing tests across many rubies.
