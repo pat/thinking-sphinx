@@ -1,0 +1,120 @@
+Edge
+* Don't search for objects when updating attributes on every save - if the object isn't there, then the error will be caught anyway.
+* Extra flexibility for association attribute references (Andrew White).
+* Setting up test suite for Travis, and fixing tests across many rubies.
+* Removing test for filtering on wordcount attribute - seems Sphinx doesn't like that.
+* If many indices are searched on, only use the first for excerpts.
+* Allow MVA facets from SQL strings that are all integers to skip object translation.
+* Adding total_count method for better Kaminari support (Dan Pickett).
+* Switching from Jeweler to Bundler for gem management.
+* Cleaning up Context - re-using camelized class names.
+* Simplified auto-star regex for 1.9 - no need to set the unicode flag.
+* Don't update sphinx_internal_id attribute when updating a record's attributes.
+* Ignore empty arrays for :without_ids (Jason Rust).
+* Now catching Riddle::ResponseError when we aren't fussed about the responses from Sphinx.
+* Distinguishing between Ruby 1.8 and 1.9 for auto-star regex (Andrew White).
+* Don't re-index at the end of suspended_delta calls if requested.
+* Adding stop_timeout setting to configure how long ts:stop should wait while checking whether Sphinx has stopped (Justin Tanner).
+* Speed improvement for types_to_crcs (Josh Goebel).
+* Adding a touched_reindex_file option, for a file that will be touched after indices are rotated (Rémi Prévost).
+* Better support for the Mysql2 adapter (Andrew White).
+* More pagination methods - next_page? and first_page?.
+* Adding use_64_bit option to ensure all timestamp attributes are treated as 64 bit integers (Andrey Deryabin).
+* Simpler, less brittle support for all Sphinx settings via Riddle (Clemens Kofler).
+* Optimised start/stop behaviour in Capistrano recipe (Lars Weiler).
+* Catch and ignore timeout errors for low priority requests.
+* Don't double up on de-polymorphised associations for generated Sphinx source SQL queries.
+
+1.4.6 - May 25th 2011
+* Require Riddle 1.3.3 or better.
+* Cast Sphinx document ids to 32bit integers to keep PostgreSQL happy when Sphinx is compiled for id64 support (Bruno Santschi).
+* Making sure suspended_delta always exists on indexed models, whether indices have been defined or not.
+* Workaround for ActsAsTaggableOn to ensure association joins work.
+* Use Sphinx string attributes instead of class_crc integers to determine which class each search result is from (Sphinx 2.x or newer).
+* String attribute support - and so, using this instead of str2ordinal for string sorting.
+* Support for fields with paired string attributes and wordcount attributes (Sphinx 1.10-beta or newer).
+* Support for file fields (Sphinx 1.10-beta or newer).
+* Wordcount attribute support (Sphinx 1.10-beta or newer).
+* Sinatra support is only used when Rails isn't loaded.
+* Sphinx 2.0.x (including 2.0.2-dev) support.
+* :without_any filtering option (the reverse of :with_all).
+
+1.4.5 - May 12th 2011
+* Require Riddle 1.3.2 or better.
+* Improved 1.9.2 support
+* Don't hack Array - make ThinkingSphinx::Search a subclass of Array instead.
+* Distinguishing between suspended deltas and disabled deltas.
+* Removing most Thread references, opting for Mutexes for better multi-threading support.
+* Added support for client_key to allow for authenticated Sphinx communication.
+* Sphinx 2.0.1 support.
+* Don't try to translate nil values (Alex Chee).
+* Performance fix for facets (Clemens Kofler).
+* Use Sphinx 0.9.9 in Capistrano recipe (Konstantin Shabanov).
+* Sinatra support (Patrick Tulskie).
+* Offer sanitize_sql method within define_index blocks (Matt Todd).
+* Performance fix: caching primary_key_for_sphinx value.
+
+1.4.4 - April 3 2011
+* Being consistent with === comparisons for Array monkeypatch.
+* Kaminari pagination support.
+* Ensure deltas are supported across multiple indices for a given model.
+* Use custom index names for excerpts calls if that's what exists (Javier Ramírez).
+* Allow for Sphinx versions compiled from source (Greg Weber).
+* Ensuring thread is being required to allow Mutexes to work.
+* Ensure primary_key_for_sphinx is inherited to subclasses (Robert Stern).
+* Don't complain if there's an error when checking for documents in a given index.
+
+1.4.3 - January 29th 2011
+* Don't memoize the database adapter.
+* Allow queries to just return specific attributes via the :only option, instead of ActiveRecord objects (Hans Hasselberg).
+* Performance fix: Only add sphinx scopes to has_many associations if there are scopes in play (Kirill Maximov).
+* Fixing CRC32 function for PostgreSQL to handle UTF characters that use more than one byte.
+
+1.4.2 - January 13th 2011
+* Ignore Sphinx errors when updating attributes (it's a low priority request).
+* Don't use the CRC32 function within the generated SQL queries for class types.
+* Direct facets to use a method to translate values using :value.
+* Ensure that if one sphinx_internal_id attribute is a bigint, they all are.
+* Ignore Sphinx errors when marking documents as deleted (it's a low priority request).
+* Don't select columns from polymorphic joins if they're not available.
+* Don't query Sphinx for a facet request if zero facets are requested.
+* Ensure we're only using local_options when it's available (Paul Schyska).
+* Don't presume the environment for Capistrano is production (Robert Glaser).
+* Allow for custom database adapters.
+* Fix for custom delta columns (Marcin Stecki).
+
+1.4.1 - December 21st 2010
+* No longer looking for attributes in :conditions option when searching.
+* Copy and then modify sort arguments.
+* Allow the generation of Sphinx configuration objects without necessarily writing to the configuration file.
+* Allow Sphinx 1.10-beta versions that have been compiled with id64 support.
+* Raise Sphinx errors when searching - which can be ignored using the :ignore_errors option (Matt Todd).
+* Handle complex :include arguments, including hashes within arrays (Paco Guzmán).
+* Handle hashes passed through to :include when searching.
+* Can now require either 'thinking_sphinx' or 'thinking-sphinx'.
+* Excerpts are less fussy about inputs.
+* No longer hard-coding RSpec colour setting - that's up to the developer.
+* Require Riddle 1.2.0 or better.
+* Use searchd to stop Sphinx (via --stop or --stopwait arguments) (Matt Todd).
+
+1.4.0 - November 14th 2010
+* No longer supporting attributes in :conditions option.
+* Case insensitive field sorting if :sortable is set to :insensitive.
+* Using Bundler for development
+* Can use make facet requests on existing searches and Sphinx scopes.
+* Don't star field markers in search queries.
+* Can use search_for_ids on Sphinx scopes.
+* Ensure the CRC32 function for PostgreSQL handles empty strings and NULLs.
+* Allow custom determination for database adapters.
+* :include search option now limits itself to the relevant classes when searching across more than one class.
+* Don't memoize primary_key_for_sphinx, which was causing trouble when objects are deleted or frozen.
+* Allow for excerpts options when searching (using :excerpt_options) (Lee Capps).
+* Wrap UTC in quotes when setting the timezone in PostgreSQL (Keith Pitt).
+* Don't colourize logs unless ActiveRecord allows for it.
+* Consistent contribution documentation (Sam Goldstein).
+* Allow the setting of Riddle's timeout value via sphinx.yml (Sam Goldstein).
+* 1.10-beta support.
+* Can set the riddle client for the search request using :client.
+* Fixing default sphinx scope support.
+* Make a reasonable attempt to check that Sphinx has stopped (Matt Todd).
+* Be more verbose if a model can't be loaded by Thinking Sphinx.
