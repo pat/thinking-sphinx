@@ -1,4 +1,11 @@
-Edge
+Rails 3 Edge
+* Don't change superclass index definitions (otherwise sibling subclasses can end up with each others' index definitions).
+* Improved scope support (Andrew White).
+* Fixed association-filtered searches for Rails 3.1 (Andrew White).
+* Fixed polymorphic association support for Rails 3.1 (Jonathan Viney).
+* All of Master Edge changes
+
+Master Edge
 * Don't search for objects when updating attributes on every save - if the object isn't there, then the error will be caught anyway.
 * Extra flexibility for association attribute references (Andrew White).
 * Setting up test suite for Travis, and fixing tests across many rubies.
@@ -24,6 +31,36 @@ Edge
 * Optimised start/stop behaviour in Capistrano recipe (Lars Weiler).
 * Catch and ignore timeout errors for low priority requests.
 * Don't double up on de-polymorphised associations for generated Sphinx source SQL queries.
+
+2.0.5 - May 25th 2011
+* Railtie equivalent for Sinatra.
+* Rails 3.1 support (Florent Piteau).
+* 1.4.6 changes.
+
+2.0.4 - May 12th 2011
+* Only determine Sphinx version when initializing Thinking Sphinx, instead of upon require.
+* Still execute logged blocks for searching even when logging isn't enabled.
+* 1.4.5 changes.
+
+2.0.3 - April 3rd 2011
+* 1.4.4 changes.
+
+2.0.2 - January 13th 2011
+* Improvement to loading the environment via Rake (Brenton Fletcher).
+* 1.4.2 changes.
+* 1.4.1 changes.
+
+2.0.1 - November 19th 2011
+* Intermittent as_json bug fix.
+* Using Rails 3 logging system (Stephen Celis).
+* Fixes for Rails 3.0.2 (Ivan Ukhov).
+
+2.0.0 - November 14th 2011
+* Handle has_many conditions defined as a hash (Artem Orlov).
+* Deprecation fixes for logging (Anton Sozontov).
+* Only load Thinking Sphinx if ActiveRecord is loaded (Matthew Higgins).
+* Rails 3 support.
+* 1.4.0 changes.
 
 1.4.6 - May 25th 2011
 * Require Riddle 1.3.3 or better.
