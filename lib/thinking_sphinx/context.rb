@@ -62,10 +62,6 @@ class ThinkingSphinx::Context
         
         begin
           camelized_model.constantize
-        rescue LoadError
-          model_name.gsub!(/.*[\/\\]/, '').nil? ? next : retry
-        rescue NameError
-          next
         rescue StandardError => err
           STDERR.puts "Warning: Error loading #{file}:"
           STDERR.puts err.message
