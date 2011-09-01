@@ -64,7 +64,7 @@ module ThinkingSphinx
 
     attr_accessor :searchd_file_path, :allow_star, :app_root,
       :model_directories, :delayed_job_priority, :indexed_models, :use_64_bit,
-      :touched_reindex_file, :stop_timeout, :version
+      :touched_reindex_file, :stop_timeout, :version, :shuffle
 
     attr_accessor :source_options, :index_options
 
@@ -111,6 +111,7 @@ module ThinkingSphinx
         Dir.glob("#{app_root}/vendor/plugins/*/app/models/")
       self.delayed_job_priority = 0
       self.indexed_models       = []
+      self.shuffle              = true
 
       self.source_options  = {}
       self.index_options   = {
@@ -249,7 +250,7 @@ module ThinkingSphinx
     attr_accessor :timeout
 
     def client
-      client = Riddle::Client.new address, port,
+      client = Riddle::Client.new shuffled_addresses, port,
         configuration.searchd.client_key
       client.max_matches = configuration.searchd.max_matches || 1000
       client.timeout = timeout || 0
@@ -301,7 +302,7 @@ module ThinkingSphinx
         self.index_options[:min_prefix_len] = 1
       end
 
-      ThinkingSphinx::Attribute::SphinxTypeMappings.merge(
+      ThinkingSphinx::Attribute::SphinxTypeMappings.merge!(
         :string => :sql_attr_string
       ) if Riddle.loaded_version.to_i > 1
     end
@@ -334,6 +335,17 @@ module ThinkingSphinx
           source.sql_attr_uint.delete :sphinx_internal_id
         }
       }
+    end
+
+    def shuffled_addresses
+      return address unless shuffle
+
+      addresses = Array(address)
+      if addresses.respond_to?(:shuffle)
+        addresses.shuffle
+      else
+        address.sort_by { rand }
+      end
     end
   end
 end

@@ -1,3 +1,10 @@
+Edge:
+* Shuffle multiple Sphinx addresses by default, but allow that to be turned off (Ngan Pham).
+* Fix string attributes when using Sphinx 2.0.1 and bin_path.
+
+2.0.7 - August 29th 2011
+* Making sure lib directory is actually a part of the gem. Oops.
+
 2.0.6 - August 28th 2011
 * Don't change superclass index definitions (otherwise sibling subclasses can end up with each others' index definitions).
 * Improved scope support (Andrew White).
