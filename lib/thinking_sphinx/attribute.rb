@@ -22,10 +22,6 @@ module ThinkingSphinx
       :wordcount => :sql_attr_str2wordcount
     }
 
-    if Riddle.loaded_version.to_i > 1
-      SphinxTypeMappings[:string] = :sql_attr_string
-    end
-
     # To create a new attribute, you'll need to pass in either a single Column
     # or an array of them, and some (optional) options.
     #
