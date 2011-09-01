@@ -49,7 +49,7 @@ module ThinkingSphinx
   #
   class Configuration
     include Singleton
-    
+
     SourceOptions = Riddle::Configuration::SQLSource.settings.map { |setting|
       setting.to_s
     } - %w( type sql_query_pre sql_query sql_joined_field sql_file_field
@@ -61,17 +61,17 @@ module ThinkingSphinx
       setting.to_s
     } - %w( source prefix_fields infix_fields )
     CustomOptions = %w( disable_range use_64_bit )
-    
+
     attr_accessor :searchd_file_path, :allow_star, :app_root,
       :model_directories, :delayed_job_priority, :indexed_models, :use_64_bit,
       :touched_reindex_file, :stop_timeout, :version
-    
+
     attr_accessor :source_options, :index_options
-    
+
     attr_reader :configuration, :controller
-    
+
     @@environment = nil
-    
+
     # Load in the configuration settings - this will look for config/sphinx.yml
     # and parse it according to the current environment.
     #
@@ -111,7 +111,7 @@ module ThinkingSphinx
         Dir.glob("#{app_root}/vendor/plugins/*/app/models/")
       self.delayed_job_priority = 0
       self.indexed_models       = []
-      
+
       self.source_options  = {}
       self.index_options   = {
         :charset_type => "utf-8"
@@ -135,7 +135,7 @@ module ThinkingSphinx
         ENV['RAILS_ENV'] || 'development'
       end
     end
-    
+
     def self.reset_environment
       ThinkingSphinx.mutex.synchronize do
         @@environment = nil
@@ -145,7 +145,7 @@ module ThinkingSphinx
     def environment
       self.class.environment
     end
-    
+
     def generate
       @configuration.indexes.clear
 
@@ -153,20 +153,20 @@ module ThinkingSphinx
         model = model.constantize
         model.define_indexes
         @configuration.indexes.concat model.to_riddle
-        
+
         enforce_common_attribute_types
       end
     end
-    
+
     # Generate the config file for Sphinx by using all the settings defined and
     # looping through all the models with indexes to build the relevant
     # indexer and searchd configuration, and sources and indexes details.
     #
     def build(file_path=nil)
       file_path ||= "#{self.config_file}"
-      
+
       generate
-      
+
       open(file_path, "w") do |file|
         file.write @configuration.render
       end
@@ -245,9 +245,9 @@ module ThinkingSphinx
     def indexer_binary_name=(name)
       @controller.indexer_binary_name = name
     end
-    
+
     attr_accessor :timeout
-    
+
     def client
       client = Riddle::Client.new address, port,
         configuration.searchd.client_key
@@ -300,6 +300,10 @@ module ThinkingSphinx
         self.index_options[:enable_star]    = true
         self.index_options[:min_prefix_len] = 1
       end
+
+      ThinkingSphinx::Attribute::SphinxTypeMappings.merge(
+        :string => :sql_attr_string
+      ) if Riddle.loaded_version.to_i > 1
     end
 
     def set_sphinx_setting(object, key, value, allowed = {})
@@ -310,22 +314,22 @@ module ThinkingSphinx
         send("#{key}=", value) if self.respond_to?("#{key}")
       end
     end
-    
+
     def enforce_common_attribute_types
       sql_indexes = configuration.indexes.reject { |index|
         index.is_a? Riddle::Configuration::DistributedIndex
       }
-      
+
       return unless sql_indexes.any? { |index|
         index.sources.any? { |source|
           source.sql_attr_bigint.include? :sphinx_internal_id
         }
       }
-      
+
       sql_indexes.each { |index|
         index.sources.each { |source|
           next if source.sql_attr_bigint.include? :sphinx_internal_id
-          
+
           source.sql_attr_bigint << :sphinx_internal_id
           source.sql_attr_uint.delete :sphinx_internal_id
         }
