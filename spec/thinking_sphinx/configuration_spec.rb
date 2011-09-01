@@ -276,6 +276,32 @@ describe ThinkingSphinx::Configuration do
     it "should use the configuration timeout" do
       @config.client.timeout.should == 1
     end
+
+    describe 'when shuffle is enabled' do
+      before :each do
+        @config.shuffle = true
+      end
+
+      it "should shuffle client servers" do
+        @config.should_receive(:shuffle).and_return(['2.2.2.2', '1.1.1.1'])
+
+        @config.address = ['1.1.1.1', '2.2.2.2']
+
+        @config.client.servers.should == ['2.2.2.2', '1.1.1.1']
+      end
+    end
+
+    describe 'when shuffle is disabled' do
+      before :each do
+        @config.shuffle = false
+      end
+
+      it "should not shuffle client servers" do
+        @config.address = ['1.1.1.1', '2.2.2.2.', '3.3.3.3', '4.4.4.4', '5.5.5.5']
+
+        @config.client.servers.should == @config.address
+      end
+    end
   end
   
   describe '#models_by_crc' do

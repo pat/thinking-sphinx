@@ -64,7 +64,7 @@ module ThinkingSphinx
 
     attr_accessor :searchd_file_path, :allow_star, :app_root,
       :model_directories, :delayed_job_priority, :indexed_models, :use_64_bit,
-      :touched_reindex_file, :stop_timeout, :version
+      :touched_reindex_file, :stop_timeout, :version, :shuffle
 
     attr_accessor :source_options, :index_options
 
@@ -111,6 +111,7 @@ module ThinkingSphinx
         Dir.glob("#{app_root}/vendor/plugins/*/app/models/")
       self.delayed_job_priority = 0
       self.indexed_models       = []
+      self.shuffle              = true
 
       self.source_options  = {}
       self.index_options   = {
@@ -249,7 +250,13 @@ module ThinkingSphinx
     attr_accessor :timeout
 
     def client
-      client = Riddle::Client.new address, port,
+      addresses = if shuffle && address.is_a?(Array)
+        address.respond_to?(:shuffle) ? address.shuffle : address.sort_by{ rand }
+      else
+        address
+      end
+
+      client = Riddle::Client.new addresses, port,
         configuration.searchd.client_key
       client.max_matches = configuration.searchd.max_matches || 1000
       client.timeout = timeout || 0
