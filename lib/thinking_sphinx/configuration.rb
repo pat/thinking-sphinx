@@ -122,6 +122,10 @@ module ThinkingSphinx
       parse_config
       self.version ||= @controller.sphinx_version
 
+      ThinkingSphinx::Attribute::SphinxTypeMappings.merge!(
+        :string => :sql_attr_string
+      ) if Riddle.loaded_version.to_i > 1
+
       self
     end
 
@@ -301,10 +305,6 @@ module ThinkingSphinx
         self.index_options[:enable_star]    = true
         self.index_options[:min_prefix_len] = 1
       end
-
-      ThinkingSphinx::Attribute::SphinxTypeMappings.merge!(
-        :string => :sql_attr_string
-      ) if Riddle.loaded_version.to_i > 1
     end
 
     def set_sphinx_setting(object, key, value, allowed = {})
