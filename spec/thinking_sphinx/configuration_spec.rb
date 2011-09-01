@@ -4,7 +4,7 @@ describe ThinkingSphinx::Configuration do
   describe "environment class method" do
     before :each do
       ThinkingSphinx::Configuration.reset_environment
-      
+
       ENV["RAILS_ENV"] = nil
     end
 
@@ -19,12 +19,12 @@ describe ThinkingSphinx::Configuration do
 
       Object.send :remove_const, :Merb
     end
-    
+
     it "should use RAILS_ENV if set" do
       RAILS_ENV = 'global_rails'
-      
+
       ThinkingSphinx::Configuration.environment.should == 'global_rails'
-      
+
       Object.send :remove_const, :RAILS_ENV
     end
 
@@ -37,31 +37,31 @@ describe ThinkingSphinx::Configuration do
       ThinkingSphinx::Configuration.environment.should == "development"
     end
   end
-  
+
   describe '#version' do
     before :each do
       @config = ThinkingSphinx::Configuration.instance
       @config.reset
     end
-    
+
     it "should use the given version from sphinx.yml if there is one" do
       open("#{RAILS_ROOT}/config/sphinx.yml", "w") do |f|
         f.write  YAML.dump({'development' => {'version' => '0.9.7'}})
       end
       @config.reset
-      
+
       @config.version.should == '0.9.7'
-      
+
       FileUtils.rm "#{RAILS_ROOT}/config/sphinx.yml"
     end
-    
+
     it "should detect the version from Riddle otherwise" do
       controller = @config.controller
       controller.stub!(:sphinx_version => '0.9.6')
-      
+
       Riddle::Controller.stub!(:new => controller)
       @config.reset
-      
+
       @config.version.should == '0.9.6'
     end
   end
@@ -118,7 +118,7 @@ describe ThinkingSphinx::Configuration do
         config.app_root = "/here/somewhere"
       end
       ThinkingSphinx::Configuration.instance.app_root.should == "/here/somewhere"
-      
+
       ThinkingSphinx::Configuration.instance.reset
     end
   end
@@ -171,7 +171,7 @@ describe ThinkingSphinx::Configuration do
 
   it "should insert set index options into the configuration file" do
     config = ThinkingSphinx::Configuration.instance
-    
+
     ThinkingSphinx::Configuration::IndexOptions.each do |option|
       config.reset
       config.index_options[option.to_sym] = "something"
@@ -187,7 +187,7 @@ describe ThinkingSphinx::Configuration do
   it "should insert set source options into the configuration file" do
     config = ThinkingSphinx::Configuration.instance
     config.reset
-    
+
     config.source_options[:sql_query_pre] = ["something"]
     ThinkingSphinx::Configuration::SourceOptions.each do |option|
       config.source_options[option.to_sym] ||= "something"
@@ -198,21 +198,21 @@ describe ThinkingSphinx::Configuration do
 
       config.source_options.delete option.to_sym
     end
-    
-    config.source_options[:sql_query_pre] = nil  
+
+    config.source_options[:sql_query_pre] = nil
   end
-  
+
   it "should not blow away delta or utf options if sql pre is specified in config" do
     config = ThinkingSphinx::Configuration.instance
     config.reset
-    
+
     config.source_options[:sql_query_pre] = ["a pre query"]
     config.build
     file = open(config.config_file) { |f| f.read }
-    
+
     file.should match(/sql_query_pre = a pre query\n\s*sql_query_pre = UPDATE `\w+` SET `delta` = 0 WHERE `delta` = 1/im)
     file.should match(/sql_query_pre = a pre query\n\s*sql_query_pre = \n/im)
-    
+
     config.source_options[:sql_query_pre] = nil
   end
 
@@ -230,24 +230,24 @@ describe ThinkingSphinx::Configuration do
     }
     file.should_not match(/index alpha_core\s+\{\s+[^\}]*prefix_fields\s+=[^\}]*\}/m)
   end
-  
+
   describe '#generate' do
     let(:config) { ThinkingSphinx::Configuration.instance }
-    
+
     it "should set all sphinx_internal_id attributes to bigints if one is" do
       config.reset
       config.generate
-      
+
       config.configuration.indexes.each do |index|
         next if index.is_a? Riddle::Configuration::DistributedIndex
-        
+
         index.sources.each do |source|
           source.sql_attr_bigint.should include(:sphinx_internal_id)
         end
       end
     end
   end
-  
+
   describe '#client' do
     before :each do
       @config = ThinkingSphinx::Configuration.instance
@@ -256,19 +256,19 @@ describe ThinkingSphinx::Configuration do
       @config.configuration.searchd.max_matches = 100
       @config.timeout = 1
     end
-    
+
     it "should return an instance of Riddle::Client" do
       @config.client.should be_a(Riddle::Client)
     end
-    
+
     it "should use the configuration address" do
       @config.client.server.should == 'domain.url'
     end
-    
+
     it "should use the configuration port" do
       @config.client.port.should == 3333
     end
-    
+
     it "should use the configuration max matches" do
       @config.client.max_matches.should == 100
     end
@@ -278,20 +278,27 @@ describe ThinkingSphinx::Configuration do
     end
 
     describe 'when shuffle is enabled' do
+      let(:client) { double('client', :max_matches= => nil, :timeout= => nil) }
+
       before :each do
         @config.shuffle = true
       end
 
       it "should shuffle client servers" do
-        @config.should_receive(:shuffle).and_return(['2.2.2.2', '1.1.1.1'])
-
         @config.address = ['1.1.1.1', '2.2.2.2']
+        @config.address.stub!(:shuffle => ['2.2.2.2', '1.1.1.1'])
 
-        @config.client.servers.should == ['2.2.2.2', '1.1.1.1']
+        Riddle::Client.should_receive(:new) do |addresses, port, key|
+          addresses.should == ['2.2.2.2', '1.1.1.1']
+          client
+        end
+        @config.client
       end
     end
 
     describe 'when shuffle is disabled' do
+      let(:client) { double('client', :max_matches= => nil, :timeout= => nil) }
+
       before :each do
         @config.shuffle = false
       end
@@ -299,20 +306,25 @@ describe ThinkingSphinx::Configuration do
       it "should not shuffle client servers" do
         @config.address = ['1.1.1.1', '2.2.2.2.', '3.3.3.3', '4.4.4.4', '5.5.5.5']
 
-        @config.client.servers.should == @config.address
+        @config.address.should_not_receive(:shuffle)
+        Riddle::Client.should_receive(:new) do |addresses, port, key|
+          addresses.should == ['1.1.1.1', '2.2.2.2.', '3.3.3.3', '4.4.4.4', '5.5.5.5']
+          client
+        end
+        @config.client
       end
     end
   end
-  
+
   describe '#models_by_crc' do
     before :each do
       @config = ThinkingSphinx::Configuration.instance
     end
-    
+
     it "should return a hash" do
       @config.models_by_crc.should be_a(Hash)
     end
-    
+
     it "should pair class names to their crc codes" do
       @config.models_by_crc[Person.to_crc32].should == 'Person'
       @config.models_by_crc[Alpha.to_crc32].should  == 'Alpha'
