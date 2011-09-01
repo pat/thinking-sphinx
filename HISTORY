@@ -1,4 +1,5 @@
 Edge:
+* Shuffle multiple Sphinx addresses by default, but allow that to be turned off (Ngan Pham).
 * Fix string attributes when using Sphinx 2.0.1 and bin_path.
 
 1.4.7 - August 28th 2011
