@@ -110,7 +110,7 @@ describe ThinkingSphinx do
 
   describe "use_group_by_shortcut? method" do
     before :each do
-      adapter = defined?(JRUBY_VERSION) ? :JdbcAdapter : :MysqlAdapter
+      adapter = defined?(JRUBY_VERSION) ? :JdbcAdapter : :Mysql2Adapter
       unless ::ActiveRecord::ConnectionAdapters.const_defined?(adapter)
         pending "No MySQL"
         return
@@ -118,8 +118,8 @@ describe ThinkingSphinx do
 
       @connection = stub('adapter',
         :select_all => true,
-        :class      => ActiveRecord::ConnectionAdapters::MysqlAdapter,
-        :config => {:adapter => defined?(JRUBY_VERSION) ? 'jdbcmysql' : 'mysql'}
+        :class      => ActiveRecord::ConnectionAdapters::Mysql2Adapter,
+        :config     => {:adapter => defined?(JRUBY_VERSION) ? 'jdbcmysql' : 'mysql2'}
       )
       ::ActiveRecord::Base.stub!(
         :connection => @connection

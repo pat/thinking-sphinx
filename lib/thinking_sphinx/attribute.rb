@@ -230,14 +230,16 @@ module ThinkingSphinx
       end_assoc  = end_association_for_mva
       raise "Could not determine SQL for MVA" if base_assoc.nil?
 
-      relation = Arel::Table.new(base_assoc.table)
+      relation = ::ActiveRecord::Relation.new(
+        base_assoc.reflection.klass, Arel::Table.new(base_assoc.table)
+      )
 
       association_joins.each do |join|
-        relation = relation.join(join.relation, Arel::OuterJoin).
-          on(*join.association_join)
+        join.join_type = Arel::OuterJoin
+        relation = relation.joins(join)
       end
 
-      relation = relation.project "#{foreign_key_for_mva base_assoc} #{ThinkingSphinx.unique_id_expression(adapter, offset)} AS #{quote_column('id')}, #{primary_key_for_mva(end_assoc)} AS #{quote_column(unique_name)}"
+      relation = relation.select "#{foreign_key_for_mva base_assoc} #{ThinkingSphinx.unique_id_expression(adapter, offset)} AS #{quote_column('id')}, #{primary_key_for_mva(end_assoc)} AS #{quote_column(unique_name)}"
 
       relation.to_sql
     end
