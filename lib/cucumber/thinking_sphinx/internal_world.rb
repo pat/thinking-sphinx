@@ -69,6 +69,7 @@ module Cucumber
           ::ThinkingSphinx::Configuration.instance.controller.stop
           sleep(0.5) # Ensure Sphinx has shut down completely
           ::ThinkingSphinx::ActiveRecord::LogSubscriber.logger.close
+          ::ActiveRecord::Base.logger.close
         end
       end
 
@@ -89,6 +90,10 @@ module Cucumber
       end
 
       def configure_active_record
+        ::ActiveRecord::Base.logger = Logger.new(
+          open("#{temporary_directory}/active_record.log", "a")
+        )
+
         ::ThinkingSphinx::ActiveRecord::LogSubscriber.logger = Logger.new(
           open("#{temporary_directory}/active_record.log", "a")
         )
