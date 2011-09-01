@@ -5,8 +5,8 @@ gemspec
 gem 'rcov',       '0.9.8',     :platform => :mri_18
 
 platforms :ruby do
-  gem 'mysql2', '~> 0.2.11'
-  gem 'pg',     '0.9.0'
+  gem 'mysql2', '~> 0.3.7'
+  gem 'pg',     '~> 0.11.0'
 end
 
 platform :jruby do
