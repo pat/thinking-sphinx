@@ -301,7 +301,7 @@ module ThinkingSphinx
         self.index_options[:min_prefix_len] = 1
       end
 
-      ThinkingSphinx::Attribute::SphinxTypeMappings.merge(
+      ThinkingSphinx::Attribute::SphinxTypeMappings.merge!(
         :string => :sql_attr_string
       ) if Riddle.loaded_version.to_i > 1
     end
