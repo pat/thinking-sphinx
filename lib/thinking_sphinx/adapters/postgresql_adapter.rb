@@ -20,7 +20,11 @@ module ThinkingSphinx
     end
 
     def group_concatenate(clause, separator = ' ')
-      "array_to_string(array_accum(COALESCE(#{clause}, '0')), '#{separator}')"
+      if connection.raw_connection.server_version >= 80400
+        "array_to_string(array_agg(COALESCE(#{clause}, '0')), '#{separator}')"
+      else
+        "array_to_string(array_accum(COALESCE(#{clause}, '0')), '#{separator}')"
+      end
     end
 
     def cast_to_string(clause)
@@ -105,7 +109,11 @@ module ThinkingSphinx
     end
 
     def create_array_accum_function
-      if connection.raw_connection.respond_to?(:server_version) && connection.raw_connection.server_version > 80200
+      if connection.raw_connection.respond_to?(:server_version) &&
+        connection.raw_connection.server_version >= 80400
+        return
+      elsif connection.raw_connection.respond_to?(:server_version) &&
+        connection.raw_connection.server_version > 80200
         execute <<-SQL
           CREATE AGGREGATE array_accum (anyelement)
           (
