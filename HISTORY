@@ -1,5 +1,7 @@
 Edge:
 * Use PostgreSQL's array_agg function if it exists, instead of array_accum (PG v8.4 or newer).
+* Don't reload I18n anymore - the load order isn't an issue in Rails 3 or 3.1.
+* Fixing attribute source queries for Rails 3.1.
 * Shuffle multiple Sphinx addresses by default, but allow that to be turned off (Ngan Pham).
 * Fix string attributes when using Sphinx 2.0.1 and bin_path.
 
