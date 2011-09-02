@@ -62,7 +62,7 @@ class ThinkingSphinx::Context
         
         begin
           camelized_model.constantize
-        rescue StandardError => err
+        rescue Error => err
           STDERR.puts "Warning: Error loading #{file}:"
           STDERR.puts err.message
           STDERR.puts err.backtrace.join("\n"), ''
