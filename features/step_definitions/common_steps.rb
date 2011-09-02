@@ -95,9 +95,13 @@ When /^I filter between ([\d\.]+) and ([\d\.]+) on (\w+)$/ do |first, last, attr
   end
 end
 
-When /^I filter between (\d+) and (\d+) days ago on (\w+)$/ do |last, first, attribute|
+When /^I filter between (\d+) and (\d+) days ago on (\w+)(?: by (date))?$/ do |last, first, attribute, by_date|
   @results = nil
-  @with[attribute.to_sym] = first.to_i.days.ago..last.to_i.days.ago
+
+  first, last = first.to_i.days.ago, last.to_i.days.ago
+  first, last = first.to_date, last.to_date if by_date
+
+  @with[attribute.to_sym] = first..last
 end
 
 When /^I filter by (\w+) between (\d+) and (\d+)$/ do |attribute, first, last|
