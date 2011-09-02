@@ -1,4 +1,5 @@
 Edge:
+* Bringing in builder gem's BlankSlate for our Builder - better at keeping global Rake methods out of the way.
 * Use PostgreSQL's array_agg function if it exists, instead of array_accum (PG v8.4 or newer).
 * Don't reload I18n anymore - the load order isn't an issue in Rails 3 or 3.1.
 * Fixing attribute source queries for Rails 3.1.
