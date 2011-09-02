@@ -3,7 +3,7 @@ require 'rails'
 
 module ThinkingSphinx
   class Railtie < Rails::Railtie
-    
+
     initializer 'thinking_sphinx.sphinx' do
       ThinkingSphinx::AutoVersion.detect
     end
@@ -26,16 +26,13 @@ module ThinkingSphinx
     end
 
     config.to_prepare do
-      I18n.backend.reload!
-      I18n.backend.available_locales
-      
       # ActiveRecord::Base.to_crc32s is dependant on the subclasses being loaded
       # consistently. When the environment is reset, subclasses/descendants will
       # be lost but our context will not reload them for us.
       #
       # We reset the context which causes the subclasses/descendants to be
       # reloaded next time the context is called.
-      # 
+      #
       ThinkingSphinx.reset_context!
     end
 
