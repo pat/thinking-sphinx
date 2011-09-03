@@ -31,18 +31,20 @@ describe ThinkingSphinx::Context do
       }.should_not raise_error
     end
 
-    it "should not raise errors if the file name does not represent a class name" do
-      class_name.should_receive(:constantize).and_raise(NameError)
+    it "should report name errors but not raise them" do
+      class_name.stub(:constantize).and_raise(NameError)
+      STDERR.stub!(:puts => '')
+      STDERR.should_receive(:puts).with('Warning: Error loading a.rb:')
 
       lambda {
         ts_context.prepare
       }.should_not raise_error
     end
 
-    # Fails in Ruby 1.9 (or maybe it's an RSpec update). Not sure why.
-    it "should retry if the first pass fails and contains a directory" do
+    it "should report load errors but not raise them" do
       class_name.stub(:constantize).and_raise(LoadError)
-      model_name_lower.should_receive(:gsub!).twice.and_return(true, nil)
+      STDERR.stub!(:puts => '')
+      STDERR.should_receive(:puts).with('Warning: Error loading a.rb:')
 
       lambda {
         ts_context.prepare
