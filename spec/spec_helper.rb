@@ -8,10 +8,9 @@ Dir["#{root}/support/**/*.rb"].each { |file| require file }
 
 RSpec.configure do |config|
   sphinx = Sphinx.new
-  sphinx.setup
 
   config.before :all do |group|
-    sphinx.start if group.class.metadata[:live]
+    sphinx.setup && sphinx.start if group.class.metadata[:live]
   end
 
   config.after :all do |group|
