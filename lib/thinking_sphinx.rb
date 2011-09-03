@@ -13,3 +13,5 @@ require 'thinking_sphinx/version'
 # Extended
 require 'thinking_sphinx/active_record'
 require 'thinking_sphinx/adapters'
+
+require 'thinking_sphinx/railtie' if defined?(Rails)

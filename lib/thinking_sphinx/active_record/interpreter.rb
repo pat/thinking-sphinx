@@ -7,8 +7,10 @@ class ThinkingSphinx::ActiveRecord::Interpreter < BlankSlate
     @index, @block = index, block
   end
 
-  def indexes(column)
-    __source.fields << ThinkingSphinx::ActiveRecord::Field.new(column)
+  def indexes(*columns)
+    columns.each do |column|
+      __source.fields << ThinkingSphinx::ActiveRecord::Field.new(column)
+    end
   end
 
   def translate!

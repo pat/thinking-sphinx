@@ -1,0 +1,4 @@
+test:
+  adapter:  mysql2
+  database: thinking_sphinx
+  username: root

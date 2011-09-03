@@ -26,5 +26,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'mysql2',       '>= 0.3.7'
   s.add_runtime_dependency 'riddle',       '>= 1.4.0'
 
-  s.add_development_dependency 'rspec',    '2.6.0'
+  s.add_development_dependency 'rspec',      '~> 2.6.0'
+  s.add_development_dependency 'combustion', '~> 0.3.0'
 end

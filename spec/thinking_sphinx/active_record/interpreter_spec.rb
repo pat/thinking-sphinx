@@ -65,6 +65,12 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
 
       instance.indexes column
     end
+
+    it "adds multiple fields when passed multiple columns" do
+      source.fields.should_receive(:<<).with(field).twice
+
+      instance.indexes column, column
+    end
   end
 
   describe '#method_missing' do
