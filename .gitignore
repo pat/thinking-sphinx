@@ -2,4 +2,5 @@
 .bundle
 Gemfile.lock
 pkg/*
-tmp
+spec/internal/config/test.sphinx.conf
+spec/internal/db/sphinx

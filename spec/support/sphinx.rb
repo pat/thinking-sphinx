@@ -1,15 +1,10 @@
 class Sphinx
   def initialize
-    config.configuration_file  = "#{root}/tmp/sphinx.conf"
-    config.index_paths        << "#{root}/spec/acceptance/indices"
-    config.searchd.mysql41     = 9307
-    config.searchd.pid_file    = "#{root}/tmp/searchd.pid"
+    config.searchd.mysql41 = 9307
   end
 
   def setup
-    FileUtils.mkdir_p "#{root}/tmp"
-
-    config.render_to_file
+    config.render_to_file && index
   end
 
   def start
@@ -21,6 +16,7 @@ class Sphinx
   end
 
   def index
+    FileUtils.mkdir_p config.indices_location
     config.controller.index
   end
 
@@ -28,9 +24,5 @@ class Sphinx
 
   def config
     ThinkingSphinx::Configuration.instance
-  end
-
-  def root
-    File.expand_path File.join(File.dirname(__FILE__), '..', '..')
   end
 end

@@ -1,21 +1,53 @@
 require 'spec_helper'
 
-class PlaceholderModel
-  extend ThinkingSphinx::ActiveRecord::Base
-end
-
 describe ThinkingSphinx::ActiveRecord::Base do
+  let(:model) {
+    Class.new(ActiveRecord::Base) do
+      extend ThinkingSphinx::ActiveRecord::Base
+    end
+  }
+  let(:subclassed_model) {
+    Class.new(model) do
+      extend ThinkingSphinx::ActiveRecord::Base
+    end
+  }
+
   describe '.search' do
     it "returns a new search object" do
-      PlaceholderModel.search.should be_a(ThinkingSphinx::Search)
+      model.search.should be_a(ThinkingSphinx::Search)
     end
 
     it "passes through arguments to the search object initializer" do
-      ThinkingSphinx::Search.should_receive(:new).with('pancakes')
+      ThinkingSphinx::Search.should_receive(:new).with('pancakes', anything)
 
-      PlaceholderModel.search 'pancakes'
+      model.search 'pancakes'
     end
 
-    it "scopes the search to a given model"
+    it "scopes the search to a given model" do
+      ThinkingSphinx::Search.should_receive(:new).
+        with(anything, hash_including(:classes => [model]))
+
+      model.search 'pancakes'
+    end
+  end
+
+  describe '.primary_key_for_sphinx' do
+    it "defaults to the model's primary key" do
+      model.stub!(:primary_key => :sphinx_id)
+
+      model.primary_key_for_sphinx.should == :sphinx_id
+    end
+
+    it "uses a custom column when set" do
+      model.stub!(:primary_key => :sphinx_id)
+      model.set_primary_key_for_sphinx :custom_sphinx_id
+
+      model.primary_key_for_sphinx.should == :custom_sphinx_id
+    end
+
+    it "uses a superclass setting if there's one available" do
+      model.set_primary_key_for_sphinx :parent_sphinx_id
+      subclassed_model.primary_key_for_sphinx.should == :parent_sphinx_id
+    end
   end
 end

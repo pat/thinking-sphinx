@@ -26,6 +26,42 @@ describe ThinkingSphinx::ActiveRecord::Index do
     end
   end
 
+  describe '#model' do
+    let(:model)  { double('model') }
+
+    it "translates symbol references to model class" do
+      ActiveSupport::Inflector.stub!(:constantize => model)
+
+      index.model.should == model
+    end
+
+    it "memoizes the result" do
+      ActiveSupport::Inflector.should_receive(:constantize).with('User').once.
+        and_return(model)
+
+      index.model
+      index.model
+    end
+  end
+
+  describe '#offset' do
+    let(:config) { double('config', :next_offset => 4) }
+
+    before :each do
+      ThinkingSphinx::Configuration.stub!(:instance => config)
+    end
+
+    it "uses the next offset value from the configuration" do
+      index.offset.should == 4
+    end
+
+    it "uses the reference to get a unique offset" do
+      config.should_receive(:next_offset).with(:user).and_return(2)
+
+      index.offset
+    end
+  end
+
   describe '#render' do
     it "interprets the provided definition"
   end

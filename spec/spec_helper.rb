@@ -3,6 +3,8 @@ require 'bundler'
 
 Bundler.require :default, :development
 
+require 'thinking_sphinx/railtie'
+
 Combustion.initialize!
 
 root = File.expand_path File.dirname(__FILE__)

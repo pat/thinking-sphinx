@@ -1,15 +1,18 @@
-require 'singleton'
-
 class ThinkingSphinx::Configuration < Riddle::Configuration
-  attr_accessor :configuration_file
+  attr_accessor :configuration_file, :indices_location
 
   attr_reader :index_paths
 
   def initialize
     super
 
-    @configuration_file = ''
-    @index_paths        = []
+    @configuration_file = Rails.root.join('config', "#{Rails.env}.sphinx.conf")
+    @index_paths        = [Rails.root.join('app', 'indices')]
+    @indices_location   = Rails.root.join('db', 'sphinx', Rails.env)
+
+    searchd.pid_file    = Rails.root.join('log', "#{Rails.env}.sphinx.pid")
+
+    @offsets = {}
   end
 
   def self.instance
@@ -22,6 +25,14 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 
   def controller
     @controller ||= Riddle::Controller.new self, configuration_file
+  end
+
+  def indices_for_reference(reference)
+    indexes.select { |index| index.reference == reference }
+  end
+
+  def next_offset(reference)
+    @offsets[reference] ||= @offsets.keys.count
   end
 
   def render

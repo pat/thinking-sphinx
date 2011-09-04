@@ -2,7 +2,9 @@ require 'spec_helper'
 
 describe ThinkingSphinx::ActiveRecord::Interpreter do
   let(:model)   { double('model') }
-  let(:index)   { double('index', :sources => sources, :model => model) }
+  let(:index)   {
+    double('index', :sources => sources, :model => model, :offset => 17)
+  }
   let(:sources) { double('sources', :<< => source) }
   let(:source)  { double('source') }
   let(:block)   { double('block') }
@@ -50,6 +52,13 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
       index.sources.should_receive(:<<).once
 
       instance.indexes column
+      instance.indexes column
+    end
+
+    it "creates the source with the index's offset" do
+      ThinkingSphinx::ActiveRecord::SQLSource.should_receive(:new).
+        with(model, :offset => 17).and_return(source)
+
       instance.indexes column
     end
 

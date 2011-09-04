@@ -37,6 +37,29 @@ describe ThinkingSphinx::Configuration do
     end
   end
 
+  describe '#indices_for_reference' do
+    it "selects from the full index set those with matching references"
+  end
+
+  describe '#next_offset' do
+    let(:reference) { double('reference') }
+
+    it "starts at 0" do
+      config.next_offset(reference).should == 0
+    end
+
+    it "increments for each new reference" do
+      config.next_offset(double('reference')).should == 0
+      config.next_offset(double('reference')).should == 1
+      config.next_offset(double('reference')).should == 2
+    end
+
+    it "doesn't increment for recorded references" do
+      config.next_offset(reference).should == 0
+      config.next_offset(reference).should == 0
+    end
+  end
+
   describe '#render' do
     before :each do
       config.searchd.stub! :render => 'searchd { }'

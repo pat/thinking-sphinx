@@ -8,6 +8,7 @@ end
 require 'thinking_sphinx/active_record/attribute'
 require 'thinking_sphinx/active_record/base'
 require 'thinking_sphinx/active_record/column'
+require 'thinking_sphinx/active_record/database_adapters'
 require 'thinking_sphinx/active_record/field'
 require 'thinking_sphinx/active_record/index'
 require 'thinking_sphinx/active_record/interpreter'
