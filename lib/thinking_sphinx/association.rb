@@ -214,6 +214,7 @@ module ThinkingSphinx
       if defined?(ActsAsTaggableOn) &&
         @reflection.klass == ActsAsTaggableOn::Tagging &&
         @reflection.name.to_s[/_taggings$/]
+        condition.gsub! /taggings\.tag_id = tags\.id AND/, "" if ThinkingSphinx.rails_3_1?
         condition = condition.gsub /taggings\./, "#{quoted_alias @join}."
       end
       
