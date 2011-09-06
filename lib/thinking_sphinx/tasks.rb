@@ -37,12 +37,26 @@ namespace :thinking_sphinx do
 
     Dir["#{config.searchd_file_path}/*.spl"].each { |file| File.delete(file) }
 
-    config.controller.start
-
-    if sphinx_running?
-      puts "Started successfully (pid #{sphinx_pid})."
+    if ENV["NODETACH"] == "true"
+      # https://gist.github.com/994070
+      # Workaround to make Sphinx die nicely:
+      #   - PTY.spawn invokes bash -c under the covers
+      #   - Which turns SIGTERM into SIGHUP (not sure exactly why, can't seem to find a reason)
+      #   - Which sphinx interprets as a reload instead of a quit
+      #   - So, we need to remap HUP to KILL for the purposes of this script.
+      unless pid = fork
+        config.controller.start(:nodetach => true)
+      end
+      trap("SIGHUP") { Process.kill(:TERM, pid) }
+      Process.wait
     else
-      puts "Failed to start searchd daemon. Check #{config.searchd_log_file}"
+      config.controller.start
+
+      if sphinx_running?
+        puts "Started successfully (pid #{sphinx_pid})."
+      else
+        puts "Failed to start searchd daemon. Check #{config.searchd_log_file}"
+      end
     end
   end
 
