@@ -19,7 +19,7 @@ module ThinkingSphinx
 
       def respond_to_with_sphinx_scopes?(method)
         proxy_association.klass.respond_to?(:sphinx_scopes) &&
-        proxy_association.klass.sphinx_scopes.include?(scope) ||
+        proxy_association.klass.sphinx_scopes.include?(method) ||
         respond_to_without_sphinx_scopes?(method)
       end
     end
