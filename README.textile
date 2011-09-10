@@ -221,3 +221,4 @@ Since I first released this library, there's been quite a few people who have su
 * Aaron Gibralter
 * Pavel Forkert
 * Anthony Byram
+* Pete Deffendol
