@@ -1,4 +1,5 @@
 Edge:
+* Adding ThinkingSphinx::Search#last_page? for Kaminari (Pete Deffendol).
 * If ENV['NODETACH'] is set when calling ts:start, pass that flag through to Riddle to start Sphinx in the foreground (Aaron Gibralter).
 * Catch and report all errors when models are loaded (Martin Gordon).
 * Bringing in builder gem's BlankSlate for our Builder - better at keeping global Rake methods out of the way.
