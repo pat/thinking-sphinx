@@ -109,6 +109,9 @@ module ThinkingSphinx
       self.stop_timeout         = 5
       self.model_directories    = ["#{app_root}/app/models/"] +
         Dir.glob("#{app_root}/vendor/plugins/*/app/models/")
+      if defined?(Rails)
+        self.model_directories += Rails.application.paths['app/models'].to_a
+      end
       self.delayed_job_priority = 0
       self.indexed_models       = []
       self.shuffle              = true
