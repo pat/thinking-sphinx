@@ -215,6 +215,10 @@ module ThinkingSphinx
     def next_page?
       !next_page.nil?
     end
+    
+    def last_page?
+      next_page.nil?
+    end
 
     # The previous page number of the result set. If this is the first page,
     # then nil is returned.
