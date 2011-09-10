@@ -37,12 +37,21 @@ namespace :thinking_sphinx do
 
     Dir["#{config.searchd_file_path}/*.spl"].each { |file| File.delete(file) }
 
-    config.controller.start
-
-    if sphinx_running?
-      puts "Started successfully (pid #{sphinx_pid})."
+    if ENV["NODETACH"] == "true"
+      unless pid = fork
+        config.controller.start(:nodetach => true)
+      end
+      Signal.trap('TERM') { Process.kill(:QUIT, pid) }
+      Signal.trap('INT')  { Process.kill(:QUIT, pid) }
+      Process.wait(pid)
     else
-      puts "Failed to start searchd daemon. Check #{config.searchd_log_file}"
+      config.controller.start
+
+      if sphinx_running?
+        puts "Started successfully (pid #{sphinx_pid})."
+      else
+        puts "Failed to start searchd daemon. Check #{config.searchd_log_file}"
+      end
     end
   end
 
