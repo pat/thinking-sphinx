@@ -5,6 +5,7 @@ describe 'Searching within a model', :live => true, :wip => true do
     Article.create! :title => 'Pancakes'
 
     ThinkingSphinx::Configuration.instance.controller.index
+    sleep 0.25
 
     articles = Article.search
 
