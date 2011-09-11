@@ -17,4 +17,12 @@ describe 'Searching across models', :live => true do
     articles.should include(pancakes)
     articles.should_not include(waffles)
   end
+
+  it "handles results from different models" do
+    article = Article.create! :title => 'Pancakes'
+    book    = Book.create! :title => 'American Gods'
+    index
+
+    ThinkingSphinx.search.to_a.should =~ [article, book]
+  end
 end
