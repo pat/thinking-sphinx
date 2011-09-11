@@ -4,17 +4,17 @@ class ThinkingSphinx::ActiveRecord::Interpreter < BlankSlate
   end
 
   def initialize(index, block)
-    @index, @block = index, block
+    @index = index
+
+    mod = Module.new
+    mod.send :define_method, :translate!, block
+    extend mod
   end
 
   def indexes(*columns)
     columns.each do |column|
       __source.fields << ThinkingSphinx::ActiveRecord::Field.new(column)
     end
-  end
-
-  def translate!
-    instance_eval &@block
   end
 
   private

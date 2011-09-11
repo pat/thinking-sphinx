@@ -7,7 +7,7 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
   }
   let(:sources) { double('sources', :<< => source) }
   let(:source)  { double('source') }
-  let(:block)   { double('block') }
+  let(:block)   { Proc.new { } }
 
   describe '.translate!' do
     let(:instance) { double('interpreter', :translate! => true) }
