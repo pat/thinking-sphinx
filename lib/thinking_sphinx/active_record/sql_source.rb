@@ -61,7 +61,7 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
   end
 
   def render
-    prepare_for_render
+    prepare_for_render unless @prepared
 
     super
   end
@@ -113,6 +113,8 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
     @sql_query_range = builder.sql_query_range
     @sql_query_info  = builder.sql_query_info
     @sql_query_pre  += builder.sql_query_pre
+
+    @prepared = true
   end
 
   def builder

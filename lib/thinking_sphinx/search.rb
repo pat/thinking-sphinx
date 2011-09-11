@@ -59,6 +59,8 @@ class ThinkingSphinx::Search < Array
   end
 
   def indices
+    return config.indexes.collect(&:name) if classes.empty?
+
     classes.collect { |klass|
       config.indices_for_reference(klass.name.underscore.to_sym).collect &:name
     }.flatten

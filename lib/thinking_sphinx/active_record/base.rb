@@ -1,6 +1,6 @@
 module ThinkingSphinx::ActiveRecord::Base
-  def search(query = nil)
-    ThinkingSphinx::Search.new query, scoped_sphinx_options
+  def search(query = nil, options = {})
+    ThinkingSphinx.search query, scoped_sphinx_options.merge(options)
   end
 
   def primary_key_for_sphinx

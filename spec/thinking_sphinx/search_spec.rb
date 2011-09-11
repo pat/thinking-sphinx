@@ -3,7 +3,8 @@ require 'spec_helper'
 describe ThinkingSphinx::Search do
   let(:search)     { ThinkingSphinx::Search.new }
   let(:config)     {
-    double('config', :searchd => searchd, :indices_for_reference => [index])
+    double('config', :searchd => searchd, :indices_for_reference => [index],
+      :indexes => indices)
   }
   let(:searchd)    { double('searchd', :address => nil, :mysql41 => 101) }
   let(:connection) { double('connection', :query => results) }
@@ -11,6 +12,7 @@ describe ThinkingSphinx::Search do
   let(:sphinx_sql) { double('sphinx select', :to_sql => 'SELECT * FROM index') }
   let(:model)      { double('model', :name => 'Article') }
   let(:index)      { double('index', :name => 'article_core') }
+  let(:indices)    { [index, double('index', :name => 'user_core')] }
 
   before :each do
     ThinkingSphinx::Configuration.stub! :instance => config
@@ -50,6 +52,13 @@ describe ThinkingSphinx::Search do
     it "passes through the SphinxQL from a Riddle::Query::Select object" do
       connection.should_receive(:query).with('SELECT * FROM index').
         and_return(results)
+
+      search.populate
+    end
+
+    it "uses all indices if not scoped to any models" do
+      sphinx_sql.should_receive(:from).with('article_core', 'user_core').
+        and_return(sphinx_sql)
 
       search.populate
     end
