@@ -16,6 +16,7 @@ class ThinkingSphinx::Search < Array
   attr_reader :options
 
   def initialize(query = nil, options = {})
+    query, options   = nil, query if query.is_a?(Hash)
     @query, @options = query, options
     @array           = []
   end
@@ -45,6 +46,15 @@ class ThinkingSphinx::Search < Array
     )
   end
 
+  def extended_query
+    @options[:conditions] ||= {}
+    @extended_query       ||= begin
+      (@query.to_s + ' ' + @options[:conditions].keys.collect { |key|
+        "@#{key} #{@options[:conditions][key]}"
+      }.join(' ')).strip
+    end
+  end
+
   def method_missing(method, *args, &block)
     populate if !SafeMethods.include?(method.to_s)
 
@@ -54,7 +64,7 @@ class ThinkingSphinx::Search < Array
   def sphinxql_select
     Riddle::Query::Select.new.tap do |select|
       select.from(*indices)
-      select.matching(@query) if @query.present?
+      select.matching(extended_query) if extended_query.present?
     end
   end
 

@@ -77,6 +77,13 @@ describe ThinkingSphinx::Search do
       ThinkingSphinx::Search.new('pancakes').populate
     end
 
+    it "appends field conditions to the query" do
+      sphinx_sql.should_receive(:matching).with('@title pancakes').
+        and_return(sphinx_sql)
+
+      ThinkingSphinx::Search.new(:conditions => {:title => 'pancakes'}).populate
+    end
+
     it "translates records to ActiveRecord objects" do
       model_name = double('article', :constantize => model)
       instance   = double('instance')
