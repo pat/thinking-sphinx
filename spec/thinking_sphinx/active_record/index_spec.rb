@@ -63,6 +63,14 @@ describe ThinkingSphinx::ActiveRecord::Index do
   end
 
   describe '#render' do
-    it "interprets the provided definition"
+    it "interprets the provided definition" do
+      index.should_receive(:interpret_definition!)
+
+      begin
+        index.render
+      rescue Riddle::Configuration::ConfigurationError
+        # Ignoring underlying validation error.
+      end
+    end
   end
 end
