@@ -6,4 +6,8 @@ class ThinkingSphinx::ActiveRecord::Column
   def __name
     @stack.last
   end
+
+  def string?
+    __name.is_a?(String)
+  end
 end

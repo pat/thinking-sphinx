@@ -4,6 +4,7 @@ class Sphinx
   end
 
   def setup
+    FileUtils.mkdir_p config.indices_location
     config.render_to_file && index
   end
 
@@ -16,7 +17,6 @@ class Sphinx
   end
 
   def index
-    FileUtils.mkdir_p config.indices_location
     config.controller.index
   end
 

@@ -2,11 +2,19 @@ require 'spec_helper'
 
 describe ThinkingSphinx::ActiveRecord::Attribute do
   let(:attribute) { ThinkingSphinx::ActiveRecord::Attribute.new column }
-  let(:column)    { double('column', :__name => :created_at) }
+  let(:column)    {
+    double('column', :__name => :created_at, :string? => false)
+  }
 
   describe '#to_group_sql' do
     it "returns the column name as a string" do
       attribute.to_group_sql.should == 'created_at'
+    end
+
+    it "returns nil if the column is a string" do
+      column.stub!(:string? => true)
+
+      attribute.to_group_sql.should be_nil
     end
   end
 

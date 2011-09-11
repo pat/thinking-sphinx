@@ -10,7 +10,7 @@ class ThinkingSphinx::ActiveRecord::Attribute < ThinkingSphinx::Attribute
   end
 
   def to_group_sql
-    column.__name.to_s
+    column.string? ? nil : column.__name.to_s
   end
 
   def to_select_sql
