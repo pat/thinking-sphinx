@@ -54,6 +54,7 @@ class ThinkingSphinx::Search < Array
   def sphinxql_select
     Riddle::Query::Select.new.tap do |select|
       select.from(*indices)
+      select.matching(@query) if @query.present?
     end
   end
 

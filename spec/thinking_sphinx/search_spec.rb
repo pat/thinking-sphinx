@@ -61,6 +61,13 @@ describe ThinkingSphinx::Search do
       ThinkingSphinx::Search.new('', :classes => [model]).populate
     end
 
+    it "matches on the query given" do
+      sphinx_sql.should_receive(:matching).with('pancakes').
+        and_return(sphinx_sql)
+
+      ThinkingSphinx::Search.new('pancakes').populate
+    end
+
     it "translates records to ActiveRecord objects" do
       model_name = double('article', :constantize => model)
       instance   = double('instance')
