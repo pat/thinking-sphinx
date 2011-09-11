@@ -1,4 +1,5 @@
 test:
-  adapter:  mysql2
-  database: thinking_sphinx
-  username: root
+  adapter:      <%= ENV['DATABASE'] || 'mysql2' %>
+  database:     thinking_sphinx
+  username:     <%= ENV['DATABASE'][/postgresql/] ? ENV['USER'] : 'root' %>
+  min_messages: warning
