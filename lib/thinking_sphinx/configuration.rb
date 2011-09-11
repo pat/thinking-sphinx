@@ -10,7 +10,9 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     @index_paths        = [Rails.root.join('app', 'indices')]
     @indices_location   = Rails.root.join('db', 'sphinx', Rails.env)
 
-    searchd.pid_file    = Rails.root.join('log', "#{Rails.env}.sphinx.pid")
+    searchd.pid_file  = Rails.root.join('log', "#{Rails.env}.sphinx.pid")
+    searchd.log       = Rails.root.join('log', "#{Rails.env}.searchd.log")
+    searchd.query_log = Rails.root.join('log', "#{Rails.env}.searchd.query.log")
 
     @offsets = {}
   end

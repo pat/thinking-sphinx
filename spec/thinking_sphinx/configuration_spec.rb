@@ -23,6 +23,13 @@ describe ThinkingSphinx::Configuration do
     end
   end
 
+  describe '#configuration_file' do
+    it "uses the Rails environment in the configuration file name" do
+      config.configuration_file.
+        should == Rails.root.join('config', 'test.sphinx.conf')
+    end
+  end
+
   describe '#controller' do
     it "returns an instance of Riddle::Controller" do
       config.controller.should be_a(Riddle::Controller)
@@ -37,8 +44,36 @@ describe ThinkingSphinx::Configuration do
     end
   end
 
+  describe '#index_paths' do
+    it "uses app/indices in the Rails app by default" do
+      config.index_paths.should == [Rails.root.join('app', 'indices')]
+    end
+  end
+
   describe '#indices_for_reference' do
     it "selects from the full index set those with matching references"
+  end
+
+  describe '#indices_location' do
+    it "stores index files in db/sphinx/ENVIRONMENT" do
+      config.indices_location.should == Rails.root.join('db', 'sphinx', 'test')
+    end
+  end
+
+  describe '#initialize' do
+    it "sets the daemon pid file within log for the Rails app" do
+      config.searchd.pid_file.
+        should == Rails.root.join('log', 'test.sphinx.pid')
+    end
+
+    it "sets the daemon log within log for the Rails app" do
+      config.searchd.log.should == Rails.root.join('log', 'test.searchd.log')
+    end
+
+    it "sets the query log within log for the Rails app" do
+      config.searchd.query_log.
+        should == Rails.root.join('log', 'test.searchd.query.log')
+    end
   end
 
   describe '#next_offset' do
