@@ -2,10 +2,9 @@ require 'spec_helper'
 
 describe 'Searching within a model', :live => true do
   it "returns results" do
-    Article.create! :title => 'Pancakes'
-
-    ThinkingSphinx::Configuration.instance.controller.index
-    sleep 0.25
+    index do
+      Article.create! :title => 'Pancakes'
+    end
 
     articles = Article.search
 
