@@ -2,11 +2,15 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
   attr_reader :model, :database_settings, :options
   attr_reader :fields, :attributes, :conditions, :groupings
 
-  def self.internal_attributes
+  def self.internal_attributes(model)
     [
       ThinkingSphinx::ActiveRecord::Attribute.new(
         ThinkingSphinx::ActiveRecord::Column.new(:id),
         :as => :sphinx_internal_id
+      ),
+      ThinkingSphinx::ActiveRecord::Attribute.new(
+        ThinkingSphinx::ActiveRecord::Column.new("'#{model.name}'"),
+        :as => :sphinx_internal_class, :type => :string
       )
     ]
   end
@@ -26,7 +30,7 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
     @options           = options
 
     @fields            = []
-    @attributes        = self.class.internal_attributes
+    @attributes        = self.class.internal_attributes(model)
     @conditions        = []
     @groupings         = []
 
@@ -93,6 +97,10 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
       case attribute.type
       when :integer
         @sql_attr_uint << attribute.name
+      when :string
+        @sql_attr_string << attribute.name
+      else
+        raise "Unknown attribute type '#{attribute.type}'"
       end
     end
 

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'Searching within a model', :live => true, :wip => true do
+describe 'Searching within a model', :live => true do
   it "returns results" do
     Article.create! :title => 'Pancakes'
 

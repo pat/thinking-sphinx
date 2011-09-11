@@ -4,13 +4,13 @@ describe ThinkingSphinx::ActiveRecord::Attribute do
   let(:attribute) { ThinkingSphinx::ActiveRecord::Attribute.new column }
   let(:column)    { double('column', :__name => :created_at) }
 
-  describe 'to_group_sql' do
+  describe '#to_group_sql' do
     it "returns the column name as a string" do
       attribute.to_group_sql.should == 'created_at'
     end
   end
 
-  describe 'to_select_sql' do
+  describe '#to_select_sql' do
     it "returns the column name as a string" do
       attribute.to_select_sql.should == 'created_at'
     end
@@ -20,6 +20,19 @@ describe ThinkingSphinx::ActiveRecord::Attribute do
         :as => :creation_timestamp
 
       attribute.to_select_sql.should == 'created_at AS creation_timestamp'
+    end
+  end
+
+  describe '#type' do
+    it "returns an integer by default" do
+      attribute.type.should == :integer
+    end
+
+    it "returns the type option provided" do
+      attribute = ThinkingSphinx::ActiveRecord::Attribute.new column,
+        :type => :datetime
+
+      attribute.type.should == :datetime
     end
   end
 end

@@ -27,6 +27,16 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
     end
   end
 
+  describe '#attributes' do
+    it "has the internal id attribute by default" do
+      source.attributes.collect(&:name).should include('sphinx_internal_id')
+    end
+
+    it "has the internal class attribute by default" do
+      source.attributes.collect(&:name).should include('sphinx_internal_class')
+    end
+  end
+
   describe '#delta_processor' do
     let(:processor) { double('processor') }
 
@@ -204,6 +214,19 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
     end
 
     it "adds any joined or file fields"
+
+    it "adds integer attributes to sql_attr_uint" do
+      source.render
+
+      source.sql_attr_uint.should include('sphinx_internal_id')
+    end
+
+    it "adds string attributes to sql_attr_string" do
+      source.render
+
+      source.sql_attr_string.should include('sphinx_internal_class')
+    end
+
     it "adds all attributes"
     it "adds other settings"
   end

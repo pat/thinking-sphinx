@@ -13,8 +13,8 @@ class ThinkingSphinx::Search < Array
   def populate
     return if @populated
 
-    replace connection.query(sphinxql_select.to_sql).collect { |record|
-      record
+    replace connection.query(sphinxql_select.to_sql).collect { |row|
+      row['sphinx_internal_class'].constantize.find row['sphinx_internal_id']
     }
     @populated = true
   end

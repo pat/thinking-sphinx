@@ -2,12 +2,15 @@ require 'spec_helper'
 
 describe ThinkingSphinx::Search do
   let(:search)     { ThinkingSphinx::Search.new }
-  let(:config)     { double('config', :searchd => searchd) }
+  let(:config)     {
+    double('config', :searchd => searchd, :indices_for_reference => [index])
+  }
   let(:searchd)    { double('searchd', :address => nil, :mysql41 => 101) }
   let(:connection) { double('connection', :query => results) }
   let(:results)    { double('results', :collect => []) }
   let(:sphinx_sql) { double('sphinx select', :to_sql => 'SELECT * FROM index') }
   let(:model)      { double('model', :name => 'Article') }
+  let(:index)      { double('index', :name => 'article_core') }
 
   before :each do
     ThinkingSphinx::Configuration.stub! :instance => config
@@ -52,13 +55,24 @@ describe ThinkingSphinx::Search do
     end
 
     it "uses indices for the given classes" do
-      index = double('index', :name => 'article_core')
-      config.stub!(:indices_for_reference => [index])
-
       sphinx_sql.should_receive(:from).with('article_core').
         and_return(sphinx_sql)
 
       ThinkingSphinx::Search.new('', :classes => [model]).populate
+    end
+
+    it "translates records to ActiveRecord objects" do
+      model_name = double('article', :constantize => model)
+      instance   = double('instance')
+      connection.stub! :query => [
+        {'sphinx_internal_id' => 24, 'sphinx_internal_class' => model_name}
+      ]
+      model.stub!(:find => instance)
+
+      search = ThinkingSphinx::Search.new('', :classes => [model])
+      search.populate
+
+      search.first.should == instance
     end
   end
 end
