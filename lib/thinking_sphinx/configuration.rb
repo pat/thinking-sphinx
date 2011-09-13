@@ -111,6 +111,9 @@ module ThinkingSphinx
         Dir.glob("#{app_root}/vendor/plugins/*/app/models/")
       if defined?(Rails)
         self.model_directories += Rails.application.paths['app/models'].to_a
+	Rails::Application::Railties.engines.each do |engine|
+          self.model_directories +=  engine.paths['app/models'].to_a
+	end
       end
       self.delayed_job_priority = 0
       self.indexed_models       = []
