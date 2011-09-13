@@ -216,15 +216,30 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
     it "adds any joined or file fields"
 
     it "adds integer attributes to sql_attr_uint" do
+      source.attributes << double('attribute',
+        :type_for => :integer, :name => 'count')
+
       source.render
 
-      source.sql_attr_uint.should include('sphinx_internal_id')
+      source.sql_attr_uint.should include('count')
+    end
+
+    it "adds boolean attributes to sql_attr_bool" do
+      source.attributes << double('attribute',
+        :type_for => :boolean, :name => 'published')
+
+      source.render
+
+      source.sql_attr_bool.should include('published')
     end
 
     it "adds string attributes to sql_attr_string" do
+      source.attributes << double('attribute',
+        :type_for => :string, :name => 'name')
+
       source.render
 
-      source.sql_attr_string.should include('sphinx_internal_class')
+      source.sql_attr_string.should include('name')
     end
 
     it "adds all attributes"

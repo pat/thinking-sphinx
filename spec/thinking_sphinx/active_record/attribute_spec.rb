@@ -31,16 +31,27 @@ describe ThinkingSphinx::ActiveRecord::Attribute do
     end
   end
 
-  describe '#type' do
-    it "returns an integer by default" do
-      attribute.type.should == :integer
-    end
+  describe '#type_for' do
+    let(:model)     { double('model', :columns => [db_column]) }
+    let(:db_column) { double('column', :name => 'created_at') }
 
     it "returns the type option provided" do
       attribute = ThinkingSphinx::ActiveRecord::Attribute.new column,
         :type => :datetime
 
-      attribute.type.should == :datetime
+      attribute.type_for(model).should == :datetime
+    end
+
+    it "detects integer types from the database" do
+      db_column.stub!(:type => :integer)
+
+      attribute.type_for(model).should == :integer
+    end
+
+    it "detects boolean types from the database" do
+      db_column.stub!(:type => :boolean)
+
+      attribute.type_for(model).should == :boolean
     end
   end
 end

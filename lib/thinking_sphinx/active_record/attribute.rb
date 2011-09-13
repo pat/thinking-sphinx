@@ -21,8 +21,10 @@ class ThinkingSphinx::ActiveRecord::Attribute < ThinkingSphinx::Attribute
     end
   end
 
-  def type
-    @options[:type] || :integer
+  def type_for(model)
+    @options[:type] || model.columns.detect { |db_column|
+      db_column.name == column.__name.to_s
+    }.type
 
     # @type ||= begin
     #   base_type = case

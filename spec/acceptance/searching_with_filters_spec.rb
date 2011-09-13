@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'Searching with filters', :live => true, :wip => true do
+describe 'Searching with filters', :live => true do
   it "limits results by single value boolean filters" do
     Article.create! :title => 'Pancakes', :published => true
     Article.create! :title => 'Waffles',  :published => false

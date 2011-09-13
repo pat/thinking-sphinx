@@ -16,8 +16,8 @@ class SphinxController
     config.controller.stop
   end
 
-  def index
-    config.controller.index
+  def index(*indices)
+    config.controller.index *indices
   end
 
   private

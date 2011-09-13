@@ -6,7 +6,7 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
     [
       ThinkingSphinx::ActiveRecord::Attribute.new(
         ThinkingSphinx::ActiveRecord::Column.new(:id),
-        :as => :sphinx_internal_id
+        :as => :sphinx_internal_id,    :type => :integer
       ),
       ThinkingSphinx::ActiveRecord::Attribute.new(
         ThinkingSphinx::ActiveRecord::Column.new("'#{model.name}'"),
@@ -94,13 +94,15 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
     # fields
     # attributes
     attributes.each do |attribute|
-      case attribute.type
+      case attribute.type_for(model)
       when :integer
         @sql_attr_uint << attribute.name
+      when :boolean
+        @sql_attr_bool << attribute.name
       when :string
         @sql_attr_string << attribute.name
       else
-        raise "Unknown attribute type '#{attribute.type}'"
+        raise "Unknown attribute type '#{attribute.type_for(model)}'"
       end
     end
 
