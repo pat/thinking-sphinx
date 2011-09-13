@@ -91,6 +91,20 @@ describe ThinkingSphinx::Search do
       ThinkingSphinx::Search.new(:with => {:visible => true}).populate
     end
 
+    it "appends order clauses to the query" do
+      sphinx_sql.should_receive(:order_by).with('created_at ASC').
+        and_return(sphinx_sql)
+
+      ThinkingSphinx::Search.new(:order => 'created_at ASC').populate
+    end
+
+    it "presumes attributes given as symbols should be sorted ascendingly" do
+      sphinx_sql.should_receive(:order_by).with('updated_at ASC').
+        and_return(sphinx_sql)
+
+      ThinkingSphinx::Search.new(:order => :updated_at).populate
+    end
+
     it "translates records to ActiveRecord objects" do
       model_name = double('article', :constantize => model)
       instance   = double('instance')

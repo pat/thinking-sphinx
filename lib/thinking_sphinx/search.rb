@@ -65,11 +65,21 @@ class ThinkingSphinx::Search < Array
     @array.send(method, *args, &block)
   end
 
+  def order_clause
+    case @options[:order]
+    when Symbol
+      "#{@options[:order]} ASC"
+    else
+      @options[:order]
+    end
+  end
+
   def sphinxql_select
     Riddle::Query::Select.new.tap do |select|
       select.from(*indices)
       select.matching(extended_query) if extended_query.present?
       select.where(filters) if filters.any?
+      select.order_by(order_clause) if order_clause.present?
     end
   end
 
