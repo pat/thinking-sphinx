@@ -11,6 +11,12 @@ class ThinkingSphinx::ActiveRecord::Interpreter < BlankSlate
     extend mod
   end
 
+  def has(*columns)
+    columns.each do |column|
+      __source.attributes << ThinkingSphinx::ActiveRecord::Attribute.new(column)
+    end
+  end
+
   def indexes(*columns)
     columns.each do |column|
       __source.fields << ThinkingSphinx::ActiveRecord::Field.new(column)

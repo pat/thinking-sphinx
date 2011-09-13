@@ -12,7 +12,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
     :quoted_table_name => '`users`', :name => 'User') }
   let(:connection) { double('connection') }
   let(:relation)   { double('relation') }
-  let(:config)     { double('config', :indexes => indices) }
+  let(:config)     { double('config', :indices => indices) }
   let(:indices)    { double('indices', :count => 5) }
   let(:fields)     { [double('field', :to_select_sql => '`name` AS `name`',
     :to_group_sql => '`name`')] }

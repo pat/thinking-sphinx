@@ -27,6 +27,61 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     end
   end
 
+  describe '#has' do
+    let(:instance)   {
+      ThinkingSphinx::ActiveRecord::Interpreter.new index, block
+    }
+    let(:column)     { double('column') }
+    let(:attributes) { double('attributes', :<< => attribute) }
+    let(:attribute)  { double('attribute') }
+
+    before :each do
+      source.stub! :attributes => attributes
+
+      ThinkingSphinx::ActiveRecord::SQLSource.stub! :new => source
+      ThinkingSphinx::ActiveRecord::Attribute.stub! :new => attribute
+    end
+
+    it "adds a source to the index" do
+      index.sources.should_receive(:<<).with(source)
+
+      instance.has column
+    end
+
+    it "only adds a single source for the given context" do
+      index.sources.should_receive(:<<).once
+
+      instance.has column
+      instance.has column
+    end
+
+    it "creates the source with the index's offset" do
+      ThinkingSphinx::ActiveRecord::SQLSource.should_receive(:new).
+        with(model, :offset => 17).and_return(source)
+
+      instance.has column
+    end
+
+    it "creates a new attribute with the provided column" do
+      ThinkingSphinx::ActiveRecord::Attribute.should_receive(:new).with(column).
+        and_return(attribute)
+
+      instance.has column
+    end
+
+    it "adds an attribute to the source" do
+      source.attributes.should_receive(:<<).with(attribute)
+
+      instance.has column
+    end
+
+    it "adds multiple attributes when passed multiple columns" do
+      source.attributes.should_receive(:<<).with(attribute).twice
+
+      instance.has column, column
+    end
+  end
+
   describe '#indexes' do
     let(:instance) {
       ThinkingSphinx::ActiveRecord::Interpreter.new index, block

@@ -87,11 +87,11 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
 
   def document_id
     quoted_alias  = quote_column(model.primary_key_for_sphinx)
-    "#{quoted_primary_key} * #{config.indexes.count} + #{source.offset} AS #{quoted_alias}"
+    "#{quoted_primary_key} * #{config.indices.count} + #{source.offset} AS #{quoted_alias}"
   end
 
   def reversed_document_id
-    "($id - #{source.offset}) / #{config.indexes.count}"
+    "($id - #{source.offset}) / #{config.indices.count}"
   end
 
   def select_clause

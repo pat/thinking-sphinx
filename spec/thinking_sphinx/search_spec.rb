@@ -4,7 +4,7 @@ describe ThinkingSphinx::Search do
   let(:search)     { ThinkingSphinx::Search.new }
   let(:config)     {
     double('config', :searchd => searchd, :indices_for_reference => [index],
-      :indexes => indices)
+      :indices => indices)
   }
   let(:searchd)    { double('searchd', :address => nil, :mysql41 => 101) }
   let(:connection) { double('connection', :query => results) }
@@ -82,6 +82,13 @@ describe ThinkingSphinx::Search do
         and_return(sphinx_sql)
 
       ThinkingSphinx::Search.new(:conditions => {:title => 'pancakes'}).populate
+    end
+
+    it "appends boolean attribute filters to the query" do
+      sphinx_sql.should_receive(:where).with(:visible => true).
+        and_return(sphinx_sql)
+
+      ThinkingSphinx::Search.new(:with => {:visible => true}).populate
     end
 
     it "translates records to ActiveRecord objects" do

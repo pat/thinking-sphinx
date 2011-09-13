@@ -4,8 +4,8 @@ describe ThinkingSphinx::Index do
   describe '.define' do
     context 'with ActiveRecord' do
       let(:index)   { double('index', :definition_block= => nil) }
-      let(:config)  { double('config', :indexes => indexes) }
-      let(:indexes) { double('indexes', :<< => true) }
+      let(:config)  { double('config', :indices => indices) }
+      let(:indices) { double('indices', :<< => true) }
 
       before :each do
         ThinkingSphinx::ActiveRecord::Index.stub! :new => index
@@ -25,7 +25,7 @@ describe ThinkingSphinx::Index do
       end
 
       it "adds the index to the collection of indices" do
-        indexes.should_receive(:<<).with(index)
+        indices.should_receive(:<<).with(index)
 
         ThinkingSphinx::Index.define(:user, :with => :active_record)
       end

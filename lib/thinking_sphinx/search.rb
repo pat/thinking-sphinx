@@ -55,6 +55,10 @@ class ThinkingSphinx::Search < Array
     end
   end
 
+  def filters
+    @options[:with] || {}
+  end
+
   def method_missing(method, *args, &block)
     populate if !SafeMethods.include?(method.to_s)
 
@@ -65,11 +69,12 @@ class ThinkingSphinx::Search < Array
     Riddle::Query::Select.new.tap do |select|
       select.from(*indices)
       select.matching(extended_query) if extended_query.present?
+      select.where(filters) if filters.any?
     end
   end
 
   def indices
-    return config.indexes.collect(&:name) if classes.empty?
+    return config.indices.collect(&:name) if classes.empty?
 
     classes.collect { |klass|
       config.indices_for_reference(klass.name.underscore.to_sym).collect &:name

@@ -30,7 +30,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def indices_for_reference(reference)
-    indexes.select { |index| index.reference == reference }
+    indices.select { |index| index.reference == reference }
   end
 
   def next_offset(reference)
