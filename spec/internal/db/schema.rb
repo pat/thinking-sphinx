@@ -7,8 +7,9 @@ ActiveRecord::Schema.define do
   end
 
   create_table(:books, :force => true) do |t|
-    t.string :title
-    t.string :author
+    t.string  :title
+    t.string  :author
+    t.integer :year
     t.timestamps
   end
 end
