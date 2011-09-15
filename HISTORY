@@ -1,4 +1,5 @@
 Edge:
+* Actually looking at Rails engines paths for models (Eduardo Casanova).
 * Adding ThinkingSphinx::Search#last_page? for Kaminari (Pete Deffendol).
 * Ensuring associations for acts-as-taggable-on are tweaked for Rails 3.1 (Anthony).
 * Bug fix for association collection proxies in Rails 3.1 (Pavel Forkert).

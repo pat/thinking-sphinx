@@ -107,14 +107,7 @@ module ThinkingSphinx
       self.searchd_file_path    = "#{self.app_root}/db/sphinx/#{environment}"
       self.allow_star           = false
       self.stop_timeout         = 5
-      self.model_directories    = ["#{app_root}/app/models/"] +
-        Dir.glob("#{app_root}/vendor/plugins/*/app/models/")
-      if defined?(Rails)
-        self.model_directories += Rails.application.paths['app/models'].to_a
-	Rails::Application::Railties.engines.each do |engine|
-          self.model_directories +=  engine.paths['app/models'].to_a
-	end
-      end
+      self.model_directories    = initial_model_directories
       self.delayed_job_priority = 0
       self.indexed_models       = []
       self.shuffle              = true
@@ -352,6 +345,20 @@ module ThinkingSphinx
       else
         address.sort_by { rand }
       end
+    end
+
+    def initial_model_directories
+      directories = ["#{app_root}/app/models/"] +
+        Dir.glob("#{app_root}/vendor/plugins/*/app/models/")
+
+      if defined?(Rails)
+        directories += Rails.application.paths['app/models'].to_a
+        directories += Rails.application.railties.engines.collect { |engine|
+          engine.paths['app/models'].to_a
+	      }.flatten
+      end
+
+      directories
     end
   end
 end

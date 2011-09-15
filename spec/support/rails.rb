@@ -12,7 +12,10 @@ module Rails
   end
 
   def self.application
-    @@application ||= Struct.new(:paths).new(Hash.new([]))
+    @@application ||= begin
+      railties = Struct.new(:engines).new([])
+      Struct.new(:paths, :railties).new(Hash.new([]), railties)
+    end
   end
 end
 
