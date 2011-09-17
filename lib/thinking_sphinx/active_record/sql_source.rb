@@ -1,6 +1,6 @@
 class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
-  attr_reader :model, :database_settings, :options
-  attr_reader :fields, :attributes, :conditions, :groupings
+  attr_reader :model, :database_settings, :options, :conditions, :groupings
+  attr_accessor :fields, :attributes
 
   def self.internal_attributes(model)
     [

@@ -6,7 +6,7 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     double('index', :sources => sources, :model => model, :offset => 17)
   }
   let(:sources) { double('sources', :<< => source) }
-  let(:source)  { double('source') }
+  let(:source)  { Struct.new(:attributes, :fields).new([], []) }
   let(:block)   { Proc.new { } }
 
   describe '.translate!' do
@@ -32,12 +32,9 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
       ThinkingSphinx::ActiveRecord::Interpreter.new index, block
     }
     let(:column)     { double('column') }
-    let(:attributes) { double('attributes', :<< => attribute) }
     let(:attribute)  { double('attribute') }
 
     before :each do
-      source.stub! :attributes => attributes
-
       ThinkingSphinx::ActiveRecord::SQLSource.stub! :new => source
       ThinkingSphinx::ActiveRecord::Attribute.stub! :new => attribute
     end
@@ -63,22 +60,31 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     end
 
     it "creates a new attribute with the provided column" do
-      ThinkingSphinx::ActiveRecord::Attribute.should_receive(:new).with(column).
-        and_return(attribute)
+      ThinkingSphinx::ActiveRecord::Attribute.should_receive(:new).
+        with(column, {}).and_return(attribute)
 
       instance.has column
+    end
+
+    it "passes through options to the attribute" do
+      ThinkingSphinx::ActiveRecord::Attribute.should_receive(:new).
+        with(column, :as => :other_name).and_return(attribute)
+
+      instance.has column, :as => :other_name
     end
 
     it "adds an attribute to the source" do
-      source.attributes.should_receive(:<<).with(attribute)
-
       instance.has column
+
+      source.attributes.should include(attribute)
     end
 
     it "adds multiple attributes when passed multiple columns" do
-      source.attributes.should_receive(:<<).with(attribute).twice
-
       instance.has column, column
+
+      source.attributes.select { |saved_attribute|
+        saved_attribute == attribute
+      }.length.should == 2
     end
   end
 
@@ -87,12 +93,9 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
       ThinkingSphinx::ActiveRecord::Interpreter.new index, block
     }
     let(:column)   { double('column') }
-    let(:fields)   { double('fields', :<< => field) }
     let(:field)    { double('field') }
 
     before :each do
-      source.stub! :fields => fields
-
       ThinkingSphinx::ActiveRecord::SQLSource.stub! :new => source
       ThinkingSphinx::ActiveRecord::Field.stub! :new => field
     end
@@ -118,22 +121,31 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     end
 
     it "creates a new field with the provided column" do
-      ThinkingSphinx::ActiveRecord::Field.should_receive(:new).with(column).
-        and_return(field)
+      ThinkingSphinx::ActiveRecord::Field.should_receive(:new).
+        with(column, {}).and_return(field)
 
       instance.indexes column
+    end
+
+    it "passes through options to the field" do
+      ThinkingSphinx::ActiveRecord::Field.should_receive(:new).
+        with(column, :as => :other_name).and_return(field)
+
+      instance.indexes column, :as => :other_name
     end
 
     it "adds a field to the source" do
-      source.fields.should_receive(:<<).with(field)
-
       instance.indexes column
+
+      source.fields.should include(field)
     end
 
     it "adds multiple fields when passed multiple columns" do
-      source.fields.should_receive(:<<).with(field).twice
-
       instance.indexes column, column
+
+      source.fields.select { |saved_field|
+        saved_field == field
+      }.length.should == 2
     end
   end
 

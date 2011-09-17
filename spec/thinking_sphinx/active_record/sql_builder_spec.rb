@@ -3,26 +3,28 @@ require 'spec_helper'
 require 'active_support/core_ext/module/delegation'
 
 describe ThinkingSphinx::ActiveRecord::SQLBuilder do
-  let(:source)     { double('source', :model => model, :offset => 3,
+  let(:source)       { double('source', :model => model, :offset => 3,
     :fields => fields, :attributes => attributes, :disable_range? => false,
     :delta_processor => nil, :conditions => [], :groupings => []) }
-  let(:model)      { double('model', :primary_key_for_sphinx => :id,
+  let(:model)        { double('model', :primary_key_for_sphinx => :id,
     :connection => connection, :descends_from_active_record? => true,
     :column_names => [], :inheritance_column => 'type', :unscoped => relation,
     :quoted_table_name => '`users`', :name => 'User') }
-  let(:connection) { double('connection') }
-  let(:relation)   { double('relation') }
-  let(:config)     { double('config', :indices => indices) }
-  let(:indices)    { double('indices', :count => 5) }
-  let(:fields)     { [double('field', :to_select_sql => '`name` AS `name`',
+  let(:connection)   { double('connection') }
+  let(:relation)     { double('relation') }
+  let(:config)       { double('config', :indices => indices) }
+  let(:indices)      { double('indices', :count => 5) }
+  let(:fields)       { [double('field', :to_select_sql => '`name` AS `name`',
     :to_group_sql => '`name`')] }
-  let(:attributes) { [] }
-  let(:builder)    { ThinkingSphinx::ActiveRecord::SQLBuilder.new source }
+  let(:attributes)   { [] }
+  let(:associations) { double('associations', :join_values => []) }
+  let(:builder)      { ThinkingSphinx::ActiveRecord::SQLBuilder.new source }
 
   before :each do
     ThinkingSphinx::Configuration.stub! :instance => config
+    ThinkingSphinx::ActiveRecord::Associations.stub! :new => associations
     relation.stub! :select => relation, :where => relation, :group => relation,
-      :order => relation, :to_sql => ''
+      :order => relation, :joins => relation, :to_sql => ''
     connection.stub!(:quote_column_name) { |column| "`#{column}`"}
   end
 
@@ -65,6 +67,12 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
         builder.sql_query
       end
 
+      it "provides the associations object to the field when adding it" do
+        fields.first.should_receive(:to_select_sql).with(associations)
+
+        builder.sql_query
+      end
+
       it "adds each attribute to the SELECT clause" do
         attributes << double('attribute',
           :to_select_sql => '`created_at` AS `created_at`',
@@ -74,6 +82,17 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
           string.should match(/`created_at` AS `created_at`/)
           relation
         end
+
+        builder.sql_query
+      end
+
+      it "provides the associations object to the attribute when adding it" do
+        attribute = double('attribute',
+          :to_select_sql => '`created_at` AS `created_at`',
+          :to_group_sql  => '`created_at`')
+        attributes << attribute
+
+        attribute.should_receive(:to_select_sql).with(associations)
 
         builder.sql_query
       end

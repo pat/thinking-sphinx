@@ -6,16 +6,12 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
   end
 
   def sql_query
-    relation = source.model.unscoped
+    relation = model.unscoped
     relation = relation.select pre_select + select_clause
-
-    # all_associations.each do |assoc|
-    #   relation = relation.joins(assoc.arel_join)
-    # end
-
     relation = relation.where where_clause
     relation = relation.group group_clause
     relation = relation.order('NULL') if source.type == 'mysql'
+    relation = relation.joins associations.join_values
 
     relation.to_sql
   end
@@ -69,6 +65,10 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
     source.delta_processor
   end
 
+  def associations
+    @associations ||= ThinkingSphinx::ActiveRecord::Associations.new(model)
+  end
+
   def quote_column(column)
     model.connection.quote_column_name(column)
   end
@@ -97,8 +97,12 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
   def select_clause
     (
       [document_id] +
-      source.fields.collect     { |field|     field.to_select_sql     } +
-      source.attributes.collect { |attribute| attribute.to_select_sql }
+      source.fields.collect     { |field|
+        field.to_select_sql(associations)
+      } +
+      source.attributes.collect { |attribute|
+        attribute.to_select_sql(associations)
+      }
     ).compact.join(', ')
   end
 
@@ -129,8 +133,12 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
 
     (
       [quoted_primary_key] +
-      source.fields.collect     { |field|     field.to_group_sql     }.compact +
-      source.attributes.collect { |attribute| attribute.to_group_sql }.compact +
+      source.fields.collect     { |field|
+        field.to_group_sql(associations)
+      }.compact +
+      source.attributes.collect { |attribute|
+        attribute.to_group_sql(associations)
+      }.compact +
       source.groupings + internal_groupings
     ).join(', ')
   end

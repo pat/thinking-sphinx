@@ -11,4 +11,12 @@ describe 'Searching on fields', :live => true do
     articles.should include(pancakes)
     articles.should_not include(waffles)
   end
+
+  it "limits results for a field from an association" do
+    user     = User.create! :name => 'Pat'
+    pancakes = Article.create! :title => 'Pancakes', :user => user
+    index
+
+    Article.search(:conditions => {:user => 'pat'}).first.should == pancakes
+  end
 end

@@ -12,15 +12,17 @@ class ThinkingSphinx::ActiveRecord::Interpreter < BlankSlate
   end
 
   def has(*columns)
-    columns.each do |column|
-      __source.attributes << ThinkingSphinx::ActiveRecord::Attribute.new(column)
-    end
+    options = columns.extract_options!
+    __source.attributes += columns.collect { |column|
+      ThinkingSphinx::ActiveRecord::Attribute.new column, options
+    }
   end
 
   def indexes(*columns)
-    columns.each do |column|
-      __source.fields << ThinkingSphinx::ActiveRecord::Field.new(column)
-    end
+    options = columns.extract_options!
+    __source.fields += columns.collect { |column|
+      ThinkingSphinx::ActiveRecord::Field.new column, options
+    }
   end
 
   private

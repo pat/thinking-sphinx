@@ -8,6 +8,31 @@ describe ThinkingSphinx::ActiveRecord::Column do
     end
   end
 
+  describe '#__stack' do
+    it "returns all but the top item" do
+      column = ThinkingSphinx::ActiveRecord::Column.new(:users, :posts, :id)
+      column.__stack.should == [:users, :posts]
+    end
+  end
+
+  describe '#method_missing' do
+    let(:column) { ThinkingSphinx::ActiveRecord::Column.new(:user) }
+
+    it "shifts the current name to the stack" do
+      column.email
+      column.__stack.should == [:user]
+    end
+
+    it "adds the new method call as the name" do
+      column.email
+      column.__name.should == :email
+    end
+
+    it "returns itself" do
+      column.email.should == column
+    end
+  end
+
   describe '#string?' do
     it "is true when the name is a string" do
       column = ThinkingSphinx::ActiveRecord::Column.new('content')

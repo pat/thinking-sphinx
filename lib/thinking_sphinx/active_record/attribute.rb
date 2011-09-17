@@ -9,15 +9,15 @@ class ThinkingSphinx::ActiveRecord::Attribute < ThinkingSphinx::Attribute
     (@options[:as] || column.__name).to_s
   end
 
-  def to_group_sql
-    column.string? ? nil : column.__name.to_s
+  def to_group_sql(associations)
+    column.string? ? nil : column_with_table(associations)
   end
 
-  def to_select_sql
+  def to_select_sql(associations)
     if @options[:as].present?
-      "#{column.__name} AS #{@options[:as]}"
+      "#{column_with_table(associations)} AS #{@options[:as]}"
     else
-      column.__name.to_s
+      column_with_table associations
     end
   end
 
@@ -44,5 +44,13 @@ class ThinkingSphinx::ActiveRecord::Attribute < ThinkingSphinx::Attribute
     #
     #   base_type
     # end
+  end
+
+  private
+
+  def column_with_table(associations)
+    return column.__name if column.string?
+
+    "#{associations.alias_for(column.__stack)}.#{column.__name}"
   end
 end
