@@ -9,8 +9,7 @@ class ThinkingSphinx::ActiveRecord::Associations
   def alias_for(stack)
     return model.quoted_table_name if stack.empty?
 
-    build_join_for stack
-    @joins[stack].aliased_table_name
+    join_for(stack).aliased_table_name
   end
 
   def join_values
@@ -23,18 +22,23 @@ class ThinkingSphinx::ActiveRecord::Associations
     @base ||= ::ActiveRecord::Associations::JoinDependency.new model, [], []
   end
 
-  def build_join_for(stack)
-    parent = base
-    (0..(stack.length-1)).each do |position|
-      @joins[stack[0..position]] ||= ::ActiveRecord::Associations::JoinDependency::JoinAssociation.new(
-        parent.active_record.reflections[stack[position]], base,
-        (base == parent) ? base.join_base : parent.join
+  def join_for(stack)
+    @joins[stack] ||= begin
+      ::ActiveRecord::Associations::JoinDependency::JoinAssociation.new(
+        reflection_for(stack), base, parent_join_for(stack)
       ).tap { |join| join.join_type = Arel::OuterJoin }
-      parent = @joins[stack[0..position]]
     end
   end
 
-  def join_for(stack)
-    @joins[stack] ||= build_join_for(stack)
+  def parent_for(stack)
+    stack.length == 1 ? base : join_for(stack[0..-2])
+  end
+
+  def parent_join_for(stack)
+    stack.length == 1 ? base.join_base : parent_for(stack).join
+  end
+
+  def reflection_for(stack)
+    parent_for(stack).active_record.reflections[stack.last]
   end
 end
