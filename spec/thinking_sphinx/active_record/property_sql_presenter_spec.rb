@@ -12,7 +12,7 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
         field, adapter, associations
       )
     }
-    let(:field)     { double('field', :name => 'title', :column => column) }
+    let(:field)     { double('field', :name => 'title', :columns => [column]) }
     let(:column)    {
       double('column', :string? => false, :__stack => [],
         :__name => 'title')
@@ -69,6 +69,17 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
         presenter.to_select.
           should == "GROUP_CONCAT(articles.title SEPARATOR ' ') AS title"
       end
+
+      it "concatenates multiple columns" do
+        adapter.stub :concatenate do |clause, separator|
+          "CONCAT_WS('#{separator}', #{clause})"
+        end
+
+        field.stub!(:columns => [column, column])
+
+        presenter.to_select.
+          should == "CONCAT_WS(' ', articles.title, articles.title) AS title"
+      end
     end
   end
 
@@ -79,7 +90,7 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
       )
     }
     let(:attribute) {
-      double('attribute', :name => 'created_at', :column => column)
+      double('attribute', :name => 'created_at', :columns => [column])
     }
     let(:column)    {
       double('column', :string? => false, :__stack => [],

@@ -1,11 +1,11 @@
 class ThinkingSphinx::ActiveRecord::Property
-  attr_reader :column
+  attr_reader :columns
 
-  def initialize(column, options = {})
-    @column, @options = column, options
+  def initialize(columns, options = {})
+    @columns, @options = Array(columns), options
   end
 
   def name
-    (@options[:as] || column.__name).to_s
+    (@options[:as] || columns.first.__name).to_s
   end
 end

@@ -28,7 +28,7 @@ class ThinkingSphinx::ActiveRecord::Attribute <
 
   def type_from_database_for(model)
     db_type = model.columns.detect { |db_column|
-      db_column.name == column.__name.to_s
+      db_column.name == columns.first.__name.to_s
     }.type
 
     case db_type

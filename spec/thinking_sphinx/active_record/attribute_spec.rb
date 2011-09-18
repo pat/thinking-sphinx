@@ -13,6 +13,10 @@ describe ThinkingSphinx::ActiveRecord::Attribute do
   }
   let(:adapter)      { double('adapter') }
 
+  before :each do
+    column.stub! :to_a => [column]
+  end
+
   describe '#type_for' do
     it "returns the type option provided" do
       attribute = ThinkingSphinx::ActiveRecord::Attribute.new column,

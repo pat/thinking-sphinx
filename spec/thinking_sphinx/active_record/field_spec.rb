@@ -8,6 +8,10 @@ describe ThinkingSphinx::ActiveRecord::Field do
   let(:associations) { double('associations', :alias_for => 'articles') }
   let(:source)       { double('source') }
 
+  before :each do
+    column.stub! :to_a => [column]
+  end
+
   describe '#with_attribute?' do
     it "defaults to false" do
       field.should_not be_with_attribute

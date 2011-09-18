@@ -13,6 +13,13 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter do
     end
   end
 
+  describe '#concatenate' do
+    it "concatenates with the given separator" do
+      adapter.concatenate('foo, bar, baz', ',').
+        should == "CONCAT_WS(',', foo, bar, baz)"
+    end
+  end
+
   describe '#convert_nulls' do
     it "translates arguments to an IFNULL SQL call" do
       adapter.convert_nulls('id', 5).should == 'IFNULL(id, 5)'

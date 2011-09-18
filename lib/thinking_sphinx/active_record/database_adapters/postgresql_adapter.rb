@@ -5,6 +5,10 @@ class ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter <
     "cast(extract(epoch from #{clause}) as int)"
   end
 
+  def concatenate(clause, separator = ' ')
+    clause.split(', ').join(" || '#{separator}' || ")
+  end
+
   def convert_nulls(clause, default = '')
     "COALESCE(#{clause}, #{default})"
   end

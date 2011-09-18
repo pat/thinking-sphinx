@@ -16,6 +16,10 @@ class ThinkingSphinx::ActiveRecord::Column
     __name.is_a?(String)
   end
 
+  def to_ary
+    [self]
+  end
+
   private
 
   def method_missing(method, *args, &block)

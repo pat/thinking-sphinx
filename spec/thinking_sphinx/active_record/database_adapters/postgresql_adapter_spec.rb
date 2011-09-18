@@ -13,6 +13,13 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter do
     end
   end
 
+  describe '#concatenate' do
+    it "concatenates with the given separator" do
+      adapter.concatenate('foo, bar, baz', ',').
+        should == "foo || ',' || bar || ',' || baz"
+    end
+  end
+
   describe '#convert_nulls' do
     it "translates arguments to a COALESCE SQL call" do
       adapter.convert_nulls('id', 5).should == 'COALESCE(id, 5)'

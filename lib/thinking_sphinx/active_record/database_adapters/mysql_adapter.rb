@@ -5,6 +5,10 @@ class ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter <
     "UNIX_TIMESTAMP(#{clause})"
   end
 
+  def concatenate(clause, separator = ' ')
+    "CONCAT_WS('#{separator}', #{clause})"
+  end
+
   def convert_nulls(clause, default = '')
     "IFNULL(#{clause}, #{default})"
   end
