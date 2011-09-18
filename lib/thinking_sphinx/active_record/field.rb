@@ -5,6 +5,10 @@ class ThinkingSphinx::ActiveRecord::Field
     @column, @options = column, options
   end
 
+  def name
+    (@options[:as] || column.__name).to_s
+  end
+
   def to_group_sql(associations)
     column_with_table associations
   end
@@ -15,6 +19,10 @@ class ThinkingSphinx::ActiveRecord::Field
     else
       column_with_table associations
     end
+  end
+
+  def with_attribute?
+    @options[:sortable]
   end
 
   private

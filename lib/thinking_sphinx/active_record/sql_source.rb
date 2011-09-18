@@ -92,6 +92,10 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
     @sql_sock ||= database_settings[:socket]
 
     # fields
+    fields.each do |field|
+      @sql_field_string << field.name if field.with_attribute?
+    end
+
     # attributes
     attributes.each do |attribute|
       case attribute.type_for(model)

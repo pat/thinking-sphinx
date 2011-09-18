@@ -41,4 +41,15 @@ describe ThinkingSphinx::ActiveRecord::Field do
       field.to_select_sql(associations).should == 'articles.title AS subject'
     end
   end
+
+  describe '#with_attribute?' do
+    it "defaults to false" do
+      field.should_not be_with_attribute
+    end
+
+    it "is true if the field is sortable" do
+      field = ThinkingSphinx::ActiveRecord::Field.new column, :sortable => true
+      field.should be_with_attribute
+    end
+  end
 end

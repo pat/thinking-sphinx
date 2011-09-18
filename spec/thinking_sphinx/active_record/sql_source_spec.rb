@@ -213,6 +213,15 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       source.sql_query_pre.should == ['Change Setting']
     end
 
+    it "adds fields with attributes to sql_field_string" do
+      source.fields << double('field',
+        :name => 'title', :with_attribute? => true)
+
+      source.render
+
+      source.sql_field_string.should include('title')
+    end
+
     it "adds any joined or file fields"
 
     it "adds integer attributes to sql_attr_uint" do
