@@ -1,24 +1,48 @@
 require 'spec_helper'
 
 describe ThinkingSphinx::Search do
-  let(:search)     { ThinkingSphinx::Search.new }
-  let(:config)     {
+  let(:search)       { ThinkingSphinx::Search.new }
+  let(:config)       {
     double('config', :searchd => searchd, :indices_for_reference => [index],
       :indices => indices)
   }
-  let(:searchd)    { double('searchd', :address => nil, :mysql41 => 101) }
-  let(:connection) { double('connection', :query => results) }
-  let(:results)    { double('results', :collect => []) }
-  let(:sphinx_sql) { double('sphinx select', :to_sql => 'SELECT * FROM index') }
-  let(:model)      { double('model', :name => 'Article') }
-  let(:index)      { double('index', :name => 'article_core') }
-  let(:indices)    { [index, double('index', :name => 'user_core')] }
+  let(:searchd)      { double('searchd', :address => nil, :mysql41 => 101) }
+  let(:connection)   { double('connection') }
+  let(:results)      { [] }
+  let(:meta_results) { [] }
+  let(:sphinx_sql)   {
+    double('sphinx select', :to_sql => 'SELECT * FROM index')
+  }
+  let(:model)        { double('model', :name => 'Article') }
+  let(:index)        { double('index', :name => 'article_core') }
+  let(:indices)      { [index, double('index', :name => 'user_core')] }
 
   before :each do
     ThinkingSphinx::Configuration.stub! :instance => config
     Riddle::Query.stub! :connection => connection
     Riddle::Query::Select.stub! :new => sphinx_sql
-    sphinx_sql.stub! :from => sphinx_sql
+    sphinx_sql.stub! :from => sphinx_sql, :offset => sphinx_sql,
+      :limit => sphinx_sql
+
+    connection.stub(:query).and_return(results, meta_results)
+  end
+
+  describe '#current_page' do
+    it "should return 1 by default" do
+      search.current_page.should == 1
+    end
+
+    it "should handle string page values" do
+      ThinkingSphinx::Search.new(:page => '2').current_page.should == 2
+    end
+
+    it "should handle empty string page values" do
+      ThinkingSphinx::Search.new(:page => '').current_page.should == 1
+    end
+
+    it "should return the requested page" do
+      ThinkingSphinx::Search.new(:page => 10).current_page.should == 10
+    end
   end
 
   describe '#empty?' do
@@ -35,9 +59,112 @@ describe ThinkingSphinx::Search do
     end
   end
 
+  describe '#first_page?' do
+    it "returns true when on the first page" do
+      search.should be_first_page
+    end
+
+    it "returns false on other pages" do
+      ThinkingSphinx::Search.new(:page => 2).should_not be_first_page
+    end
+  end
+
+  describe '#last_page?' do
+    let(:meta_results) { [{'Variable_name' => 'total', 'Value' => '44'}] }
+
+    it "is true when there's no more pages" do
+      ThinkingSphinx::Search.new(:page => 3).should be_last_page
+    end
+
+    it "is false when there's still more pages" do
+      search.should_not be_last_page
+    end
+  end
+
+  describe '#next_page' do
+    let(:meta_results) { [{'Variable_name' => 'total', 'Value' => '44'}] }
+
+    it "should return one more than the current page" do
+      search.next_page.should == 2
+    end
+
+    it "should return nil if on the last page" do
+      ThinkingSphinx::Search.new(:page => 3).next_page.should be_nil
+    end
+  end
+
+  describe '#next_page?' do
+    let(:meta_results) { [{'Variable_name' => 'total', 'Value' => '44'}] }
+
+    it "is true when there is a second page" do
+      search.next_page?.should be_true
+    end
+
+    it "is false when there's no more pages" do
+      ThinkingSphinx::Search.new(:page => 3).next_page?.should be_false
+    end
+  end
+
+  describe '#offset' do
+    it "should default to 0" do
+      search.offset.should == 0
+    end
+
+    it "should increase by the per_page value for each page in" do
+      ThinkingSphinx::Search.new(:per_page => 25, :page => 2).offset.
+        should == 25
+    end
+
+    it "should prioritise explicit :offset over calculated if given" do
+      ThinkingSphinx::Search.new(:offset => 5).offset.should == 5
+    end
+  end
+
+  describe '#page' do
+    it "sets the current page" do
+      search.page(3)
+      search.current_page.should == 3
+    end
+
+    it "returns the search object" do
+      search.page(2).should == search
+    end
+  end
+
+  describe '#per' do
+    it "sets the current per_page value" do
+      search.per(29)
+      search.per_page.should == 29
+    end
+
+    it "returns the search object" do
+      search.per(29).should == search
+    end
+  end
+
+  describe '#per_page' do
+    it "defaults to 20" do
+      search.per_page.should == 20
+    end
+
+    it "is set as part of the search options" do
+      ThinkingSphinx::Search.new(:per_page => 10).per_page.should == 10
+    end
+
+    it "should prioritise :limit over :per_page if given" do
+      ThinkingSphinx::Search.new(:per_page => 30, :limit => 40).per_page.
+        should == 40
+    end
+
+    it "should allow for string arguments" do
+      ThinkingSphinx::Search.new(:per_page => '10').per_page.should == 10
+    end
+  end
+
   describe '#populate' do
     it "populates the data set from Sphinx" do
-      connection.should_receive(:query).and_return(results)
+      connection.unstub :query
+      connection.should_receive(:query).once.and_return(results)
 
       search.populate
     end
@@ -50,6 +177,7 @@ describe ThinkingSphinx::Search do
     end
 
     it "passes through the SphinxQL from a Riddle::Query::Select object" do
+      connection.unstub :query
       connection.should_receive(:query).with('SELECT * FROM index').
         and_return(results)
 
@@ -105,6 +233,18 @@ describe ThinkingSphinx::Search do
       ThinkingSphinx::Search.new(:order => :updated_at).populate
     end
 
+    it "uses the provided offset" do
+      sphinx_sql.should_receive(:offset).with(50).and_return(sphinx_sql)
+
+      ThinkingSphinx::Search.new(:per_page => 25, :page => 3).populate
+    end
+
+    it "uses the provided limit" do
+      sphinx_sql.should_receive(:limit).with(24).and_return(sphinx_sql)
+
+      ThinkingSphinx::Search.new(:per_page => 24, :page => 3).populate
+    end
+
     it "translates records to ActiveRecord objects" do
       model_name = double('article', :constantize => model)
       instance   = double('instance')
@@ -117,6 +257,76 @@ describe ThinkingSphinx::Search do
       search.populate
 
       search.first.should == instance
+    end
+  end
+
+  describe '#populate_meta' do
+    it "connects using the searchd address and port" do
+      Riddle::Query.should_receive(:connection).with('127.0.0.1', 101).
+        and_return(connection)
+
+      search.populate_meta
+    end
+
+    it "requests the query and the metadata from Sphinx" do
+      connection.unstub :query
+      connection.should_receive(:query).with('SELECT * FROM index').once.
+        and_return(results)
+      connection.should_receive(:query).with('SHOW META').once.
+        and_return(meta_results)
+
+      search.populate_meta
+    end
+  end
+
+  describe '#previous_page' do
+    let(:meta_results) { [{'Variable_name' => 'total', 'Value' => '44'}] }
+
+    it "should return one less than the current page" do
+      ThinkingSphinx::Search.new(:page => 2).previous_page.should == 1
+    end
+
+    it "should return nil if on the first page" do
+      search.previous_page.should be_nil
+    end
+  end
+
+  describe '#respond_to?' do
+    it "should respond to Array methods" do
+      search.respond_to?(:each).should be_true
+    end
+
+    it "should respond to Search methods" do
+      search.respond_to?(:per_page).should be_true
+    end
+  end
+
+  describe '#total_entries' do
+    let(:meta_results) { [{'Variable_name' => 'total_found', 'Value' => '12'}] }
+
+    it "returns the total found from the search request metadata" do
+      search.total_entries.should == 12
+    end
+  end
+
+  describe '#total_pages' do
+    let(:meta_results) { [
+      {'Variable_name' => 'total',       'Value' => '40'},
+      {'Variable_name' => 'total_found', 'Value' => '44'}
+    ] }
+
+    it "uses the total available from the search request metadata" do
+      search.total_pages.should == 2
+    end
+
+    it "should allow for custom per_page values" do
+      ThinkingSphinx::Search.new(:per_page => 40).total_pages.should == 1
+    end
+
+    it "should return 0 if there is no index and therefore no results" do
+      meta_results.first['Value'] = nil
+
+      search.total_pages.should == 0
     end
   end
 end

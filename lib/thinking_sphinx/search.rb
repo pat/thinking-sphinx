@@ -21,14 +21,93 @@ class ThinkingSphinx::Search < Array
     @array           = []
   end
 
+  def current_page
+    @options[:page] = 1 if @options[:page].blank?
+    @options[:page].to_i
+  end
+
+  def first_page?
+    current_page == 1
+  end
+
+  def last_page?
+    next_page.nil?
+  end
+
+  def next_page
+    current_page >= total_pages ? nil : current_page + 1
+  end
+
+  def next_page?
+    !next_page.nil?
+  end
+
+  def offset
+    @options[:offset] || ((current_page - 1) * per_page)
+  end
+
+  def page(number)
+    @options[:page] = number
+    self
+  end
+
+  def per(limit)
+    @options[:limit] = limit
+    self
+  end
+
+  def per_page
+    @options[:limit] ||= (@options[:per_page] || 20)
+    @options[:limit].to_i
+  end
+
   def populate
     return if @populated
 
-    @array.replace connection.query(sphinxql_select.to_sql).collect { |row|
+    @raw = connection.query(sphinxql_select.to_sql)
+    @array.replace @raw.collect { |row|
       row['sphinx_internal_class'].constantize.find row['sphinx_internal_id']
     }
     @populated = true
   end
+
+  def populate_meta
+    return if @populated_meta
+
+    populate
+    @meta = connection.query(Riddle::Query.meta).inject({}) { |hash, row|
+      hash[row['Variable_name']] = row['Value']
+      hash
+    }
+    @populated_meta = true
+  end
+
+  def previous_page
+    current_page == 1 ? nil : current_page - 1
+  end
+
+  def respond_to?(method, include_private = false)
+    super || @array.respond_to?(method, include_private)
+  end
+
+  def total_entries
+    populate_meta
+
+    @meta['total_found'].to_i
+  end
+
+  def total_pages
+    populate_meta
+    return 0 if @meta['total'].nil?
+
+    @total_pages ||= (@meta['total'].to_i / per_page.to_f).ceil
+  end
+
+  # For Kaminari and Will Paginate
+  alias_method :limit_value, :per_page
+  alias_method :page_count,  :total_pages
+  alias_method :num_pages,   :total_pages
+  alias_method :total_count, :total_entries
 
   private
 
@@ -80,6 +159,8 @@ class ThinkingSphinx::Search < Array
       select.matching(extended_query) if extended_query.present?
       select.where(filters) if filters.any?
       select.order_by(order_clause) if order_clause.present?
+      select.offset(offset)
+      select.limit(per_page)
     end
   end
 
