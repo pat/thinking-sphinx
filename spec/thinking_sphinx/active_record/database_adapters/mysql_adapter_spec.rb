@@ -18,4 +18,11 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter do
       adapter.convert_nulls('id', 5).should == 'IFNULL(id, 5)'
     end
   end
+
+  describe '#group_concatenate' do
+    it "group concatenates the clause with the given separator" do
+      adapter.group_concatenate('foo', ',').
+        should == "GROUP_CONCAT(foo SEPARATOR ',')"
+    end
+  end
 end

@@ -18,4 +18,11 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter do
       adapter.convert_nulls('id', 5).should == 'COALESCE(id, 5)'
     end
   end
+
+  describe '#group_concatenate' do
+    it "group concatenates the clause with the given separator" do
+      adapter.group_concatenate('foo', ',').
+        should == "array_to_string(array_agg(foo), ',')"
+    end
+  end
 end

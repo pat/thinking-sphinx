@@ -2,7 +2,9 @@ require 'spec_helper'
 
 describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
   let(:adapter)      { double('adapter') }
-  let(:associations) { double('associations', :alias_for => 'articles') }
+  let(:associations) {
+    double('associations', :alias_for => 'articles', :aggregate_for? => false)
+  }
 
   context 'with a field' do
     let(:presenter) {
@@ -29,6 +31,12 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
 
         presenter.to_group
       end
+
+      it "returns nil if the property is an aggregate" do
+        associations.stub! :aggregate_for? => true
+
+        presenter.to_group.should be_nil
+      end
     end
 
     describe '#to_select' do
@@ -49,6 +57,17 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
         field.stub!(:name => :subject)
 
         presenter.to_select.should == 'articles.title AS subject'
+      end
+
+      it "groups and concatenates aggregated columns" do
+        adapter.stub :group_concatenate do |clause, separator|
+          "GROUP_CONCAT(#{clause} SEPARATOR '#{separator}')"
+        end
+
+        associations.stub! :aggregate_for? => true
+
+        presenter.to_select.
+          should == "GROUP_CONCAT(articles.title SEPARATOR ' ') AS title"
       end
     end
   end
@@ -89,6 +108,12 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
 
       it "returns nil if the column is a string" do
         column.stub!(:string? => true)
+
+        presenter.to_group.should be_nil
+      end
+
+      it "returns nil if the property is an aggregate" do
+        associations.stub! :aggregate_for? => true
 
         presenter.to_group.should be_nil
       end

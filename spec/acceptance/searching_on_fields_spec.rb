@@ -19,4 +19,14 @@ describe 'Searching on fields', :live => true do
 
     Article.search(:conditions => {:user => 'pat'}).first.should == pancakes
   end
+
+  it "returns results with matches from concatenated field results" do
+    user     = User.create! :name => 'Pat'
+    pancakes = Article.create! :title => 'Pancakes', :user => user
+    waffles  = Article.create! :title => 'Waffles',  :user => user
+    index
+
+    Article.search('waffles', :conditions => {:title => 'pancakes'}).to_a.
+      should == [pancakes]
+  end
 end

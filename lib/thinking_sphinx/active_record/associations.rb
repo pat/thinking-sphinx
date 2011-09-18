@@ -6,6 +6,16 @@ class ThinkingSphinx::ActiveRecord::Associations
     @joins = {}
   end
 
+  def aggregate_for?(stack)
+    return false if stack.empty?
+
+    joins_for(stack).any? { |join|
+      [:has_many, :has_and_belongs_to_many].include?(
+        join.reflection.macro
+      )
+    }
+  end
+
   def alias_for(stack)
     return model.quoted_table_name if stack.empty?
 
@@ -30,12 +40,20 @@ class ThinkingSphinx::ActiveRecord::Associations
     end
   end
 
+  def joins_for(stack)
+    if stack.length == 1
+      [join_for(stack)]
+    else
+      [joins_for(stack[0..-2]), join_for(stack)].flatten
+    end
+  end
+
   def parent_for(stack)
     stack.length == 1 ? base : join_for(stack[0..-2])
   end
 
   def parent_join_for(stack)
-    stack.length == 1 ? base.join_base : parent_for(stack).join
+    stack.length == 1 ? base.join_base : parent_for(stack)
   end
 
   def reflection_for(stack)

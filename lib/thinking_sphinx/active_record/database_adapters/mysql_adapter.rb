@@ -8,4 +8,8 @@ class ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter <
   def convert_nulls(clause, default = '')
     "IFNULL(#{clause}, #{default})"
   end
+
+  def group_concatenate(clause, separator = ' ')
+    "GROUP_CONCAT(#{clause} SEPARATOR '#{separator}')"
+  end
 end

@@ -7,7 +7,9 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
   end
 
   def to_group
-    property.column.string? ? nil : column_with_table
+    return nil unless group?
+
+    column_with_table
   end
 
   def to_select
@@ -16,18 +18,25 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
 
   private
 
+  def aggregate?
+    associations.aggregate_for?(property.column.__stack)
+  end
+
   def casted_column_with_table
     clause = column_with_table
-    if type == :timestamp
-      adapter.cast_to_timestamp(clause)
-    else
-      clause
-    end
+    clause = adapter.cast_to_timestamp(clause) if type == :timestamp
+    clause = adapter.group_concatenate(clause, ' ') if aggregate?
+
+    clause
   end
 
   def column_with_table
     return property.column.__name if property.column.string?
 
     "#{associations.alias_for(property.column.__stack)}.#{property.column.__name}"
+  end
+
+  def group?
+    !(aggregate? || property.column.string?)
   end
 end
