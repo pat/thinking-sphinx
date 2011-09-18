@@ -5,7 +5,8 @@ require 'active_support/core_ext/module/delegation'
 describe ThinkingSphinx::ActiveRecord::SQLBuilder do
   let(:source)       { double('source', :model => model, :offset => 3,
     :fields => fields, :attributes => attributes, :disable_range? => false,
-    :delta_processor => nil, :conditions => [], :groupings => []) }
+    :delta_processor => nil, :conditions => [], :groupings => [],
+    :adapter => adapter) }
   let(:model)        { double('model', :primary_key_for_sphinx => :id,
     :connection => connection, :descends_from_active_record? => true,
     :column_names => [], :inheritance_column => 'type', :unscoped => relation,
@@ -14,14 +15,18 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
   let(:relation)     { double('relation') }
   let(:config)       { double('config', :indices => indices) }
   let(:indices)      { double('indices', :count => 5) }
-  let(:fields)       { [double('field', :to_select_sql => '`name` AS `name`',
-    :to_group_sql => '`name`')] }
+  let(:fields)       { [] }
   let(:attributes)   { [] }
+  let(:presenter)    {
+    double('presenter', :to_select => '`name` AS `name`', :to_group => '`name`')
+  }
+  let(:adapter)      { double('adapter') }
   let(:associations) { double('associations', :join_values => []) }
   let(:builder)      { ThinkingSphinx::ActiveRecord::SQLBuilder.new source }
 
   before :each do
     ThinkingSphinx::Configuration.stub! :instance => config
+    ThinkingSphinx::ActiveRecord::PropertySQLPresenter.stub! :new => presenter
     ThinkingSphinx::ActiveRecord::Associations.stub! :new => associations
     relation.stub! :select => relation, :where => relation, :group => relation,
       :order => relation, :joins => relation, :to_sql => ''
@@ -59,6 +64,8 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
       end
 
       it "adds each field to the SELECT clause" do
+        fields << double('field')
+
         relation.should_receive(:select) do |string|
           string.should match(/`name` AS `name`/)
           relation
@@ -67,32 +74,14 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
         builder.sql_query
       end
 
-      it "provides the associations object to the field when adding it" do
-        fields.first.should_receive(:to_select_sql).with(associations, source)
-
-        builder.sql_query
-      end
-
       it "adds each attribute to the SELECT clause" do
-        attributes << double('attribute',
-          :to_select_sql => '`created_at` AS `created_at`',
-          :to_group_sql  => '`created_at`')
+        attributes << double('attribute', :type_for => :integer)
+        presenter.stub!(:to_select => '`created_at` AS `created_at`')
 
         relation.should_receive(:select) do |string|
           string.should match(/`created_at` AS `created_at`/)
           relation
         end
-
-        builder.sql_query
-      end
-
-      it "provides the associations object to the attribute when adding it" do
-        attribute = double('attribute',
-          :to_select_sql => '`created_at` AS `created_at`',
-          :to_group_sql  => '`created_at`')
-        attributes << attribute
-
-        attribute.should_receive(:to_select_sql).with(associations, source)
 
         builder.sql_query
       end
@@ -140,6 +129,8 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
       end
 
       it "groups each field" do
+        fields << double('field')
+
         relation.should_receive(:group) do |string|
           string.should match(/`name`/)
           relation
@@ -149,9 +140,8 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
       end
 
       it "groups each attribute" do
-        attributes << double('attribute',
-          :to_select_sql => '`created_at` AS `created_at`',
-          :to_group_sql  => '`created_at`')
+        attributes << double('attribute', :type_for => :integer)
+        presenter.stub!(:to_group => '`created_at`')
 
         relation.should_receive(:group) do |string|
           string.should match(/`created_at`/)
@@ -262,8 +252,8 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
     end
 
     context 'PostgreSQL adapter' do
-      let(:fields)     { [double('field', :to_select_sql => '"name" AS "name"',
-        :to_group_sql => '"name"')] }
+      let(:presenter) { double('presenter', :to_select => '"name" AS "name"',
+        :to_group => '"name"') }
 
       before :each do
         source.stub! :type => 'pgsql'
@@ -287,6 +277,8 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
       end
 
       it "adds each field to the SELECT clause" do
+        fields << double('field')
+
         relation.should_receive(:select) do |string|
           string.should match(/"name" AS "name"/)
           relation
@@ -296,9 +288,8 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
       end
 
       it "adds each attribute to the SELECT clause" do
-        attributes << double('attribute',
-          :to_select_sql => '"created_at" AS "created_at"',
-          :to_group_sql  => '"created_at"')
+        attributes << double('attribute', :type_for => :integer)
+        presenter.stub!(:to_select => '"created_at" AS "created_at"')
 
         relation.should_receive(:select) do |string|
           string.should match(/"created_at" AS "created_at"/)
@@ -351,6 +342,8 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
       end
 
       it "groups each field" do
+        fields << double('field')
+
         relation.should_receive(:group) do |string|
           string.should match(/"name"/)
           relation
@@ -360,9 +353,8 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
       end
 
       it "groups each attribute" do
-        attributes << double('attribute',
-          :to_select_sql => '"created_at" AS "created_at"',
-          :to_group_sql  => '"created_at"')
+        attributes << double('attribute', :type_for => :integer)
+        presenter.stub!(:to_group => '"created_at"')
 
         relation.should_receive(:group) do |string|
           string.should match(/"created_at"/)
@@ -488,10 +480,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
   end
 
   describe 'sql_query_range' do
-    let(:adapter) { double('adapter') }
-
     before :each do
-      source.stub! :adapter => adapter
       adapter.stub!(:convert_nulls) { |string, default|
         "ISNULL(#{string}, #{default})"
       }

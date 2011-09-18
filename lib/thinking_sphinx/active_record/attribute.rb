@@ -1,10 +1,5 @@
 class ThinkingSphinx::ActiveRecord::Attribute <
   ThinkingSphinx::ActiveRecord::Property
-  attr_reader :column
-
-  def to_select_sql(associations, source)
-    "#{casted_column_with_table(associations, source)} AS #{name}"
-  end
 
   def type_for(model)
     @options[:type] || type_from_database_for(model)
@@ -30,15 +25,6 @@ class ThinkingSphinx::ActiveRecord::Attribute <
   end
 
   private
-
-  def casted_column_with_table(associations, source)
-    clause = column_with_table(associations)
-    if type_for(source.model) == :timestamp
-      source.adapter.cast_to_timestamp(clause)
-    else
-      clause
-    end
-  end
 
   def type_from_database_for(model)
     db_type = model.columns.detect { |db_column|

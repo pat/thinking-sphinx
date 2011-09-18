@@ -8,16 +8,4 @@ class ThinkingSphinx::ActiveRecord::Property
   def name
     (@options[:as] || column.__name).to_s
   end
-
-  def to_group_sql(associations)
-    column.string? ? nil : column_with_table(associations)
-  end
-
-  private
-
-  def column_with_table(associations)
-    return column.__name if column.string?
-
-    "#{associations.alias_for(column.__stack)}.#{column.__name}"
-  end
 end

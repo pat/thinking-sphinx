@@ -94,15 +94,28 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
     "($id - #{source.offset}) / #{config.indices.count}"
   end
 
+  def attribute_presenters
+    @attribute_presenters ||= source.attributes.collect { |attribute|
+      ThinkingSphinx::ActiveRecord::PropertySQLPresenter.new(
+        attribute, source.adapter, associations,
+        attribute.type_for(source.model)
+      )
+    }
+  end
+
+  def field_presenters
+    @field_presenters ||= source.fields.collect { |field|
+      ThinkingSphinx::ActiveRecord::PropertySQLPresenter.new(
+        field, source.adapter, associations
+      )
+    }
+  end
+
   def select_clause
     (
       [document_id] +
-      source.fields.collect     { |field|
-        field.to_select_sql(associations, source)
-      } +
-      source.attributes.collect { |attribute|
-        attribute.to_select_sql(associations, source)
-      }
+      field_presenters.collect(&:to_select) +
+      attribute_presenters.collect(&:to_select)
     ).compact.join(', ')
   end
 
@@ -133,12 +146,8 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
 
     (
       [quoted_primary_key] +
-      source.fields.collect     { |field|
-        field.to_group_sql(associations)
-      }.compact +
-      source.attributes.collect { |attribute|
-        attribute.to_group_sql(associations)
-      }.compact +
+      field_presenters.collect(&:to_group).compact +
+      attribute_presenters.collect(&:to_group).compact +
       source.groupings + internal_groupings
     ).join(', ')
   end
