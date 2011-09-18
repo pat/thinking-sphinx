@@ -1,17 +1,6 @@
-class ThinkingSphinx::ActiveRecord::Attribute
-  attr_reader :source, :column
-
-  def initialize(column, options = {})
-    @column, @options = column, options
-  end
-
-  def name
-    (@options[:as] || column.__name).to_s
-  end
-
-  def to_group_sql(associations)
-    column.string? ? nil : column_with_table(associations)
-  end
+class ThinkingSphinx::ActiveRecord::Attribute <
+  ThinkingSphinx::ActiveRecord::Property
+  attr_reader :column
 
   def to_select_sql(associations, source)
     "#{casted_column_with_table(associations, source)} AS #{name}"
@@ -49,12 +38,6 @@ class ThinkingSphinx::ActiveRecord::Attribute
     else
       clause
     end
-  end
-
-  def column_with_table(associations)
-    return column.__name if column.string?
-
-    "#{associations.alias_for(column.__stack)}.#{column.__name}"
   end
 
   def type_from_database_for(model)

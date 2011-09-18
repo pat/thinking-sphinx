@@ -2,7 +2,9 @@ require 'spec_helper'
 
 describe ThinkingSphinx::ActiveRecord::Field do
   let(:field)        { ThinkingSphinx::ActiveRecord::Field.new column }
-  let(:column)       { double('column', :__name => :title, :__stack => []) }
+  let(:column)       {
+    double('column', :__name => :title, :__stack => [], :string? => false)
+  }
   let(:associations) { double('associations', :alias_for => 'articles') }
   let(:source)       { double('source') }
 
@@ -23,7 +25,8 @@ describe ThinkingSphinx::ActiveRecord::Field do
 
   describe '#to_select_sql' do
     it "returns the column name as a string" do
-      field.to_select_sql(associations, source).should == 'articles.title'
+      field.to_select_sql(associations, source).
+        should == 'articles.title AS title'
     end
 
     it "gets the column's table alias from the associations object" do

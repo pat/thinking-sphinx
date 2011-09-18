@@ -5,6 +5,7 @@ module ThinkingSphinx::ActiveRecord
   #
 end
 
+require 'thinking_sphinx/active_record/property'
 require 'thinking_sphinx/active_record/associations'
 require 'thinking_sphinx/active_record/attribute'
 require 'thinking_sphinx/active_record/base'
