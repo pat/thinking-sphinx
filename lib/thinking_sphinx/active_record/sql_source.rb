@@ -105,6 +105,8 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
         @sql_attr_bool << attribute.name
       when :string
         @sql_attr_string << attribute.name
+      when :timestamp
+        @sql_attr_timestamp << attribute.name
       else
         raise "Unknown attribute type '#{attribute.type_for(model)}'"
       end

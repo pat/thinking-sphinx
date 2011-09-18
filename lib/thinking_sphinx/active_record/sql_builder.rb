@@ -98,10 +98,10 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
     (
       [document_id] +
       source.fields.collect     { |field|
-        field.to_select_sql(associations)
+        field.to_select_sql(associations, source)
       } +
       source.attributes.collect { |attribute|
-        attribute.to_select_sql(associations)
+        attribute.to_select_sql(associations, source)
       }
     ).compact.join(', ')
   end

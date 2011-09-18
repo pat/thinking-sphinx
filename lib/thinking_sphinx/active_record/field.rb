@@ -13,7 +13,7 @@ class ThinkingSphinx::ActiveRecord::Field
     column_with_table associations
   end
 
-  def to_select_sql(associations)
+  def to_select_sql(associations, source)
     if @options[:as].present?
       "#{column_with_table(associations)} AS #{@options[:as]}"
     else

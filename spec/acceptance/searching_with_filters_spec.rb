@@ -17,4 +17,18 @@ describe 'Searching with filters', :live => true do
 
     Book.search(:with => {:year => [2001, 2005]}).to_a.should == [gods, boys]
   end
+
+  it "limits results by a ranged filter" do
+    gods  = Book.create! :title => 'American Gods'
+    boys  = Book.create! :title => 'Anansi Boys'
+    grave = Book.create! :title => 'The Graveyard Book'
+
+    gods.update_attribute  :created_at, 5.days.ago
+    boys.update_attribute  :created_at, 3.days.ago
+    grave.update_attribute :created_at, 1.day.ago
+    index
+
+    Book.search(:with => {:created_at => 6.days.ago..2.days.ago}).to_a.
+      should == [gods, boys]
+  end
 end

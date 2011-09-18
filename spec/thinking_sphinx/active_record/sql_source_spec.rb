@@ -251,6 +251,15 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       source.sql_attr_string.should include('name')
     end
 
+    it "adds timestamp attributes to sql_attr_timestamp" do
+      source.attributes << double('attribute',
+        :type_for => :timestamp, :name => 'created_at')
+
+      source.render
+
+      source.sql_attr_timestamp.should include('created_at')
+    end
+
     it "adds all attributes"
     it "adds other settings"
   end

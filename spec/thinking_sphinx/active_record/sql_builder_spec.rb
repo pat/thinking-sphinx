@@ -68,7 +68,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
       end
 
       it "provides the associations object to the field when adding it" do
-        fields.first.should_receive(:to_select_sql).with(associations)
+        fields.first.should_receive(:to_select_sql).with(associations, source)
 
         builder.sql_query
       end
@@ -92,7 +92,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
           :to_group_sql  => '`created_at`')
         attributes << attribute
 
-        attribute.should_receive(:to_select_sql).with(associations)
+        attribute.should_receive(:to_select_sql).with(associations, source)
 
         builder.sql_query
       end
