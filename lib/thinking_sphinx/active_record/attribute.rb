@@ -1,4 +1,4 @@
-class ThinkingSphinx::ActiveRecord::Attribute < ThinkingSphinx::Attribute
+class ThinkingSphinx::ActiveRecord::Attribute
   attr_reader :source, :column
 
   def initialize(column, options = {})

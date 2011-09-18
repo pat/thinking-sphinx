@@ -8,7 +8,6 @@ module ThinkingSphinx
 end
 
 # Core
-require 'thinking_sphinx/attribute'
 require 'thinking_sphinx/configuration'
 require 'thinking_sphinx/index'
 require 'thinking_sphinx/search'
