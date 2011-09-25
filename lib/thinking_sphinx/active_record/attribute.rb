@@ -34,6 +34,8 @@ class ThinkingSphinx::ActiveRecord::Attribute <
     case db_type
     when :datetime
       :timestamp
+    when :text
+      :string
     else
       db_type
     end
