@@ -260,6 +260,15 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       source.sql_attr_timestamp.should include('created_at')
     end
 
+    it "adds float attributes to sql_attr_float" do
+      source.attributes << double('attribute',
+        :type_for => :float, :name => 'rating')
+
+      source.render
+
+      source.sql_attr_float.should include('rating')
+    end
+
     it "adds all attributes"
     it "adds other settings"
   end

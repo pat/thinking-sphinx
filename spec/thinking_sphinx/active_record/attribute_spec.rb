@@ -49,10 +49,22 @@ describe ThinkingSphinx::ActiveRecord::Attribute do
       attribute.type_for(model).should == :string
     end
 
-    it "detects text types from the database" do
+    it "detects text types from the database as strings" do
       db_column.stub!(:type => :text)
 
       attribute.type_for(model).should == :string
+    end
+
+    it "detects float types from the database" do
+      db_column.stub!(:type => :float)
+
+      attribute.type_for(model).should == :float
+    end
+
+    it "detects decimal types from the database as floats" do
+      db_column.stub!(:type => :decimal)
+
+      attribute.type_for(model).should == :float
     end
   end
 end

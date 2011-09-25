@@ -36,6 +36,8 @@ class ThinkingSphinx::ActiveRecord::Attribute <
       :timestamp
     when :text
       :string
+    when :decimal
+      :float
     else
       db_type
     end
