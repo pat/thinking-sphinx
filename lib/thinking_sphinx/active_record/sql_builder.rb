@@ -66,7 +66,11 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
   end
 
   def associations
-    @associations ||= ThinkingSphinx::ActiveRecord::Associations.new(model)
+    @associations ||= ThinkingSphinx::ActiveRecord::Associations.new(model).tap do |assocs|
+      source.associations.each do |association|
+        assocs.add_join_to association.stack
+      end
+    end
   end
 
   def quote_column(column)

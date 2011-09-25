@@ -1,6 +1,6 @@
 class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
   attr_reader :model, :database_settings, :options, :conditions, :groupings
-  attr_accessor :fields, :attributes
+  attr_accessor :fields, :attributes, :associations
 
   def self.internal_attributes(model)
     [
@@ -31,6 +31,7 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
 
     @fields            = []
     @attributes        = self.class.internal_attributes(model)
+    @associations      = []
     @conditions        = []
     @groupings         = []
 

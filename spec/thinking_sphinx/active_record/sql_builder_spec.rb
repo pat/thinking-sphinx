@@ -6,7 +6,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
   let(:source)       { double('source', :model => model, :offset => 3,
     :fields => fields, :attributes => attributes, :disable_range? => false,
     :delta_processor => nil, :conditions => [], :groupings => [],
-    :adapter => adapter) }
+    :adapter => adapter, :associations => []) }
   let(:model)        { double('model', :primary_key_for_sphinx => :id,
     :connection => connection, :descends_from_active_record? => true,
     :column_names => [], :inheritance_column => 'type', :unscoped => relation,
@@ -34,6 +34,18 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
   end
 
   describe 'sql_query' do
+    before :each do
+      source.stub! :type => 'mysql'
+    end
+
+    it "adds source associations to the joins of the query" do
+      source.associations << double('association', :stack => [:user, :posts])
+
+      associations.should_receive(:add_join_to).with([:user, :posts])
+
+      builder.sql_query
+    end
+
     context 'MySQL adapter' do
       before :each do
         source.stub! :type => 'mysql'

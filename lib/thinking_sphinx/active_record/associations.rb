@@ -6,6 +6,10 @@ class ThinkingSphinx::ActiveRecord::Associations
     @joins = {}
   end
 
+  def add_join_to(stack)
+    join_for(stack)
+  end
+
   def aggregate_for?(stack)
     return false if stack.empty?
 

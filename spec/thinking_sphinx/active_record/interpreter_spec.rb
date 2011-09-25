@@ -6,7 +6,9 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     double('index', :sources => sources, :model => model, :offset => 17)
   }
   let(:sources) { double('sources', :<< => source) }
-  let(:source)  { Struct.new(:attributes, :fields).new([], []) }
+  let(:source)  {
+    Struct.new(:attributes, :fields, :associations).new([], [], [])
+  }
   let(:block)   { Proc.new { } }
 
   describe '.translate!' do
@@ -145,6 +147,60 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
 
       source.fields.select { |saved_field|
         saved_field == field
+      }.length.should == 2
+    end
+  end
+
+  describe '#join' do
+    let(:instance)    {
+      ThinkingSphinx::ActiveRecord::Interpreter.new index, block
+    }
+    let(:column)      { double('column') }
+    let(:association) { double('association') }
+
+    before :each do
+      ThinkingSphinx::ActiveRecord::SQLSource.stub! :new => source
+      ThinkingSphinx::ActiveRecord::Association.stub! :new => association
+    end
+
+    it "adds a source to the index" do
+      index.sources.should_receive(:<<).with(source)
+
+      instance.join column
+    end
+
+    it "only adds a single source for the given context" do
+      index.sources.should_receive(:<<).once
+
+      instance.join column
+      instance.join column
+    end
+
+    it "creates the source with the index's offset" do
+      ThinkingSphinx::ActiveRecord::SQLSource.should_receive(:new).
+        with(model, :offset => 17).and_return(source)
+
+      instance.join column
+    end
+
+    it "creates a new association with the provided column" do
+      ThinkingSphinx::ActiveRecord::Association.should_receive(:new).
+        with(column).and_return(association)
+
+      instance.join column
+    end
+
+    it "adds an association to the source" do
+      instance.join column
+
+      source.associations.should include(association)
+    end
+
+    it "adds multiple fields when passed multiple columns" do
+      instance.join column, column
+
+      source.associations.select { |saved_assoc|
+        saved_assoc == association
       }.length.should == 2
     end
   end

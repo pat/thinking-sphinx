@@ -25,6 +25,12 @@ class ThinkingSphinx::ActiveRecord::Interpreter < BlankSlate
     }
   end
 
+  def join(*columns)
+    __source.associations += columns.collect { |column|
+      ThinkingSphinx::ActiveRecord::Association.new column
+    }
+  end
+
   private
 
   def method_missing(method, *args)

@@ -33,6 +33,49 @@ describe ThinkingSphinx::ActiveRecord::Associations do
     join.active_record.reflections[:posts] = sub_reflection
   end
 
+  describe '#add_join_to' do
+    it "adds just one join for a stack with a single association" do
+      ActiveRecord::Associations::JoinDependency::JoinAssociation.unstub :new
+      ActiveRecord::Associations::JoinDependency::JoinAssociation.
+        should_receive(:new).with(reflection, base, join_base).once.
+        and_return(join)
+
+      associations.add_join_to([:user])
+    end
+
+    it "does not duplicate joins when given the same stack twice" do
+      ActiveRecord::Associations::JoinDependency::JoinAssociation.unstub :new
+      ActiveRecord::Associations::JoinDependency::JoinAssociation.
+        should_receive(:new).once.and_return(join)
+
+      associations.add_join_to([:user])
+      associations.add_join_to([:user])
+    end
+
+    context 'multiple joins' do
+      it "adds two joins for a stack with two associations" do
+        ActiveRecord::Associations::JoinDependency::JoinAssociation.unstub :new
+        ActiveRecord::Associations::JoinDependency::JoinAssociation.
+          should_receive(:new).with(reflection, base, join_base).once.
+          and_return(join)
+        ActiveRecord::Associations::JoinDependency::JoinAssociation.
+          should_receive(:new).with(sub_reflection, base, join).once.
+          and_return(sub_join)
+
+        associations.add_join_to([:user, :posts])
+      end
+
+      it "extends upon existing joins when given stacks where parts are already mapped" do
+        ActiveRecord::Associations::JoinDependency::JoinAssociation.unstub :new
+        ActiveRecord::Associations::JoinDependency::JoinAssociation.
+          should_receive(:new).twice.and_return(join, sub_join)
+
+        associations.add_join_to([:user])
+        associations.add_join_to([:user, :posts])
+      end
+    end
+  end
+
   describe '#aggregate_for?' do
     it "is false when the stack is empty" do
       associations.aggregate_for?([]).should be_false
