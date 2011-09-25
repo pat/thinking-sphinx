@@ -26,7 +26,11 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def controller
-    @controller ||= Riddle::Controller.new self, configuration_file
+    @controller ||= Riddle::Controller.new(self, configuration_file).tap do |rc|
+      if settings['bin_path'].present?
+        rc.bin_path = settings['bin_path'].gsub(/([^\/])$/, '\1/')
+      end
+    end
   end
 
   def indices_for_reference(reference)
@@ -49,5 +53,19 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 
   def render_to_file
     open(configuration_file, 'w') { |file| file.write render }
+  end
+
+  private
+
+  def settings
+    @settings ||= if File.exists?(settings_file)
+      YAML.load(ERB.new(File.read(settings_file)).result)[Rails.env]
+    else
+      {}
+    end
+  end
+
+  def settings_file
+    Rails.root.join 'config', 'sphinx.yml'
   end
 end

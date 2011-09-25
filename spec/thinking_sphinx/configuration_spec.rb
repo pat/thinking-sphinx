@@ -42,6 +42,18 @@ describe ThinkingSphinx::Configuration do
       config.controller
       config.controller
     end
+
+    it "sets the bin path from the sphinx.yml file" do
+      write_configuration('bin_path' => '/foo/bar/bin/')
+
+      config.controller.bin_path.should == '/foo/bar/bin/'
+    end
+
+    it "appends a backslash to the bin_path if appropriate" do
+      write_configuration('bin_path' => '/foo/bar/bin')
+
+      config.controller.bin_path.should == '/foo/bar/bin/'
+    end
   end
 
   describe '#index_paths' do
