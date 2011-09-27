@@ -157,4 +157,36 @@ describe ThinkingSphinx::Configuration do
       config.render_to_file
     end
   end
+
+  describe '#searchd' do
+    describe '#address' do
+      it "defaults to 127.0.0.1" do
+        config.searchd.address.should == '127.0.0.1'
+      end
+
+      it "respects the address setting" do
+        write_configuration('address' => '10.11.12.13')
+
+        config.searchd.address.should == '10.11.12.13'
+      end
+    end
+
+    describe '#mysql41' do
+      it "defaults to 9306" do
+        config.searchd.mysql41.should == 9306
+      end
+
+      it "respects the port setting" do
+        write_configuration('port' => 9313)
+
+        config.searchd.mysql41.should == 9313
+      end
+
+      it "respects the mysql41 setting" do
+        write_configuration('mysql41' => 9307)
+
+        config.searchd.mysql41.should == 9307
+      end
+    end
+  end
 end

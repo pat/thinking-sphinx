@@ -13,6 +13,9 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     searchd.pid_file  = Rails.root.join('log', "#{Rails.env}.sphinx.pid")
     searchd.log       = Rails.root.join('log', "#{Rails.env}.searchd.log")
     searchd.query_log = Rails.root.join('log', "#{Rails.env}.searchd.query.log")
+    searchd.address   = settings['address']
+    searchd.address   = '127.0.0.1' unless searchd.address.present?
+    searchd.mysql41   = settings['mysql41'] || settings['port'] || 9306
 
     @offsets = {}
   end
