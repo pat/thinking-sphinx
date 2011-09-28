@@ -51,6 +51,7 @@ namespace :thinking_sphinx do
         puts "Started successfully (pid #{sphinx_pid})."
       else
         puts "Failed to start searchd daemon. Check #{config.searchd_log_file}"
+        puts "Be sure to run thinking_sphinx:index before thinking_sphinx:start"
       end
     end
   end
