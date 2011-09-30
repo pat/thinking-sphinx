@@ -110,7 +110,7 @@ namespace :thinking_sphinx do
   desc "Run Sphinx in foreground"
   task :start_foreground => :app_env do
     config = ThinkingSphinx::Configuration.instance
-    exec "#{ts.bin_path}#{ts.searchd_binary_name} --pidfile --config #{ts.config_file} --nodetach"
+    exec "#{config.bin_path}#{config.searchd_binary_name} --pidfile --config #{config.config_file} --nodetach"
   end
 end
 
@@ -136,6 +136,8 @@ namespace :ts do
   task :config  => "thinking_sphinx:configure"
   desc "Stop Sphinx (if it's running), rebuild the indexes, and start Sphinx"
   task :rebuild => "thinking_sphinx:rebuild"
+  desc "Run Sphinx in foreground"
+  task :start_foreground => "thinking_sphinx:start_foreground"
 end
 
 def sphinx_pid
