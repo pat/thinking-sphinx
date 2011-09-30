@@ -110,6 +110,12 @@ namespace :thinking_sphinx do
     Rake::Task["thinking_sphinx:index"].invoke
     Rake::Task["thinking_sphinx:start"].invoke
   end
+  
+  desc "Run Sphinx in foreground"
+  task :start_foreground => :app_env do
+    config = ThinkingSphinx::Configuration.instance
+    exec "#{ts.bin_path}#{ts.searchd_binary_name} --pidfile --config #{ts.config_file} --nodetach"
+  end
 end
 
 namespace :ts do
