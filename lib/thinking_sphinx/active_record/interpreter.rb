@@ -31,6 +31,13 @@ class ThinkingSphinx::ActiveRecord::Interpreter < BlankSlate
     }
   end
 
+  def set_property(properties)
+    properties.each do |key, value|
+      @index.send("#{key}=", value)   if @index.class.settings.include?(key)
+      __source.send("#{key}=", value) if __source.class.settings.include?(key)
+    end
+  end
+
   private
 
   def method_missing(method, *args)

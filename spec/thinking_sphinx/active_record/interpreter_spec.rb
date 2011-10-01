@@ -1,6 +1,9 @@
 require 'spec_helper'
 
 describe ThinkingSphinx::ActiveRecord::Interpreter do
+  let(:instance) {
+    ThinkingSphinx::ActiveRecord::Interpreter.new index, block
+  }
   let(:model)   { double('model') }
   let(:index)   {
     double('index', :sources => sources, :model => model, :offset => 17)
@@ -10,6 +13,10 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     Struct.new(:attributes, :fields, :associations).new([], [], [])
   }
   let(:block)   { Proc.new { } }
+
+  before :each do
+    ThinkingSphinx::ActiveRecord::SQLSource.stub! :new => source
+  end
 
   describe '.translate!' do
     let(:instance) { double('interpreter', :translate! => true) }
@@ -30,14 +37,10 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
   end
 
   describe '#has' do
-    let(:instance)   {
-      ThinkingSphinx::ActiveRecord::Interpreter.new index, block
-    }
-    let(:column)     { double('column') }
-    let(:attribute)  { double('attribute') }
+    let(:column)    { double('column') }
+    let(:attribute) { double('attribute') }
 
     before :each do
-      ThinkingSphinx::ActiveRecord::SQLSource.stub! :new => source
       ThinkingSphinx::ActiveRecord::Attribute.stub! :new => attribute
     end
 
@@ -91,14 +94,10 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
   end
 
   describe '#indexes' do
-    let(:instance) {
-      ThinkingSphinx::ActiveRecord::Interpreter.new index, block
-    }
-    let(:column)   { double('column') }
-    let(:field)    { double('field') }
+    let(:column) { double('column') }
+    let(:field)  { double('field') }
 
     before :each do
-      ThinkingSphinx::ActiveRecord::SQLSource.stub! :new => source
       ThinkingSphinx::ActiveRecord::Field.stub! :new => field
     end
 
@@ -152,14 +151,10 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
   end
 
   describe '#join' do
-    let(:instance)    {
-      ThinkingSphinx::ActiveRecord::Interpreter.new index, block
-    }
     let(:column)      { double('column') }
     let(:association) { double('association') }
 
     before :each do
-      ThinkingSphinx::ActiveRecord::SQLSource.stub! :new => source
       ThinkingSphinx::ActiveRecord::Association.stub! :new => association
     end
 
@@ -206,10 +201,7 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
   end
 
   describe '#method_missing' do
-    let(:instance) {
-      ThinkingSphinx::ActiveRecord::Interpreter.new index, block
-    }
-    let(:column)   { double('column') }
+    let(:column) { double('column') }
 
     before :each do
       ThinkingSphinx::ActiveRecord::Column.stub!(:new => column)
@@ -224,6 +216,53 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
         with(:users, :posts, :subject).and_return(column)
 
       instance.users(:posts, :subject)
+    end
+  end
+
+  describe '#set_property' do
+    before :each do
+      index.class.stub  :settings => [:morphology]
+      source.class.stub :settings => [:mysql_ssl_cert]
+    end
+
+    context 'index settings' do
+      it "sets the provided setting" do
+        index.should_receive(:morphology=).with('stem_en')
+
+        instance.set_property :morphology => 'stem_en'
+      end
+    end
+
+    context 'source settings' do
+      before :each do
+        source.stub :mysql_ssl_cert= => true
+      end
+
+      it "adds a source to the index" do
+        index.sources.should_receive(:<<).with(source)
+
+        instance.set_property :mysql_ssl_cert => 'private.cert'
+      end
+
+      it "only adds a single source for the given context" do
+        index.sources.should_receive(:<<).once
+
+        instance.set_property :mysql_ssl_cert => 'private.cert'
+        instance.set_property :mysql_ssl_cert => 'private.cert'
+      end
+
+      it "creates the source with the index's offset" do
+        ThinkingSphinx::ActiveRecord::SQLSource.should_receive(:new).
+          with(model, :offset => 17).and_return(source)
+
+        instance.set_property :mysql_ssl_cert => 'private.cert'
+      end
+
+      it "sets the provided setting" do
+        source.should_receive(:mysql_ssl_cert=).with('private.cert')
+
+        instance.set_property :mysql_ssl_cert => 'private.cert'
+      end
     end
   end
 
