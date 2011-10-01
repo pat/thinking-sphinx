@@ -201,3 +201,4 @@ Since I first released this library, there's been quite a few people who have su
 * Martin Gordon
 * Aaron Gibralter
 * Pete Deffendol
+* Tony Pitale

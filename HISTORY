@@ -1,4 +1,5 @@
 Edge:
+* Making error message when daemon fails to start a little more helpful (Tony Pitale).
 * Adding ThinkingSphinx::Search#last_page? for Kaminari (Pete Deffendol).
 * If ENV['NODETACH'] is set when calling ts:start, pass that flag through to Riddle to start Sphinx in the foreground (Aaron Gibralter).
 * Catch and report all errors when models are loaded (Martin Gordon).
