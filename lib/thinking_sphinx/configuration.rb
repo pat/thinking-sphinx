@@ -58,14 +58,15 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     open(configuration_file, 'w') { |file| file.write render }
   end
 
+  def settings
+    @settings ||= File.exists?(settings_file) ? settings_to_hash : {}
+  end
+
   private
 
-  def settings
-    @settings ||= if File.exists?(settings_file)
-      YAML.load(ERB.new(File.read(settings_file)).result)[Rails.env]
-    else
-      {}
-    end
+  def settings_to_hash
+    contents = YAML.load(ERB.new(File.read(settings_file)).result)
+    contents ? contents[Rails.env] : {}
   end
 
   def settings_file

@@ -189,4 +189,51 @@ describe ThinkingSphinx::Configuration do
       end
     end
   end
+
+  describe '#settings' do
+    context 'YAML file exists' do
+      before :each do
+        File.stub :exists? => true
+      end
+
+      it "reads from the YAML file" do
+        File.should_receive(:read).and_return('')
+
+        config.settings
+      end
+
+      it "uses the settings for the given environment" do
+        File.stub :read => {
+          'test'    => {'foo' => 'bar'},
+          'staging' => {'baz' => 'qux'}
+        }.to_yaml
+        Rails.stub :env => 'staging'
+
+        config.settings['baz'].should == 'qux'
+      end
+
+      it "remembers the file contents" do
+        File.should_receive(:read).and_return('')
+
+        config.settings
+        config.settings
+      end
+    end
+
+    context 'YAML file does not exist' do
+      before :each do
+        File.stub :exists? => false
+      end
+
+      it "does not read the file" do
+        File.should_not_receive(:read)
+
+        config.settings
+      end
+
+      it "returns an empty hash" do
+        config.settings.should == {}
+      end
+    end
+  end
 end

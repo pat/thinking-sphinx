@@ -10,7 +10,7 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
   end
 
   def interpret_definition!
-    return if @interpreted_definition
+    return if @interpreted_definition || @definition_block.nil?
 
     ThinkingSphinx::ActiveRecord::Interpreter.translate! self, @definition_block
     @interpreted_definition = true
@@ -25,6 +25,11 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
   end
 
   def render
+    self.class.settings.each do |setting|
+      value = config.settings[setting.to_s]
+      send("#{setting}=", value) unless value.nil?
+    end
+
     interpret_definition!
 
     @path ||= config.indices_location.join(name)

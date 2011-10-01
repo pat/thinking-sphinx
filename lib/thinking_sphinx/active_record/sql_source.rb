@@ -62,6 +62,11 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
   end
 
   def render
+    self.class.settings.each do |setting|
+      value = config.settings[setting.to_s]
+      send("#{setting}=", value) unless value.nil?
+    end
+
     prepare_for_render unless @prepared
 
     super
@@ -79,6 +84,14 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
   end
 
   private
+
+  def builder
+    @builder ||= ThinkingSphinx::ActiveRecord::SQLBuilder.new self
+  end
+
+  def config
+    ThinkingSphinx::Configuration.instance
+  end
 
   def name_suffix
     delta? ? 'delta' : 'core'
@@ -115,20 +128,11 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
       end
     end
 
-    # config.options.each do |key, value|
-    #   next unless self.respond_to?("#{key}=") && self.send(key).nil?
-    #   self.send("#{key}=", value)
-    # end
-
     @sql_query       = builder.sql_query
     @sql_query_range = builder.sql_query_range
     @sql_query_info  = builder.sql_query_info
     @sql_query_pre  += builder.sql_query_pre
 
     @prepared = true
-  end
-
-  def builder
-    @builder ||= ThinkingSphinx::ActiveRecord::SQLBuilder.new self
   end
 end

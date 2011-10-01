@@ -103,9 +103,11 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
   describe '#render' do
     let(:builder) { double('builder', :sql_query_pre => []).as_null_object }
+    let(:config)  { double('config', :settings => {}) }
 
     before :each do
       ThinkingSphinx::ActiveRecord::SQLBuilder.stub! :new => builder
+      ThinkingSphinx::Configuration.stub :instance => config
     end
 
     it "sets the sql_host setting from the model's database settings" do
@@ -270,7 +272,15 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
     end
 
     it "adds all attributes"
-    it "adds other settings"
+
+    it "adds relevant settings from sphinx.yml" do
+      config.settings['mysql_ssl_cert'] = 'foo.cert'
+      config.settings['morphology']     = 'stem_en' # should be ignored
+
+      source.render
+
+      source.mysql_ssl_cert.should == 'foo.cert'
+    end
   end
 
   describe '#type' do

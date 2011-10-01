@@ -1,7 +1,15 @@
 require 'spec_helper'
 
 describe ThinkingSphinx::ActiveRecord::Index do
-  let(:index) { ThinkingSphinx::ActiveRecord::Index.new :user }
+  let(:index)        { ThinkingSphinx::ActiveRecord::Index.new :user }
+  let(:indices_path) { double('indices path', :join => '') }
+  let(:config)       {
+    double('config', :settings => {}, :indices_location => indices_path)
+  }
+
+  before :each do
+    ThinkingSphinx::Configuration.stub :instance => config
+  end
 
   describe '#interpret_definition!' do
     let(:block) { double('block') }
@@ -44,11 +52,33 @@ describe ThinkingSphinx::ActiveRecord::Index do
     end
   end
 
-  describe '#offset' do
-    let(:config) { double('config', :next_offset => 4) }
+  describe '#morphology' do
+    context 'with a render' do
+      it "defaults to nil" do
+        begin
+          index.render
+        rescue Riddle::Configuration::ConfigurationError
+        end
 
+        index.morphology.should be_nil
+      end
+
+      it "reads from the settings file if provided" do
+        config.settings['morphology'] = 'stem_en'
+
+        begin
+          index.render
+        rescue Riddle::Configuration::ConfigurationError
+        end
+
+        index.morphology.should == 'stem_en'
+      end
+    end
+  end
+
+  describe '#offset' do
     before :each do
-      ThinkingSphinx::Configuration.stub!(:instance => config)
+      config.stub :next_offset => 4
     end
 
     it "uses the next offset value from the configuration" do
