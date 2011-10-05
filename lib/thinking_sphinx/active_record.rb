@@ -29,7 +29,7 @@ module ThinkingSphinx
                 @sphinx_primary_key_attribute ||
                 superclass.primary_key_for_sphinx
               else
-                primary_key
+                primary_key || 'id'
               end
             end
           end
