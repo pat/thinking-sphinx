@@ -1,4 +1,5 @@
 Edge:
+* Adding smart default (id) for primary key column name.
 * Making error message when daemon fails to start a little more helpful (Tony Pitale).
 * Actually looking at Rails engines paths for models (Eduardo Casanova).
 * Adding ThinkingSphinx::Search#last_page? for Kaminari (Pete Deffendol).
