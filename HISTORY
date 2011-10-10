@@ -1,19 +1,11 @@
-1.4.8 - October 10th 2011
-* Adding smart default (id) for primary key column name.
-* Making error message when daemon fails to start a little more helpful (Tony Pitale).
+2.0.8 - October 10th 2011
 * Actually looking at Rails engines paths for models (Eduardo Casanova).
-* Adding ThinkingSphinx::Search#last_page? for Kaminari (Pete Deffendol).
 * Ensuring associations for acts-as-taggable-on are tweaked for Rails 3.1 (Anthony).
 * Bug fix for association collection proxies in Rails 3.1 (Pavel Forkert).
 * References all known Rails model paths - better for Rails 3 Engines.
-* If ENV['NODETACH'] is set when calling ts:start, pass that flag through to Riddle to start Sphinx in the foreground (Aaron Gibralter).
-* Catch and report all errors when models are loaded (Martin Gordon).
-* Bringing in builder gem's BlankSlate for our Builder - better at keeping global Rake methods out of the way.
-* Use PostgreSQL's array_agg function if it exists, instead of array_accum (PG v8.4 or newer).
 * Don't reload I18n anymore - the load order isn't an issue in Rails 3 or 3.1.
 * Fixing attribute source queries for Rails 3.1.
-* Shuffle multiple Sphinx addresses by default, but allow that to be turned off (Ngan Pham).
-* Fix string attributes when using Sphinx 2.0.1 and bin_path.
+* 1.4.8 changes
 
 2.0.7 - August 29th 2011
 * Making sure lib directory is actually a part of the gem. Oops.
@@ -54,6 +46,17 @@
 * Only load Thinking Sphinx if ActiveRecord is loaded (Matthew Higgins).
 * Rails 3 support.
 * 1.4.0 changes.
+
+1.4.8 - October 10th 2011
+* Adding smart default (id) for primary key column name.
+* Making error message when daemon fails to start a little more helpful (Tony Pitale).
+* Adding ThinkingSphinx::Search#last_page? for Kaminari (Pete Deffendol).
+* If ENV['NODETACH'] is set when calling ts:start, pass that flag through to Riddle to start Sphinx in the foreground (Aaron Gibralter).
+* Catch and report all errors when models are loaded (Martin Gordon).
+* Bringing in builder gem's BlankSlate for our Builder - better at keeping global Rake methods out of the way.
+* Use PostgreSQL's array_agg function if it exists, instead of array_accum (PG v8.4 or newer).
+* Shuffle multiple Sphinx addresses by default, but allow that to be turned off (Ngan Pham).
+* Fix string attributes when using Sphinx 2.0.1 and bin_path.
 
 1.4.7 - August 28th 2011
 * Don't search for objects when updating attributes on every save - if the object isn't there, then the error will be caught anyway.
