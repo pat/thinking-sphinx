@@ -9,7 +9,7 @@ module ThinkingSphinx::ActiveRecord::Base
       superclass.respond_to?(:primary_key_for_sphinx?) &&
       superclass.primary_key_for_sphinx? &&
       superclass.primary_key_for_sphinx
-    ) || primary_key
+    ) || primary_key || :id
   end
 
   def primary_key_for_sphinx?

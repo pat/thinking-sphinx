@@ -49,5 +49,11 @@ describe ThinkingSphinx::ActiveRecord::Base do
       model.set_primary_key_for_sphinx :parent_sphinx_id
       subclassed_model.primary_key_for_sphinx.should == :parent_sphinx_id
     end
+
+    it "defaults to id if no primary key is set" do
+      model.stub!(:primary_key => nil)
+
+      model.primary_key_for_sphinx.should == :id
+    end
   end
 end
