@@ -44,12 +44,20 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     @offsets[reference] ||= @offsets.keys.count
   end
 
-  def render
+  def preload_indices
+    return if @preloaded_indices
+
     index_paths.each do |path|
       Dir["#{path}/**/*.rb"].each do |file|
         ActiveSupport::Dependencies.require_or_load file
       end
     end
+
+    @preloaded_indices = true
+  end
+
+  def render
+    preload_indices
 
     super
   end
@@ -66,7 +74,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 
   def settings_to_hash
     contents = YAML.load(ERB.new(File.read(settings_file)).result)
-    contents ? contents[Rails.env] : {}
+    contents.try(:[], Rails.env) || {}
   end
 
   def settings_file

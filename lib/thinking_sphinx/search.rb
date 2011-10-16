@@ -155,16 +155,17 @@ class ThinkingSphinx::Search < Array
 
   def sphinxql_select
     Riddle::Query::Select.new.tap do |select|
-      select.from(*indices)
-      select.matching(extended_query) if extended_query.present?
-      select.where(filters) if filters.any?
-      select.order_by(order_clause) if order_clause.present?
-      select.offset(offset)
-      select.limit(per_page)
+      select.from *indices.collect { |index| "`#{index}`" }
+      select.matching extended_query if extended_query.present?
+      select.where filters if filters.any?
+      select.order_by order_clause if order_clause.present?
+      select.offset offset
+      select.limit per_page
     end
   end
 
   def indices
+    config.preload_indices
     return config.indices.collect(&:name) if classes.empty?
 
     classes.collect { |klass|

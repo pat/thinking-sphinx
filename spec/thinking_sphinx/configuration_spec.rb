@@ -107,6 +107,50 @@ describe ThinkingSphinx::Configuration do
     end
   end
 
+  describe '#preload_indices' do
+    it "searches each index path for ruby files" do
+      config.index_paths.replace ['/path/to/indices', '/path/to/other/indices']
+
+      Dir.should_receive(:[]).with('/path/to/indices/**/*.rb').once.
+        and_return([])
+      Dir.should_receive(:[]).with('/path/to/other/indices/**/*.rb').once.
+        and_return([])
+
+      config.preload_indices
+    end
+
+    it "loads each file returned" do
+      config.index_paths.replace ['/path/to/indices']
+      Dir.stub! :[] => [
+        '/path/to/indices/foo_index.rb',
+        '/path/to/indices/bar_index.rb'
+      ]
+
+      ActiveSupport::Dependencies.should_receive(:require_or_load).
+        with('/path/to/indices/foo_index.rb').once
+      ActiveSupport::Dependencies.should_receive(:require_or_load).
+        with('/path/to/indices/bar_index.rb').once
+
+      config.preload_indices
+    end
+
+    it "does not double-load indices" do
+      config.index_paths.replace ['/path/to/indices']
+      Dir.stub! :[] => [
+        '/path/to/indices/foo_index.rb',
+        '/path/to/indices/bar_index.rb'
+      ]
+
+      ActiveSupport::Dependencies.should_receive(:require_or_load).
+        with('/path/to/indices/foo_index.rb').once
+      ActiveSupport::Dependencies.should_receive(:require_or_load).
+        with('/path/to/indices/bar_index.rb').once
+
+      config.preload_indices
+      config.preload_indices
+    end
+  end
+
   describe '#render' do
     before :each do
       config.searchd.stub! :render => 'searchd { }'
@@ -136,6 +180,22 @@ describe ThinkingSphinx::Configuration do
         with('/path/to/indices/bar_index.rb').once
 
       config.render
+    end
+
+    it "does not double-load indices" do
+      config.index_paths.replace ['/path/to/indices']
+      Dir.stub! :[] => [
+        '/path/to/indices/foo_index.rb',
+        '/path/to/indices/bar_index.rb'
+      ]
+
+      ActiveSupport::Dependencies.should_receive(:require_or_load).
+        with('/path/to/indices/foo_index.rb').once
+      ActiveSupport::Dependencies.should_receive(:require_or_load).
+        with('/path/to/indices/bar_index.rb').once
+
+      config.preload_indices
+      config.preload_indices
     end
   end
 
@@ -217,6 +277,13 @@ describe ThinkingSphinx::Configuration do
 
         config.settings
         config.settings
+      end
+
+      it "returns an empty hash when no settings for the environment exist" do
+        File.stub :read => {'test' => {'foo' => 'bar'}}.to_yaml
+        Rails.stub :env => 'staging'
+
+        config.settings.should == {}
       end
     end
 

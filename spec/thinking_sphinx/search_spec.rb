@@ -4,7 +4,7 @@ describe ThinkingSphinx::Search do
   let(:search)       { ThinkingSphinx::Search.new }
   let(:config)       {
     double('config', :searchd => searchd, :indices_for_reference => [index],
-      :indices => indices)
+      :indices => indices, :preload_indices => true)
   }
   let(:searchd)      { double('searchd', :address => nil, :mysql41 => 101) }
   let(:connection)   { double('connection') }
@@ -184,15 +184,21 @@ describe ThinkingSphinx::Search do
       search.populate
     end
 
+    it "ensures the indices are loaded" do
+      config.should_receive(:preload_indices)
+
+      search.populate
+    end
+
     it "uses all indices if not scoped to any models" do
-      sphinx_sql.should_receive(:from).with('article_core', 'user_core').
+      sphinx_sql.should_receive(:from).with('`article_core`', '`user_core`').
         and_return(sphinx_sql)
 
       search.populate
     end
 
     it "uses indices for the given classes" do
-      sphinx_sql.should_receive(:from).with('article_core').
+      sphinx_sql.should_receive(:from).with('`article_core`').
         and_return(sphinx_sql)
 
       ThinkingSphinx::Search.new('', :classes => [model]).populate
