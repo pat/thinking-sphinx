@@ -13,7 +13,7 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
   end
 
   def to_select
-    "#{casted_column_with_table} AS #{property.name}"
+    "#{casted_column_with_table} AS #{adapter.quote property.name}"
   end
 
   private
@@ -36,7 +36,7 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
   def column_with_table(column)
     return column.__name if column.string?
 
-    "#{associations.alias_for(column.__stack)}.#{column.__name}"
+    "#{associations.alias_for(column.__stack)}.#{adapter.quote column.__name}"
   end
 
   def columns_with_table

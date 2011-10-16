@@ -6,6 +6,10 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
     double('associations', :alias_for => 'articles', :aggregate_for? => false)
   }
 
+  before :each do
+    adapter.stub(:quote) { |column| column }
+  end
+
   context 'with a field' do
     let(:presenter) {
       ThinkingSphinx::ActiveRecord::PropertySQLPresenter.new(
