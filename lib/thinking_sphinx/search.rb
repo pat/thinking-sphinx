@@ -202,3 +202,7 @@ class ThinkingSphinx::Search < Array
     }.flatten
   end
 end
+
+require 'thinking_sphinx/search/geodist'
+
+ThinkingSphinx::Search.send :include, ThinkingSphinx::Search::Geodist

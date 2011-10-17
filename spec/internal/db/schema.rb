@@ -14,6 +14,12 @@ ActiveRecord::Schema.define do
     t.timestamps
   end
 
+  create_table(:cities, :force => true) do |t|
+    t.string :name
+    t.float  :lat
+    t.float  :lng
+  end
+
   create_table(:users, :force => true) do |t|
     t.string :name
     t.timestamps
