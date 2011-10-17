@@ -64,10 +64,8 @@ class ThinkingSphinx::Search < Array
   def populate
     return if @populated
 
-    @raw = connection.query(sphinxql_select.to_sql)
-    @array.replace @raw.collect { |row|
-      row['sphinx_internal_class'].constantize.find row['sphinx_internal_id']
-    }
+    results_for_models # load now to avoid segfaults
+    @array.replace raw.collect { |row| result_for_row row }
     @populated = true
   end
 
@@ -151,6 +149,37 @@ class ThinkingSphinx::Search < Array
     else
       @options[:order]
     end
+  end
+
+  def raw
+    @raw ||= connection.query(sphinxql_select.to_sql)
+  end
+
+  def result_for_row(row)
+    results_for_models[row['sphinx_internal_class']].detect { |record|
+      record.id == row['sphinx_internal_id']
+    }
+  end
+
+  def result_ids_for_model(model_name)
+    raw.select { |row|
+      row['sphinx_internal_class'] == model_name
+    }.collect { |row|
+      row['sphinx_internal_id']
+    }
+  end
+
+  def result_model_names
+    @result_model_names ||= raw.collect { |row|
+      row['sphinx_internal_class']
+    }.uniq
+  end
+
+  def results_for_models
+    @results_for_models ||= result_model_names.inject({}) { |hash, name|
+      hash[name] = name.constantize.find result_ids_for_model(name)
+      hash
+    }
   end
 
   def sphinxql_select

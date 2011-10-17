@@ -47,13 +47,19 @@ describe ThinkingSphinx::Search do
 
   describe '#empty?' do
     it "returns false if there is anything in the data set" do
-      results.stub!(:collect => [{}])
+      instance   = double('instance', :id => 12)
+      model      = double('model', :find => [instance])
+      model_name = double('model name', :constantize => model)
+      results << {
+        'sphinx_internal_class' => model_name,
+        'sphinx_internal_id' => 12
+      }
 
       search.should_not be_empty
     end
 
     it "returns true if the data set is empty" do
-      results.stub!(:collect => [])
+      results.clear
 
       search.should be_empty
     end
@@ -253,16 +259,65 @@ describe ThinkingSphinx::Search do
 
     it "translates records to ActiveRecord objects" do
       model_name = double('article', :constantize => model)
-      instance   = double('instance')
+      instance   = double('instance', :id => 24)
       connection.stub! :query => [
         {'sphinx_internal_id' => 24, 'sphinx_internal_class' => model_name}
       ]
-      model.stub!(:find => instance)
+      model.stub!(:find => [instance])
 
       search = ThinkingSphinx::Search.new('', :classes => [model])
       search.populate
 
       search.first.should == instance
+    end
+
+    it "only queries the model once for the given search results" do
+      model_name = double('article', :constantize => model)
+      instance   = double('instance', :id => 24)
+      connection.stub! :query => [
+        {'sphinx_internal_id' => 24, 'sphinx_internal_class' => model_name},
+        {'sphinx_internal_id' => 42, 'sphinx_internal_class' => model_name}
+      ]
+
+      model.should_receive(:find).once.and_return([instance])
+
+      search = ThinkingSphinx::Search.new('', :classes => [model])
+      search.populate
+    end
+
+    it "handles multiple models" do
+      article_model = double('article model')
+      article_name  = double('article name', :constantize => article_model)
+      article       = double('article instance', :id => 24)
+
+      user_model    = double('user model')
+      user_name     = double('user name', :constantize => user_model)
+      user          = double('user instance', :id => 12)
+
+      connection.stub! :query => [
+        {'sphinx_internal_id' => 24, 'sphinx_internal_class' => article_name},
+        {'sphinx_internal_id' => 12, 'sphinx_internal_class' => user_name}
+      ]
+
+      article_model.should_receive(:find).once.and_return([article])
+      user_model.should_receive(:find).once.and_return([user])
+
+      search.populate
+    end
+
+    it "sorts the results according to Sphinx order, not database order" do
+      model_name = double('article', :constantize => model)
+      instance_1 = double('instance 1', :id => 1)
+      instance_2 = double('instance 1', :id => 2)
+      connection.stub! :query => [
+        {'sphinx_internal_id' => 2, 'sphinx_internal_class' => model_name},
+        {'sphinx_internal_id' => 1, 'sphinx_internal_class' => model_name}
+      ]
+
+      model.stub(:find => [instance_1, instance_2])
+
+      search.populate
+      search.to_a.should == [instance_2, instance_1]
     end
   end
 
