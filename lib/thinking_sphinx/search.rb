@@ -19,6 +19,8 @@ class ThinkingSphinx::Search < Array
     query, options   = nil, query if query.is_a?(Hash)
     @query, @options = query, options
     @array           = []
+
+    populate if options[:populate]
   end
 
   def current_page
@@ -62,11 +64,13 @@ class ThinkingSphinx::Search < Array
   end
 
   def populate
-    return if @populated
+    return self if @populated
 
     results_for_models # load now to avoid segfaults
     @array.replace raw.collect { |row| result_for_row row }
     @populated = true
+
+    self
   end
 
   def populate_meta

@@ -319,6 +319,17 @@ describe ThinkingSphinx::Search do
       search.populate
       search.to_a.should == [instance_2, instance_1]
     end
+
+    it "should automatically populate when :populate is set to true" do
+      connection.unstub :query
+      connection.should_receive(:query).once.and_return(results)
+
+      ThinkingSphinx::Search.new(:populate => true)
+    end
+
+    it "returns itself" do
+      search.populate.should == search
+    end
   end
 
   describe '#populate_meta' do
