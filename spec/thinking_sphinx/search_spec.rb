@@ -257,6 +257,15 @@ describe ThinkingSphinx::Search do
       ThinkingSphinx::Search.new(:per_page => 24, :page => 3).populate
     end
 
+    it "uses any provided field weights" do
+      sphinx_sql.should_receive(:with_options) do |options|
+        options[:field_weights].should == {:title => 3}
+        sphinx_sql
+      end
+
+      ThinkingSphinx::Search.new(:field_weights => {:title => 3}).populate
+    end
+
     it "translates records to ActiveRecord objects" do
       model_name = double('article', :constantize => model)
       instance   = double('instance', :id => 24)

@@ -6,6 +6,7 @@ class ThinkingSphinx::Search < Array
     respond_to_missing? send should should_not type )
   SafeMethods = %w( partition private_methods protected_methods public_methods
     send class )
+  SelectOptions = [:field_weights]
 
   instance_methods.select { |method|
     method.to_s[/^__/].nil? && !CoreMethods.include?(method.to_s)
@@ -140,6 +141,15 @@ class ThinkingSphinx::Search < Array
     @options[:with] || {}
   end
 
+  def indices
+    config.preload_indices
+    return config.indices.collect(&:name) if classes.empty?
+
+    classes.collect { |klass|
+      config.indices_for_reference(klass.name.underscore.to_sym).collect &:name
+    }.flatten
+  end
+
   def method_missing(method, *args, &block)
     populate if !SafeMethods.include?(method.to_s)
 
@@ -186,6 +196,13 @@ class ThinkingSphinx::Search < Array
     }
   end
 
+  def select_options
+    @select_options ||= options.keys.inject({}) do |hash, key|
+      hash[key] = options[key] if SelectOptions.include?(key)
+      hash
+    end
+  end
+
   def sphinxql_select
     Riddle::Query::Select.new.tap do |select|
       select.from *indices.collect { |index| "`#{index}`" }
@@ -194,16 +211,8 @@ class ThinkingSphinx::Search < Array
       select.order_by order_clause if order_clause.present?
       select.offset offset
       select.limit per_page
+      select.with_options select_options if select_options.keys.any?
     end
-  end
-
-  def indices
-    config.preload_indices
-    return config.indices.collect(&:name) if classes.empty?
-
-    classes.collect { |klass|
-      config.indices_for_reference(klass.name.underscore.to_sym).collect &:name
-    }.flatten
   end
 end
 
