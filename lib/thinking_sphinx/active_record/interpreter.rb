@@ -45,12 +45,6 @@ class ThinkingSphinx::ActiveRecord::Interpreter < BlankSlate
   end
 
   def __source
-    @source ||= begin
-      ThinkingSphinx::ActiveRecord::SQLSource.new(
-        @index.model, :offset => @index.offset
-      ).tap do |source|
-        @index.sources << source
-      end
-    end
+    @source ||= @index.append_source
   end
 end

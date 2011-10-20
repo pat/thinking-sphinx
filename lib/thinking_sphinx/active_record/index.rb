@@ -9,6 +9,14 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
     super reference.to_s
   end
 
+  def append_source
+    ThinkingSphinx::ActiveRecord::SQLSource.new(
+      model, :offset => offset
+    ).tap do |source|
+      sources << source
+    end
+  end
+
   def interpret_definition!
     return if @interpreted_definition || @definition_block.nil?
 

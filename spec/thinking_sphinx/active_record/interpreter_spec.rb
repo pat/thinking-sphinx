@@ -5,10 +5,7 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     ThinkingSphinx::ActiveRecord::Interpreter.new index, block
   }
   let(:model)   { double('model') }
-  let(:index)   {
-    double('index', :sources => sources, :model => model, :offset => 17)
-  }
-  let(:sources) { double('sources', :<< => source) }
+  let(:index)   { double('index', :append_source => source) }
   let(:source)  {
     Struct.new(:attributes, :fields, :associations).new([], [], [])
   }
@@ -45,22 +42,15 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     end
 
     it "adds a source to the index" do
-      index.sources.should_receive(:<<).with(source)
+      index.should_receive(:append_source).and_return(source)
 
       instance.has column
     end
 
     it "only adds a single source for the given context" do
-      index.sources.should_receive(:<<).once
+      index.should_receive(:append_source).once.and_return(source)
 
       instance.has column
-      instance.has column
-    end
-
-    it "creates the source with the index's offset" do
-      ThinkingSphinx::ActiveRecord::SQLSource.should_receive(:new).
-        with(model, :offset => 17).and_return(source)
-
       instance.has column
     end
 
@@ -102,22 +92,15 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     end
 
     it "adds a source to the index" do
-      index.sources.should_receive(:<<).with(source)
+      index.should_receive(:append_source).and_return(source)
 
       instance.indexes column
     end
 
     it "only adds a single source for the given context" do
-      index.sources.should_receive(:<<).once
+      index.should_receive(:append_source).once.and_return(source)
 
       instance.indexes column
-      instance.indexes column
-    end
-
-    it "creates the source with the index's offset" do
-      ThinkingSphinx::ActiveRecord::SQLSource.should_receive(:new).
-        with(model, :offset => 17).and_return(source)
-
       instance.indexes column
     end
 
@@ -159,22 +142,15 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     end
 
     it "adds a source to the index" do
-      index.sources.should_receive(:<<).with(source)
+      index.should_receive(:append_source).and_return(source)
 
       instance.join column
     end
 
     it "only adds a single source for the given context" do
-      index.sources.should_receive(:<<).once
+      index.should_receive(:append_source).once.and_return(source)
 
       instance.join column
-      instance.join column
-    end
-
-    it "creates the source with the index's offset" do
-      ThinkingSphinx::ActiveRecord::SQLSource.should_receive(:new).
-        with(model, :offset => 17).and_return(source)
-
       instance.join column
     end
 
@@ -239,22 +215,15 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
       end
 
       it "adds a source to the index" do
-        index.sources.should_receive(:<<).with(source)
+        index.should_receive(:append_source).and_return(source)
 
         instance.set_property :mysql_ssl_cert => 'private.cert'
       end
 
       it "only adds a single source for the given context" do
-        index.sources.should_receive(:<<).once
+        index.should_receive(:append_source).once.and_return(source)
 
         instance.set_property :mysql_ssl_cert => 'private.cert'
-        instance.set_property :mysql_ssl_cert => 'private.cert'
-      end
-
-      it "creates the source with the index's offset" do
-        ThinkingSphinx::ActiveRecord::SQLSource.should_receive(:new).
-          with(model, :offset => 17).and_return(source)
-
         instance.set_property :mysql_ssl_cert => 'private.cert'
       end
 

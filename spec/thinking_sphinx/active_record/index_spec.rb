@@ -11,6 +11,34 @@ describe ThinkingSphinx::ActiveRecord::Index do
     ThinkingSphinx::Configuration.stub :instance => config
   end
 
+  describe '#append_source' do
+    let(:model)  { double('model') }
+    let(:source) { double('source') }
+
+    before :each do
+      ActiveSupport::Inflector.stub!(:constantize => model)
+      ThinkingSphinx::ActiveRecord::SQLSource.stub :new => source
+      config.stub :next_offset => 17
+    end
+
+    it "adds a source to the index" do
+      index.sources.should_receive(:<<).with(source)
+
+      index.append_source
+    end
+
+    it "creates the source with the index's offset" do
+      ThinkingSphinx::ActiveRecord::SQLSource.should_receive(:new).
+        with(model, :offset => 17).and_return(source)
+
+      index.append_source
+    end
+
+    it "returns the new source" do
+      index.append_source.should == source
+    end
+  end
+
   describe '#interpret_definition!' do
     let(:block) { double('block') }
 
