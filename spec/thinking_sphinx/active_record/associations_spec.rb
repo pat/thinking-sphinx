@@ -1,43 +1,41 @@
 require 'spec_helper'
 
 describe ThinkingSphinx::ActiveRecord::Associations do
-  let(:model)        {
-    double('model', :quoted_table_name => 'articles', :reflections => {})
-  }
   let(:associations) { ThinkingSphinx::ActiveRecord::Associations.new model }
+  let(:model)        { model_double 'articles' }
   let(:base)         {
     double('base', :active_record => model, :join_base => join_base)
   }
   let(:join_base)    { double('join base') }
-  let(:reflection)   { double('reflection') }
-  let(:join)         {
-    double('join', :join_type= => nil, :aliased_table_name => 'users',
-      :reflection => reflection)
-  }
-  let(:sub_reflection) { double('sub reflection') }
-  let(:sub_join)       {
-    double('sub join', :join_type= => nil, :aliased_table_name => 'posts',
-      :reflection => sub_reflection)
-  }
+  let(:join)         { join_double 'users' }
+  let(:sub_join)     { join_double 'posts' }
+
+  def join_double(table_alias)
+    double 'join',
+      :join_type=         => nil,
+      :aliased_table_name => table_alias,
+      :reflection         => double('reflection')
+  end
+
+  def model_double(table_name = nil)
+    double 'model', :quoted_table_name => table_name, :reflections => {}
+  end
 
   before :each do
-    ActiveRecord::Associations::JoinDependency.stub! :new => base
+    ActiveRecord::Associations::JoinDependency.stub :new => base
     ActiveRecord::Associations::JoinDependency::JoinAssociation.
-      stub!(:new).and_return(join, sub_join)
-    model.reflections[:user] = reflection
+      stub(:new).and_return(join, sub_join)
+    model.reflections[:user] = join.reflection
 
-    join.stub!(
-      :active_record => double('model', :reflections => {}),
-      :join          => double('joiner')
-    )
-    join.active_record.reflections[:posts] = sub_reflection
+    join.stub :active_record => model_double
+    join.active_record.reflections[:posts] = sub_join.reflection
   end
 
   describe '#add_join_to' do
     it "adds just one join for a stack with a single association" do
       ActiveRecord::Associations::JoinDependency::JoinAssociation.unstub :new
       ActiveRecord::Associations::JoinDependency::JoinAssociation.
-        should_receive(:new).with(reflection, base, join_base).once.
+        should_receive(:new).with(join.reflection, base, join_base).once.
         and_return(join)
 
       associations.add_join_to([:user])
@@ -56,10 +54,10 @@ describe ThinkingSphinx::ActiveRecord::Associations do
       it "adds two joins for a stack with two associations" do
         ActiveRecord::Associations::JoinDependency::JoinAssociation.unstub :new
         ActiveRecord::Associations::JoinDependency::JoinAssociation.
-          should_receive(:new).with(reflection, base, join_base).once.
+          should_receive(:new).with(join.reflection, base, join_base).once.
           and_return(join)
         ActiveRecord::Associations::JoinDependency::JoinAssociation.
-          should_receive(:new).with(sub_reflection, base, join).once.
+          should_receive(:new).with(sub_join.reflection, base, join).once.
           and_return(sub_join)
 
         associations.add_join_to([:user, :posts])
@@ -82,46 +80,46 @@ describe ThinkingSphinx::ActiveRecord::Associations do
     end
 
     it "is true when a reflection is a has_many" do
-      reflection.stub!(:macro => :has_many)
+      join.reflection.stub!(:macro => :has_many)
 
       associations.aggregate_for?([:user]).should be_true
     end
 
     it "is true when a reflection is a has_and_belongs_to_many" do
-      reflection.stub!(:macro => :has_and_belongs_to_many)
+      join.reflection.stub!(:macro => :has_and_belongs_to_many)
 
       associations.aggregate_for?([:user]).should be_true
     end
 
     it "is false when a reflection is a belongs_to" do
-      reflection.stub!(:macro => :belongs_to)
+      join.reflection.stub!(:macro => :belongs_to)
 
       associations.aggregate_for?([:user]).should be_false
     end
 
     it "is false when a reflection is a has_one" do
-      reflection.stub!(:macro => :has_one)
+      join.reflection.stub!(:macro => :has_one)
 
       associations.aggregate_for?([:user]).should be_false
     end
 
     it "is true when one level is aggregate" do
-      reflection.stub!(:macro => :belongs_to)
-      sub_reflection.stub!(:macro => :has_many)
+      join.reflection.stub!(:macro => :belongs_to)
+      sub_join.reflection.stub!(:macro => :has_many)
 
       associations.aggregate_for?([:user, :posts]).should be_true
     end
 
     it "is true when both levels are aggregates" do
-      reflection.stub!(:macro => :has_many)
-      sub_reflection.stub!(:macro => :has_many)
+      join.reflection.stub!(:macro => :has_many)
+      sub_join.reflection.stub!(:macro => :has_many)
 
       associations.aggregate_for?([:user, :posts]).should be_true
     end
 
     it "is false when both levels are not aggregates" do
-      reflection.stub!(:macro => :belongs_to)
-      sub_reflection.stub!(:macro => :belongs_to)
+      join.reflection.stub!(:macro => :belongs_to)
+      sub_join.reflection.stub!(:macro => :belongs_to)
 
       associations.aggregate_for?([:user, :posts]).should be_false
     end
@@ -135,7 +133,7 @@ describe ThinkingSphinx::ActiveRecord::Associations do
     it "adds just one join for a stack with a single association" do
       ActiveRecord::Associations::JoinDependency::JoinAssociation.unstub :new
       ActiveRecord::Associations::JoinDependency::JoinAssociation.
-        should_receive(:new).with(reflection, base, join_base).once.
+        should_receive(:new).with(join.reflection, base, join_base).once.
         and_return(join)
 
       associations.alias_for([:user])
@@ -158,10 +156,10 @@ describe ThinkingSphinx::ActiveRecord::Associations do
       it "adds two joins for a stack with two associations" do
         ActiveRecord::Associations::JoinDependency::JoinAssociation.unstub :new
         ActiveRecord::Associations::JoinDependency::JoinAssociation.
-          should_receive(:new).with(reflection, base, join_base).once.
+          should_receive(:new).with(join.reflection, base, join_base).once.
           and_return(join)
         ActiveRecord::Associations::JoinDependency::JoinAssociation.
-          should_receive(:new).with(sub_reflection, base, join).once.
+          should_receive(:new).with(sub_join.reflection, base, join).once.
           and_return(sub_join)
 
         associations.alias_for([:user, :posts])
