@@ -29,22 +29,6 @@ class ThinkingSphinx::Search < Array
     @options[:page].to_i
   end
 
-  def first_page?
-    current_page == 1
-  end
-
-  def last_page?
-    next_page.nil?
-  end
-
-  def next_page
-    current_page >= total_pages ? nil : current_page + 1
-  end
-
-  def next_page?
-    !next_page.nil?
-  end
-
   def offset
     @options[:offset] || ((current_page - 1) * per_page)
   end
@@ -85,32 +69,9 @@ class ThinkingSphinx::Search < Array
     @populated_meta = true
   end
 
-  def previous_page
-    current_page == 1 ? nil : current_page - 1
-  end
-
   def respond_to?(method, include_private = false)
     super || @array.respond_to?(method, include_private)
   end
-
-  def total_entries
-    populate_meta
-
-    @meta['total_found'].to_i
-  end
-
-  def total_pages
-    populate_meta
-    return 0 if @meta['total'].nil?
-
-    @total_pages ||= (@meta['total'].to_i / per_page.to_f).ceil
-  end
-
-  # For Kaminari and Will Paginate
-  alias_method :limit_value, :per_page
-  alias_method :page_count,  :total_pages
-  alias_method :num_pages,   :total_pages
-  alias_method :total_count, :total_entries
 
   private
 
@@ -217,5 +178,7 @@ class ThinkingSphinx::Search < Array
 end
 
 require 'thinking_sphinx/search/geodist'
+require 'thinking_sphinx/search/pagination'
 
 ThinkingSphinx::Search.send :include, ThinkingSphinx::Search::Geodist
+ThinkingSphinx::Search.send :include, ThinkingSphinx::Search::Pagination
