@@ -148,7 +148,7 @@ describe ThinkingSphinx::Search do
       @results = [] # to confirm same object
       ThinkingSphinx.stub!(:search => @results)
       
-      ThinkingSphinx::Search.search.object_id.should == @results.object_id
+      ThinkingSphinx.search.object_id.should == @results.object_id
     end
   end
   
@@ -157,7 +157,7 @@ describe ThinkingSphinx::Search do
       @results = [] # to confirm same object
       ThinkingSphinx.stub!(:search_for_ids => @results)
       
-      ThinkingSphinx::Search.search_for_ids.object_id.
+      ThinkingSphinx.search_for_ids.object_id.
         should == @results.object_id
     end
   end
@@ -167,7 +167,7 @@ describe ThinkingSphinx::Search do
       @results = [] # to confirm same object
       ThinkingSphinx.stub!(:search_for_id => @results)
       
-      ThinkingSphinx::Search.search_for_id.object_id.
+      ThinkingSphinx.search_for_id.object_id.
         should == @results.object_id
     end
   end
@@ -177,7 +177,7 @@ describe ThinkingSphinx::Search do
       @results = [] # to confirm same object
       ThinkingSphinx.stub!(:count => @results)
       
-      ThinkingSphinx::Search.count.object_id.should == @results.object_id
+      ThinkingSphinx.count.object_id.should == @results.object_id
     end
   end
   
@@ -186,7 +186,7 @@ describe ThinkingSphinx::Search do
       @results = [] # to confirm same object
       ThinkingSphinx.stub!(:facets => @results)
       
-      ThinkingSphinx::Search.facets.object_id.should == @results.object_id
+      ThinkingSphinx.facets.object_id.should == @results.object_id
     end
   end
   
