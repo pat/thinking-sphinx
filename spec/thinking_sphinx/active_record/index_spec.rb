@@ -29,7 +29,7 @@ describe ThinkingSphinx::ActiveRecord::Index do
 
     it "creates the source with the index's offset" do
       ThinkingSphinx::ActiveRecord::SQLSource.should_receive(:new).
-        with(model, :offset => 17).and_return(source)
+        with(model, hash_including(:offset => 17)).and_return(source)
 
       index.append_source
     end
@@ -101,6 +101,18 @@ describe ThinkingSphinx::ActiveRecord::Index do
 
         index.morphology.should == 'stem_en'
       end
+    end
+  end
+
+  describe '#name' do
+    it "uses the core suffix by default" do
+      index = ThinkingSphinx::ActiveRecord::Index.new :user
+      index.name.should == 'user_core'
+    end
+
+    it "uses the delta suffix when delta? is true" do
+      index = ThinkingSphinx::ActiveRecord::Index.new :user, :delta? => true
+      index.name.should == 'user_delta'
     end
   end
 

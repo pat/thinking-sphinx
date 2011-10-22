@@ -11,6 +11,7 @@ ActiveRecord::Schema.define do
     t.string  :title
     t.string  :author
     t.integer :year
+    t.boolean :delta, :default => true, :null => false
     t.timestamps
   end
 

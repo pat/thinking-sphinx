@@ -46,7 +46,7 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
   end
 
   def delta_processor
-    options[:delta_processor]
+    options[:delta_processor].try(:new, adapter)
   end
 
   def delta?

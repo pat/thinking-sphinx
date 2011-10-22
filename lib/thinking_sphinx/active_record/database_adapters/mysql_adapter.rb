@@ -1,6 +1,10 @@
 class ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter <
   ThinkingSphinx::ActiveRecord::DatabaseAdapters::AbstractAdapter
 
+  def boolean_value(value)
+    value ? 1 : 0
+  end
+
   def cast_to_timestamp(clause)
     "UNIX_TIMESTAMP(#{clause})"
   end

@@ -15,5 +15,6 @@ require 'thinking_sphinx/search'
 require 'thinking_sphinx/version'
 # Extended
 require 'thinking_sphinx/active_record'
+require 'thinking_sphinx/deltas'
 
 require 'thinking_sphinx/railtie' if defined?(Rails)

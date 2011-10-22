@@ -5,16 +5,21 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
   def initialize(reference, options = {})
     @reference = reference
     @docinfo   = :extern
+    @options   = options
 
-    super reference.to_s
+    super "#{reference}_#{name_suffix}"
   end
 
   def append_source
     ThinkingSphinx::ActiveRecord::SQLSource.new(
-      model, :offset => offset
+      model, source_options
     ).tap do |source|
       sources << source
     end
+  end
+
+  def delta?
+    @options[:delta?]
   end
 
   def interpret_definition!
@@ -49,5 +54,17 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
 
   def config
     ThinkingSphinx::Configuration.instance
+  end
+
+  def name_suffix
+    @options[:delta?] ? 'delta' : 'core'
+  end
+
+  def source_options
+    {
+      :offset          => offset,
+      :delta?          => @options[:delta?],
+      :delta_processor => @options[:delta_processor]
+    }
   end
 end

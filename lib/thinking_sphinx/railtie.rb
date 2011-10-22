@@ -1,6 +1,6 @@
 class ThinkingSphinx::Railtie < Rails::Railtie
   ActiveSupport.on_load :active_record do
-    extend ThinkingSphinx::ActiveRecord::Base
+    include ThinkingSphinx::ActiveRecord::Base
   end
 
   rake_tasks do

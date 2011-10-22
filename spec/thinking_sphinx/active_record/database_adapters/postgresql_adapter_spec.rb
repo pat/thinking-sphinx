@@ -6,6 +6,16 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter do
   }
   let(:model)   { double('model') }
 
+  describe '#boolean_value' do
+    it "returns 'TRUE' for true" do
+      adapter.boolean_value(true).should == 'TRUE'
+    end
+
+    it "returns 'FALSE' for false" do
+      adapter.boolean_value(false).should == 'FALSE'
+    end
+  end
+
   describe '#cast_to_timestamp' do
     it "converts to unix timestamps" do
       adapter.cast_to_timestamp('created_at').

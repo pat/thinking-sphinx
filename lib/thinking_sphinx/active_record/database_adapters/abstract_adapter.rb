@@ -6,4 +6,8 @@ class ThinkingSphinx::ActiveRecord::DatabaseAdapters::AbstractAdapter
   def quote(column)
     @model.connection.quote_column_name(column)
   end
+
+  def quoted_table_name
+    @model.quoted_table_name
+  end
 end

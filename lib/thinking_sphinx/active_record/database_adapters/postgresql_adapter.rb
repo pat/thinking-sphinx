@@ -1,6 +1,10 @@
 class ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter <
   ThinkingSphinx::ActiveRecord::DatabaseAdapters::AbstractAdapter
 
+  def boolean_value(value)
+    value ? 'TRUE' : 'FALSE'
+  end
+
   def cast_to_timestamp(clause)
     "cast(extract(epoch from #{clause}) as int)"
   end

@@ -6,6 +6,14 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter do
   }
   let(:model)   { double('model') }
 
+  it "returns 1 for true" do
+    adapter.boolean_value(true).should == 1
+  end
+
+  it "returns 0 for false" do
+    adapter.boolean_value(false).should == 0
+  end
+
   describe '#cast_to_timestamp' do
     it "converts to unix timestamps" do
       adapter.cast_to_timestamp('created_at').

@@ -20,4 +20,12 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters::AbstractAdapter do
       adapter.quote('foo').should == '"foo"'
     end
   end
+
+  describe '#quoted_table_name' do
+    it "passes the method through to the model" do
+      model.should_receive(:quoted_table_name).and_return('"articles"')
+
+      adapter.quoted_table_name.should == '"articles"'
+    end
+  end
 end
