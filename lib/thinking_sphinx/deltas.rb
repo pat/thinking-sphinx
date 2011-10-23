@@ -1,6 +1,13 @@
 module ThinkingSphinx::Deltas
   def self.processor_for(delta)
-    ThinkingSphinx::Deltas::DefaultDelta
+    case delta
+    when TrueClass
+      ThinkingSphinx::Deltas::DefaultDelta
+    when Class
+      delta
+    else
+      nil
+    end
   end
 end
 

@@ -6,5 +6,10 @@ describe ThinkingSphinx::Deltas do
       ThinkingSphinx::Deltas.processor_for(true).
         should == ThinkingSphinx::Deltas::DefaultDelta
     end
+
+    it "returns the class when given one" do
+      klass = Class.new
+      ThinkingSphinx::Deltas.processor_for(klass).should == klass
+    end
   end
 end
