@@ -202,3 +202,4 @@ Since I first released this library, there's been quite a few people who have su
 * Aaron Gibralter
 * Pete Deffendol
 * Tony Pitale
+* Kenn Ejima
