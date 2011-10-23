@@ -35,6 +35,10 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
     it "has the internal class attribute by default" do
       source.attributes.collect(&:name).should include('sphinx_internal_class')
     end
+
+    it "has the internal deleted attribute by default" do
+      source.attributes.collect(&:name).should include('sphinx_deleted')
+    end
   end
 
   describe '#delta_processor' do

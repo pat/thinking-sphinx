@@ -82,6 +82,26 @@ describe ThinkingSphinx::ActiveRecord::Index do
     end
   end
 
+  describe '#delta_processor' do
+    it "creates an instance of the delta processor option" do
+      processor       = double('processor')
+      processor_class = double('processor class', :new => processor)
+      index = ThinkingSphinx::ActiveRecord::Index.new :user,
+        :delta_processor => processor_class
+
+      index.delta_processor.should == processor
+    end
+  end
+
+  describe '#document_id_for_key' do
+    it "calculates the document id based on offset and number of indices" do
+      config.stub_chain(:indices, :count).and_return(5)
+      config.stub :next_offset => 7
+
+      index.document_id_for_key(123).should == 622
+    end
+  end
+
   describe '#interpret_definition!' do
     let(:block) { double('block') }
 

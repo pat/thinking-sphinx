@@ -6,9 +6,9 @@ describe ThinkingSphinx::Search::Geodist do
     double('search', :query => '', :options => {}, :offset => 0, :per_page => 5)
   }
   let(:config)     {
-    double('config', :searchd => searchd, :indices => [], :preload_indices => true)
+    double('config', :connection => connection, :indices => [],
+      :preload_indices => true)
   }
-  let(:searchd)    { double('searchd', :address => nil, :mysql41 => 101) }
   let(:connection) { double('connection') }
   let(:sphinx_sql) { double('sphinx select', :to_sql => '') }
 
@@ -18,7 +18,7 @@ describe ThinkingSphinx::Search::Geodist do
     Riddle::Query::Select.stub! :new => sphinx_sql
 
     sphinx_sql.stub! :from => sphinx_sql, :offset => sphinx_sql,
-      :limit => sphinx_sql
+      :limit => sphinx_sql, :where => sphinx_sql
     connection.stub(:query).and_return([], [])
   end
 

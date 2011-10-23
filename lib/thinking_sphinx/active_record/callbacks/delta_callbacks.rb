@@ -14,21 +14,33 @@ class ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks
   end
 
   def after_commit
-    return unless delta_indices? && instance.delta?
+    return unless delta_indices? && processors.any? { |processor|
+      processor.toggled?(instance)
+    }
 
-    config.controller.index *delta_indices.collect(&:name)
+    delta_indices.each do |index|
+      index.delta_processor.index index
+    end
+
+    core_indices.each do |index|
+      index.delta_processor.delete index, instance
+    end
   end
 
   def before_save
     return unless delta_indices?
 
-    instance.delta = true
+    processors.each { |processor| processor.toggle instance }
   end
 
   private
 
   def config
     ThinkingSphinx::Configuration.instance
+  end
+
+  def core_indices
+    @core_indices ||= indices.reject { |index| index.delta? }
   end
 
   def delta_indices
@@ -41,6 +53,10 @@ class ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks
 
   def indices
     @indices ||= config.indices_for_reference reference
+  end
+
+  def processors
+    delta_indices.collect &:delta_processor
   end
 
   def reference

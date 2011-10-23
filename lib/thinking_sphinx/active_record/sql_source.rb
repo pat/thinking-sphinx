@@ -11,6 +11,10 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
       ThinkingSphinx::ActiveRecord::Attribute.new(
         ThinkingSphinx::ActiveRecord::Column.new("'#{model.name}'"),
         :as => :sphinx_internal_class, :type => :string
+      ),
+      ThinkingSphinx::ActiveRecord::Attribute.new(
+        ThinkingSphinx::ActiveRecord::Column.new("0"),
+        :as => :sphinx_deleted,        :type => :boolean
       )
     ]
   end

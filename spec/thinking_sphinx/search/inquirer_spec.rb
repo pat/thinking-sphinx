@@ -8,10 +8,9 @@ describe ThinkingSphinx::Search::Inquirer do
   let(:connection) { double('connection') }
   let(:sphinx_sql) { double('sphinx sql', :to_sql => 'SELECT * FROM index') }
   let(:config)     {
-    double('config', :searchd => searchd, :preload_indices => true,
+    double('config', :connection => connection, :preload_indices => true,
       :indices => [])
   }
-  let(:searchd)    { double('searchd', :address => '', :mysql41 => 101)}
 
   before :each do
     ThinkingSphinx::Configuration.stub :instance => config
@@ -20,7 +19,7 @@ describe ThinkingSphinx::Search::Inquirer do
 
     connection.stub(:query).and_return([], [])
     sphinx_sql.stub :from => sphinx_sql, :offset => sphinx_sql,
-      :limit => sphinx_sql
+      :limit => sphinx_sql, :where => sphinx_sql
   end
 
   describe '#populate' do
@@ -31,15 +30,6 @@ describe ThinkingSphinx::Search::Inquirer do
     it "populates the data and meta sets from Sphinx" do
       connection.unstub :query
       connection.should_receive(:query).twice.and_return([], [])
-
-      inquirer.populate
-    end
-
-    it "connects using the searchd address and port" do
-      searchd.stub :address => '127.0.0.1', :mysql41 => 121
-
-      Riddle::Query.should_receive(:connection).with('127.0.0.1', 121).
-        and_return(connection)
 
       inquirer.populate
     end
@@ -99,10 +89,17 @@ describe ThinkingSphinx::Search::Inquirer do
       inquirer.populate
     end
 
+    it "filters out deleted values by default" do
+      sphinx_sql.should_receive(:where).with(:sphinx_deleted => false).
+        and_return(sphinx_sql)
+
+      inquirer.populate
+    end
+
     it "appends boolean attribute filters to the query" do
       search.options[:with] = {:visible => true}
 
-      sphinx_sql.should_receive(:where).with(:visible => true).
+      sphinx_sql.should_receive(:where).with(hash_including(:visible => true)).
         and_return(sphinx_sql)
 
       inquirer.populate

@@ -31,9 +31,7 @@ class ThinkingSphinx::Search::Inquirer
   end
 
   def connection
-    @connection ||= Riddle::Query.connection(
-      (config.searchd.address || '127.0.0.1'), config.searchd.mysql41
-    )
+    @connection ||= config.connection
   end
 
   def extended_query
@@ -46,7 +44,9 @@ class ThinkingSphinx::Search::Inquirer
   end
 
   def filters
-    options[:with] || {}
+    @filters ||= (options[:with] || {}).tap do |with|
+      with[:sphinx_deleted] = false
+    end
   end
 
   def indices

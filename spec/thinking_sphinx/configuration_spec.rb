@@ -30,6 +30,27 @@ describe ThinkingSphinx::Configuration do
     end
   end
 
+  describe '#connection' do
+    let(:connection) { double('connection') }
+
+    before :each do
+      Riddle::Query.stub :connection => connection
+    end
+
+    it "connects using the searchd address and port" do
+      config.searchd.stub :address => '127.0.0.1', :mysql41 => 121
+
+      Riddle::Query.should_receive(:connection).with('127.0.0.1', 121).
+        and_return(connection)
+
+      config.connection
+    end
+
+    it "returns the connection" do
+      config.connection.should == connection
+    end
+  end
+
   describe '#controller' do
     it "returns an instance of Riddle::Controller" do
       config.controller.should be_a(Riddle::Controller)

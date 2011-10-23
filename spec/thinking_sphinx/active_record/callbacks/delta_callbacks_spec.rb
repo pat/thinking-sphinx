@@ -5,8 +5,10 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks do
     ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks.new instance
   }
   let(:instance)   { double('instance', :delta? => true) }
-  let(:controller) { double('controller') }
-  let(:config)     { double('config', :controller => controller) }
+  let(:config)     { double('config') }
+  let(:processor)  {
+    double('processor', :toggled? => true, :index => true, :delete => true)
+  }
 
   before :each do
     ThinkingSphinx::Configuration.stub :instance => config
@@ -39,65 +41,87 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks do
   end
 
   describe '#after_commit' do
-    it "does not fire a delta index when no indices" do
-      config.stub :indices_for_reference => []
+    let(:index) {
+      double('index', :delta? => false, :delta_processor => processor)
+    }
 
-      controller.should_not_receive(:index)
-
-      callbacks.after_commit
-    end
-
-    it "does not fire a delta index when no delta indices" do
-      config.stub :indices_for_reference => [double('index', :delta? => false)]
-
-      controller.should_not_receive(:index)
-
-      callbacks.after_commit
-    end
-
-    it "indexes any delta indices" do
-      index = double('index', :delta? => true, :name => 'foo_delta')
+    before :each do
       config.stub :indices_for_reference => [index]
-
-      controller.should_receive(:index).with('foo_delta')
-
-      callbacks.after_commit
     end
 
-    it "only indexes delta indices" do
-      core_index  = double('index', :delta? => false, :name => 'foo_core')
-      delta_index = double('index', :delta? => true,  :name => 'foo_delta')
-      config.stub :indices_for_reference => [core_index, delta_index]
+    context 'without delta indices' do
+      it "does not fire a delta index when no delta indices" do
+        processor.should_not_receive(:index)
 
-      controller.should_receive(:index).with('foo_delta')
+        callbacks.after_commit
+      end
 
-      callbacks.after_commit
+      it "does not delete the instance from any index" do
+        processor.should_not_receive(:delete)
+
+        callbacks.after_commit
+      end
     end
 
-    it "does not index if model's delta flag is not true" do
-      index = double('index', :delta? => true, :name => 'foo_delta')
-      config.stub :indices_for_reference => [index]
-      instance.stub :delta? => false
+    context 'with delta indices' do
+      let(:core_index) { double('index', :delta? => false, :name => 'foo_core',
+        :delta_processor => processor) }
+      let(:delta_index) { double('index', :delta? => true, :name => 'foo_delta',
+        :delta_processor => processor) }
 
-      controller.should_not_receive(:index)
+      before :each do
+        config.stub :indices_for_reference => [core_index, delta_index]
+      end
 
-      callbacks.after_commit
+      it "only indexes delta indices" do
+        processor.should_receive(:index).with(delta_index)
+
+        callbacks.after_commit
+      end
+
+      it "deletes the instance from the core index" do
+        processor.should_receive(:delete).with(core_index, instance)
+
+        callbacks.after_commit
+      end
+
+      it "does not index if model's delta flag is not true" do
+        processor.stub :toggled? => false
+
+        processor.should_not_receive(:index)
+
+        callbacks.after_commit
+      end
+
+      it "does not delete if model's delta flag is not true" do
+        processor.stub :toggled? => false
+
+        processor.should_not_receive(:delete)
+
+        callbacks.after_commit
+      end
     end
   end
 
   describe '#before_save' do
-    it "sets delta to true if there are delta indices" do
-      config.stub :indices_for_reference => [double('index', :delta? => true)]
+    let(:index) {
+      double('index', :delta? => true, :delta_processor => processor)
+    }
 
-      instance.should_receive(:delta=).with(true)
+    before :each do
+      config.stub :indices_for_reference => [index]
+    end
+
+    it "sets delta to true if there are delta indices" do
+      processor.should_receive(:toggle).with(instance)
 
       callbacks.before_save
     end
 
     it "does not try to set delta to true if there are no delta indices" do
-      config.stub :indices_for_reference => [double('index', :delta? => false)]
+      index.stub :delta? => false
 
-      instance.should_not_receive(:delta=)
+      processor.should_not_receive(:toggle)
 
       callbacks.before_save
     end

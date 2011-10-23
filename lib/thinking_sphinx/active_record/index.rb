@@ -22,6 +22,14 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
     @options[:delta?]
   end
 
+  def delta_processor
+    @options[:delta_processor].try(:new, adapter)
+  end
+
+  def document_id_for_key(key)
+     key * config.indices.count + offset
+  end
+
   def interpret_definition!
     return if @interpreted_definition || @definition_block.nil?
 
@@ -51,6 +59,11 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
   end
 
   private
+
+  def adapter
+    @adapter ||= ThinkingSphinx::ActiveRecord::DatabaseAdapters.
+      adapter_for(model)
+  end
 
   def config
     ThinkingSphinx::Configuration.instance

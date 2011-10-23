@@ -28,6 +28,12 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     @instance = nil
   end
 
+  def connection
+    Riddle::Query.connection(
+      (searchd.address || '127.0.0.1'), searchd.mysql41
+    )
+  end
+
   def controller
     @controller ||= Riddle::Controller.new(self, configuration_file).tap do |rc|
       if settings['bin_path'].present?
