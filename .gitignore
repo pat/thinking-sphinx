@@ -1,5 +1,6 @@
 *.gem
 .bundle
+.rbx
 Gemfile.lock
 pkg/*
 spec/internal/config/test.sphinx.conf

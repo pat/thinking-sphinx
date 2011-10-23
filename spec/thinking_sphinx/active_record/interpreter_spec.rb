@@ -238,12 +238,12 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
   describe '#translate!' do
     it "returns the block evaluated within the context of the interpreter" do
       block = Proc.new {
-        self.class.name
+        __id__
       }
 
       interpreter = ThinkingSphinx::ActiveRecord::Interpreter.new index, block
       interpreter.translate!.
-        should == 'ThinkingSphinx::ActiveRecord::Interpreter'
+        should == interpreter.__id__
     end
   end
 end

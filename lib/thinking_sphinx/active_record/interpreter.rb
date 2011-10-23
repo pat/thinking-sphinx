@@ -1,4 +1,6 @@
 class ThinkingSphinx::ActiveRecord::Interpreter < BlankSlate
+  reveal :extend
+
   def self.translate!(index, block)
     new(index, block).translate!
   end
