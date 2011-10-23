@@ -39,6 +39,17 @@ describe ThinkingSphinx::ActiveRecord::Index do
     end
   end
 
+  describe '#delta?' do
+    it "defaults to false" do
+      index.should_not be_delta
+    end
+
+    it "reflects the delta? option" do
+      index = ThinkingSphinx::ActiveRecord::Index.new :user, :delta? => true
+      index.should be_delta
+    end
+  end
+
   describe '#interpret_definition!' do
     let(:block) { double('block') }
 

@@ -36,10 +36,16 @@ module ThinkingSphinx::ActiveRecord::Base
 
   module InstanceMethods
     def after_commit_with_sphinx
-      config  = ThinkingSphinx::Configuration.instance
-      indices = config.indices_for_reference(self.class.name.underscore.to_sym).
-        select { |index| index.delta? }
-      config.controller.index *indices.collect(&:name) if indices.any?
+      indices = sphinx_indices.select { |index| index.delta? }
+      sphinx_config.controller.index *indices.collect(&:name) if indices.any?
+    end
+
+    def sphinx_config
+      ThinkingSphinx::Configuration.instance
+    end
+
+    def sphinx_indices
+      sphinx_config.indices_for_reference(self.class.name.underscore.to_sym)
     end
   end
 end

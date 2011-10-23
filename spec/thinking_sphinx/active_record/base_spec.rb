@@ -3,12 +3,12 @@ require 'spec_helper'
 describe ThinkingSphinx::ActiveRecord::Base do
   let(:model) {
     Class.new(ActiveRecord::Base) do
-      extend ThinkingSphinx::ActiveRecord::Base
+      include ThinkingSphinx::ActiveRecord::Base
     end
   }
   let(:subclassed_model) {
     Class.new(model) do
-      extend ThinkingSphinx::ActiveRecord::Base
+      include ThinkingSphinx::ActiveRecord::Base
     end
   }
 
@@ -54,6 +54,72 @@ describe ThinkingSphinx::ActiveRecord::Base do
       model.stub!(:primary_key => nil)
 
       model.primary_key_for_sphinx.should == :id
+    end
+  end
+
+  describe '#save' do
+    let(:controller) { double('controller') }
+    let(:config)     { double('config', :controller => controller) }
+    let(:model)      {
+      Class.new do
+        def self.after_commit(*callbacks)
+          @after_commits ||= []
+          @after_commits += callbacks
+        end
+
+        def self.after_commits
+          @after_commits
+        end
+
+        def self.name
+          'FooBar'
+        end
+
+        def save
+          self.class.after_commits.each { |callback| send callback }
+        end
+
+        include ThinkingSphinx::ActiveRecord::Base
+      end
+    }
+
+    before :each do
+      ThinkingSphinx::Configuration.stub :instance => config
+    end
+
+    it "does not fire a delta index when no indices" do
+      config.stub :indices_for_reference => []
+
+      controller.should_not_receive(:index)
+
+      model.new.save
+    end
+
+    it "does not fire a delta index when no delta indices" do
+      config.stub :indices_for_reference => [double('index', :delta? => false)]
+
+      controller.should_not_receive(:index)
+
+      model.new.save
+    end
+
+    it "indexes any delta indices" do
+      index = double('index', :delta? => true, :name => 'foo_delta')
+      config.stub :indices_for_reference => [index]
+
+      controller.should_receive(:index).with('foo_delta')
+
+      model.new.save
+    end
+
+    it "only indexes delta indices" do
+      core_index  = double('index', :delta? => false, :name => 'foo_core')
+      delta_index = double('index', :delta? => true,  :name => 'foo_delta')
+      config.stub :indices_for_reference => [core_index, delta_index]
+
+      controller.should_receive(:index).with('foo_delta')
+
+      model.new.save
     end
   end
 end

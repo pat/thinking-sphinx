@@ -37,6 +37,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def indices_for_reference(reference)
+    preload_indices
     indices.select { |index| index.reference == reference }
   end
 
