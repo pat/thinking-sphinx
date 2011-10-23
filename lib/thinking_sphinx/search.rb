@@ -6,7 +6,6 @@ class ThinkingSphinx::Search < Array
     respond_to_missing? send should should_not type )
   SafeMethods = %w( partition private_methods protected_methods public_methods
     send class )
-  SelectOptions = [:field_weights]
 
   instance_methods.select { |method|
     method.to_s[/^__/].nil? && !CoreMethods.include?(method.to_s)
@@ -14,7 +13,7 @@ class ThinkingSphinx::Search < Array
     undef_method method
   }
 
-  attr_reader :options
+  attr_reader :options, :query
 
   def initialize(query = nil, options = {})
     query, options   = nil, query if query.is_a?(Hash)
@@ -27,6 +26,10 @@ class ThinkingSphinx::Search < Array
   def current_page
     @options[:page] = 1 if @options[:page].blank?
     @options[:page].to_i
+  end
+
+  def meta
+    inquirer.meta
   end
 
   def offset
@@ -51,22 +54,14 @@ class ThinkingSphinx::Search < Array
   def populate
     return self if @populated
 
-    results_for_models # load now to avoid segfaults
-    @array.replace raw.collect { |row| result_for_row row }
+    @array.replace translator.to_active_record
     @populated = true
 
     self
   end
 
-  def populate_meta
-    return if @populated_meta
-
-    populate
-    @meta = connection.query(Riddle::Query.meta).inject({}) { |hash, row|
-      hash[row['Variable_name']] = row['Value']
-      hash
-    }
-    @populated_meta = true
+  def raw
+    inquirer.raw
   end
 
   def respond_to?(method, include_private = false)
@@ -75,40 +70,8 @@ class ThinkingSphinx::Search < Array
 
   private
 
-  def classes
-    options[:classes] || []
-  end
-
-  def config
-    ThinkingSphinx::Configuration.instance
-  end
-
-  def connection
-    @connection ||= Riddle::Query.connection(
-      (config.searchd.address || '127.0.0.1'), config.searchd.mysql41
-    )
-  end
-
-  def extended_query
-    @options[:conditions] ||= {}
-    @extended_query       ||= begin
-      (@query.to_s + ' ' + @options[:conditions].keys.collect { |key|
-        "@#{key} #{@options[:conditions][key]}"
-      }.join(' ')).strip
-    end
-  end
-
-  def filters
-    @options[:with] || {}
-  end
-
-  def indices
-    config.preload_indices
-    return config.indices.collect(&:name) if classes.empty?
-
-    classes.collect { |klass|
-      config.indices_for_reference(klass.name.underscore.to_sym).collect &:name
-    }.flatten
+  def inquirer
+    @inquirer ||= ThinkingSphinx::Search::Inquirer.new(self).populate
   end
 
   def method_missing(method, *args, &block)
@@ -117,68 +80,14 @@ class ThinkingSphinx::Search < Array
     @array.send(method, *args, &block)
   end
 
-  def order_clause
-    case @options[:order]
-    when Symbol
-      "#{@options[:order]} ASC"
-    else
-      @options[:order]
-    end
-  end
-
-  def raw
-    @raw ||= connection.query(sphinxql_select.to_sql)
-  end
-
-  def result_for_row(row)
-    results_for_models[row['sphinx_internal_class']].detect { |record|
-      record.id == row['sphinx_internal_id']
-    }
-  end
-
-  def result_ids_for_model(model_name)
-    raw.select { |row|
-      row['sphinx_internal_class'] == model_name
-    }.collect { |row|
-      row['sphinx_internal_id']
-    }
-  end
-
-  def result_model_names
-    @result_model_names ||= raw.collect { |row|
-      row['sphinx_internal_class']
-    }.uniq
-  end
-
-  def results_for_models
-    @results_for_models ||= result_model_names.inject({}) { |hash, name|
-      hash[name] = name.constantize.find result_ids_for_model(name)
-      hash
-    }
-  end
-
-  def select_options
-    @select_options ||= options.keys.inject({}) do |hash, key|
-      hash[key] = options[key] if SelectOptions.include?(key)
-      hash
-    end
-  end
-
-  def sphinxql_select
-    Riddle::Query::Select.new.tap do |select|
-      select.from *indices.collect { |index| "`#{index}`" }
-      select.matching extended_query if extended_query.present?
-      select.where filters if filters.any?
-      select.order_by order_clause if order_clause.present?
-      select.offset offset
-      select.limit per_page
-      select.with_options select_options if select_options.keys.any?
-    end
+  def translator
+    @translator ||= ThinkingSphinx::Search::Translator.new(raw)
   end
 end
 
 require 'thinking_sphinx/search/geodist'
+require 'thinking_sphinx/search/inquirer'
 require 'thinking_sphinx/search/pagination'
+require 'thinking_sphinx/search/translator'
 
-ThinkingSphinx::Search.send :include, ThinkingSphinx::Search::Geodist
 ThinkingSphinx::Search.send :include, ThinkingSphinx::Search::Pagination

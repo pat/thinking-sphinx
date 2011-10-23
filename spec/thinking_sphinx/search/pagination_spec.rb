@@ -2,28 +2,15 @@ require 'spec_helper'
 
 describe ThinkingSphinx::Search::Pagination do
   let(:search)       { ThinkingSphinx::Search.new }
-  let(:config)       {
-    double('config', :searchd => searchd, :indices_for_reference => [index],
-      :indices => indices, :preload_indices => true)
-  }
-  let(:searchd)      { double('searchd', :address => nil, :mysql41 => 101) }
-  let(:connection)   { double('connection') }
   let(:meta_results) { [] }
-  let(:sphinx_sql)   {
-    double('sphinx select', :to_sql => 'SELECT * FROM index')
-  }
-  let(:model)        { double('model', :name => 'Article') }
-  let(:index)        { double('index', :name => 'article_core') }
-  let(:indices)      { [index, double('index', :name => 'user_core')] }
+  let(:translator)   { double('translator', :to_active_record => []) }
+  let(:inquirer)     { double('inquirer', :raw => [], :meta => {}) }
 
   before :each do
-    ThinkingSphinx::Configuration.stub! :instance => config
-    Riddle::Query.stub! :connection => connection
-    Riddle::Query::Select.stub! :new => sphinx_sql
-    sphinx_sql.stub! :from => sphinx_sql, :offset => sphinx_sql,
-      :limit => sphinx_sql
+    ThinkingSphinx::Search::Translator.stub :new => translator
+    ThinkingSphinx::Search::Inquirer.stub :new => inquirer
 
-    connection.stub(:query).and_return([], meta_results)
+    inquirer.stub :populate => inquirer
   end
 
   describe '#first_page?' do
@@ -37,7 +24,9 @@ describe ThinkingSphinx::Search::Pagination do
   end
 
   describe '#last_page?' do
-    let(:meta_results) { [{'Variable_name' => 'total', 'Value' => '44'}] }
+    before :each do
+      inquirer.meta['total'] = '44'
+    end
 
     it "is true when there's no more pages" do
       ThinkingSphinx::Search.new(:page => 3).should be_last_page
@@ -49,7 +38,9 @@ describe ThinkingSphinx::Search::Pagination do
   end
 
   describe '#next_page' do
-    let(:meta_results) { [{'Variable_name' => 'total', 'Value' => '44'}] }
+    before :each do
+      inquirer.meta['total'] = '44'
+    end
 
     it "should return one more than the current page" do
       search.next_page.should == 2
@@ -61,7 +52,9 @@ describe ThinkingSphinx::Search::Pagination do
   end
 
   describe '#next_page?' do
-    let(:meta_results) { [{'Variable_name' => 'total', 'Value' => '44'}] }
+    before :each do
+      inquirer.meta['total'] = '44'
+    end
 
     it "is true when there is a second page" do
       search.next_page?.should be_true
@@ -73,7 +66,9 @@ describe ThinkingSphinx::Search::Pagination do
   end
 
   describe '#previous_page' do
-    let(:meta_results) { [{'Variable_name' => 'total', 'Value' => '44'}] }
+    before :each do
+      inquirer.meta['total'] = '44'
+    end
 
     it "should return one less than the current page" do
       ThinkingSphinx::Search.new(:page => 2).previous_page.should == 1
@@ -85,7 +80,9 @@ describe ThinkingSphinx::Search::Pagination do
   end
 
   describe '#total_entries' do
-    let(:meta_results) { [{'Variable_name' => 'total_found', 'Value' => '12'}] }
+    before :each do
+      inquirer.meta['total_found'] = '12'
+    end
 
     it "returns the total found from the search request metadata" do
       search.total_entries.should == 12
@@ -93,10 +90,10 @@ describe ThinkingSphinx::Search::Pagination do
   end
 
   describe '#total_pages' do
-    let(:meta_results) { [
-      {'Variable_name' => 'total',       'Value' => '40'},
-      {'Variable_name' => 'total_found', 'Value' => '44'}
-    ] }
+    before :each do
+      inquirer.meta['total']       = '40'
+      inquirer.meta['total_found'] = '44'
+    end
 
     it "uses the total available from the search request metadata" do
       search.total_pages.should == 2
@@ -107,7 +104,7 @@ describe ThinkingSphinx::Search::Pagination do
     end
 
     it "should return 0 if there is no index and therefore no results" do
-      meta_results.first['Value'] = nil
+      inquirer.meta.clear
 
       search.total_pages.should == 0
     end

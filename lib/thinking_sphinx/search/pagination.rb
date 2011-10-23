@@ -30,15 +30,12 @@ module ThinkingSphinx::Search::Pagination
   end
 
   def total_entries
-    populate_meta
-
-    @meta['total_found'].to_i
+    meta['total_found'].to_i
   end
 
   def total_pages
-    populate_meta
-    return 0 if @meta['total'].nil?
+    return 0 if meta['total'].nil?
 
-    @total_pages ||= (@meta['total'].to_i / per_page.to_f).ceil
+    @total_pages ||= (meta['total'].to_i / per_page.to_f).ceil
   end
 end
