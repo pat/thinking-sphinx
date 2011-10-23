@@ -41,10 +41,9 @@ describe ThinkingSphinx::Context do
       }.should_not raise_error
     end
 
-    it "should report load errors but not raise them" do
+    it "should retry if the first load fails and contains a directory" do
+      model_name_lower.should_receive(:gsub!).twice.and_return(true, nil)
       class_name.stub(:constantize).and_raise(LoadError)
-      STDERR.stub!(:puts => '')
-      STDERR.should_receive(:puts).with('Warning: Error loading a.rb:')
 
       lambda {
         ts_context.prepare
