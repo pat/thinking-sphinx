@@ -12,11 +12,11 @@ describe ThinkingSphinx::ActiveRecord::Index do
   end
 
   describe '#append_source' do
-    let(:model)  { double('model') }
+    let(:model)  { double('model', :primary_key => :id) }
     let(:source) { double('source') }
 
     before :each do
-      ActiveSupport::Inflector.stub!(:constantize => model)
+      ActiveSupport::Inflector.stub(:constantize => model)
       ThinkingSphinx::ActiveRecord::SQLSource.stub :new => source
       config.stub :next_offset => 17
     end
@@ -36,6 +36,38 @@ describe ThinkingSphinx::ActiveRecord::Index do
 
     it "returns the new source" do
       index.append_source.should == source
+    end
+
+    it "defaults to the model's primary key" do
+      model.stub :primary_key => :sphinx_id
+
+      ThinkingSphinx::ActiveRecord::SQLSource.should_receive(:new).
+        with(model, hash_including(:primary_key => :sphinx_id)).
+        and_return(source)
+
+      index.append_source
+    end
+
+    it "uses a custom column when set" do
+      model.stub :primary_key => :sphinx_id
+
+      ThinkingSphinx::ActiveRecord::SQLSource.should_receive(:new).
+        with(model, hash_including(:primary_key => :custom_sphinx_id)).
+        and_return(source)
+
+      index = ThinkingSphinx::ActiveRecord::Index.new:user,
+        :primary_key => :custom_sphinx_id
+      index.append_source
+    end
+
+    it "defaults to id if no primary key is set" do
+      model.stub :primary_key => nil
+
+      ThinkingSphinx::ActiveRecord::SQLSource.should_receive(:new).
+        with(model, hash_including(:primary_key => :id)).
+        and_return(source)
+
+      index.append_source
     end
   end
 
@@ -77,7 +109,7 @@ describe ThinkingSphinx::ActiveRecord::Index do
     let(:model)  { double('model') }
 
     it "translates symbol references to model class" do
-      ActiveSupport::Inflector.stub!(:constantize => model)
+      ActiveSupport::Inflector.stub(:constantize => model)
 
       index.model.should == model
     end

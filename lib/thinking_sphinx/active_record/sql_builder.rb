@@ -78,7 +78,7 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
   end
 
   def quoted_primary_key
-    "#{model.quoted_table_name}.#{quote_column(model.primary_key_for_sphinx)}"
+    "#{model.quoted_table_name}.#{quote_column(source.primary_key)}"
   end
 
   def quoted_inheritance_column
@@ -90,7 +90,7 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
   end
 
   def document_id
-    quoted_alias  = quote_column(model.primary_key_for_sphinx)
+    quoted_alias = quote_column source.primary_key
     "#{quoted_primary_key} * #{config.indices.count} + #{source.offset} AS #{quoted_alias}"
   end
 

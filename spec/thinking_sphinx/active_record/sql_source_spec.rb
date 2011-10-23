@@ -38,7 +38,7 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
   end
 
   describe '#delta_processor' do
-    let(:processor_class) { double('processor class', :new => processor) }
+    let(:processor_class) { double('processor class', :try => processor) }
     let(:processor)       { double('processor') }
     let(:source)          {
       ThinkingSphinx::ActiveRecord::SQLSource.new model,
@@ -46,7 +46,8 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
     }
 
     it "loads the processor with the adapter" do
-      processor_class.should_receive(:new).with(adapter).and_return processor
+      processor_class.should_receive(:try).with(:new, adapter).
+        and_return processor
 
       source.delta_processor
     end

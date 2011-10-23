@@ -6,10 +6,10 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
   let(:source)       { double('source', :model => model, :offset => 3,
     :fields => fields, :attributes => attributes, :disable_range? => false,
     :delta_processor => nil, :conditions => [], :groupings => [],
-    :adapter => adapter, :associations => []) }
-  let(:model)        { double('model', :primary_key_for_sphinx => :id,
-    :connection => connection, :descends_from_active_record? => true,
-    :column_names => [], :inheritance_column => 'type', :unscoped => relation,
+    :adapter => adapter, :associations => [], :primary_key => :id) }
+  let(:model)        { double('model', :connection => connection,
+    :descends_from_active_record? => true, :column_names => [],
+    :inheritance_column => 'type', :unscoped => relation,
     :quoted_table_name => '`users`', :name => 'User') }
   let(:connection)   { double('connection') }
   let(:relation)     { double('relation') }

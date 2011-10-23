@@ -61,6 +61,10 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
     options[:offset]
   end
 
+  def primary_key
+    options[:primary_key]
+  end
+
   def render
     self.class.settings.each do |setting|
       value = config.settings[setting.to_s]

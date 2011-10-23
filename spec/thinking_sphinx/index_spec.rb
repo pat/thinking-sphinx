@@ -14,7 +14,7 @@ describe ThinkingSphinx::Index do
 
       it "creates an ActiveRecord index" do
         ThinkingSphinx::ActiveRecord::Index.should_receive(:new).
-          with(:user).and_return index
+          with(:user, :with => :active_record).and_return index
 
         ThinkingSphinx::Index.define(:user, :with => :active_record)
       end
@@ -51,10 +51,14 @@ describe ThinkingSphinx::Index do
         it "creates two indices with delta settings" do
           ThinkingSphinx::ActiveRecord::Index.unstub :new
           ThinkingSphinx::ActiveRecord::Index.should_receive(:new).
-            with(:user, :delta? => false, :delta_processor => processor).once.
+            with(:user,
+              hash_including(:delta? => false, :delta_processor => processor)
+            ).once.
             and_return index
           ThinkingSphinx::ActiveRecord::Index.should_receive(:new).
-            with(:user, :delta? => true,  :delta_processor => processor).once.
+            with(:user,
+              hash_including(:delta? => true,  :delta_processor => processor)
+            ).once.
             and_return delta_index
 
           ThinkingSphinx::Index.define :user,
