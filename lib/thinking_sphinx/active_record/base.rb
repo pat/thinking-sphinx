@@ -2,7 +2,8 @@ module ThinkingSphinx::ActiveRecord::Base
   extend ActiveSupport::Concern
 
   included do
-    after_commit :after_commit_with_sphinx
+    before_save  ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks
+    after_commit ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks
   end
 
   module ClassMethods
@@ -31,21 +32,6 @@ module ThinkingSphinx::ActiveRecord::Base
 
     def scoped_sphinx_options
       {:classes => [self]}
-    end
-  end
-
-  module InstanceMethods
-    def after_commit_with_sphinx
-      indices = sphinx_indices.select { |index| index.delta? }
-      sphinx_config.controller.index *indices.collect(&:name) if indices.any?
-    end
-
-    def sphinx_config
-      ThinkingSphinx::Configuration.instance
-    end
-
-    def sphinx_indices
-      sphinx_config.indices_for_reference(self.class.name.underscore.to_sym)
     end
   end
 end
