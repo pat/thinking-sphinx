@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'acceptance/spec_helper'
 
 describe 'Sorting search results', :live => true do
   it "sorts by a given clause" do

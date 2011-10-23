@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'acceptance/spec_helper'
 
 describe 'specifying joins' do
   it "renders the SQL with the join" do

@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'acceptance/spec_helper'
 
 describe 'Searching on fields', :live => true do
   it "limits results by field" do

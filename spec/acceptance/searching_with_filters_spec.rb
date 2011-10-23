@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'acceptance/spec_helper'
 
 describe 'Searching with filters', :live => true do
   it "limits results by single value boolean filters" do

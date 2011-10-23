@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'acceptance/spec_helper'
 
 describe 'Searching across models', :live => true do
   it "returns results" do

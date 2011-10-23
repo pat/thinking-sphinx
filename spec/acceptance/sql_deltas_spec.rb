@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'acceptance/spec_helper'
 
 describe 'SQL delta indexing', :live => true do
   it "automatically indexes new records" do
