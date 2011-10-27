@@ -3,7 +3,7 @@ require 'thinking_sphinx/index/faux_column'
 
 module ThinkingSphinx
   class Index
-    attr_accessor :name, :model, :sources, :delta_object
+    attr_accessor :name, :model, :sources, :delta_object, :delta_stages
     
     # Create a new index instance by passing in the model it is tied to, and
     # a block to build it with (optional but recommended). For documentation
@@ -39,13 +39,21 @@ module ThinkingSphinx
       "#{name}_core"
     end
     
-    def delta_name
-      "#{name}_delta"
+    def delta_name(stage)
+      "#{name}_delta_#{stage}"
+    end
+    
+    def delta_names
+      @delta_object.stages.collect{|s| delta_name(s)}
+    end
+    
+    def enumerate_delta_names
+      delta_names.each{|n| yield(n)}
     end
     
     def all_names
       names  = [core_name]
-      names << delta_name if delta?
+      names += delta_names if delta?
       
       names
     end
@@ -81,7 +89,7 @@ module ThinkingSphinx
     
     def to_riddle(offset)
       indexes = [to_riddle_for_core(offset)]
-      indexes << to_riddle_for_delta(offset) if delta?
+      @delta_object.stages.each {|s| indexes << to_riddle_for_delta(offset, s)} if delta?
       indexes << to_riddle_for_distributed
     end
     
@@ -117,13 +125,13 @@ module ThinkingSphinx
       index
     end
     
-    def to_riddle_for_delta(offset)
-      index = Riddle::Configuration::Index.new delta_name
+    def to_riddle_for_delta(offset, stage)
+      index = Riddle::Configuration::Index.new delta_name(stage)
       index.parent = core_name
       index.path = File.join config.searchd_file_path, index.name
       
       sources.each_with_index do |source, i|
-        index.sources << source.to_riddle_for_delta(offset, i)
+        index.sources << source.to_riddle_for_delta(offset, i, stage)
       end
       
       index
@@ -131,8 +139,8 @@ module ThinkingSphinx
     
     def to_riddle_for_distributed
       index = Riddle::Configuration::DistributedIndex.new name
-      index.local_indexes << core_name
-      index.local_indexes.unshift delta_name if delta?
+      index.local_indexes << core_name 
+      enumerate_delta_names {|n| index.local_indexes.unshift n} if delta?
       index
     end
     

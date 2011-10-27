@@ -53,9 +53,9 @@ module ThinkingSphinx
       source
     end
     
-    def to_riddle_for_delta(offset, position)
+    def to_riddle_for_delta(offset, position, stage)
       source = Riddle::Configuration::SQLSource.new(
-        "#{index.delta_name}_#{position}", adapter.sphinx_identifier
+        "#{index.delta_name(stage)}_#{position}", adapter.sphinx_identifier
       )
       source.parent = "#{index.core_name}_#{position}"
       
