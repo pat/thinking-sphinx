@@ -1,5 +1,5 @@
 class ThinkingSphinx::ActiveRecord::Interpreter < BlankSlate
-  reveal :extend
+  reveal :extend if RUBY_ENGINE == 'rbx'
 
   def self.translate!(index, block)
     new(index, block).translate!
