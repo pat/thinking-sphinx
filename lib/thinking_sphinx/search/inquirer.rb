@@ -34,6 +34,14 @@ class ThinkingSphinx::Search::Inquirer
     @connection ||= config.connection
   end
 
+  def exclusive_filters
+    @exclusive_filters ||= (options[:without] || {}).tap do |without|
+      if options[:without_ids].present? && options[:without_ids].any?
+        without[:sphinx_internal_id] = options[:without_ids]
+      end
+    end
+  end
+
   def extended_query
     conditions = options[:conditions] || {}
     @extended_query ||= begin
@@ -43,8 +51,8 @@ class ThinkingSphinx::Search::Inquirer
     end
   end
 
-  def filters
-    @filters ||= (options[:with] || {}).tap do |with|
+  def inclusive_filters
+    @inclusive_filters ||= (options[:with] || {}).tap do |with|
       with[:sphinx_deleted] = false
     end
   end
@@ -82,7 +90,8 @@ class ThinkingSphinx::Search::Inquirer
     Riddle::Query::Select.new.tap do |select|
       select.from *indices.collect { |index| "`#{index}`" }
       select.matching extended_query if extended_query.present?
-      select.where filters if filters.any?
+      select.where inclusive_filters if inclusive_filters.any?
+      select.where_not exclusive_filters if exclusive_filters.any?
       select.order_by order_clause if order_clause.present?
       select.offset @search.offset
       select.limit @search.per_page

@@ -105,6 +105,25 @@ describe ThinkingSphinx::Search::Inquirer do
       inquirer.populate
     end
 
+    it "appends exclusive filters to the query" do
+      search.options[:without] = {:tag_ids => [2, 4, 8]}
+
+      sphinx_sql.should_receive(:where_not).
+        with(hash_including(:tag_ids => [2, 4, 8])).and_return(sphinx_sql)
+
+      inquirer.populate
+    end
+
+    it "appends the without_ids option as an exclusive filter" do
+      search.options[:without_ids] = [1, 4, 9]
+
+      sphinx_sql.should_receive(:where_not).
+        with(hash_including(:sphinx_internal_id => [1, 4, 9])).
+        and_return(sphinx_sql)
+
+      inquirer.populate
+    end
+
     it "appends order clauses to the query" do
       search.options[:order] = 'created_at ASC'
 
