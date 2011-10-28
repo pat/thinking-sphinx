@@ -43,6 +43,12 @@ describe ThinkingSphinx::ActiveRecord::Attribute do
       attribute.type_for(model).should == :timestamp
     end
 
+    it "detects date types from the database as timestamps" do
+      db_column.stub!(:type => :date)
+
+      attribute.type_for(model).should == :timestamp
+    end
+
     it "detects string types from the database" do
       db_column.stub!(:type => :string)
 

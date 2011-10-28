@@ -32,7 +32,7 @@ class ThinkingSphinx::ActiveRecord::Attribute <
     }.type
 
     case db_type
-    when :datetime
+    when :datetime, :date
       :timestamp
     when :text
       :string
