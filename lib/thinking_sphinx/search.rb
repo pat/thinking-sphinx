@@ -54,7 +54,9 @@ class ThinkingSphinx::Search < Array
   def populate
     return self if @populated
 
-    @array.replace translator.to_active_record
+    RetryOnStaleIds.new(self).try_with_stale do
+      @array.replace translator.to_active_record
+    end
     @populated = true
 
     self
@@ -64,8 +66,23 @@ class ThinkingSphinx::Search < Array
     inquirer.raw
   end
 
+  def reset!
+    @inquirer, @translator = nil, nil
+  end
+
   def respond_to?(method, include_private = false)
     super || @array.respond_to?(method, include_private)
+  end
+
+  def stale_retries
+    @stale_retries ||= case options[:retry_stale]
+    when nil, TrueClass
+      3
+    when FalseClass
+      0
+    else
+      options[:retry_stale].to_i
+    end
   end
 
   private
@@ -88,6 +105,8 @@ end
 require 'thinking_sphinx/search/geodist'
 require 'thinking_sphinx/search/inquirer'
 require 'thinking_sphinx/search/pagination'
+require 'thinking_sphinx/search/retry_on_stale_ids'
+require 'thinking_sphinx/search/stale_ids_exception'
 require 'thinking_sphinx/search/translator'
 
 ThinkingSphinx::Search.send :include, ThinkingSphinx::Search::Pagination

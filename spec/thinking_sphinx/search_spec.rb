@@ -1,15 +1,18 @@
 require 'spec_helper'
 
 describe ThinkingSphinx::Search do
-  let(:search)     { ThinkingSphinx::Search.new }
-  let(:translator) { double('translator', :to_active_record => []) }
-  let(:inquirer)   { double('inquirer', :raw => []) }
+  let(:search)      { ThinkingSphinx::Search.new }
+  let(:translator)  { double('translator', :to_active_record => []) }
+  let(:inquirer)    { double('inquirer', :raw => []) }
+  let(:stale_retry) { double('retrier') }
 
   before :each do
     ThinkingSphinx::Search::Translator.stub :new => translator
     ThinkingSphinx::Search::Inquirer.stub :new => inquirer
+    ThinkingSphinx::Search::RetryOnStaleIds.stub :new => stale_retry
 
     inquirer.stub :populate => inquirer
+    stale_retry.stub(:try_with_stale).and_yield
   end
 
   describe '#current_page' do
@@ -114,6 +117,21 @@ describe ThinkingSphinx::Search do
     end
   end
 
+  describe '#populate' do
+    it "retrieves the ActiveRecord-translated results" do
+      translator.should_receive(:to_active_record).and_return([])
+
+      search.populate
+    end
+
+    it "does not retrieve results twice" do
+      translator.should_receive(:to_active_record).once.and_return([])
+
+      search.populate
+      search.populate
+    end
+  end
+
   describe '#respond_to?' do
     it "should respond to Array methods" do
       search.respond_to?(:each).should be_true
@@ -121,6 +139,30 @@ describe ThinkingSphinx::Search do
 
     it "should respond to Search methods" do
       search.respond_to?(:per_page).should be_true
+    end
+  end
+
+  describe '#stale_retries' do
+    it "returns 3 by default" do
+      search.stale_retries.should == 3
+    end
+
+    it "returns 3 when given true" do
+      search.options[:retry_stale] = true
+
+      search.stale_retries.should == 3
+    end
+
+    it "returns 0 when given false" do
+      search.options[:retry_stale] = false
+
+      search.stale_retries.should == 0
+    end
+
+    it "respects integer values" do
+      search.options[:retry_stale] = 7
+
+      search.stale_retries.should == 7
     end
   end
 end

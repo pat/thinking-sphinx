@@ -9,7 +9,7 @@ describe ThinkingSphinx::Search::Translator do
     it "translates records to ActiveRecord objects" do
       model_name = double('article', :constantize => model)
       instance   = double('instance', :id => 24)
-      model.stub!(:find => [instance])
+      model.stub!(:where => [instance])
 
       raw << {'sphinx_internal_id' => 24, 'sphinx_internal_class' => model_name}
 
@@ -18,11 +18,12 @@ describe ThinkingSphinx::Search::Translator do
 
     it "only queries the model once for the given search results" do
       model_name = double('article', :constantize => model)
-      instance   = double('instance', :id => 24)
+      instance_a = double('instance', :id => 24)
+      instance_b = double('instance', :id => 42)
       raw << {'sphinx_internal_id' => 24, 'sphinx_internal_class' => model_name}
       raw << {'sphinx_internal_id' => 42, 'sphinx_internal_class' => model_name}
 
-      model.should_receive(:find).once.and_return([instance])
+      model.should_receive(:where).once.and_return([instance_a, instance_b])
 
       translator.to_active_record
     end
@@ -39,8 +40,8 @@ describe ThinkingSphinx::Search::Translator do
       raw << {'sphinx_internal_id' => 24, 'sphinx_internal_class' => article_name}
       raw << {'sphinx_internal_id' => 12, 'sphinx_internal_class' => user_name}
 
-      article_model.should_receive(:find).once.and_return([article])
-      user_model.should_receive(:find).once.and_return([user])
+      article_model.should_receive(:where).once.and_return([article])
+      user_model.should_receive(:where).once.and_return([user])
 
       translator.to_active_record
     end
@@ -53,9 +54,24 @@ describe ThinkingSphinx::Search::Translator do
       raw << {'sphinx_internal_id' => 2, 'sphinx_internal_class' => model_name}
       raw << {'sphinx_internal_id' => 1, 'sphinx_internal_class' => model_name}
 
-      model.stub(:find => [instance_1, instance_2])
+      model.stub(:where => [instance_1, instance_2])
 
       translator.to_active_record.should == [instance_2, instance_1]
+    end
+
+    it "raises a stale id exception if ActiveRecord doesn't return ids" do
+      model_name = double('article', :constantize => model)
+      instance = double('instance', :id => 24)
+      raw << {'sphinx_internal_id' => 24, 'sphinx_internal_class' => model_name}
+      raw << {'sphinx_internal_id' => 42, 'sphinx_internal_class' => model_name}
+
+      model.should_receive(:where).once.and_return([instance])
+
+      lambda {
+        translator.to_active_record
+      }.should raise_error(ThinkingSphinx::Search::StaleIdsException) { |err|
+        err.ids.should == [42]
+      }
     end
   end
 end

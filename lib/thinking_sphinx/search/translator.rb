@@ -34,7 +34,14 @@ class ThinkingSphinx::Search::Translator
 
   def results_for_models
     @results_for_models ||= model_names.inject({}) { |hash, name|
-      hash[name] = name.constantize.find ids_for_model(name)
+      ids = ids_for_model(name)
+      hash[name] = name.constantize.where(:id => ids)
+
+      stale_ids = ids - hash[name].collect(&:id)
+      if stale_ids.any?
+        raise ThinkingSphinx::Search::StaleIdsException, stale_ids
+      end
+
       hash
     }
   end
