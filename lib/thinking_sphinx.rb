@@ -2,6 +2,10 @@ require 'riddle'
 require 'active_record'
 
 module ThinkingSphinx
+  def self.count(query = '', options = {})
+    search(query, options).total_entries
+  end
+
   def self.search(query = '', options = {})
     ThinkingSphinx::Search.new query, options
   end

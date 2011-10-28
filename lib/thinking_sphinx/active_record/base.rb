@@ -12,6 +12,10 @@ module ThinkingSphinx::ActiveRecord::Base
       ThinkingSphinx.search query, scoped_sphinx_options.merge(options)
     end
 
+    def search_count(query = nil, options = {})
+      search(query, options).total_entries
+    end
+
     private
 
     def scoped_sphinx_options

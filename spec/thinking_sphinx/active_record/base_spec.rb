@@ -25,4 +25,23 @@ describe ThinkingSphinx::ActiveRecord::Base do
       model.search 'pancakes'
     end
   end
+
+  describe '.search_count' do
+    let(:search) { double('search', :total_entries => 12) }
+
+    before :each do
+      ThinkingSphinx.stub :search => search
+    end
+
+    it "returns the search object's total entries count" do
+      model.search_count.should == search.total_entries
+    end
+
+    it "scopes the search to a given model" do
+      ThinkingSphinx.should_receive(:search).
+        with(anything, hash_including(:classes => [model])).and_return(search)
+
+      model.search_count
+    end
+  end
 end
