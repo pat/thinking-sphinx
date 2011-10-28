@@ -1,13 +1,7 @@
-class ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks
-  attr_reader :instance
+class ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks <
+  ThinkingSphinx::ActiveRecord::Callbacks
 
-  def self.after_destroy(instance)
-    new(instance).after_destroy
-  end
-
-  def initialize(instance)
-    @instance = instance
-  end
+  callbacks :after_destroy
 
   def after_destroy
     indices.each do |index|

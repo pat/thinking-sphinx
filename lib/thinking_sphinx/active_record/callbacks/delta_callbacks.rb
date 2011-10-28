@@ -1,17 +1,7 @@
-class ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks
-  attr_reader :instance
+class ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks <
+  ThinkingSphinx::ActiveRecord::Callbacks
 
-  def self.after_commit(instance)
-    new(instance).after_commit
-  end
-
-  def self.before_save(instance)
-    new(instance).before_save
-  end
-
-  def initialize(instance)
-    @instance = instance
-  end
+  callbacks :after_commit, :before_save
 
   def after_commit
     return unless delta_indices? && processors.any? { |processor|
