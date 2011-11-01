@@ -1,7 +1,5 @@
 require 'spec_helper'
 
-require 'active_support/core_ext/module/delegation'
-
 describe ThinkingSphinx::ActiveRecord::SQLBuilder do
   let(:source)       { double('source', :model => model, :offset => 3,
     :fields => fields, :attributes => attributes, :disable_range? => false,
