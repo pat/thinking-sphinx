@@ -1,4 +1,6 @@
 Edge:
+* Updating Riddle references for impending 1.5.0 release.
+* Handle out-of-date indexed_models references.
 * Fixing STI model handling during context index loading (Kenn Ejima).
 
 2.0.9 - October 10th 2011

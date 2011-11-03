@@ -14,20 +14,20 @@ module Riddle
   class Configuration
     class ConfigurationError < StandardError #:nodoc:
     end
-    
-    attr_reader :indexes, :searchd
+
+    attr_reader :indices, :searchd
     attr_accessor :indexer
-    
+
     def initialize
       @indexer = Riddle::Configuration::Indexer.new
       @searchd = Riddle::Configuration::Searchd.new
-      @indexes = []
+      @indices = []
     end
-    
+
     def render
       (
         [@indexer.render, @searchd.render] +
-        @indexes.collect { |index| index.render }
+        @indices.collect { |index| index.render }
       ).join("\n")
     end
   end

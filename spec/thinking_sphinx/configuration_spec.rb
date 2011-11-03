@@ -231,7 +231,7 @@ describe ThinkingSphinx::Configuration do
       config.reset
       config.generate
 
-      config.configuration.indexes.each do |index|
+      config.configuration.indices.each do |index|
         next if index.is_a? Riddle::Configuration::DistributedIndex
 
         index.sources.each do |source|

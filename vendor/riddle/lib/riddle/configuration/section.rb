@@ -1,11 +1,9 @@
 module Riddle
   class Configuration
     class Section
-      class << self
-        attr_accessor :settings
+      def self.settings
+        []
       end
-      
-      settings = []
       
       def valid?
         true

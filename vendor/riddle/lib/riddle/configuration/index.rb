@@ -1,17 +1,21 @@
 module Riddle
   class Configuration
     class Index < Riddle::Configuration::Section
-      self.settings = [:type, :source, :path, :docinfo, :mlock, :morphology,
-        :dict, :index_sp, :index_zones, :min_stemming_len, :stopwords,
-        :wordforms, :exceptions, :min_word_len, :charset_dictpath,
-        :charset_type, :charset_table, :ignore_chars, :min_prefix_len,
-        :min_infix_len, :prefix_fields, :infix_fields, :enable_star,
-        :expand_keywords, :ngram_len, :ngram_chars, :phrase_boundary,
-        :phrase_boundary_step, :blend_chars, :blend_mode, :html_strip,
-        :html_index_attrs, :html_remove_elements, :preopen, :ondisk_dict,
-        :inplace_enable, :inplace_hit_gap, :inplace_docinfo_gap,
-        :inplace_reloc_factor, :inplace_write_factor, :index_exact_words,
-        :overshort_step, :stopwords_step, :hitless_words]
+      def self.settings
+        [
+          :type, :source, :path, :docinfo, :mlock, :morphology,
+          :dict, :index_sp, :index_zones, :min_stemming_len, :stopwords,
+          :wordforms, :exceptions, :min_word_len, :charset_dictpath,
+          :charset_type, :charset_table, :ignore_chars, :min_prefix_len,
+          :min_infix_len, :prefix_fields, :infix_fields, :enable_star,
+          :expand_keywords, :ngram_len, :ngram_chars, :phrase_boundary,
+          :phrase_boundary_step, :blend_chars, :blend_mode, :html_strip,
+          :html_index_attrs, :html_remove_elements, :preopen, :ondisk_dict,
+          :inplace_enable, :inplace_hit_gap, :inplace_docinfo_gap,
+          :inplace_reloc_factor, :inplace_write_factor, :index_exact_words,
+          :overshort_step, :stopwords_step, :hitless_words
+        ]
+      end
       
       attr_accessor :name, :parent, :type, :sources, :path, :docinfo, :mlock,
         :morphologies, :dict, :index_sp, :index_zones, :min_stemming_len,
