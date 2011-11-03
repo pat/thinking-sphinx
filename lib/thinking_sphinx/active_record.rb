@@ -316,7 +316,7 @@ module ThinkingSphinx
       private
 
       def local_sphinx_indexes
-        sphinx_indexes.select { |index|
+        (sphinx_indexes || []).select { |index|
           index.model == self
         }
       end
