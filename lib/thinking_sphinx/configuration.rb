@@ -152,12 +152,12 @@ module ThinkingSphinx
     end
 
     def generate
-      @configuration.indexes.clear
+      @configuration.indices.clear
 
       ThinkingSphinx.context.indexed_models.each do |model|
         model = model.constantize
         model.define_indexes
-        @configuration.indexes.concat model.to_riddle
+        @configuration.indices.concat model.to_riddle
 
         enforce_common_attribute_types
       end
@@ -317,7 +317,7 @@ module ThinkingSphinx
     end
 
     def enforce_common_attribute_types
-      sql_indexes = configuration.indexes.reject { |index|
+      sql_indexes = configuration.indices.reject { |index|
         index.is_a? Riddle::Configuration::DistributedIndex
       }
 
