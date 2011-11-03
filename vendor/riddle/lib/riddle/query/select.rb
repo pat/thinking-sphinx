@@ -1,14 +1,21 @@
 class Riddle::Query::Select
   def initialize
+    @values                = ['*']
     @indices               = []
     @matching              = nil
     @wheres                = {}
+    @where_nots            = {}
     @group_by              = nil
     @order_by              = nil
     @order_within_group_by = nil
     @offset                = nil
     @limit                 = nil
     @options               = {}
+  end
+
+  def values(*values)
+    @values += values
+    self
   end
 
   def from(*indices)
@@ -23,6 +30,11 @@ class Riddle::Query::Select
 
   def where(filters = {})
     @wheres.merge!(filters)
+    self
+  end
+
+  def where_not(filters = {})
+    @where_nots.merge!(filters)
     self
   end
 
@@ -57,7 +69,7 @@ class Riddle::Query::Select
   end
 
   def to_sql
-    sql = "SELECT * FROM #{ @indices.join(', ') }"
+    sql = "SELECT #{ @values.join(', ') } FROM #{ @indices.join(', ') }"
     sql << " WHERE #{ combined_wheres }" if wheres?
     sql << " GROUP BY #{@group_by}"      if !@group_by.nil?
     sql << " ORDER BY #{@order_by}"      if !@order_by.nil?
@@ -66,20 +78,20 @@ class Riddle::Query::Select
     end
     sql << " #{limit_clause}"   unless @limit.nil? && @offset.nil?
     sql << " #{options_clause}" unless @options.empty?
-  
+
     sql
   end
 
   private
 
   def wheres?
-    !(@wheres.empty? && @matching.nil?)
+    !(@wheres.empty? && @where_nots.empty? && @matching.nil?)
   end
 
   def combined_wheres
     if @matching.nil?
       wheres_to_s
-    elsif @wheres.empty?
+    elsif @wheres.empty? && @where_nots.empty?
       "MATCH('#{@matching}')"
     else
       "MATCH('#{@matching}') AND #{wheres_to_s}"
@@ -87,9 +99,49 @@ class Riddle::Query::Select
   end
 
   def wheres_to_s
-    @wheres.keys.collect { |key|
-      "#{key} = #{@wheres[key]}"
-    }.join(' AND ')
+    (
+      @wheres.keys.collect { |key|
+        filter_comparison_and_value key, @wheres[key]
+      } +
+      @where_nots.keys.collect { |key|
+        exclusive_filter_comparison_and_value key, @where_nots[key]
+      }
+    ).join(' AND ')
+  end
+
+  def filter_comparison_and_value(attribute, value)
+    case value
+    when Array
+      "#{attribute} IN (#{value.collect { |val| filter_value(val) }.join(', ')})"
+    when Range
+      "#{attribute} BETWEEN #{filter_value(value.first)} AND #{filter_value(value.last)}"
+    else
+      "#{attribute} = #{filter_value(value)}"
+    end
+  end
+
+  def exclusive_filter_comparison_and_value(attribute, value)
+    case value
+    when Array
+      "#{attribute} NOT IN (#{value.collect { |val| filter_value(val) }.join(', ')})"
+    when Range
+      "#{attribute} < #{filter_value(value.first)} OR #{attribute} > #{filter_value(value.last)}"
+    else
+      "#{attribute} <> #{filter_value(value)}"
+    end
+  end
+
+  def filter_value(value)
+    case value
+    when TrueClass
+      1
+    when FalseClass
+      0
+    when Time
+      value.to_i
+    else
+      value
+    end
   end
 
   def limit_clause
@@ -102,7 +154,16 @@ class Riddle::Query::Select
 
   def options_clause
     'OPTION ' + @options.keys.collect { |key|
-      "#{key}=#{@options[key]}"
+      "#{key}=#{option_value @options[key]}"
     }.join(', ')
+  end
+
+  def option_value(value)
+    case value
+    when Hash
+      '(' + value.collect { |key, value| "#{key}=#{value}" }.join(', ') + ')'
+    else
+      value
+    end
   end
 end
