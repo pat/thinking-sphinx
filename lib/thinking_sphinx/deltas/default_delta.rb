@@ -2,10 +2,12 @@ module ThinkingSphinx
   module Deltas
     class DefaultDelta
       attr_accessor :column
+      attr_accessor :stages
       
       def initialize(index, options)
         @index  = index
         @column = options.delete(:delta_column) || :delta
+        @stages = options.delete(:delta_stages) || ['a']
       end
       
       def index(model, instance = nil)

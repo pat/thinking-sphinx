@@ -238,7 +238,7 @@ module ThinkingSphinx
 
       def delta_index_names
         define_indexes
-        sphinx_indexes.select(&:delta?).collect(&:delta_name)
+        sphinx_indexes.select(&:delta?).collect(&:delta_names).flatten
       end
 
       def to_riddle

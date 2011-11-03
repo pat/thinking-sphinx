@@ -22,7 +22,9 @@ module ThinkingSphinx
 
           update_index index.core_name, attribute_names, attribute_values
           next unless index.delta?
-          update_index index.delta_name, attribute_names, attribute_values
+          index.enumerate_delta_names do |delta_name|
+            update_index delta_name, attribute_names, attribute_values
+          end
         end
 
         true
