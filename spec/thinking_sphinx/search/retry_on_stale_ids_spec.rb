@@ -5,23 +5,26 @@ describe ThinkingSphinx::Search::RetryOnStaleIds do
   let(:search)  {
     double('search', :stale_retries => 2, :options => {}, :reset! => true)
   }
-  let(:block)   { Proc.new {} }
 
   describe '#try_with_stale' do
+    let(:block) { Proc.new {} }
+
     it "calls the given block" do
       block.should_receive(:call)
 
-      retrier.try_with_stale &block
+      retrier.try_with_stale do
+        block.call
+      end
     end
 
     context 'one stale ids exception' do
-      before :each do
-        block.stub(:call) do
+      let(:block) {
+        Proc.new {
           @calls ||= 0
           @calls += 1
           raise ThinkingSphinx::Search::StaleIdsException, [12] if @calls == 1
-        end
-      end
+        }
+      }
 
       it "resets the search" do
         search.should_receive(:reset!)
@@ -57,15 +60,14 @@ describe ThinkingSphinx::Search::RetryOnStaleIds do
     end
 
     context  'two stale ids exceptions' do
-      before :each do
-        block.stub(:call) do
+      let(:block) {
+        Proc.new {
           @calls ||= 0
           @calls += 1
-
           raise ThinkingSphinx::Search::StaleIdsException, [12] if @calls == 1
           raise ThinkingSphinx::Search::StaleIdsException, [13] if @calls == 2
-        end
-      end
+        }
+      }
 
       it "resets the search each time" do
         search.should_receive(:reset!).twice
@@ -101,16 +103,16 @@ describe ThinkingSphinx::Search::RetryOnStaleIds do
     end
 
     context 'three stale ids exceptions' do
-      before :each do
-        block.stub(:call) do
+      let(:block) {
+        Proc.new {
           @calls ||= 0
           @calls += 1
 
           raise ThinkingSphinx::Search::StaleIdsException, [12] if @calls == 1
           raise ThinkingSphinx::Search::StaleIdsException, [13] if @calls == 2
           raise ThinkingSphinx::Search::StaleIdsException, [14] if @calls == 3
-        end
-      end
+        }
+      }
 
       it "raises the final stale ids exceptions" do
         lambda {
