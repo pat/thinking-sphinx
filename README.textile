@@ -1,0 +1,45 @@
+h1. Thinking Sphinx
+
+Welcome to Thinking Sphinx version 3 - a complete rewrite from past versions. Right now it is a work-in-progress, missing many of the features in TS 2 and earlier. It's also currently built for Rails 3.1 only.
+
+Still interested? Well, read on!
+
+h2. Installation
+
+There's no gem (prerelease or otherwise) at this point - so you'll need to use the git reference:
+
+<pre><code>gem 'thinking-sphinx',
+  :git    => 'git://github.com/freelancing-god/thinking-sphinx.git',
+  :branch => 'edge',
+  :ref    => 'current-commit-ref'</code></pre>
+
+h2. Usage
+
+Indexes are no longer defined in models - they now live in `app/indices` (which you will need to create yourself). Each index should get its own file, and look something like this:
+
+<pre><code># app/indices/article_index.rb
+ThinkingSphinx::Index.define :article, :with => :active_record do
+  indexes title, content
+  indexes user.name, :as => :user
+  indexes user.articles.title, :as => :related_titles
+
+  has published
+end</code></pre>
+
+You'll notice the first argument is the model name downcased and as a symbol, and we are specifying the processor - @:active_record@. Everything inside the block is just like previous versions of Thinking Sphinx. Same goes for @config/sphinx.yml@.
+
+h2. Limitations
+
+Basic indexing and searching should be fine. There's currently no facets or excerpts, and limited delta support. Many settings haven't yet been brought across. Many of the smaller features don't yet exist either. Some may actually not return... we'll see.
+
+h2. Contributing
+
+You're brave! To contribute, clone this repository and have a good look through the specs - you'll notice the distinction between acceptance tests that actually use Sphinx and go through the full stack, and unit tests (everything else) which use liberal test doubles to ensure they're only testing the behaviour of the class in question. I've found this leads to far better code design.
+
+If you're still interested in helping evolve this, then write the tests and then the code to get them passing, and send through a pull request. No promises on merging anything, but we shall see!
+
+For some ideas behind my current approach, have a look through @sketchpad.rb@ in the root of this project. If you can make sense of that, you're doing very well indeed.
+
+h2. Licence
+
+Copyright (c) 2011, Combustion is developed and maintained by Pat Allan, and is released under the open MIT Licence. Many thanks to "all who have contributed patches":https://github.com/freelancing-god/thinking-sphinx/contributors.
