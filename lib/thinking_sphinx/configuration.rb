@@ -81,7 +81,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 
   def settings_to_hash
     contents = YAML.load(ERB.new(File.read(settings_file)).result)
-    contents.try(:[], Rails.env) || {}
+    contents && contents[Rails.env] || {}
   end
 
   def settings_file
