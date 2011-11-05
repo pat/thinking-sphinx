@@ -42,7 +42,7 @@ class ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks <
   end
 
   def indices
-    @indices ||= config.indices_for_reference reference
+    @indices ||= config.indices_for_references reference
   end
 
   def processors

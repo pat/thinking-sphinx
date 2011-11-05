@@ -2,7 +2,8 @@ require 'spec_helper'
 
 describe ThinkingSphinx::ActiveRecord::SQLSource do
   let(:model)      {
-    double('model', :connection => connection, :name => 'User')
+    double('model', :connection => connection, :name => 'User',
+      :column_names => [], :inheritance_column => 'type')
   }
   let(:connection) { double('connection', :instance_variable_get => db_config) }
   let(:db_config)  {
@@ -76,6 +77,26 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
         :disable_range? => true
 
       source.disable_range?.should be_true
+    end
+  end
+
+  describe '#fields' do
+    it "has the internal class field by default" do
+      source.fields.collect(&:name).should include('sphinx_class')
+    end
+
+    it "sets the sphinx class field to use a string of the class name" do
+      source.fields.detect { |field|
+        field.name == 'sphinx_class'
+      }.columns.first.__name.should == "'User'"
+    end
+
+    it "uses the inheritance column if it exists for the sphinx class field" do
+      model.stub :column_names => ['type']
+
+      source.fields.detect { |field|
+        field.name == 'sphinx_class'
+      }.columns.first.__name.should == :type
     end
   end
 

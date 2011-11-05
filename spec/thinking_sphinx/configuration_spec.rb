@@ -83,7 +83,7 @@ describe ThinkingSphinx::Configuration do
     end
   end
 
-  describe '#indices_for_reference' do
+  describe '#indices_for_references' do
     it "selects from the full index set those with matching references"
   end
 

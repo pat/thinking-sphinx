@@ -26,6 +26,10 @@ class ThinkingSphinx::Search::Inquirer
     options[:classes] || []
   end
 
+  def class_filter?
+    classes.length == 1 && classes.first.superclass != ActiveRecord::Base
+  end
+
   def config
     ThinkingSphinx::Configuration.instance
   end
@@ -44,6 +48,7 @@ class ThinkingSphinx::Search::Inquirer
 
   def extended_query
     conditions = options[:conditions] || {}
+    conditions[:sphinx_class] = classes.first.name if class_filter?
     @extended_query ||= begin
       (@search.query.to_s + ' ' + conditions.keys.collect { |key|
         "@#{key} #{conditions[key]}"
@@ -61,9 +66,7 @@ class ThinkingSphinx::Search::Inquirer
     config.preload_indices
     return config.indices.collect(&:name) if classes.empty?
 
-    classes.collect { |klass|
-      config.indices_for_reference(klass.name.underscore.to_sym).collect &:name
-    }.flatten
+    config.indices_for_references(*references).collect &:name
   end
 
   def options
@@ -77,6 +80,18 @@ class ThinkingSphinx::Search::Inquirer
     else
       options[:order]
     end
+  end
+
+  def references
+    classes.collect { |model|
+      model.ancestors.take_while { |klass|
+        klass != ActiveRecord::Base
+      }.select { |klass|
+        klass.class == Class
+      }.collect { |klass|
+        klass.name.underscore.to_sym
+      }
+    }.flatten
   end
 
   def select_options

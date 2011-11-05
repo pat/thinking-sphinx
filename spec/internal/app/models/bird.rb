@@ -1,0 +1,2 @@
+class Bird < Animal
+end

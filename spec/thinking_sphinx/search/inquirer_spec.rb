@@ -9,7 +9,7 @@ describe ThinkingSphinx::Search::Inquirer do
   let(:sphinx_sql) { double('sphinx sql', :to_sql => 'SELECT * FROM index') }
   let(:config)     {
     double('config', :connection => connection, :preload_indices => true,
-      :indices => [])
+      :indices => [], :indices_for_references => [])
   }
 
   before :each do
@@ -19,7 +19,7 @@ describe ThinkingSphinx::Search::Inquirer do
 
     connection.stub(:query).and_return([], [])
     sphinx_sql.stub :from => sphinx_sql, :offset => sphinx_sql,
-      :limit => sphinx_sql, :where => sphinx_sql
+      :limit => sphinx_sql, :where => sphinx_sql, :matching => sphinx_sql
   end
 
   describe '#populate' do
@@ -62,11 +62,27 @@ describe ThinkingSphinx::Search::Inquirer do
     end
 
     it "uses indices for the given classes" do
-      model = double('model', :name => 'Article')
+      model = Class.new(ActiveRecord::Base)
+      model.stub :name => 'Article'
+
       search.options[:classes] = [model]
 
-      config.should_receive(:indices_for_reference).with(:article).
+      config.should_receive(:indices_for_references).with(:article).
         and_return([])
+
+      inquirer.populate
+    end
+
+    it "requests indices for any superclasses" do
+      supermodel = Class.new(ActiveRecord::Base)
+      supermodel.stub :name => 'Article'
+      submodel   = Class.new(supermodel)
+      submodel.stub :name => 'OpinionArticle'
+
+      search.options[:classes] = [submodel]
+
+      config.should_receive(:indices_for_references).
+        with(:opinion_article, :article).and_return([])
 
       inquirer.populate
     end
@@ -84,6 +100,20 @@ describe ThinkingSphinx::Search::Inquirer do
       search.options[:conditions] = {:title => 'pancakes'}
 
       sphinx_sql.should_receive(:matching).with('@title pancakes').
+        and_return(sphinx_sql)
+
+      inquirer.populate
+    end
+
+    it "appends field conditions for the class when searching on subclasses" do
+      supermodel = Class.new(ActiveRecord::Base)
+      supermodel.stub :name => 'Cat'
+      submodel   = Class.new(supermodel)
+      submodel.stub :name => 'Lion'
+
+      search.options[:classes] = [submodel]
+
+      sphinx_sql.should_receive(:matching).with('@sphinx_class Lion').
         and_return(sphinx_sql)
 
       inquirer.populate

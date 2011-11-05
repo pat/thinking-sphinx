@@ -32,7 +32,7 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks do
 
   describe '#after_destroy' do
     let(:config)     { double('config', :connection => connection,
-      :indices_for_reference => [index], :preload_indices => true) }
+      :indices_for_references => [index], :preload_indices => true) }
     let(:connection) { double('connection', :query => nil) }
     let(:index)      {
       double('index', :name => 'foo_core', :document_id_for_key => 14)

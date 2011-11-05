@@ -42,9 +42,9 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     end
   end
 
-  def indices_for_reference(reference)
+  def indices_for_references(*references)
     preload_indices
-    indices.select { |index| index.reference == reference }
+    indices.select { |index| references.include?(index.reference) }
   end
 
   def next_offset(reference)

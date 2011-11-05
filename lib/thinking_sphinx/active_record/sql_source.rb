@@ -19,6 +19,20 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
     ]
   end
 
+  def self.internal_fields(model)
+    column = "'#{model.name}'"
+    if model.column_names.include?(model.inheritance_column)
+      column = model.inheritance_column.to_sym
+    end
+
+    [
+      ThinkingSphinx::ActiveRecord::Field.new(
+        ThinkingSphinx::ActiveRecord::Column.new(column),
+        :as => :sphinx_class
+      )
+    ]
+  end
+
   # Options:
   # - :name
   # - :offset
@@ -33,7 +47,7 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
     @database_settings = model.connection.instance_variable_get(:@config).clone
     @options           = options
 
-    @fields            = []
+    @fields            = self.class.internal_fields(model)
     @attributes        = self.class.internal_attributes(model)
     @associations      = []
     @conditions        = []

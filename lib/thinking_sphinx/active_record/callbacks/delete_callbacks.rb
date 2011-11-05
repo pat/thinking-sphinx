@@ -24,6 +24,6 @@ class ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks <
 
   def indices
     config.preload_indices
-    config.indices_for_reference instance.class.name.underscore.to_sym
+    config.indices_for_references instance.class.name.underscore.to_sym
   end
 end
