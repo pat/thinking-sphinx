@@ -40,8 +40,12 @@ class ThinkingSphinx::Search::Inquirer
     }.flatten
   end
 
+  def classes_and_descendants
+    classes + descendants
+  end
+
   def class_condition
-    'thinkingsphinxbase -(' + ancestors.collect(&:name).join('|') + ')'
+    '(' + classes_and_descendants.collect(&:name).join('|') + ')'
   end
 
   def config
@@ -50,6 +54,18 @@ class ThinkingSphinx::Search::Inquirer
 
   def connection
     @connection ||= config.connection
+  end
+
+  def descendants
+    @descendants ||= classes.select { |klass|
+      klass.column_names.include?(klass.inheritance_column)
+    }.collect { |klass|
+      klass.connection.select_values(<<-SQL).compact.each(&:constantize)
+SELECT DISTINCT #{klass.inheritance_column}
+FROM #{klass.table_name}
+      SQL
+      klass.descendants
+    }.flatten
   end
 
   def exclusive_filters
@@ -62,7 +78,7 @@ class ThinkingSphinx::Search::Inquirer
 
   def extended_query
     conditions = options[:conditions] || {}
-    conditions[:sphinx_class] = class_condition if ancestors.any?
+    conditions[:sphinx_class] = class_condition if classes.any?
     @extended_query ||= begin
       (@search.query.to_s + ' ' + conditions.keys.collect { |key|
         "@#{key} #{conditions[key]}"

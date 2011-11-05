@@ -95,13 +95,12 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       adapter.stub(:convert_nulls) { |clause, default|
         "ifnull(#{clause}, #{default})"
       }
-      adapter.stub(:concatenate) { |clause| "concat(#{clause})" }
       model.stub :column_names => ['type']
 
       source.fields.detect { |field|
         field.name == 'sphinx_class'
       }.columns.first.__name.
-        should == "concat('thinkingsphinxbase', ifnull(type, 'User'))"
+        should == "ifnull(type, 'User')"
     end
   end
 

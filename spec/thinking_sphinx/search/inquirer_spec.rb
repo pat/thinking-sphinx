@@ -106,15 +106,18 @@ describe ThinkingSphinx::Search::Inquirer do
     end
 
     it "appends field conditions for the class when searching on subclasses" do
+      db_connection = double('db connection', :select_values => [])
       supermodel = Class.new(ActiveRecord::Base)
-      supermodel.stub :name => 'Cat'
+      supermodel.stub :name => 'Cat', :connection => db_connection,
+        :column_names => ['type']
       submodel   = Class.new(supermodel)
-      submodel.stub :name => 'Lion'
+      submodel.stub :name => 'Lion', :connection => db_connection,
+        :column_names => ['type']
 
       search.options[:classes] = [submodel]
 
       sphinx_sql.should_receive(:matching).
-        with('@sphinx_class thinkingsphinxbase -(Cat)').and_return(sphinx_sql)
+        with('@sphinx_class (Lion)').and_return(sphinx_sql)
 
       inquirer.populate
     end
