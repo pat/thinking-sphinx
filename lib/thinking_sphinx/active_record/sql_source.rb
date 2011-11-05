@@ -2,37 +2,6 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
   attr_reader :model, :database_settings, :options, :conditions, :groupings
   attr_accessor :fields, :attributes, :associations
 
-  def self.internal_attributes(model)
-    [
-      ThinkingSphinx::ActiveRecord::Attribute.new(
-        ThinkingSphinx::ActiveRecord::Column.new(:id),
-        :as => :sphinx_internal_id,    :type => :integer
-      ),
-      ThinkingSphinx::ActiveRecord::Attribute.new(
-        ThinkingSphinx::ActiveRecord::Column.new("'#{model.name}'"),
-        :as => :sphinx_internal_class, :type => :string
-      ),
-      ThinkingSphinx::ActiveRecord::Attribute.new(
-        ThinkingSphinx::ActiveRecord::Column.new("0"),
-        :as => :sphinx_deleted,        :type => :boolean
-      )
-    ]
-  end
-
-  def self.internal_fields(model)
-    column = "'#{model.name}'"
-    if model.column_names.include?(model.inheritance_column)
-      column = model.inheritance_column.to_sym
-    end
-
-    [
-      ThinkingSphinx::ActiveRecord::Field.new(
-        ThinkingSphinx::ActiveRecord::Column.new(column),
-        :as => :sphinx_class
-      )
-    ]
-  end
-
   # Options:
   # - :name
   # - :offset
@@ -47,11 +16,13 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
     @database_settings = model.connection.instance_variable_get(:@config).clone
     @options           = options
 
-    @fields            = self.class.internal_fields(model)
-    @attributes        = self.class.internal_attributes(model)
+    @fields            = []
+    @attributes        = []
     @associations      = []
     @conditions        = []
     @groupings         = []
+
+    Template.new(self).apply
 
     name = "#{options[:name] || model.name.downcase}_#{name_suffix}"
 
@@ -158,3 +129,5 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
     @prepared = true
   end
 end
+
+require 'thinking_sphinx/active_record/sql_source/template'
