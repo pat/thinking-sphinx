@@ -92,11 +92,16 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
     end
 
     it "uses the inheritance column if it exists for the sphinx class field" do
+      adapter.stub(:convert_nulls) { |clause, default|
+        "ifnull(#{clause}, #{default})"
+      }
+      adapter.stub(:concatenate) { |clause| "concat(#{clause})" }
       model.stub :column_names => ['type']
 
       source.fields.detect { |field|
         field.name == 'sphinx_class'
-      }.columns.first.__name.should == :type
+      }.columns.first.__name.
+        should == "concat('thinkingsphinxbase', ifnull(type, 'User'))"
     end
   end
 

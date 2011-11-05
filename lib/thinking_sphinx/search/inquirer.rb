@@ -22,12 +22,26 @@ class ThinkingSphinx::Search::Inquirer
 
   private
 
+  def ancestors
+    classes_and_ancestors - classes
+  end
+
   def classes
     options[:classes] || []
   end
 
-  def class_filter?
-    classes.length == 1 && classes.first.superclass != ActiveRecord::Base
+  def classes_and_ancestors
+    @classes_and_ancestors ||= classes.collect { |model|
+      model.ancestors.take_while { |klass|
+        klass != ActiveRecord::Base
+      }.select { |klass|
+        klass.class == Class
+      }
+    }.flatten
+  end
+
+  def class_condition
+    'thinkingsphinxbase -' + ancestors.collect(&:name).join(' -')
   end
 
   def config
@@ -48,7 +62,7 @@ class ThinkingSphinx::Search::Inquirer
 
   def extended_query
     conditions = options[:conditions] || {}
-    conditions[:sphinx_class] = classes.first.name if class_filter?
+    conditions[:sphinx_class] = class_condition if ancestors.any?
     @extended_query ||= begin
       (@search.query.to_s + ' ' + conditions.keys.collect { |key|
         "@#{key} #{conditions[key]}"
@@ -83,15 +97,9 @@ class ThinkingSphinx::Search::Inquirer
   end
 
   def references
-    classes.collect { |model|
-      model.ancestors.take_while { |klass|
-        klass != ActiveRecord::Base
-      }.select { |klass|
-        klass.class == Class
-      }.collect { |klass|
-        klass.name.underscore.to_sym
-      }
-    }.flatten
+    classes_and_ancestors.collect { |klass|
+      klass.name.underscore.to_sym
+    }
   end
 
   def select_options

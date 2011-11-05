@@ -18,6 +18,7 @@
 #   - are a subclass and superclass STI pair both indexed? One offset for both.
 # - need to track position of current model within all indexed models (offset)
 # - need to generate configuration
+# - need to know subclasses available to search on.
 #
 # SO:
 # - load all indices *and* related models when needing document id

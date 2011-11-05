@@ -113,8 +113,8 @@ describe ThinkingSphinx::Search::Inquirer do
 
       search.options[:classes] = [submodel]
 
-      sphinx_sql.should_receive(:matching).with('@sphinx_class Lion').
-        and_return(sphinx_sql)
+      sphinx_sql.should_receive(:matching).
+        with('@sphinx_class thinkingsphinxbase -Cat').and_return(sphinx_sql)
 
       inquirer.populate
     end
