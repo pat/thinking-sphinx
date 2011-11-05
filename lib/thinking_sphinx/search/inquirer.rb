@@ -41,7 +41,7 @@ class ThinkingSphinx::Search::Inquirer
   end
 
   def class_condition
-    'thinkingsphinxbase -' + ancestors.collect(&:name).join(' -')
+    'thinkingsphinxbase -(' + ancestors.collect(&:name).join('|') + ')'
   end
 
   def config
