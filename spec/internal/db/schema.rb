@@ -1,4 +1,9 @@
 ActiveRecord::Schema.define do
+  create_table(:animals, :force => true) do |t|
+    t.string :name
+    t.string :type
+  end
+
   create_table(:articles, :force => true) do |t|
     t.string  :title
     t.text    :content
