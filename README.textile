@@ -32,6 +32,14 @@ h2. Limitations
 
 Basic indexing and searching should be fine. There's currently no facets or excerpts, and limited delta support. Many settings haven't yet been brought across. Many of the smaller features don't yet exist either. Some may actually not return... we'll see.
 
+h3. Rails Versions
+
+Currently TS 3 is built to support Rails 3.1. 3.0 will almost certainly be added - not promising anything for Rails 2.3, and anything earlier than that definitely won't be supported.
+
+h3. Ruby Versions
+
+Built on MRI 1.9.3, but tested on MRI 1.8.7, MRI 1.9.2, Rubinius and REE. Will never support 1.8.6, but will hopefully support JRuby (the one catch there is the different MySQL interfaces).
+
 h2. Contributing
 
 You're brave! To contribute, clone this repository and have a good look through the specs - you'll notice the distinction between acceptance tests that actually use Sphinx and go through the full stack, and unit tests (everything else) which use liberal test doubles to ensure they're only testing the behaviour of the class in question. I've found this leads to far better code design.
