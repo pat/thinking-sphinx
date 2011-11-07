@@ -28,4 +28,12 @@ describe 'Sphinx scopes', :live => true do
     Book.by_year(2001).by_query_and_year('Graveyard', 2009).to_a.
       should == [grave]
   end
+
+  it "allows further search calls on scopes" do
+    gaiman    = Book.create! :title => 'American Gods'
+    pratchett = Book.create! :title => 'Small Gods'
+    index
+
+    Book.by_query('Gods').search('Small').to_a.should == [pratchett]
+  end
 end

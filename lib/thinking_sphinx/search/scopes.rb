@@ -6,25 +6,16 @@ module ThinkingSphinx::Search::Scopes
     end
   end
 
+  def search(query = nil, options = {})
+    query, options = nil, query if query.is_a?(Hash)
+    merge! query, options
+    self
+  end
+
   private
 
   def apply_scope(scope, *args)
-    query, options = sphinx_scopes[scope].call(*args)
-    query, options = nil, query if query.is_a?(Hash)
-
-    @query = query
-    options.each do |key, value|
-      case key
-      when :conditions, :with, :without
-        @options[key] ||= {}
-        @options[key].merge! value
-      when :without_ids
-        @options[key] ||= []
-        @options[key] << value
-      else
-        @options[key] = value
-      end
-    end
+    search *sphinx_scopes[scope].call(*args)
   end
 
   def can_apply_scope?(scope)
@@ -34,9 +25,25 @@ module ThinkingSphinx::Search::Scopes
     sphinx_scopes[scope].present?
   end
 
+  def merge!(query, options)
+    @query = query unless query.nil?
+    options.each do |key, value|
+      case key
+      when :conditions, :with, :without
+        @options[key] ||= {}
+        @options[key].merge! value
+      when :without_ids
+        @options[key] ||= []
+        @options[key] += value
+      else
+        @options[key] = value
+      end
+    end
+  end
+
   def method_missing_with_scope(method, *args, &block)
     if can_apply_scope? method
-      apply_scope method, *args and self
+      apply_scope method, *args
     else
       method_missing_without_scope method, *args, &block
     end
