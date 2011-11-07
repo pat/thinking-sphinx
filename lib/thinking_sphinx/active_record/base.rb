@@ -9,6 +9,7 @@ module ThinkingSphinx::ActiveRecord::Base
 
   module ClassMethods
     def search(query = nil, options = {})
+      query, options = nil, query if query.is_a?(Hash)
       ThinkingSphinx.search query, scoped_sphinx_options.merge(options)
     end
 

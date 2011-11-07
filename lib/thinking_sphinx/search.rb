@@ -106,7 +106,9 @@ require 'thinking_sphinx/search/geodist'
 require 'thinking_sphinx/search/inquirer'
 require 'thinking_sphinx/search/pagination'
 require 'thinking_sphinx/search/retry_on_stale_ids'
+require 'thinking_sphinx/search/scopes'
 require 'thinking_sphinx/search/stale_ids_exception'
 require 'thinking_sphinx/search/translator'
 
 ThinkingSphinx::Search.send :include, ThinkingSphinx::Search::Pagination
+ThinkingSphinx::Search.send :include, ThinkingSphinx::Search::Scopes
