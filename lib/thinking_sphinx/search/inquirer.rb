@@ -13,11 +13,17 @@ class ThinkingSphinx::Search::Inquirer
   end
 
   def populate
-    raw and meta and self
+    log :query, sphinxql do
+      raw and meta
+    end
+    total = meta['total_found']
+    log :message, "Found #{total} result#{'s' unless total == 1}"
+
+    self
   end
 
   def raw
-    @raw ||= connection.query(sphinxql_select.to_sql)
+    @raw ||= connection.query(sphinxql)
   end
 
   private
@@ -99,6 +105,12 @@ FROM #{klass.table_name}
     config.indices_for_references(*references).collect &:name
   end
 
+  def log(notification, message, &block)
+    ActiveSupport::Notifications.instrument(
+      "#{notification}.thinking_sphinx", notification => message, &block
+    )
+  end
+
   def options
     @search.options
   end
@@ -123,6 +135,10 @@ FROM #{klass.table_name}
       hash[key] = options[key] if SelectOptions.include?(key)
       hash
     end
+  end
+
+  def sphinxql
+    @sphinxql ||= sphinxql_select.to_sql
   end
 
   def sphinxql_select

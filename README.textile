@@ -88,7 +88,6 @@ A list of what still needs to be implemented, in no particular order:
 * sanitise_sql method in index definitions
 * Bitmask weighting helper
 * Query times for searches
-* (ActiveSupport) Logging for searches
 * Starred queries
 * Flexible options for geosearching (attributes must be named lat and lng currently)
 * Rake task to index without generating configuration
