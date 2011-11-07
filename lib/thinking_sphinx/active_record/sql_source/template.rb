@@ -6,11 +6,10 @@ class ThinkingSphinx::ActiveRecord::SQLSource::Template
   end
 
   def apply
-    add_field     class_column, :sphinx_class
+    add_field class_column, :sphinx_internal_class, true
 
-    add_attribute :id,          :sphinx_internal_id,    :integer
-    add_attribute class_column, :sphinx_internal_class, :string
-    add_attribute '0',          :sphinx_deleted,        :boolean
+    add_attribute :id, :sphinx_internal_id, :integer
+    add_attribute '0', :sphinx_deleted,     :boolean
   end
 
   private
@@ -22,9 +21,10 @@ class ThinkingSphinx::ActiveRecord::SQLSource::Template
     )
   end
 
-  def add_field(column, name)
+  def add_field(column, name, sortable = false)
     source.fields << ThinkingSphinx::ActiveRecord::Field.new(
-      ThinkingSphinx::ActiveRecord::Column.new(column), :as => name
+      ThinkingSphinx::ActiveRecord::Column.new(column),
+      :as => name, :sortable => sortable
     )
   end
 

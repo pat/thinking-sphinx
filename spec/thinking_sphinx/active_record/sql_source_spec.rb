@@ -33,10 +33,6 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       source.attributes.collect(&:name).should include('sphinx_internal_id')
     end
 
-    it "has the internal class attribute by default" do
-      source.attributes.collect(&:name).should include('sphinx_internal_class')
-    end
-
     it "has the internal deleted attribute by default" do
       source.attributes.collect(&:name).should include('sphinx_deleted')
     end
@@ -82,12 +78,12 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
   describe '#fields' do
     it "has the internal class field by default" do
-      source.fields.collect(&:name).should include('sphinx_class')
+      source.fields.collect(&:name).should include('sphinx_internal_class')
     end
 
     it "sets the sphinx class field to use a string of the class name" do
       source.fields.detect { |field|
-        field.name == 'sphinx_class'
+        field.name == 'sphinx_internal_class'
       }.columns.first.__name.should == "'User'"
     end
 
@@ -98,9 +94,15 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       model.stub :column_names => ['type']
 
       source.fields.detect { |field|
-        field.name == 'sphinx_class'
+        field.name == 'sphinx_internal_class'
       }.columns.first.__name.
         should == "ifnull(type, 'User')"
+    end
+
+    it "should have a paired attribute for the internal class field" do
+      source.fields.detect { |field|
+        field.name == 'sphinx_internal_class'
+      }.with_attribute?.should be_true
     end
   end
 

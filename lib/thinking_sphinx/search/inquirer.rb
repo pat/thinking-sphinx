@@ -78,7 +78,7 @@ FROM #{klass.table_name}
 
   def extended_query
     conditions = options[:conditions] || {}
-    conditions[:sphinx_class] = class_condition if classes.any?
+    conditions[:sphinx_internal_class] = class_condition if classes.any?
     @extended_query ||= begin
       (@search.query.to_s + ' ' + conditions.keys.collect { |key|
         "@#{key} #{conditions[key]}"
