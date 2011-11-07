@@ -36,4 +36,14 @@ describe 'Sphinx scopes', :live => true do
 
     Book.by_query('Gods').search('Small').to_a.should == [pratchett]
   end
+
+  it "allows accessing counts on scopes" do
+    Book.create! :title => 'American Gods'
+    Book.create! :title => 'Anansi Boys'
+    Book.create! :title => 'Small Gods'
+    Book.create! :title => 'Night Watch'
+    index
+
+    Book.by_query('gods').count.should == 2
+  end
 end

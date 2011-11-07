@@ -6,6 +6,7 @@ module ThinkingSphinx::Search::Pagination
       alias_method :page_count,  :total_pages
       alias_method :num_pages,   :total_pages
       alias_method :total_count, :total_entries
+      alias_method :count,       :total_entries
     end
   end
 
