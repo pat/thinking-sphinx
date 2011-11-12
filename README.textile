@@ -75,7 +75,6 @@ A list of what still needs to be implemented, in no particular order:
 * Sorting modes
 * Ranking modes
 * File fields
-* Tests for Unicode support
 * ActiveRecord :include and :select options being passed through on searches
 * Test Helpers
 * Overwritable toggle_delta? method on model
