@@ -6,7 +6,7 @@ class ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks <
   def after_commit
     return unless delta_indices? && processors.any? { |processor|
       processor.toggled?(instance)
-    }
+    } && !ThinkingSphinx::Deltas.suspended?
 
     delta_indices.each do |index|
       index.delta_processor.index index

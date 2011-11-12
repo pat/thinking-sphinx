@@ -70,11 +70,21 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks do
         :delta_processor => processor) }
 
       before :each do
+        ThinkingSphinx::Deltas.stub :suspended? => false
+
         config.stub :indices_for_references => [core_index, delta_index]
       end
 
       it "only indexes delta indices" do
         processor.should_receive(:index).with(delta_index)
+
+        callbacks.after_commit
+      end
+
+      it "does not process delta indices when deltas are suspended" do
+        ThinkingSphinx::Deltas.stub :suspended? => true
+
+        processor.should_not_receive(:index)
 
         callbacks.after_commit
       end
@@ -95,6 +105,14 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks do
 
       it "does not delete if model's delta flag is not true" do
         processor.stub :toggled? => false
+
+        processor.should_not_receive(:delete)
+
+        callbacks.after_commit
+      end
+
+      it "does not delete when deltas are suspended" do
+        ThinkingSphinx::Deltas.stub :suspended? => true
 
         processor.should_not_receive(:delete)
 

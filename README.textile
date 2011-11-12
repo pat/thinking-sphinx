@@ -34,6 +34,17 @@ Other changes:
 * The match mode is always extended - SphinxQL doesn't know any other way.
 * ActiveRecord::Base.set_sphinx_primary_key is now an option in the index definition (alongside @:with@ in the above example): @:primary_key@ - and therefore is no longer inheritable between models.
 * If you're explicitly setting a time attribute's type, instead of @:datetime@ it should now be @:timestamp@.
+* Delta arguments are passed in as an option of the @define@ call, not within the block:
+
+<pre><code>ThinkingSphinx::Index.define :article, :with => :active_record, :delta => true do
+  # ...
+end</code></pre>
+
+* Suspended deltas are no longer called from the model, but like so instead:
+
+<pre><code>ThinkingSphinx::Deltas.suspend :article do
+  article.update_attributes(:title => 'pancakes')
+end</code></pre>
 
 h2. Limitations
 
@@ -44,7 +55,6 @@ A list of what still needs to be implemented, in no particular order:
 * Facets
 * Bundled Searches
 * Excerpts
-* Suspended Deltas
 * Delayed Deltas
 * Datetime Deltas
 * Attribute Updates
