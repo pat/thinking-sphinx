@@ -119,8 +119,8 @@ module Riddle
       :match_mode, :sort_mode, :sort_by, :weights, :id_range, :filters,
       :group_by, :group_function, :group_clause, :group_distinct, :cut_off,
       :retry_count, :retry_delay, :anchor, :index_weights, :rank_mode,
-      :max_query_time, :field_weights, :timeout, :overrides, :select,
-      :connection, :key
+      :rank_expr, :max_query_time, :field_weights, :timeout, :overrides,
+      :select, :connection, :key
     attr_reader :queue
 
     @@connection = nil
@@ -174,6 +174,7 @@ module Riddle
       # string keys are index names, integer values are weightings
       @index_weights  = {}
       @rank_mode      = :proximity_bm25
+      @rank_expr      = ''
       @max_query_time = 0
       # string keys are field names, integer values are weightings
       @field_weights  = {}
@@ -383,24 +384,25 @@ module Riddle
     # 3. Pass the documents' text to +excerpts+ for marking up of matched terms.
     #
     def excerpts(options = {})
-      options[:index]            ||= '*'
-      options[:before_match]     ||= '<span class="match">'
-      options[:after_match]      ||= '</span>'
-      options[:chunk_separator]  ||= ' &#8230; ' # ellipsis
-      options[:limit]            ||= 256
-      options[:limit_passages]   ||= 0
-      options[:limit_words]      ||= 0
-      options[:around]           ||= 5
-      options[:exact_phrase]     ||= false
-      options[:single_passage]   ||= false
-      options[:query_mode]       ||= false
-      options[:force_all_words]  ||= false
-      options[:start_passage_id] ||= 1
-      options[:load_files]       ||= false
-      options[:html_strip_mode]  ||= 'index'
-      options[:allow_empty]      ||= false
-      options[:passage_boundary] ||= 'none'
-      options[:emit_zones]       ||= false
+      options[:index]                ||= '*'
+      options[:before_match]         ||= '<span class="match">'
+      options[:after_match]          ||= '</span>'
+      options[:chunk_separator]      ||= ' &#8230; ' # ellipsis
+      options[:limit]                ||= 256
+      options[:limit_passages]       ||= 0
+      options[:limit_words]          ||= 0
+      options[:around]               ||= 5
+      options[:exact_phrase]         ||= false
+      options[:single_passage]       ||= false
+      options[:query_mode]           ||= false
+      options[:force_all_words]      ||= false
+      options[:start_passage_id]     ||= 1
+      options[:load_files]           ||= false
+      options[:html_strip_mode]      ||= 'index'
+      options[:allow_empty]          ||= false
+      options[:passage_boundary]     ||= 'none'
+      options[:emit_zones]           ||= false
+      options[:load_files_scattered] ||= false
 
       response = Response.new request(:excerpt, excerpts_message(options))
 
@@ -674,9 +676,15 @@ module Riddle
     def query_message(search, index, comments = '')
       message = Message.new
 
-      # Mode, Limits, Sort Mode
-      message.append_ints @offset, @limit, MatchModes[@match_mode],
-        RankModes[@rank_mode], SortModes[@sort_mode]
+      # Mode, Limits
+      message.append_ints @offset, @limit, MatchModes[@match_mode]
+
+      # Ranking
+      message.append_int RankModes[@rank_mode]
+      message.append_string @rank_expr if @rank_mode == :expr
+
+      # Sort Mode
+      message.append_int SortModes[@sort_mode]
       message.append_string @sort_by
 
       # Query
@@ -809,21 +817,14 @@ module Riddle
     end
 
     AttributeHandlers = {
-      AttributeTypes[:integer] =>           :next_int,
-      AttributeTypes[:timestamp] =>         :next_int,
-      AttributeTypes[:ordinal] =>           :next_int,
-      AttributeTypes[:bool] =>              :next_int,
-      AttributeTypes[:float] =>             :next_float,
-      AttributeTypes[:bigint] =>            :next_64bit_int,
-      AttributeTypes[:string] =>            :next,
-
-      AttributeTypes[:multi] + AttributeTypes[:integer]   => :next_int_array,
-      AttributeTypes[:multi] + AttributeTypes[:timestamp] => :next_int_array,
-      AttributeTypes[:multi] + AttributeTypes[:ordinal]   => :next_int_array,
-      AttributeTypes[:multi] + AttributeTypes[:bool]      => :next_int_array,
-      AttributeTypes[:multi] + AttributeTypes[:float]     => :next_float_array,
-      AttributeTypes[:multi] + AttributeTypes[:bigint]    => :next_64bit_int_array,
-      AttributeTypes[:multi] + AttributeTypes[:string]    => :next_array
+      AttributeTypes[:integer]   => :next_int,
+      AttributeTypes[:timestamp] => :next_int,
+      AttributeTypes[:ordinal]   => :next_int,
+      AttributeTypes[:bool]      => :next_int,
+      AttributeTypes[:float]     => :next_float,
+      AttributeTypes[:bigint]    => :next_64bit_int,
+      AttributeTypes[:string]    => :next,
+      AttributeTypes[:multi] + AttributeTypes[:integer] => :next_int_array
     }
 
     def attribute_from_type(type, response)
@@ -833,15 +834,16 @@ module Riddle
 
     def excerpt_flags(options)
       flags = 1
-      flags |= 2   if options[:exact_phrase]
-      flags |= 4   if options[:single_passage]
-      flags |= 8   if options[:use_boundaries]
-      flags |= 16  if options[:weight_order]
-      flags |= 32  if options[:query_mode]
-      flags |= 64  if options[:force_all_words]
-      flags |= 128 if options[:load_files]
-      flags |= 256 if options[:allow_empty]
-      flags |= 512 if options[:emit_zones]
+      flags |= 2    if options[:exact_phrase]
+      flags |= 4    if options[:single_passage]
+      flags |= 8    if options[:use_boundaries]
+      flags |= 16   if options[:weight_order]
+      flags |= 32   if options[:query_mode]
+      flags |= 64   if options[:force_all_words]
+      flags |= 128  if options[:load_files]
+      flags |= 256  if options[:allow_empty]
+      flags |= 512  if options[:emit_zones]
+      flags |= 1024 if options[:load_files_scattered]
       flags
     end
   end
