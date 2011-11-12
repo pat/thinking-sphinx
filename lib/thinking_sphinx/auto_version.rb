@@ -9,10 +9,12 @@ module ThinkingSphinx
         require 'riddle/1.10'
       when /2.0.\d/
         require 'riddle/2.0.1'
+      when /2.1.\d/
+        require 'riddle/2.1.0'
       else
         documentation_link = %Q{
 For more information, read the documentation:
-http://freelancing-god.github.com/ts/en/advanced_config.html          
+http://freelancing-god.github.com/ts/en/advanced_config.html
 }
 
         if version.nil? || version.empty?
