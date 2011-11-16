@@ -2,11 +2,12 @@
 module ThinkingSphinx::Search::Pagination
   def self.included(base)
     base.instance_eval do
-      alias_method :limit_value, :per_page
-      alias_method :page_count,  :total_pages
-      alias_method :num_pages,   :total_pages
-      alias_method :total_count, :total_entries
-      alias_method :count,       :total_entries
+      alias_method :limit_value,  :per_page
+      alias_method :page_count,   :total_pages
+      alias_method :num_pages,    :total_pages
+      alias_method :total_count,  :total_entries
+      alias_method :count,        :total_entries
+      alias_method :offset_value, :offset
     end
   end
 
