@@ -215,7 +215,7 @@ module ThinkingSphinx
     def next_page?
       !next_page.nil?
     end
-    
+
     def last_page?
       next_page.nil?
     end
@@ -295,6 +295,8 @@ module ThinkingSphinx
     def offset
       @options[:offset] || ((current_page - 1) * per_page)
     end
+
+    alias_method :offset_value, :offset
 
     def indexes
       return options[:index] if options[:index]
