@@ -1,5 +1,3 @@
-require 'blankslate'
-
 module ThinkingSphinx
   class Index
     # The Builder class is the core for the index definition block processing.
@@ -14,7 +12,14 @@ module ThinkingSphinx
     # set_property allows you to set some settings on a per-index basis. Check
     # out each method's documentation for better ideas of usage.
     #
-    class Builder < BlankSlate
+    class Builder
+      instance_methods.grep(/^[^_]/).each { |method|
+        next if method.to_s == "instance_eval"
+        define_method(method) {
+          caller.grep(/irb.completion/).empty? ? method_missing(method) : super
+        }
+      }
+
       def self.generate(model, name = nil, &block)
         index  = ThinkingSphinx::Index.new(model)
         index.name = name unless name.nil?
