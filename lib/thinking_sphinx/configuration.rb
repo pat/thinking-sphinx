@@ -351,7 +351,7 @@ module ThinkingSphinx
       directories = ["#{app_root}/app/models/"] +
         Dir.glob("#{app_root}/vendor/plugins/*/app/models/")
 
-      if defined?(Rails)
+      if defined?(Rails) && Rails.application
         directories += Rails.application.paths['app/models'].to_a
         directories += Rails.application.railties.engines.collect { |engine|
           engine.paths['app/models'].to_a
