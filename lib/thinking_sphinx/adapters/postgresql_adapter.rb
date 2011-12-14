@@ -14,7 +14,7 @@ module ThinkingSphinx
         clause.split('), ').join(") || '#{separator}' || ")
       else
         clause.split(', ').collect { |field|
-          "CAST(COALESCE(#{field}, '') as varchar)"
+          "CAST(COALESCE(#{field}::varchar, '') as varchar)"
         }.join(" || '#{separator}' || ")
       end
     end
