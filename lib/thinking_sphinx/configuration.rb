@@ -111,7 +111,7 @@ module ThinkingSphinx
         Dir.glob("#{app_root}/vendor/plugins/*/app/models/")
       self.delayed_job_priority = 0
       self.indexed_models       = []
-      self.shuffle              = true
+      self.shuffle              = false
 
       self.source_options  = {}
       self.index_options   = {
