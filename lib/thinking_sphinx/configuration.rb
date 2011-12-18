@@ -110,7 +110,7 @@ module ThinkingSphinx
       self.model_directories    = initial_model_directories
       self.delayed_job_priority = 0
       self.indexed_models       = []
-      self.shuffle              = true
+      self.shuffle              = false
 
       self.source_options  = {}
       self.index_options   = {
