@@ -1346,6 +1346,21 @@ describe ThinkingSphinx::Search do
     end
   end
 
+  describe '#all' do
+    before :each do
+      @search = ThinkingSphinx::Search.new
+    end
+
+    it "should populate the result set" do
+      @search.all
+      @search.should be_populated
+    end
+
+    it "should return the Search object" do
+      @search.all.should be_a(ThinkingSphinx::Search)
+    end
+  end
+
   describe '#freeze' do
     before :each do
       @search = ThinkingSphinx::Search.new
