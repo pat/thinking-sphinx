@@ -195,6 +195,14 @@ module ThinkingSphinx
       @configuration.searchd.port = port
     end
 
+    def use_socket=(use_socket)
+      if use_socket
+        socket = "#{app_root}/tmp/sockets/searchd.#{self.environment}.sock"
+        @configuration.searchd.listen = socket
+        self.address = socket
+      end
+    end
+
     def pid_file
       @configuration.searchd.pid_file
     end
