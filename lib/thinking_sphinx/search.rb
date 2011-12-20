@@ -100,6 +100,12 @@ module ThinkingSphinx
       @array
     end
 
+    # Populates the search result set
+    def all
+      populate
+      self
+    end
+
     def freeze
       populate
       @array.freeze
