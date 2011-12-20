@@ -196,8 +196,9 @@ module ThinkingSphinx
 
     def use_socket=(use_socket)
       if use_socket
-        @configuration.searchd.listen  = "#{app_root}/tmp/sockets/searchd.sock"
-        self.address = "#{app_root}/tmp/sockets/searchd.sock"
+        socket = "#{app_root}/tmp/sockets/searchd.#{self.environment}.sock"
+        @configuration.searchd.listen = socket
+        self.address = socket
       end
     end
 
