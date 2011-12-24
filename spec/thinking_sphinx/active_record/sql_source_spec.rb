@@ -313,7 +313,7 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
     it "adds all attributes"
 
-    it "adds relevant settings from sphinx.yml" do
+    it "adds relevant settings from thinking_sphinx.yml" do
       config.settings['mysql_ssl_cert'] = 'foo.cert'
       config.settings['morphology']     = 'stem_en' # should be ignored
 

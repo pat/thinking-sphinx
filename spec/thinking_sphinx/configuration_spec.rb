@@ -64,7 +64,7 @@ describe ThinkingSphinx::Configuration do
       config.controller
     end
 
-    it "sets the bin path from the sphinx.yml file" do
+    it "sets the bin path from the thinking_sphinx.yml file" do
       write_configuration('bin_path' => '/foo/bar/bin/')
 
       config.controller.bin_path.should == '/foo/bar/bin/'

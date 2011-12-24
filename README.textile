@@ -26,7 +26,7 @@ ThinkingSphinx::Index.define :article, :with => :active_record do
   has published
 end</code></pre>
 
-You'll notice the first argument is the model name downcased and as a symbol, and we are specifying the processor - @:active_record@. Everything inside the block is just like previous versions of Thinking Sphinx. Same goes for @config/sphinx.yml@.
+You'll notice the first argument is the model name downcased and as a symbol, and we are specifying the processor - @:active_record@. Everything inside the block is just like previous versions of Thinking Sphinx. Same goes for @config/thinking_sphinx.yml@ (formerly @config/sphinx.yml@).
 
 Other changes:
 * SphinxQL is now used instead of the old socket connections (hence the dependency on the @mysql2@ gem).

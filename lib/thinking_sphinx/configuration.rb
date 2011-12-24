@@ -85,6 +85,6 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def settings_file
-    Rails.root.join 'config', 'sphinx.yml'
+    Rails.root.join 'config', 'thinking_sphinx.yml'
   end
 end
