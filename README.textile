@@ -226,3 +226,4 @@ Since I first released this library, there's been quite a few people who have su
 * Tony Pitale
 * Kenn Ejima
 * Matthew Barnett
+* Adrian Macneil
