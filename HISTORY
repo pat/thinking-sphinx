@@ -1,4 +1,6 @@
 Edge
+* No longer shuffle Sphinx addresses by default.
+* Fix coalescing of non-char values in PostgreSQL (Matthew Barnett).
 * Default database user for Sphinx configuration is now ENV['USER'], not root.
 * Alias offset to offset_value for Kaminari.
 * Sphinx 2.1.0-dev support.
