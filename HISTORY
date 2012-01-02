@@ -1,10 +1,6 @@
 Edge
 * Call #all on search results to force population of results, matching ActiveRecord::Relation#all in essence. (Adrian Macneil).
-* No longer shuffle Sphinx addresses by default.
-* Fix coalescing of non-char values in PostgreSQL (Matthew Barnett).
-* Default database user for Sphinx configuration is now ENV['USER'], not root.
-* Alias offset to offset_value for Kaminari.
-* Sphinx 2.1.0-dev support.
+* 1.4.11 changes.
 
 2.0.10 - November 4th 2011
 * 1.4.10 changes.
@@ -60,6 +56,14 @@ Edge
 * Only load Thinking Sphinx if ActiveRecord is loaded (Matthew Higgins).
 * Rails 3 support.
 * 1.4.0 changes.
+
+1.4.11 - January 2nd 2011
+* Handle no results for total_pages and total_entries with defaults of 0.
+* No longer shuffle Sphinx addresses by default.
+* Fix coalescing of non-char values in PostgreSQL (Matthew Barnett).
+* Default database user for Sphinx configuration is now ENV['USER'], not root.
+* Alias offset to offset_value for Kaminari.
+* Sphinx 2.1.0-dev support.
 
 1.4.10 - November 4th 2011
 * Updating Riddle references for impending 1.5.0 release of Riddle.
