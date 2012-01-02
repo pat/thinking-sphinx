@@ -254,7 +254,7 @@ module ThinkingSphinx
     #
     def total_pages
       populate
-      return 0 if @results[:total].nil?
+      return 0 if @results.nil? || @results[:total].nil?
 
       @total_pages ||= (@results[:total] / per_page.to_f).ceil
     end
@@ -279,7 +279,7 @@ module ThinkingSphinx
     #
     def total_entries
       populate
-      return 0 if @results[:total_found].nil?
+      return 0 if @results.nil? || @results[:total_found].nil?
 
       @total_entries ||= @results[:total_found]
     end
