@@ -1,4 +1,4 @@
-Edge
+1.4.11 - January 2nd 2011
 * Handle no results for total_pages and total_entries with defaults of 0.
 * No longer shuffle Sphinx addresses by default.
 * Fix coalescing of non-char values in PostgreSQL (Matthew Barnett).
