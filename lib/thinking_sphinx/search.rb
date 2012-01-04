@@ -530,7 +530,7 @@ module ThinkingSphinx
       [
         :max_matches, :group_by, :group_function, :group_clause,
         :group_distinct, :id_range, :cut_off, :retry_count, :retry_delay,
-        :rank_mode, :max_query_time, :field_weights
+        :rank_mode, :rank_expr, :max_query_time, :field_weights
       ].each do |key|
         value = options[key] || index_options[key]
         client.send("#{key}=", value) if value

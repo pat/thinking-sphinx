@@ -1,3 +1,6 @@
+Edge:
+* Allow for rank_expr option being passed through to Riddle.
+
 1.4.11 - January 2nd 2011
 * Handle no results for total_pages and total_entries with defaults of 0.
 * No longer shuffle Sphinx addresses by default.
