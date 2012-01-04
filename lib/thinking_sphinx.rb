@@ -1,4 +1,5 @@
 require 'riddle'
+require 'blankslate'
 require 'active_record'
 
 module ThinkingSphinx

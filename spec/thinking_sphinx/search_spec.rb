@@ -165,4 +165,15 @@ describe ThinkingSphinx::Search do
       search.stale_retries.should == 7
     end
   end
+
+  describe '#to_a' do
+    it "returns each of the standard ActiveRecord objects" do
+      unglazed = double('unglazed instance')
+      glazed   = double('glazed instance', :unglazed => unglazed)
+
+      translator.stub(:to_active_record => [glazed])
+
+      search.to_a.first.__id__.should == unglazed.__id__
+    end
+  end
 end

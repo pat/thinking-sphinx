@@ -85,6 +85,11 @@ class ThinkingSphinx::Search < Array
     end
   end
 
+  def to_a
+    populate
+    @array.collect &:unglazed
+  end
+
   private
 
   def inquirer
@@ -103,6 +108,7 @@ class ThinkingSphinx::Search < Array
 end
 
 require 'thinking_sphinx/search/geodist'
+require 'thinking_sphinx/search/glaze'
 require 'thinking_sphinx/search/inquirer'
 require 'thinking_sphinx/search/pagination'
 require 'thinking_sphinx/search/retry_on_stale_ids'

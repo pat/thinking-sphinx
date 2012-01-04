@@ -1,5 +1,4 @@
 require 'active_record'
-require 'blankslate'
 
 module ThinkingSphinx::ActiveRecord
   #
