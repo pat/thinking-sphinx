@@ -11,10 +11,6 @@ class ThinkingSphinx::Search::Glaze < BlankSlate
     @object.equal? object
   end
 
-  def !=(object)
-    @object != object
-  end
-
   def unglazed
     @object
   end
