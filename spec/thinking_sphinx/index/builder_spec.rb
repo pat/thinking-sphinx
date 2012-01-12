@@ -431,6 +431,27 @@ describe ThinkingSphinx::Index::Builder do
     end
   end
   
+  describe "multiple local indexes" do
+    before :each do
+      @index = ThinkingSphinx::Index::Builder.generate(Person) do
+        indexes first_name
+
+        use_local_index :other_local_index_1
+        use_local_indices "other_local_index_2", "other_local_index_3"
+      end
+    end
+
+    it "should have three additional indexes" do
+      @index.additional_indices.length.should == 3
+    end
+
+    it "should append _core to the name of each local index" do
+      @index.additional_indices.first.should eql("other_local_index_1_core")
+      @index.additional_indices.second.should eql("other_local_index_2_core")
+      @index.additional_indices.third.should eql("other_local_index_3_core")
+    end
+  end
+
   describe "index options" do
     before :each do
       @index = ThinkingSphinx::Index::Builder.generate(Person) do

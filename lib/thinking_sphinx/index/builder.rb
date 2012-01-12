@@ -47,6 +47,11 @@ module ThinkingSphinx
         self.instance_eval &block
       end
 
+      def use_local_indices(*indexes)
+        @index.additional_indices += indexes.map {|index_name| "#{index_name.to_s}_core"}
+      end
+      alias_method :use_local_index, :use_local_indices
+
       # This is how you add fields - the strings Sphinx looks at - to your
       # index. Technically, to use this method, you need to pass in some
       # columns and options - but there's some neat method_missing stuff
