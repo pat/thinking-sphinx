@@ -904,6 +904,18 @@ describe ThinkingSphinx::Search do
       end
     end
 
+    describe ':attributes_only option' do
+      it "returns the attributes as hashes with values" do
+        ThinkingSphinx::Search.new(
+          :attributes_only => true
+        ).first.should == {
+          :sphinx_internal_class => "Alpha",
+          :class_crc => Alpha.to_crc32,
+          :sphinx_internal_id => 1
+        }
+      end
+    end
+
     context 'result objects' do
       describe '#excerpts' do
         before :each do
