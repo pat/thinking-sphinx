@@ -81,4 +81,22 @@ describe ThinkingSphinx::Search::Glaze do
         should == :special_attributes
     end
   end
+
+  describe '#weight' do
+    it "returns the object's weight by default" do
+      raw['weight'] = 101
+
+      glaze.weight.should == 101
+    end
+
+    it "respects an existing sphinx_attributes method" do
+      klass = Class.new do
+        def weight
+          202
+        end
+      end
+
+      ThinkingSphinx::Search::Glaze.new(klass.new).weight.should == 202
+    end
+  end
 end

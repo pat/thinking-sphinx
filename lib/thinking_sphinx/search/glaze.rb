@@ -27,6 +27,10 @@ class ThinkingSphinx::Search::Glaze < BlankSlate
     @object
   end
 
+  def weight
+    @object.respond_to?(:weight) ? @object.weight : @raw[:weight]
+  end
+
   private
 
   def method_missing(method, *args, &block)

@@ -62,7 +62,6 @@ A list of what still needs to be implemented, in no particular order:
 * Abstract Inheritance support
 * Rails 3.0 support
 * Searching from association contexts
-* Weight access
 * Searching by specific indices
 * Matching many values on a single MVA attribute (:with_all)
 * Matching none of many values on a single MVA attribute (:without_any)
