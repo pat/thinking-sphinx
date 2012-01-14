@@ -7,20 +7,24 @@ class ThinkingSphinx::Search::Glaze < BlankSlate
     (@object == object) || super
   end
 
+  def distance
+    @object.respond_to?(:distance) ? @object.distance : @raw[:geodist].to_f
+  end
+
   def equal?(object)
     @object.equal? object
   end
 
-  def unglazed
-    @object
+  def geodist
+    @object.respond_to?(:geodist) ? @object.geodist : @raw[:geodist].to_f
   end
 
   def sphinx_attributes
-    if @object.respond_to?(:sphinx_attributes)
-      @object.sphinx_attributes
-    else
-      @raw
-    end
+    @object.respond_to?(:sphinx_attributes) ? @object.sphinx_attributes : @raw
+  end
+
+  def unglazed
+    @object
   end
 
   private

@@ -15,6 +15,54 @@ describe ThinkingSphinx::Search::Glaze do
     end
   end
 
+  describe '#distance' do
+    it "returns the object's geodistance attribute by default" do
+      raw['geodist'] = 123.45
+
+      glaze.distance.should == 123.45
+    end
+
+    it "converts string geodistances to floats" do
+      raw['geodist'] = '123.450'
+
+      glaze.distance.should == 123.45
+    end
+
+    it "respects an existing distance method" do
+      klass = Class.new do
+        def distance
+          10
+        end
+      end
+
+      ThinkingSphinx::Search::Glaze.new(klass.new).distance.should == 10
+    end
+  end
+
+  describe '#geodist' do
+    it "returns the object's geodistance attribute by default" do
+      raw['geodist'] = 123.45
+
+      glaze.geodist.should == 123.45
+    end
+
+    it "converts string geodistances to floats" do
+      raw['geodist'] = '123.450'
+
+      glaze.geodist.should == 123.45
+    end
+
+    it "respects an existing geodist method" do
+      klass = Class.new do
+        def geodist
+          10
+        end
+      end
+
+      ThinkingSphinx::Search::Glaze.new(klass.new).geodist.should == 10
+    end
+  end
+
   describe '#sphinx_attributes' do
     it "returns the object's sphinx attributes by default" do
       raw['foo'] = 24
