@@ -1,6 +1,6 @@
 class ThinkingSphinx::Search::Glaze < BlankSlate
-  def initialize(object)
-    @object = object
+  def initialize(object, raw = {})
+    @object, @raw = object, raw.with_indifferent_access
   end
 
   def ==(object)
@@ -13,6 +13,14 @@ class ThinkingSphinx::Search::Glaze < BlankSlate
 
   def unglazed
     @object
+  end
+
+  def sphinx_attributes
+    if @object.respond_to?(:sphinx_attributes)
+      @object.sphinx_attributes
+    else
+      @raw
+    end
   end
 
   private

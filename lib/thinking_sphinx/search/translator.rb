@@ -7,7 +7,7 @@ class ThinkingSphinx::Search::Translator
 
   def to_active_record
     results_for_models # load now to avoid segfaults
-    raw.collect { |row| ThinkingSphinx::Search::Glaze.new result_for(row) }
+    raw.collect { |row| ThinkingSphinx::Search::Glaze.new result_for(row), row }
   end
 
   private
