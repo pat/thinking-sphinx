@@ -44,6 +44,10 @@ class ThinkingSphinx::ActiveRecord::Interpreter < BlankSlate
     end
   end
 
+  def where(*conditions)
+    __source.conditions += conditions
+  end
+
   private
 
   def method_missing(method, *args)

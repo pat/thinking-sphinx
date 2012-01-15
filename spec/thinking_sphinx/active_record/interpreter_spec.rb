@@ -7,8 +7,8 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
   let(:model)   { double('model') }
   let(:index)   { double('index', :append_source => source) }
   let(:source)  {
-    Struct.new(:attributes, :fields, :associations, :groupings).
-      new([], [], [], [])
+    Struct.new(:attributes, :fields, :associations, :groupings, :conditions).
+      new([], [], [], [], [])
   }
   let(:block)   { Proc.new { } }
 
@@ -266,6 +266,27 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
       interpreter = ThinkingSphinx::ActiveRecord::Interpreter.new index, block
       interpreter.translate!.
         should == interpreter.__id__
+    end
+  end
+
+  describe '#where' do
+    it "adds a source to the index" do
+      index.should_receive(:append_source).and_return(source)
+
+      instance.where 'id > 100'
+    end
+
+    it "only adds a single source for the given context" do
+      index.should_receive(:append_source).once.and_return(source)
+
+      instance.where 'id > 100'
+      instance.where 'id < 150'
+    end
+
+    it "appends a new grouping statement to the source" do
+      instance.where 'id > 100'
+
+      source.conditions.should include('id > 100')
     end
   end
 end
