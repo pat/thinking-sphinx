@@ -7,7 +7,8 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
   let(:model)   { double('model') }
   let(:index)   { double('index', :append_source => source) }
   let(:source)  {
-    Struct.new(:attributes, :fields, :associations).new([], [], [])
+    Struct.new(:attributes, :fields, :associations, :groupings).
+      new([], [], [], [])
   }
   let(:block)   { Proc.new { } }
 
@@ -30,6 +31,27 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
       instance.should_receive(:translate!)
 
       ThinkingSphinx::ActiveRecord::Interpreter.translate! index, block
+    end
+  end
+
+  describe '#group_by' do
+    it "adds a source to the index" do
+      index.should_receive(:append_source).and_return(source)
+
+      instance.group_by 'lat'
+    end
+
+    it "only adds a single source for the given context" do
+      index.should_receive(:append_source).once.and_return(source)
+
+      instance.group_by 'lat'
+      instance.group_by 'lng'
+    end
+
+    it "appends a new grouping statement to the source" do
+      instance.group_by 'lat'
+
+      source.groupings.should include('lat')
     end
   end
 

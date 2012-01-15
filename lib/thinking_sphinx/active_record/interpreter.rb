@@ -13,6 +13,10 @@ class ThinkingSphinx::ActiveRecord::Interpreter < BlankSlate
     extend mod
   end
 
+  def group_by(*columns)
+    __source.groupings += columns
+  end
+
   def has(*columns)
     options = columns.extract_options!
     __source.attributes += columns.collect { |column|

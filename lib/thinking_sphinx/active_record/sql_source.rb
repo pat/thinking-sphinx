@@ -1,6 +1,6 @@
 class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
-  attr_reader :model, :database_settings, :options, :conditions, :groupings
-  attr_accessor :fields, :attributes, :associations
+  attr_reader :model, :database_settings, :options, :conditions
+  attr_accessor :fields, :attributes, :associations, :groupings
 
   # Options:
   # - :name
