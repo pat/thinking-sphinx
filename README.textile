@@ -57,6 +57,7 @@ If you want to excerpt any string without going through an object, you can use t
 results.excerpter.excerpt!('The Etymology of Foo')</code></pre>
 
 * When indexing models on classes that are using single-table inheritance (STI), make sure you have a database index on the @type@ column. Thinking Sphinx will need to determine which subclasses are available, and we can't rely on Rails having loaded all models at any given point, so it queries the database.
+* The option @:rank_mode@ has now become @:ranker@ - and the options (as strings or symbols) are as follows: proximity_bm25, bm25, none, wordcount, proximity, matchany, and fieldmask.
 
 h2. Limitations
 
@@ -80,7 +81,6 @@ A list of what still needs to be implemented, in no particular order:
 * Grouped search results
 * Group enumerators (with group, with count, with both)
 * Sorting modes
-* Ranking modes
 * File fields
 * ActiveRecord :include and :select options being passed through on searches
 * Test Helpers

@@ -1,5 +1,5 @@
 class ThinkingSphinx::Search::Inquirer
-  SelectOptions = [:field_weights]
+  SelectOptions = [:field_weights, :ranker]
 
   def initialize(search)
     @search = search

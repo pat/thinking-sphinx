@@ -201,5 +201,16 @@ describe ThinkingSphinx::Search::Inquirer do
 
       inquirer.populate
     end
+
+    it "uses any given ranker option" do
+      search.options[:ranker] = 'proximity'
+
+      sphinx_sql.should_receive(:with_options) do |options|
+        options[:ranker].should == 'proximity'
+        sphinx_sql
+      end
+
+      inquirer.populate
+    end
   end
 end
