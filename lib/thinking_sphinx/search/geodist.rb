@@ -8,6 +8,10 @@ module ThinkingSphinx::Search::Geodist
 
   private
 
+  def attribute_names
+    @attribute_names ||= indices.collect(&:unique_attribute_names).flatten.uniq
+  end
+
   def geo
     options[:geo]
   end
@@ -17,11 +21,15 @@ module ThinkingSphinx::Search::Geodist
   end
 
   def latitude_attribute
-    @search.options[:latitude_attr] || 'lat'
+    @search.options[:latitude_attr]                                ||
+    attribute_names.detect { |attribute| attribute == 'lat' }      ||
+    attribute_names.detect { |attribute| attribute == 'latitude' } || 'lat'
   end
 
   def longitude_attribute
-    @search.options[:longitude_attr] || 'lng'
+    @search.options[:longitude_attr]                                ||
+    attribute_names.detect { |attribute| attribute == 'lng' }       ||
+    attribute_names.detect { |attribute| attribute == 'longitude' } || 'lng'
   end
 
   def sphinxql_select_with_geo

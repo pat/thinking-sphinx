@@ -58,6 +58,10 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
     super
   end
 
+  def unique_attribute_names
+    sources.collect(&:attributes).flatten.collect(&:name)
+  end
+
   private
 
   def adapter

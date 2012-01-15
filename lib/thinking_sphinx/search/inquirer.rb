@@ -5,11 +5,8 @@ class ThinkingSphinx::Search::Inquirer
     @search = search
   end
 
-  def indices
-    config.preload_indices
-    return config.indices.collect(&:name) if classes.empty?
-
-    config.indices_for_references(*references).collect &:name
+  def index_names
+    indices.collect(&:name)
   end
 
   def meta
@@ -105,6 +102,13 @@ FROM #{klass.table_name}
     end
   end
 
+  def indices
+    config.preload_indices
+    return config.indices if classes.empty?
+
+    config.indices_for_references(*references)
+  end
+
   def log(notification, message, &block)
     ActiveSupport::Notifications.instrument(
       "#{notification}.thinking_sphinx", notification => message, &block
@@ -143,7 +147,7 @@ FROM #{klass.table_name}
 
   def sphinxql_select
     Riddle::Query::Select.new.tap do |select|
-      select.from *indices.collect { |index| "`#{index}`" }
+      select.from *index_names.collect { |index| "`#{index}`" }
       select.values values if values.present?
       select.matching extended_query if extended_query.present?
       select.where inclusive_filters if inclusive_filters.any?

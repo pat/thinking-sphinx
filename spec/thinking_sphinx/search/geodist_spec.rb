@@ -52,5 +52,29 @@ describe ThinkingSphinx::Search::Geodist do
 
       inquirer.populate
     end
+
+    it "uses latitude if any index has that but not lat as an attribute" do
+      config.indices << double('index', :unique_attribute_names => ['latitude'],
+        :name => 'an_index')
+      search.options[:geo] = [0.1, 0.2]
+
+      sphinx_sql.should_receive(:values).
+        with('GEODIST(0.1, 0.2, latitude, lng) AS geodist').
+        and_return(sphinx_sql)
+
+      inquirer.populate
+    end
+
+    it "uses latitude if any index has that but not lat as an attribute" do
+      config.indices << double('index',
+        :unique_attribute_names => ['longitude'], :name => 'an_index')
+      search.options[:geo] = [0.1, 0.2]
+
+      sphinx_sql.should_receive(:values).
+        with('GEODIST(0.1, 0.2, lat, longitude) AS geodist').
+        and_return(sphinx_sql)
+
+      inquirer.populate
+    end
   end
 end

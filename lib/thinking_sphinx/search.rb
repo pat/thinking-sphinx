@@ -29,7 +29,7 @@ class ThinkingSphinx::Search < Array
   end
 
   def excerpter
-    @excerpter ||= ThinkingSphinx::Excerpter.new inquirer.indices.first,
+    @excerpter ||= ThinkingSphinx::Excerpter.new inquirer.index_names.first,
       excerpt_words, (options[:excerpts] || {})
   end
 
