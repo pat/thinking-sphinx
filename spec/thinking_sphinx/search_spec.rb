@@ -3,7 +3,8 @@ require 'spec_helper'
 describe ThinkingSphinx::Search do
   let(:search)      { ThinkingSphinx::Search.new }
   let(:translator)  { double('translator', :to_active_record => []) }
-  let(:inquirer)    { double('inquirer', :raw => []) }
+  let(:inquirer)    { double('inquirer', :raw => [], :meta => {},
+    :indices => ['alpha']) }
   let(:stale_retry) { double('retrier') }
 
   before :each do

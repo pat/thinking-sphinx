@@ -28,6 +28,11 @@ class ThinkingSphinx::Search < Array
     @options[:page].to_i
   end
 
+  def excerpter
+    @excerpter ||= ThinkingSphinx::Excerpter.new inquirer.indices.first,
+      excerpt_words
+  end
+
   def meta
     inquirer.meta
   end
@@ -92,6 +97,12 @@ class ThinkingSphinx::Search < Array
 
   private
 
+  def excerpt_words
+    meta.keys.select { |key|
+      key[/^keyword\[/]
+    }.collect { |key| meta[key] }.join(' ')
+  end
+
   def inquirer
     @inquirer ||= ThinkingSphinx::Search::Inquirer.new(self).populate
   end
@@ -103,10 +114,11 @@ class ThinkingSphinx::Search < Array
   end
 
   def translator
-    @translator ||= ThinkingSphinx::Search::Translator.new(raw)
+    @translator ||= ThinkingSphinx::Search::Translator.new(raw, excerpter)
   end
 end
 
+require 'thinking_sphinx/search/excerpt_glaze'
 require 'thinking_sphinx/search/geodist'
 require 'thinking_sphinx/search/glaze'
 require 'thinking_sphinx/search/inquirer'

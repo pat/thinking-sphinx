@@ -1,9 +1,10 @@
 require 'spec_helper'
 
 describe ThinkingSphinx::Search::Glaze do
-  let(:object) { double('object') }
-  let(:raw)    { {} }
-  let(:glaze)  { ThinkingSphinx::Search::Glaze.new object, raw }
+  let(:object)    { double('object') }
+  let(:excerpter) { double('excerpter') }
+  let(:raw)       { {} }
+  let(:glaze)     { ThinkingSphinx::Search::Glaze.new object, excerpter, raw }
 
   describe '#!=' do
     it "is true for objects that don't match" do
@@ -36,6 +37,23 @@ describe ThinkingSphinx::Search::Glaze do
       end
 
       ThinkingSphinx::Search::Glaze.new(klass.new).distance.should == 10
+    end
+  end
+
+  describe '#excerpts' do
+    it "returns an excerpt glazing" do
+      glaze.excerpts.class.should == ThinkingSphinx::Search::ExcerptGlaze
+    end
+
+    it "respects an existing excerpts method" do
+      klass = Class.new do
+        def excerpts
+          :custom_excerpts
+        end
+      end
+
+      ThinkingSphinx::Search::Glaze.new(klass.new).excerpts.
+        should == :custom_excerpts
     end
   end
 

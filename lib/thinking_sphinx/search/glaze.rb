@@ -1,6 +1,6 @@
 class ThinkingSphinx::Search::Glaze < BlankSlate
-  def initialize(object, raw = {})
-    @object, @raw = object, raw.with_indifferent_access
+  def initialize(object, excerpter = nil, raw = {})
+    @object, @excerpter, @raw = object, excerpter, raw.with_indifferent_access
   end
 
   def ==(object)
@@ -13,6 +13,10 @@ class ThinkingSphinx::Search::Glaze < BlankSlate
 
   def equal?(object)
     @object.equal? object
+  end
+
+  def excerpts
+    @object.respond_to?(:excerpts) ? @object.excerpts : excerpt_glazing
   end
 
   def geodist
@@ -32,6 +36,12 @@ class ThinkingSphinx::Search::Glaze < BlankSlate
   end
 
   private
+
+  def excerpt_glazing
+    @excerpt_glazing ||= ThinkingSphinx::Search::ExcerptGlaze.new(
+      @object, @excerpter
+    )
+  end
 
   def method_missing(method, *args, &block)
     @object.send(method, *args, &block)

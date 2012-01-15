@@ -54,7 +54,6 @@ A list of what still needs to be implemented, in no particular order:
 
 * Facets
 * Bundled Searches
-* Excerpts
 * Delayed Deltas
 * Datetime Deltas
 * Attribute Updates
@@ -96,6 +95,7 @@ A list of what still needs to be implemented, in no particular order:
 * Starred queries
 * Flexible options for geosearching (attributes must be named lat and lng currently)
 * Rake task to index without generating configuration
+* Ability to customise excerpt options
 
 h3. Sphinx Versions
 

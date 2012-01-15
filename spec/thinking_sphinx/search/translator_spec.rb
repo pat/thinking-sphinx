@@ -1,8 +1,9 @@
 require 'spec_helper'
 
 describe ThinkingSphinx::Search::Translator do
-  let(:translator) { ThinkingSphinx::Search::Translator.new raw }
+  let(:translator) { ThinkingSphinx::Search::Translator.new raw, excerpter }
   let(:raw)        { [] }
+  let(:excerpter)  { double('excerpter') }
   let(:model)      { double('model') }
 
   describe '#to_active_record' do

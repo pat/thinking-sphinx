@@ -5,6 +5,13 @@ class ThinkingSphinx::Search::Inquirer
     @search = search
   end
 
+  def indices
+    config.preload_indices
+    return config.indices.collect(&:name) if classes.empty?
+
+    config.indices_for_references(*references).collect &:name
+  end
+
   def meta
     @meta ||= connection.query(Riddle::Query.meta).inject({}) { |hash, row|
       hash[row['Variable_name']] = row['Value']
@@ -96,13 +103,6 @@ FROM #{klass.table_name}
     @inclusive_filters ||= (options[:with] || {}).tap do |with|
       with[:sphinx_deleted] = false
     end
-  end
-
-  def indices
-    config.preload_indices
-    return config.indices.collect(&:name) if classes.empty?
-
-    config.indices_for_references(*references).collect &:name
   end
 
   def log(notification, message, &block)

@@ -1,13 +1,15 @@
 class ThinkingSphinx::Search::Translator
-  attr_reader :raw
+  attr_reader :raw, :excerpter
 
-  def initialize(raw)
-    @raw = raw
+  def initialize(raw, excerpter)
+    @raw, @excerpter = raw, excerpter
   end
 
   def to_active_record
     results_for_models # load now to avoid segfaults
-    raw.collect { |row| ThinkingSphinx::Search::Glaze.new result_for(row), row }
+    raw.collect { |row|
+      ThinkingSphinx::Search::Glaze.new result_for(row), excerpter, row
+    }
   end
 
   private

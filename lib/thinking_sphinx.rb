@@ -14,6 +14,7 @@ end
 
 # Core
 require 'thinking_sphinx/configuration'
+require 'thinking_sphinx/excerpter'
 require 'thinking_sphinx/index'
 require 'thinking_sphinx/rake_interface'
 require 'thinking_sphinx/scopes'
