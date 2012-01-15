@@ -144,6 +144,7 @@ FROM #{klass.table_name}
   def sphinxql_select
     Riddle::Query::Select.new.tap do |select|
       select.from *indices.collect { |index| "`#{index}`" }
+      select.values values if values.present?
       select.matching extended_query if extended_query.present?
       select.where inclusive_filters if inclusive_filters.any?
       select.where_not exclusive_filters if exclusive_filters.any?
@@ -152,6 +153,10 @@ FROM #{klass.table_name}
       select.limit @search.per_page
       select.with_options select_options if select_options.keys.any?
     end
+  end
+
+  def values
+    options[:select]
   end
 end
 

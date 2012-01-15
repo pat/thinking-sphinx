@@ -191,6 +191,15 @@ describe ThinkingSphinx::Search::Inquirer do
       inquirer.populate
     end
 
+    it "adds the provided select statement" do
+      search.options[:select] = 'foo as bar'
+
+      sphinx_sql.should_receive(:values).with('foo as bar').
+        and_return(sphinx_sql)
+
+      inquirer.populate
+    end
+
     it "uses any provided field weights" do
       search.options[:field_weights] = {:title => 3}
 
