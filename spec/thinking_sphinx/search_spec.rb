@@ -4,7 +4,7 @@ describe ThinkingSphinx::Search do
   let(:search)      { ThinkingSphinx::Search.new }
   let(:translator)  { double('translator', :to_active_record => []) }
   let(:inquirer)    { double('inquirer', :raw => [], :meta => {},
-    :indices => ['alpha']) }
+    :index_names => ['alpha']) }
   let(:stale_retry) { double('retrier') }
 
   before :each do
@@ -52,7 +52,7 @@ describe ThinkingSphinx::Search do
     let(:excerpter) { double('excerpter') }
 
     it "creates an excerpter with the first index and all keywords" do
-      inquirer.stub :indices => ['alpha', 'beta', 'gamma']
+      inquirer.stub :index_names => ['alpha', 'beta', 'gamma']
       inquirer.meta['keyword[0]'] = 'foo'
       inquirer.meta['keyword[1]'] = 'bar'
 
