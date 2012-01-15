@@ -56,6 +56,8 @@ If you want to excerpt any string without going through an object, you can use t
 <pre><code>results = ThinkingSphinx.search 'foo'
 results.excerpter.excerpt!('The Etymology of Foo')</code></pre>
 
+* When indexing models on classes that are using single-table inheritance (STI), make sure you have a database index on the @type@ column. Thinking Sphinx will need to determine which subclasses are available, and we can't rely on Rails having loaded all models at any given point, so it queries the database.
+
 h2. Limitations
 
 Basic indexing and searching should be fine. There's currently no facets or excerpts, and limited delta support. Many settings haven't yet been brought across. Many of the smaller features don't yet exist either. Some may actually not return... we'll see.
