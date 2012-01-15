@@ -30,7 +30,7 @@ class ThinkingSphinx::Search < Array
 
   def excerpter
     @excerpter ||= ThinkingSphinx::Excerpter.new inquirer.indices.first,
-      excerpt_words
+      excerpt_words, (options[:excerpts] || {})
   end
 
   def meta
@@ -100,7 +100,7 @@ class ThinkingSphinx::Search < Array
   def excerpt_words
     meta.keys.select { |key|
       key[/^keyword\[/]
-    }.collect { |key| meta[key] }.join(' ')
+    }.sort.collect { |key| meta[key] }.join(' ')
   end
 
   def inquirer

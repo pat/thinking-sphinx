@@ -48,6 +48,36 @@ describe ThinkingSphinx::Search do
     end
   end
 
+  describe '#excerpter' do
+    let(:excerpter) { double('excerpter') }
+
+    it "creates an excerpter with the first index and all keywords" do
+      inquirer.stub :indices => ['alpha', 'beta', 'gamma']
+      inquirer.meta['keyword[0]'] = 'foo'
+      inquirer.meta['keyword[1]'] = 'bar'
+
+      ThinkingSphinx::Excerpter.should_receive(:new).
+        with('alpha', 'foo bar', anything).and_return(excerpter)
+
+      search.excerpter
+    end
+
+    it "returns the generated excerpter" do
+      ThinkingSphinx::Excerpter.stub :new => excerpter
+
+      search.excerpter.should == excerpter
+    end
+
+    it "passes through excerpts options" do
+      search = ThinkingSphinx::Search.new :excerpts => {:before_match => 'foo'}
+
+      ThinkingSphinx::Excerpter.should_receive(:new).
+        with(anything, anything, :before_match => 'foo').and_return(excerpter)
+
+      search.excerpter
+    end
+  end
+
   describe '#initialize' do
     it "lazily loads by default" do
       inquirer.should_not_receive(:populate)

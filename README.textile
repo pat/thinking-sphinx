@@ -46,6 +46,16 @@ end</code></pre>
   article.update_attributes(:title => 'pancakes')
 end</code></pre>
 
+* Excerpts through search results behaves the same way. Excerpt options (like @:before_match@, @:after_match@ and @:chunk_separator@) can be passed through when searching under the @:excerpts@ option:
+
+<pre><code>ThinkingSphinx.search 'foo',
+  :excerpts => {:chunk_separator => ' -- '}</code></pre>
+
+If you want to excerpt any string without going through an object, you can use the search result set's excerpter object:
+
+<pre><code>results = ThinkingSphinx.search 'foo'
+results.excerpter.excerpt!('The Etymology of Foo')</code></pre>
+
 h2. Limitations
 
 Basic indexing and searching should be fine. There's currently no facets or excerpts, and limited delta support. Many settings haven't yet been brought across. Many of the smaller features don't yet exist either. Some may actually not return... we'll see.
@@ -95,7 +105,6 @@ A list of what still needs to be implemented, in no particular order:
 * Starred queries
 * Flexible options for geosearching (attributes must be named lat and lng currently)
 * Rake task to index without generating configuration
-* Ability to customise excerpt options
 
 h3. Sphinx Versions
 
