@@ -6,7 +6,7 @@ namespace :ts do
 
   desc 'Generate the Sphinx configuration file'
   task :configure => :environment do
-    interface.configure
+    interface.configure(ENV['INDEX_ONLY'] == 'true')
   end
 
   desc 'Generate the Sphinx configuration file and process all indices'

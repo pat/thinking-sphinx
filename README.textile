@@ -67,6 +67,9 @@ results.excerpter.excerpt!('The Etymology of Foo')</code></pre>
   :order  => :custom_weight
 )</code></pre>
 
+* Support for latitude and longitude attributes named something other than 'lat' and 'lng' or 'latitude' and 'longitude' has been removed. May add it back in if requested, but would be surprised if it's a necessary feature.
+* Set INDEX_ONLY to true in your shell for the index task to re-index without regenerating the configuration file.
+
 h2. Limitations
 
 Basic indexing and searching should be fine. There's currently no facets or excerpts, and limited delta support. Many settings haven't yet been brought across. Many of the smaller features don't yet exist either. Some may actually not return... we'll see.
@@ -111,8 +114,6 @@ A list of what still needs to be implemented, in no particular order:
 * Bitmask weighting helper
 * Query times for searches
 * Starred queries
-* Flexible options for geosearching (attributes must be named lat and lng currently)
-* Rake task to index without generating configuration
 
 h3. Sphinx Versions
 

@@ -46,10 +46,16 @@ describe ThinkingSphinx::RakeInterface do
       FileUtils.stub :mkdir_p => true
     end
 
-    it "renders the configuration to a file" do
+    it "renders the configuration to a file by default" do
       configuration.should_receive(:render_to_file)
 
       interface.index
+    end
+
+    it "does not render the configuration if requested" do
+      configuration.should_not_receive(:render_to_file)
+
+      interface.index false
     end
 
     it "creates the directory for the index files" do

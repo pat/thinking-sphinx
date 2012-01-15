@@ -4,8 +4,8 @@ class ThinkingSphinx::RakeInterface
     config.render_to_file
   end
 
-  def index
-    configure
+  def index(reconfigure = true)
+    configure if reconfigure
     FileUtils.mkdir_p config.indices_location
     controller.index :verbose => true
   end
