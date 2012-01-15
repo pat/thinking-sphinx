@@ -40,5 +40,17 @@ describe ThinkingSphinx::Search::Geodist do
 
       inquirer.populate
     end
+
+    it "respects :latitude_attr and :longitude_attr options" do
+      search.options[:latitude_attr]  = 'side_to_side'
+      search.options[:longitude_attr] = 'up_or_down'
+      search.options[:geo] = [0.1, 0.2]
+
+      sphinx_sql.should_receive(:values).
+        with('GEODIST(0.1, 0.2, side_to_side, up_or_down) AS geodist').
+        and_return(sphinx_sql)
+
+      inquirer.populate
+    end
   end
 end

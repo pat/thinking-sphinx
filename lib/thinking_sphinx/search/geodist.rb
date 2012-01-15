@@ -13,7 +13,15 @@ module ThinkingSphinx::Search::Geodist
   end
 
   def geodist_clause
-    "GEODIST(#{geo.first}, #{geo.last}, lat, lng) AS geodist"
+    "GEODIST(#{geo.first}, #{geo.last}, #{latitude_attribute}, #{longitude_attribute}) AS geodist"
+  end
+
+  def latitude_attribute
+    @search.options[:latitude_attr] || 'lat'
+  end
+
+  def longitude_attribute
+    @search.options[:longitude_attr] || 'lng'
   end
 
   def sphinxql_select_with_geo
