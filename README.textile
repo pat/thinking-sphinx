@@ -82,7 +82,7 @@ A list of what still needs to be implemented, in no particular order:
 * Datetime Deltas
 * Attribute Updates
 * JRuby support
-* Abstract Inheritance support
+* Abstract Inheritance support (maybe - not sure this is something many of people want).
 * Rails 3.0 support
 * Searching from association contexts
 * Searching by specific indices
