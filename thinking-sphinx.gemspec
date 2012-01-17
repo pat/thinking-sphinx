@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'activerecord', '= 3.1.0'
   s.add_runtime_dependency 'builder',      '>= 2.1.2'
   s.add_runtime_dependency 'mysql2',       '>= 0.3.7'
-  s.add_runtime_dependency 'riddle',       '>= 1.5.0'
+  # s.add_runtime_dependency 'riddle',       '>= 1.5.0'
 
   s.add_development_dependency 'combustion',       '~> 0.3.1'
   s.add_development_dependency 'database_cleaner', '~> 0.6.7'
