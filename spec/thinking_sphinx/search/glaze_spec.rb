@@ -41,8 +41,14 @@ describe ThinkingSphinx::Search::Glaze do
   end
 
   describe '#excerpts' do
+    let(:excerpt_glaze) { double('excerpt glaze') }
+
+    before :each do
+      ThinkingSphinx::Search::ExcerptGlaze.stub :new => excerpt_glaze
+    end
+
     it "returns an excerpt glazing" do
-      glaze.excerpts.class.should == ThinkingSphinx::Search::ExcerptGlaze
+      glaze.excerpts.should == excerpt_glaze
     end
 
     it "respects an existing excerpts method" do
