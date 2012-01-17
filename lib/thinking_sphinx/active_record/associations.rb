@@ -3,7 +3,7 @@ class ThinkingSphinx::ActiveRecord::Associations
 
   def initialize(model)
     @model = model
-    @joins = {}
+    @joins = ActiveSupport::OrderedHash.new
   end
 
   def add_join_to(stack)
