@@ -12,11 +12,11 @@ Feature: Handle not-quite-supported column types as attributes
   Scenario: Dates as Datetimes
     Given Sphinx is running
     And I am searching on alphas
-    When I filter between 1 and 3 days ago on created_on by date
+    When I filter between 2 and 4 days ago on created_on by date
     Then I should get 2 results
 
   Scenario: Timestamps as Datetimes
     Given Sphinx is running
     And I am searching on alphas
-    When I filter between 1 and 3 days ago on created_at
+    When I filter between 2 and 4 days ago on created_at
     Then I should get 2 results
