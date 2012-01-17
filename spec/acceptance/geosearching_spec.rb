@@ -29,7 +29,11 @@ describe 'Searching by latitude and longitude', :live => true do
     bri = City.create :name => 'Brisbane',  :lat => -0.4794031, :lng => 2.670838
     index
 
-    City.search(:geo => [-0.616241, 2.602712], :order => 'geodist ASC').first.
-      geodist.should == 250326.906250
+    cities = City.search(:geo => [-0.616241, 2.602712], :order => 'geodist ASC')
+    if ActiveRecord::Base.configurations['test']['adapter'][/postgres/]
+      cities.first.geodist.should == 250331.234375
+    else # mysql
+      cities.first.geodist.should == 250326.906250
+    end
   end
 end

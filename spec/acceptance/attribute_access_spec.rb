@@ -12,6 +12,10 @@ describe 'Accessing attributes directly via search results', :live => true do
     Book.create! :title => 'American Gods', :year => 2001
     index
 
-    Book.search('gods').first.weight.should == 3500
+    if ActiveRecord::Base.configurations['test']['adapter'][/postgres/]
+      Book.search('gods').first.weight.should == 2500
+    else # mysql
+      Book.search('gods').first.weight.should == 3500
+    end
   end
 end
