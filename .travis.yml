@@ -10,7 +10,7 @@ rvm:
 branches:
   only:
     - master
-    - rails3
+    - v1
     - edge
 before_script:
   - "mysql -e 'create database thinking_sphinx;' > /dev/null"
