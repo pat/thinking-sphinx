@@ -761,8 +761,10 @@ module ThinkingSphinx
         filter_value(value.first).first..filter_value(value.last).first
       when Array
         value.collect { |v| filter_value(v) }.flatten
-      when Date, Time
-        [value.to_time.to_i]
+      when Time
+        [value.to_i]
+      when Date
+        [Time.utc(value.year, value.month, value.day).to_i]
       when NilClass
         0
       else
