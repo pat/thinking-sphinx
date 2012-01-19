@@ -13,7 +13,7 @@ Feature: Handle not-quite-supported column types as attributes
     Given Sphinx is running
     And I am searching on alphas
     When I filter between 2 and 4 days ago on created_on by date
-    Then I should get 2 results
+    Then I should get 3 results
 
   Scenario: Timestamps as Datetimes
     Given Sphinx is running
