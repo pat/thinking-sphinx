@@ -20,7 +20,7 @@ module ThinkingSphinx
     end
 
     def group_concatenate(clause, separator = ' ')
-      if connection.raw_connection.server_version >= 80400
+      if server_version >= 80400
         "array_to_string(array_agg(COALESCE(#{clause}, '0')), '#{separator}')"
       else
         "array_to_string(array_accum(COALESCE(#{clause}, '0')), '#{separator}')"
@@ -109,11 +109,9 @@ module ThinkingSphinx
     end
 
     def create_array_accum_function
-      if connection.raw_connection.respond_to?(:server_version) &&
-        connection.raw_connection.server_version >= 80400
+      if server_version >= 80400
         return
-      elsif connection.raw_connection.respond_to?(:server_version) &&
-        connection.raw_connection.server_version > 80200
+      elsif server_version > 80200
         execute <<-SQL
           CREATE AGGREGATE array_accum (anyelement)
           (
@@ -174,6 +172,17 @@ module ThinkingSphinx
         $$ IMMUTABLE LANGUAGE plpgsql;
       SQL
       execute function, true
+    end
+
+    def server_version
+      if RUBY_PLATFORM == 'java'
+        (connection.raw_connection.connection.server_major_version * 10000) +
+        (connection.raw_connection.connection.server_minor_version * 100)
+      elsif connection.raw_connection.respond_to?(:server_version)
+        connection.raw_connection.server_version
+      else
+        0
+      end
     end
   end
 end
