@@ -26,7 +26,6 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'cucumber',      '1.0.2'
   s.add_development_dependency 'faker',         '0.3.1'
-  s.add_development_dependency 'ginger',        '1.2.0'
   s.add_development_dependency 'rake',          '>= 0.9.2'
   s.add_development_dependency 'rspec',         '2.6.0'
   s.add_development_dependency 'will_paginate', '2.3.15'
