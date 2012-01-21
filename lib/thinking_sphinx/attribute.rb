@@ -269,7 +269,7 @@ WHERE #{@source.index.delta_object.clause(model, true)})
     end
 
     def end_association_for_mva
-      @association_for_mva ||= associations[columns.first].detect { |assoc|
+      @association_for_mva ||= associations[columns.first.__stack].detect { |assoc|
         assoc.has_column?(columns.first.__name)
       }
     end
@@ -358,8 +358,8 @@ block:
 
     def all_of_type?(*column_types)
       @columns.all? { |col|
-        klasses = @associations[col].empty? ? [@model] :
-          @associations[col].collect { |assoc| assoc.reflection.klass }
+        klasses = @associations[col.__stack].empty? ? [@model] :
+          @associations[col.__stack].collect { |assoc| assoc.reflection.klass }
         klasses.all? { |klass|
           column = klass.columns.detect { |column| column.name == col.__name.to_s }
           !column.nil? && column_types.include?(column.type)

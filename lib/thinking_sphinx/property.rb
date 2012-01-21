@@ -19,7 +19,7 @@ module ThinkingSphinx
       @alias    = @alias.to_sym unless @alias.blank?
 
       @columns.each { |col|
-        @associations[col] = association_stack(col.__stack.clone).each { |assoc|
+        @associations[col.__stack] = association_stack(col.__stack.clone).each { |assoc|
           assoc.join_to(source.base)
         }
       }
@@ -125,7 +125,7 @@ module ThinkingSphinx
     # happens for polymorphic situations).
     #
     def multiple_associations?
-      associations.any? { |col,assocs| assocs.length > 1 }
+      associations.values.any? { |assocs| assocs.length > 1 }
     end
 
     # Builds a column reference tied to the appropriate associations. This
@@ -140,7 +140,7 @@ module ThinkingSphinx
       elsif column.__stack.empty?
         "#{@model.quoted_table_name}.#{quote_column(column.__name)}"
       else
-        associations[column].collect { |assoc|
+        associations[column.__stack].collect { |assoc|
           assoc.has_column?(column.__name) ?
           "#{quote_with_table(assoc.join.aliased_table_name, column.__name)}" :
           nil
@@ -160,7 +160,7 @@ module ThinkingSphinx
       elsif column.__stack.empty?
         @model.column_names.include?(column.__name.to_s)
       else
-        (associations[column] || []).any? { |assoc|
+        associations[column.__stack].any? { |assoc|
           assoc.has_column?(column.__name)
         }
       end
