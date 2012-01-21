@@ -9,7 +9,6 @@ Dir[File.join(File.dirname(__FILE__), '../../vendor/*/lib')].each do |path|
   $:.unshift path
 end
 
-require 'active_support/core_ext/class/inheritable_attributes'
 require 'active_record'
 require 'cucumber/thinking_sphinx/internal_world'
 
