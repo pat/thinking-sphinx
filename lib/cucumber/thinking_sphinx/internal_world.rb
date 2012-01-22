@@ -22,7 +22,7 @@ module Cucumber
         @host     = 'localhost'
 
         if ActiveRecord.constants.include?('VERSION')
-          @adapter.gsub! /^mysql$/, 'mysql2'
+          @adapter = @adapter.gsub /^mysql$/, 'mysql2'
         end
 
         if @adapter[/mysql/]
