@@ -4,6 +4,8 @@ describe ThinkingSphinx::ActiveRecord::Base do
   let(:model) {
     Class.new(ActiveRecord::Base) do
       include ThinkingSphinx::ActiveRecord::Base
+
+      def self.name; 'Model'; end
     end
   }
 

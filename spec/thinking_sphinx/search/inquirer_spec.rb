@@ -62,8 +62,9 @@ describe ThinkingSphinx::Search::Inquirer do
     end
 
     it "uses indices for the given classes" do
-      model = Class.new(ActiveRecord::Base)
-      model.stub :name => 'Article'
+      model = Class.new(ActiveRecord::Base) do
+        def self.name; 'Article'; end
+      end
 
       search.options[:classes] = [model]
 
@@ -74,10 +75,12 @@ describe ThinkingSphinx::Search::Inquirer do
     end
 
     it "requests indices for any superclasses" do
-      supermodel = Class.new(ActiveRecord::Base)
-      supermodel.stub :name => 'Article'
-      submodel   = Class.new(supermodel)
-      submodel.stub :name => 'OpinionArticle'
+      supermodel = Class.new(ActiveRecord::Base) do
+        def self.name; 'Article'; end
+      end
+      submodel   = Class.new(supermodel) do
+        def self.name; 'OpinionArticle'; end
+      end
 
       search.options[:classes] = [submodel]
 
@@ -106,13 +109,16 @@ describe ThinkingSphinx::Search::Inquirer do
     end
 
     it "appends field conditions for the class when searching on subclasses" do
-      db_connection = double('db connection', :select_values => [])
-      supermodel = Class.new(ActiveRecord::Base)
-      supermodel.stub :name => 'Cat', :connection => db_connection,
-        :column_names => ['type']
-      submodel   = Class.new(supermodel)
-      submodel.stub :name => 'Lion', :connection => db_connection,
-        :column_names => ['type']
+      db_connection = double('db connection', :select_values => [],
+        :schema_cache => double('cache', :table_exists? => false))
+      supermodel = Class.new(ActiveRecord::Base) do
+        def self.name; 'Cat'; end
+      end
+      supermodel.stub :connection => db_connection, :column_names => ['type']
+      submodel   = Class.new(supermodel) do
+        def self.name; 'Lion'; end
+      end
+      submodel.stub :connection => db_connection, :column_names => ['type']
 
       search.options[:classes] = [submodel]
 
