@@ -1,6 +1,7 @@
 appraise 'rails_3_0' do
   gem 'activerecord', '~> 3.0.3'
   gem 'actionpack',   '~> 3.0.3'
+  gem 'mysql2',       '~> 0.2.18', :platform => :ruby
 end
 
 appraise 'rails_3_1' do
