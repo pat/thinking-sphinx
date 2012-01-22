@@ -16,14 +16,10 @@ module Cucumber
         @fixtures_directory   = "#{pwd}/features/thinking_sphinx/db/fixtures"
         @database_file        = "#{pwd}/features/thinking_sphinx/database.yml"
 
-        @adapter  = (ENV['DATABASE'] || 'mysql')
+        @adapter  = (ENV['DATABASE'] || 'mysql').gsub /^mysql$/, 'mysql2'
         @database = 'thinking_sphinx'
         @username = ENV['USER']
         @host     = 'localhost'
-
-        if ActiveRecord.constants.include?('VERSION')
-          @adapter.gsub! /^mysql$/, 'mysql2'
-        end
 
         if @adapter[/mysql/]
           @username = 'root'

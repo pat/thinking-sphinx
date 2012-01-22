@@ -3,11 +3,11 @@
 source :rubygems
 
 gem "rcov", "0.9.8", :platform=>:mri_18
-gem "mysql2", "~> 0.2.11", :platform=>:ruby
-gem "pg", "0.9.0", :platform=>:ruby
+gem "mysql2", "~> 0.3.7", :platform=>:ruby
+gem "pg", "~> 0.11.0", :platform=>:ruby
 gem "activerecord-jdbcmysql-adapter", "~> 1.1.3", :platform=>:jruby
 gem "activerecord-jdbcpostgresql-adapter", "~> 1.1.3", :platform=>:jruby
-gem "activerecord", "~> 2.1.2"
-gem "mysql", "2.8.1", :platform=>:ruby
+gem "activerecord", "~> 3.1.0"
+gem "actionpack", "~> 3.1.0"
 
 gemspec :path=>"../"

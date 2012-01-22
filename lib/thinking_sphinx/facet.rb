@@ -107,7 +107,7 @@ module ThinkingSphinx
         result && result.to_crc32 == attribute_value
       }
 
-      object ? object.send(method) : nil
+      object.try(method)
     end
 
     def source_objects(object)

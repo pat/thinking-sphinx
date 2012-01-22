@@ -1,13 +1,14 @@
-appraise 'rails_2_1' do
-  gem 'activerecord', '~> 2.1.2'
-  gem 'mysql',        '2.8.1', :platform=>:ruby
+appraise 'rails_3_0' do
+  gem 'activerecord', '~> 3.0.3'
+  gem 'actionpack',   '~> 3.0.3'
 end
 
-appraise 'rails_2_2' do
-  gem 'activerecord', '~> 2.2.3'
-  gem 'mysql',        '2.8.1', :platform=>:ruby
+appraise 'rails_3_1' do
+  gem 'activerecord', '~> 3.1.0'
+  gem 'actionpack',   '~> 3.1.0'
 end
 
-appraise 'rails_2_3' do
-  gem 'activerecord', '~> 2.3.8'
+appraise 'rails_3_2' do
+  gem 'activerecord', '~> 3.2.0'
+  gem 'actionpack',   '~> 3.2.0'
 end
