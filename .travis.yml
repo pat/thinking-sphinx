@@ -15,7 +15,7 @@ branches:
 before_script:
   - "mysql -e 'create database thinking_sphinx;' > /dev/null"
   - "psql -c 'create database thinking_sphinx;' -U postgres >/dev/null"
-gemfiles:
+gemfile:
   - gemfiles/rails_3_0.gemfile
   - gemfiles/rails_3_1.gemfile
   - gemfiles/rails_3_2.gemfile
