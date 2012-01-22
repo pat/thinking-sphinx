@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'builder',      '>= 2.1.2'
 
   s.add_development_dependency 'actionpack',    '>= 3.0.3'
+  s.add_development_dependency 'appraisal',     '0.4.0'
   s.add_development_dependency 'cucumber',      '1.0.2'
   s.add_development_dependency 'faker',         '0.3.1'
   s.add_development_dependency 'rake',          '>= 0.9.2'

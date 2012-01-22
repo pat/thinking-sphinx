@@ -1,12 +1,8 @@
 rvm:
   - 1.8.7
-  - 1.9.2
-  - 1.9.3
   - rbx
-  - rbx-2.0
   - ree
   - jruby
-  - ruby-head
 branches:
   only:
     - master
@@ -15,3 +11,7 @@ branches:
 before_script:
   - "mysql -e 'create database thinking_sphinx;' > /dev/null"
   - "psql -c 'create database thinking_sphinx;' -U postgres >/dev/null"
+gemfiles:
+  - gemfiles/rails_2_1.gemfile
+  - gemfiles/rails_2_2.gemfile
+  - gemfiles/rails_2_3.gemfile
