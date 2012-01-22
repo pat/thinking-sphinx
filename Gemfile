@@ -6,10 +6,5 @@ gem 'riddle',
 
 gemspec
 
-platforms :ruby do
-  gem 'pg', '~> 0.11.0'
-end
-
-platform :jruby do
-  gem 'activerecord-jdbcpostgresql-adapter', '~> 1.1.3'
-end
+gem 'pg', '~> 0.11.0', :platform => :ruby
+gem 'activerecord-jdbcpostgresql-adapter', '~> 1.1.3', :platform => :jruby
