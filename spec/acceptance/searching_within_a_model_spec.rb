@@ -25,4 +25,11 @@ describe 'Searching within a model', :live => true do
 
     City.search('İstanbul').to_a.should == [istanbul]
   end
+
+  it "will star provided queries on request" do
+    article = Article.create! :title => 'Pancakes'
+    index
+
+    Article.search('cake', :star => true).first.should == article
+  end
 end

@@ -11,9 +11,11 @@ describe ThinkingSphinx::Search::Inquirer do
     double('config', :connection => connection, :preload_indices => true,
       :indices => [], :indices_for_references => [])
   }
+  let(:query)      { double('query', :to_s => '') }
 
   before :each do
     ThinkingSphinx::Configuration.stub :instance => config
+    ThinkingSphinx::Search::Query.stub :new => query
     Riddle::Query.stub :connection => connection
     Riddle::Query::Select.stub :new => sphinx_sql
 
@@ -90,20 +92,29 @@ describe ThinkingSphinx::Search::Inquirer do
       inquirer.populate
     end
 
-    it "matches on the query given" do
-      search.stub :query => 'pancakes'
+    it "generates a Sphinx query from the provided keyword and conditions" do
+      search.stub :query => 'tasty'
+      search.options[:conditions] = {:title => 'pancakes'}
 
-      sphinx_sql.should_receive(:matching).with('pancakes').
-        and_return(sphinx_sql)
+      ThinkingSphinx::Search::Query.should_receive(:new).
+        with('tasty', {:title => 'pancakes'}, anything).and_return(query)
 
       inquirer.populate
     end
 
-    it "appends field conditions to the query" do
-      search.options[:conditions] = {:title => 'pancakes'}
+    it "matches on the generated query" do
+      query.stub :to_s => 'waffles'
 
-      sphinx_sql.should_receive(:matching).with('@title pancakes').
-        and_return(sphinx_sql)
+      sphinx_sql.should_receive(:matching).with('waffles')
+
+      inquirer.populate
+    end
+
+    it "requests a starred query if the :star option is set to true" do
+      search.options[:star] = true
+
+      ThinkingSphinx::Search::Query.should_receive(:new).
+        with(anything, anything, true).and_return(query)
 
       inquirer.populate
     end
@@ -122,8 +133,9 @@ describe ThinkingSphinx::Search::Inquirer do
 
       search.options[:classes] = [submodel]
 
-      sphinx_sql.should_receive(:matching).
-        with('@sphinx_internal_class (Lion)').and_return(sphinx_sql)
+      ThinkingSphinx::Search::Query.should_receive(:new).with(anything,
+        hash_including(:sphinx_internal_class => '(Lion)'), anything).
+        and_return(query)
 
       inquirer.populate
     end

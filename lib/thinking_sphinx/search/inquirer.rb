@@ -90,9 +90,8 @@ FROM #{klass.table_name}
     conditions = options[:conditions] || {}
     conditions[:sphinx_internal_class] = class_condition if classes.any?
     @extended_query ||= begin
-      (@search.query.to_s + ' ' + conditions.keys.collect { |key|
-        "@#{key} #{conditions[key]}"
-      }.join(' ')).strip
+      ThinkingSphinx::Search::Query.new(@search.query, conditions,
+        options[:star]).to_s
     end
   end
 
