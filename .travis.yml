@@ -2,10 +2,9 @@ rvm:
   - 1.8.7
   - 1.9.2
   - 1.9.3
-  - rbx
-  - rbx-2.0
+  - rbx-18mode
   - ree
-  - jruby
+  - jruby-18mode
   - ruby-head
 branches:
   only:
