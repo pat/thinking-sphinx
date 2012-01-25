@@ -1,4 +1,10 @@
 class ThinkingSphinx::ActiveRecord::Interpreter < BlankSlate
+  def self.reveal(name)
+    hidden_method = find_hidden_method(name)
+    fail "Don't know how to reveal method '#{name}'" unless hidden_method
+    define_method(name, hidden_method)
+  end
+
   reveal :extend if RUBY_DESCRIPTION[/^ruby 1.9/].nil?
 
   def self.translate!(index, block)
