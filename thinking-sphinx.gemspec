@@ -21,13 +21,13 @@ Gem::Specification.new do |s|
   }
   s.require_paths = ['lib']
 
-  s.add_runtime_dependency 'activerecord', '>= 3.1.0'
+  s.add_runtime_dependency 'activerecord', '>= 3.0.0'
   s.add_runtime_dependency 'builder',      '>= 2.1.2'
-  s.add_runtime_dependency 'mysql2',       '>= 0.3.7'
+  s.add_runtime_dependency 'mysql2',       '>= 0.2.18'
   # s.add_runtime_dependency 'riddle',       '>= 1.5.0'
 
   s.add_development_dependency 'appraisal',        '~> 0.4.0'
-  s.add_development_dependency 'combustion',       '~> 0.3.1'
+  # s.add_development_dependency 'combustion',       '~> 0.3.1'
   s.add_development_dependency 'database_cleaner', '~> 0.7.1'
   s.add_development_dependency 'rspec',            '~> 2.6.0'
 end

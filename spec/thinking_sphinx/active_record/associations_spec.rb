@@ -1,6 +1,12 @@
 require 'spec_helper'
 
 describe ThinkingSphinx::ActiveRecord::Associations do
+  JoinDependency = if defined?(::ActiveRecord::Associations::JoinDependency)
+    ::ActiveRecord::Associations::JoinDependency
+  else
+    ::ActiveRecord::Associations::ClassMethods::JoinDependency
+  end
+
   let(:associations) { ThinkingSphinx::ActiveRecord::Associations.new model }
   let(:model)        { model_double 'articles' }
   let(:base)         {
@@ -22,9 +28,8 @@ describe ThinkingSphinx::ActiveRecord::Associations do
   end
 
   before :each do
-    ActiveRecord::Associations::JoinDependency.stub :new => base
-    ActiveRecord::Associations::JoinDependency::JoinAssociation.
-      stub(:new).and_return(join, sub_join)
+    JoinDependency.stub :new => base
+    JoinDependency::JoinAssociation.stub(:new).and_return(join, sub_join)
     model.reflections[:user] = join.reflection
 
     join.stub :active_record => model_double
@@ -33,18 +38,16 @@ describe ThinkingSphinx::ActiveRecord::Associations do
 
   describe '#add_join_to' do
     it "adds just one join for a stack with a single association" do
-      ActiveRecord::Associations::JoinDependency::JoinAssociation.unstub :new
-      ActiveRecord::Associations::JoinDependency::JoinAssociation.
-        should_receive(:new).with(join.reflection, base, join_base).once.
-        and_return(join)
+      JoinDependency::JoinAssociation.unstub :new
+      JoinDependency::JoinAssociation.should_receive(:new).
+        with(join.reflection, base, join_base).once.and_return(join)
 
       associations.add_join_to([:user])
     end
 
     it "does not duplicate joins when given the same stack twice" do
-      ActiveRecord::Associations::JoinDependency::JoinAssociation.unstub :new
-      ActiveRecord::Associations::JoinDependency::JoinAssociation.
-        should_receive(:new).once.and_return(join)
+      JoinDependency::JoinAssociation.unstub :new
+      JoinDependency::JoinAssociation.should_receive(:new).once.and_return(join)
 
       associations.add_join_to([:user])
       associations.add_join_to([:user])
@@ -52,21 +55,19 @@ describe ThinkingSphinx::ActiveRecord::Associations do
 
     context 'multiple joins' do
       it "adds two joins for a stack with two associations" do
-        ActiveRecord::Associations::JoinDependency::JoinAssociation.unstub :new
-        ActiveRecord::Associations::JoinDependency::JoinAssociation.
-          should_receive(:new).with(join.reflection, base, join_base).once.
-          and_return(join)
-        ActiveRecord::Associations::JoinDependency::JoinAssociation.
-          should_receive(:new).with(sub_join.reflection, base, join).once.
-          and_return(sub_join)
+        JoinDependency::JoinAssociation.unstub :new
+        JoinDependency::JoinAssociation.should_receive(:new).
+          with(join.reflection, base, join_base).once.and_return(join)
+        JoinDependency::JoinAssociation.should_receive(:new).
+          with(sub_join.reflection, base, join).once.and_return(sub_join)
 
         associations.add_join_to([:user, :posts])
       end
 
       it "extends upon existing joins when given stacks where parts are already mapped" do
-        ActiveRecord::Associations::JoinDependency::JoinAssociation.unstub :new
-        ActiveRecord::Associations::JoinDependency::JoinAssociation.
-          should_receive(:new).twice.and_return(join, sub_join)
+        JoinDependency::JoinAssociation.unstub :new
+        JoinDependency::JoinAssociation.should_receive(:new).twice.
+          and_return(join, sub_join)
 
         associations.add_join_to([:user])
         associations.add_join_to([:user, :posts])
@@ -131,10 +132,9 @@ describe ThinkingSphinx::ActiveRecord::Associations do
     end
 
     it "adds just one join for a stack with a single association" do
-      ActiveRecord::Associations::JoinDependency::JoinAssociation.unstub :new
-      ActiveRecord::Associations::JoinDependency::JoinAssociation.
-        should_receive(:new).with(join.reflection, base, join_base).once.
-        and_return(join)
+      JoinDependency::JoinAssociation.unstub :new
+      JoinDependency::JoinAssociation.should_receive(:new).
+        with(join.reflection, base, join_base).once.and_return(join)
 
       associations.alias_for([:user])
     end
@@ -144,9 +144,8 @@ describe ThinkingSphinx::ActiveRecord::Associations do
     end
 
     it "does not duplicate joins when given the same stack twice" do
-      ActiveRecord::Associations::JoinDependency::JoinAssociation.unstub :new
-      ActiveRecord::Associations::JoinDependency::JoinAssociation.
-        should_receive(:new).once.and_return(join)
+      JoinDependency::JoinAssociation.unstub :new
+      JoinDependency::JoinAssociation.should_receive(:new).once.and_return(join)
 
       associations.alias_for([:user])
       associations.alias_for([:user])
@@ -154,13 +153,11 @@ describe ThinkingSphinx::ActiveRecord::Associations do
 
     context 'multiple joins' do
       it "adds two joins for a stack with two associations" do
-        ActiveRecord::Associations::JoinDependency::JoinAssociation.unstub :new
-        ActiveRecord::Associations::JoinDependency::JoinAssociation.
-          should_receive(:new).with(join.reflection, base, join_base).once.
-          and_return(join)
-        ActiveRecord::Associations::JoinDependency::JoinAssociation.
-          should_receive(:new).with(sub_join.reflection, base, join).once.
-          and_return(sub_join)
+        JoinDependency::JoinAssociation.unstub :new
+        JoinDependency::JoinAssociation.should_receive(:new).
+          with(join.reflection, base, join_base).once.and_return(join)
+        JoinDependency::JoinAssociation.should_receive(:new).
+          with(sub_join.reflection, base, join).once.and_return(sub_join)
 
         associations.alias_for([:user, :posts])
       end
@@ -170,9 +167,9 @@ describe ThinkingSphinx::ActiveRecord::Associations do
       end
 
       it "extends upon existing joins when given stacks where parts are already mapped" do
-        ActiveRecord::Associations::JoinDependency::JoinAssociation.unstub :new
-        ActiveRecord::Associations::JoinDependency::JoinAssociation.
-          should_receive(:new).twice.and_return(join, sub_join)
+        JoinDependency::JoinAssociation.unstub :new
+        JoinDependency::JoinAssociation.should_receive(:new).twice.
+          and_return(join, sub_join)
 
         associations.alias_for([:user])
         associations.alias_for([:user, :posts])

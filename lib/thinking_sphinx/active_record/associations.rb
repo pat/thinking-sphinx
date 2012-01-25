@@ -1,4 +1,10 @@
 class ThinkingSphinx::ActiveRecord::Associations
+  JoinDependency = if defined?(::ActiveRecord::Associations::JoinDependency)
+    ::ActiveRecord::Associations::JoinDependency
+  else
+    ::ActiveRecord::Associations::ClassMethods::JoinDependency
+  end
+
   attr_reader :model
 
   def initialize(model)
@@ -33,12 +39,12 @@ class ThinkingSphinx::ActiveRecord::Associations
   private
 
   def base
-    @base ||= ::ActiveRecord::Associations::JoinDependency.new model, [], []
+    @base ||= JoinDependency.new model, [], []
   end
 
   def join_for(stack)
     @joins[stack] ||= begin
-      ::ActiveRecord::Associations::JoinDependency::JoinAssociation.new(
+      JoinDependency::JoinAssociation.new(
         reflection_for(stack), base, parent_join_for(stack)
       ).tap { |join| join.join_type = Arel::OuterJoin }
     end
@@ -61,6 +67,10 @@ class ThinkingSphinx::ActiveRecord::Associations
   end
 
   def reflection_for(stack)
-    parent_for(stack).active_record.reflections[stack.last]
+    if parent_for(stack).respond_to?(:active_record)
+      parent_for(stack).active_record.reflections[stack.last]
+    else
+      parent_for(stack).joins.first.active_record.reflections[stack.last]
+    end
   end
 end

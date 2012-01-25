@@ -83,7 +83,6 @@ A list of what still needs to be implemented, in no particular order:
 * Attribute Updates
 * JRuby support
 * Abstract Inheritance support (maybe - not sure this is something many of people want).
-* Rails 3.0 support
 * Searching from association contexts
 * Searching by specific indices
 * Matching many values on a single MVA attribute (:with_all)
@@ -121,9 +120,9 @@ TS 3 is built for Sphinx 2.x only. You cannot use 1.10-beta, 0.9.9 or anything e
 
 h3. Rails Versions
 
-Currently TS 3 is built to support Rails 3.1. 3.0 will almost certainly be added - not promising anything for Rails 2.3, and anything earlier than that definitely won't be supported.
+Currently TS 3 is built to support Rails 3.0 or newer. Sinatra is not yet supported, but it will be.
 
-Sinatra is not yet supported, but it will be. Merb support has been discontinued.
+Rails 2.0 or earlier and Merb support have been discontinued.
 
 h3. Ruby Versions
 
