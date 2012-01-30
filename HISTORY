@@ -1,4 +1,9 @@
 Edge:
+* Adding Sphinx 2.0.3 support (identical to 2.1.0).
+* Dropping Rails 1.2 and 2.0.x support.
+* Association keys now are the association stacks as arrays - more reliable in Rubinius.
+* Can now determine PostgreSQL versions with JRuby.
+* Many testing tweaks.
 * Allow for rank_expr option being passed through to Riddle.
 
 1.4.11 - January 2nd 2011
