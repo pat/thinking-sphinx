@@ -567,10 +567,12 @@ module Riddle
           self.connection.call(self)
         elsif self.class.connection
           self.class.connection.call(self)
-        elsif server.index('/') == 0
+        elsif server && server.index('/') == 0
           UNIXSocket.new server
-        else
+        elsif server
           TCPSocket.new server, @port
+        else
+          raise "Server not set."
         end
       rescue Errno::ETIMEDOUT, Errno::ECONNRESET, Errno::ECONNREFUSED => e
         retry if (tries += 1) < 5

@@ -7,9 +7,9 @@ module ThinkingSphinx
         require "riddle/#{version}"
       when /1.10/
         require 'riddle/1.10'
-      when /2.0.\d/
+      when /2.0.[12]/
         require 'riddle/2.0.1'
-      when /2.1.\d/
+      when /2.0.3/, /2.1.\d/
         require 'riddle/2.1.0'
       else
         documentation_link = %Q{

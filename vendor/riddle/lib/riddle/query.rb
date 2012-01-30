@@ -59,7 +59,10 @@ module Riddle::Query
 
   def self.snippets(data, index, query, options = nil)
     options = ', ' + options.keys.collect { |key|
-      "#{options[key]} AS #{key}"
+      value = options[key]
+      value = "'#{value}'" if value.is_a?(String)
+
+      "#{value} AS #{key}"
     }.join(', ') unless options.nil?
 
     "CALL SNIPPETS('#{data}', '#{index}', '#{query}'#{options})"
