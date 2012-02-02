@@ -5,6 +5,8 @@ module ThinkingSphinx::ActiveRecord::Base
     after_destroy ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks
     before_save   ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks
     after_commit  ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks
+
+    after_save    ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks
   end
 
   module ClassMethods

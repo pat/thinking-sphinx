@@ -13,9 +13,12 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     searchd.pid_file  = Rails.root.join('log', "#{Rails.env}.sphinx.pid")
     searchd.log       = Rails.root.join('log', "#{Rails.env}.searchd.log")
     searchd.query_log = Rails.root.join('log', "#{Rails.env}.searchd.query.log")
+    searchd.binlog_path = Rails.root.join('tmp', 'binlog', Rails.env)
+
     searchd.address   = settings['address']
     searchd.address   = '127.0.0.1' unless searchd.address.present?
     searchd.mysql41   = settings['mysql41'] || settings['port'] || 9306
+    searchd.workers   = 'threads'
 
     @offsets = {}
   end
@@ -70,6 +73,8 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def render_to_file
+    FileUtils.mkdir_p searchd.binlog_path
+
     open(configuration_file, 'w') { |file| file.write render }
   end
 

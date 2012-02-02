@@ -13,6 +13,7 @@ module ThinkingSphinx
 end
 
 # Core
+require 'thinking_sphinx/callbacks'
 require 'thinking_sphinx/configuration'
 require 'thinking_sphinx/excerpter'
 require 'thinking_sphinx/index'
@@ -23,5 +24,6 @@ require 'thinking_sphinx/version'
 # Extended
 require 'thinking_sphinx/active_record'
 require 'thinking_sphinx/deltas'
+require 'thinking_sphinx/real_time'
 
 require 'thinking_sphinx/railtie' if defined?(Rails)

@@ -1,5 +1,5 @@
 class ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks <
-  ThinkingSphinx::ActiveRecord::Callbacks
+  ThinkingSphinx::Callbacks
 
   callbacks :after_commit, :before_save
 

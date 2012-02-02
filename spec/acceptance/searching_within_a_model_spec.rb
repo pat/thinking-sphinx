@@ -33,3 +33,11 @@ describe 'Searching within a model', :live => true do
     Article.search('cake', :star => true).first.should == article
   end
 end
+
+describe 'Searching within a model with a realtime index', :live => true do
+  it "returns results" do
+    product = Product.create! :name => 'Widget'
+
+    Product.search.first.should == product
+  end
+end

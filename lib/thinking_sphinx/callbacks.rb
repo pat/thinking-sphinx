@@ -1,4 +1,4 @@
-class ThinkingSphinx::ActiveRecord::Callbacks
+class ThinkingSphinx::Callbacks
   attr_reader :instance
 
   def self.callbacks(*methods)
@@ -13,6 +13,3 @@ class ThinkingSphinx::ActiveRecord::Callbacks
     @instance = instance
   end
 end
-
-require 'thinking_sphinx/active_record/callbacks/delete_callbacks'
-require 'thinking_sphinx/active_record/callbacks/delta_callbacks'

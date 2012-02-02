@@ -2,14 +2,17 @@ require 'spec_helper'
 
 describe ThinkingSphinx::Index do
   describe '.define' do
-    context 'with ActiveRecord' do
-      let(:index)   { double('index', :definition_block= => nil) }
-      let(:config)  { double('config', :indices => indices) }
-      let(:indices) { double('indices', :<< => true) }
+    let(:index)   { double('index', :definition_block= => nil) }
+    let(:config)  { double('config', :indices => indices) }
+    let(:indices) { double('indices', :<< => true) }
 
+    before :each do
+      ThinkingSphinx::Configuration.stub :instance => config
+    end
+
+    context 'with ActiveRecord' do
       before :each do
         ThinkingSphinx::ActiveRecord::Index.stub :new => index
-        ThinkingSphinx::Configuration.stub :instance => config
       end
 
       it "creates an ActiveRecord index" do
@@ -84,6 +87,38 @@ describe ThinkingSphinx::Index do
             :delta => true) do
             indexes name
           end
+        end
+      end
+    end
+
+    context 'with Real-Time' do
+      before :each do
+        ThinkingSphinx::RealTime::Index.stub :new => index
+      end
+
+      it "creates a real-time index" do
+        ThinkingSphinx::RealTime::Index.should_receive(:new).
+          with(:user, :with => :real_time).and_return index
+
+        ThinkingSphinx::Index.define(:user, :with => :real_time)
+      end
+
+      it "returns the ActiveRecord index" do
+        ThinkingSphinx::Index.define(:user, :with => :real_time).
+          should == index
+      end
+
+      it "adds the index to the collection of indices" do
+        indices.should_receive(:<<).with(index)
+
+        ThinkingSphinx::Index.define(:user, :with => :real_time)
+      end
+
+      it "sets the block in the index" do
+        index.should_receive(:definition_block=).with instance_of(Proc)
+
+        ThinkingSphinx::Index.define(:user, :with => :real_time) do
+          indexes name
         end
       end
     end

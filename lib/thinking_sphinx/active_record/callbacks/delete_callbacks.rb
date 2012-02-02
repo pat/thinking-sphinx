@@ -1,5 +1,5 @@
 class ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks <
-  ThinkingSphinx::ActiveRecord::Callbacks
+  ThinkingSphinx::Callbacks
 
   callbacks :after_destroy
 
