@@ -215,8 +215,8 @@ describe ThinkingSphinx::Search do
         :matches => minimal_result_hashes(@alpha_a, @beta_b, @alpha_b, @beta_a),
         :fields  => ["one", "two", "three", "four", "five"]
       }
-      Alpha.stub! :find => [@alpha_a, @alpha_b]
-      Beta.stub!  :find => [@beta_a, @beta_b]
+      Alpha.stub! :find => [@alpha_a, @alpha_b], :unscoped => Alpha
+      Beta.stub!  :find => [@beta_a, @beta_b], :unscoped => Beta
     end
 
     it "should issue only one select per model" do

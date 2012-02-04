@@ -887,7 +887,7 @@ module ThinkingSphinx
       index_options = klass.sphinx_index_options
 
       ids = matches.collect { |match| match[:attributes]["sphinx_internal_id"] }
-      instances = ids.length > 0 ? klass.find(
+      instances = ids.length > 0 ? klass.unscoped.find(
         :all,
         :joins      => options[:joins],
         :conditions => {klass.primary_key_for_sphinx.to_sym => ids},
