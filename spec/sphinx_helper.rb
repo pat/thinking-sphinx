@@ -18,6 +18,9 @@ class SphinxHelper
       @username = config['username']
       @password = config['password']
       @socket   = config['socket']
+      @sslca    = config['sslca']
+      @sslcert  = config['sslcert']
+      @sslkey   = config['sslkey']
     end
 
     @path = File.expand_path(File.dirname(__FILE__))
@@ -30,7 +33,10 @@ class SphinxHelper
       :username => @username,
       :password => @password,
       :host     => @host,
-      :socket   => @socket
+      :socket   => @socket,
+      :sslca    => @sslca,
+      :sslcert  => @sslcert,
+      :sslkey   => @sslkey
     )
     ActiveRecord::Base.logger = Logger.new(File.open('tmp/activerecord.log', 'a'))
 
