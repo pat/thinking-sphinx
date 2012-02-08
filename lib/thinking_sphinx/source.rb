@@ -97,6 +97,11 @@ module ThinkingSphinx
       source.sql_db   = config[:database]
       source.sql_port = config[:port]
       source.sql_sock = config[:socket]
+
+      # MySQL SSL support
+      source.mysql_ssl_ca   = config[:sslca]   if config[:sslca]
+      source.mysql_ssl_cert = config[:sslcert] if config[:sslcert]
+      source.mysql_ssl_key  = config[:sslkey]  if config[:sslkey]
     end
 
     def set_source_fields(source)
