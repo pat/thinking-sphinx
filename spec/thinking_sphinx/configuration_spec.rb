@@ -84,7 +84,13 @@ describe ThinkingSphinx::Configuration do
   end
 
   describe '#indices_for_references' do
-    it "selects from the full index set those with matching references"
+    it "selects from the full index set those with matching references" do
+      config.indices << double('index', :reference => :article)
+      config.indices << double('index', :reference => :book)
+      config.indices << double('index', :reference => :page)
+
+      config.indices_for_references(:book, :article).length.should == 2
+    end
   end
 
   describe '#indices_location' do

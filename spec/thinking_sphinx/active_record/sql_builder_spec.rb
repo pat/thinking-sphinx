@@ -476,17 +476,72 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
   end
 
   describe 'sql_query_info' do
-    it "filters on the reversed document id"
+    it "filters on the reversed document id" do
+      relation.should_receive(:where).
+        with("`users`.`id` = ($id - #{source.offset}) / #{indices.count}").
+        and_return(relation)
+
+      builder.sql_query_info
+    end
+
+    it "returns the generated SQL query" do
+      relation.stub(:to_sql).and_return('SELECT * FROM people WHERE id = $id')
+
+      builder.sql_query_info.should == 'SELECT * FROM people WHERE id = $id'
+    end
   end
 
   describe 'sql_query_pre' do
-    it "adds a reset delta query if there is a delta processor and this is the core source"
-    it "does not add a reset query if there is no delta processor"
-    it "does not add a reset query if this is a delta source"
-    it "sets the group_concat_max_len value if set"
-    it "does not set the group_concat_max_len if not provided"
-    it "sets the connection to use UTF-8 if required"
-    it "does not set the connection to use UTF-8 if not required"
+    let(:processor) { double('processor', :reset_query => 'RESET DELTAS') }
+
+    before :each do
+      source.stub :options => {}, :delta_processor => nil, :delta? => false
+      adapter.stub :utf8_query_pre => 'SET UTF8'
+    end
+
+    it "adds a reset delta query if there is a delta processor and this is the core source" do
+      source.stub :delta_processor => processor
+
+      builder.sql_query_pre.should include('RESET DELTAS')
+    end
+
+    it "does not add a reset query if there is no delta processor" do
+      builder.sql_query_pre.should_not include('RESET DELTAS')
+    end
+
+    it "does not add a reset query if this is a delta source" do
+      source.stub :delta_processor => processor
+      source.stub :delta? => true
+
+      builder.sql_query_pre.should_not include('RESET DELTAS')
+    end
+
+    it "sets the group_concat_max_len value if set" do
+      source.options[:group_concat_max_len] = 123
+
+      builder.sql_query_pre.
+        should include('SET SESSION group_concat_max_len = 123')
+    end
+
+    it "does not set the group_concat_max_len if not provided" do
+      source.options[:group_concat_max_len] = nil
+
+      builder.sql_query_pre.select { |sql|
+        sql[/SET SESSION group_concat_max_len/]
+      }.should be_empty
+    end
+
+    it "sets the connection to use UTF-8 if required" do
+      source.options[:utf8?] = true
+
+      builder.sql_query_pre.should include('SET UTF8')
+    end
+
+    it "does not set the connection to use UTF-8 if not required" do
+      source.options[:utf8?] = false
+
+      builder.sql_query_pre.should_not include('SET UTF8')
+    end
   end
 
   describe 'sql_query_range' do

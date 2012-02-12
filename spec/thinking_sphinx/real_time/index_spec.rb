@@ -152,6 +152,9 @@ describe ThinkingSphinx::RealTime::Index do
   end
 
   describe '#unique_attribute_names' do
-    pending
+    it "returns all attribute names" do
+      index.unique_attribute_names.should == ['sphinx_internal_class_attr',
+        'sphinx_internal_id', 'sphinx_deleted']
+    end
   end
 end

@@ -78,6 +78,25 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
 
   private
 
+  def attribute_array_for(type)
+    case type
+    when :string, :timestamp, :float, :bigint
+      instance_variable_get "@sql_attr_#{type}".to_sym
+    when :integer
+      @sql_attr_uint
+    when :boolean
+      @sql_attr_bool
+    when :ordinal
+      @sql_attr_str2ordinal
+    when :multi
+      @sql_attr_multi
+    when :wordcount
+      @sql_attr_str2wordcount
+    else
+      raise "Unknown attribute type '#{type}'"
+    end
+  end
+
   def builder
     @builder ||= ThinkingSphinx::ActiveRecord::SQLBuilder.new self
   end
@@ -91,34 +110,15 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
   end
 
   def prepare_for_render
-    @sql_host ||= database_settings[:host]     || 'localhost'
-    @sql_user ||= database_settings[:username] || database_settings[:user]
-    @sql_pass ||= database_settings[:password].to_s.gsub('#', '\#')
-    @sql_db   ||= database_settings[:database]
-    @sql_port ||= database_settings[:port]
-    @sql_sock ||= database_settings[:socket]
+    set_database_settings
 
-    # fields
     fields.each do |field|
       @sql_field_string << field.name if field.with_attribute?
+      @sql_file_field   << field.name if field.file?
     end
 
-    # attributes
     attributes.each do |attribute|
-      case attribute.type_for(model)
-      when :integer
-        @sql_attr_uint << attribute.name
-      when :boolean
-        @sql_attr_bool << attribute.name
-      when :string
-        @sql_attr_string << attribute.name
-      when :timestamp
-        @sql_attr_timestamp << attribute.name
-      when :float
-        @sql_attr_float << attribute.name
-      else
-        raise "Unknown attribute type '#{attribute.type_for(model)}'"
-      end
+      attribute_array_for(attribute.type_for(model)) << attribute.name
     end
 
     @sql_query       = builder.sql_query
@@ -127,6 +127,15 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
     @sql_query_pre  += builder.sql_query_pre
 
     @prepared = true
+  end
+
+  def set_database_settings
+    @sql_host ||= database_settings[:host]     || 'localhost'
+    @sql_user ||= database_settings[:username] || database_settings[:user]
+    @sql_pass ||= database_settings[:password].to_s.gsub('#', '\#')
+    @sql_db   ||= database_settings[:database]
+    @sql_port ||= database_settings[:port]
+    @sql_sock ||= database_settings[:socket]
   end
 end
 

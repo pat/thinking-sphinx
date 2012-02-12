@@ -256,14 +256,23 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
     it "adds fields with attributes to sql_field_string" do
       source.fields << double('field',
-        :name => 'title', :with_attribute? => true)
+        :name => 'title', :with_attribute? => true, :file? => false)
 
       source.render
 
       source.sql_field_string.should include('title')
     end
 
-    it "adds any joined or file fields"
+    it "adds any joined or file fields" do
+      source.fields << double('field',
+        :name => 'title', :file? => true, :with_attribute? => false)
+
+      source.render
+
+      source.sql_file_field.should include('title')
+    end
+
+    it "adds any joined fields"
 
     it "adds integer attributes to sql_attr_uint" do
       source.attributes << double('attribute',
@@ -310,7 +319,41 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       source.sql_attr_float.should include('rating')
     end
 
-    it "adds all attributes"
+    it "adds bigint attributes to sql_attr_bigint" do
+      source.attributes << double('attribute',
+        :type_for => :bigint, :name => 'super_id')
+
+      source.render
+
+      source.sql_attr_bigint.should include('super_id')
+    end
+
+    it "adds ordinal strings to sql_attr_str2ordinal" do
+      source.attributes << double('attribute',
+        :type_for => :ordinal, :name => 'name')
+
+      source.render
+
+      source.sql_attr_str2ordinal.should include('name')
+    end
+
+    it "adds multi-value attributes to sql_attr_multi" do
+      source.attributes << double('attribute',
+        :type_for => :multi, :name => 'tag_ids')
+
+      source.render
+
+      source.sql_attr_multi.should include('tag_ids')
+    end
+
+    it "adds word count attributes to sql_attr_str2wordcount" do
+      source.attributes << double('attribute',
+        :type_for => :wordcount, :name => 'name')
+
+      source.render
+
+      source.sql_attr_str2wordcount.should include('name')
+    end
 
     it "adds relevant settings from thinking_sphinx.yml" do
       config.settings['mysql_ssl_cert'] = 'foo.cert'

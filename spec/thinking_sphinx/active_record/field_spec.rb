@@ -12,6 +12,17 @@ describe ThinkingSphinx::ActiveRecord::Field do
     column.stub! :to_a => [column]
   end
 
+  describe '#file?' do
+    it "defaults to false" do
+      field.should_not be_file
+    end
+
+    it "is true if file option is set" do
+      field = ThinkingSphinx::ActiveRecord::Field.new column, :file => true
+      field.should be_file
+    end
+  end
+
   describe '#with_attribute?' do
     it "defaults to false" do
       field.should_not be_with_attribute
