@@ -3,8 +3,7 @@ require 'spec_helper'
 describe ThinkingSphinx::Index do
   describe '.define' do
     let(:index)   { double('index', :definition_block= => nil) }
-    let(:config)  { double('config', :indices => indices) }
-    let(:indices) { double('indices', :<< => true) }
+    let(:config)  { Struct.new(:indices).new([]) }
 
     before :each do
       ThinkingSphinx::Configuration.stub :instance => config
@@ -24,13 +23,13 @@ describe ThinkingSphinx::Index do
 
       it "returns the ActiveRecord index" do
         ThinkingSphinx::Index.define(:user, :with => :active_record).
-          should == index
+          should == [index]
       end
 
       it "adds the index to the collection of indices" do
-        indices.should_receive(:<<).with(index)
-
         ThinkingSphinx::Index.define(:user, :with => :active_record)
+
+        config.indices.should include(index)
       end
 
       it "sets the block in the index" do
@@ -70,12 +69,12 @@ describe ThinkingSphinx::Index do
         end
 
         it "appends both indices to the collection" do
-          indices.should_receive(:<<).with(index)
-          indices.should_receive(:<<).with(delta_index)
-
           ThinkingSphinx::Index.define :user,
             :with  => :active_record,
             :delta => true
+
+          config.indices.should include(index)
+          config.indices.should include(delta_index)
         end
 
         it "sets the block in the index" do
@@ -105,13 +104,13 @@ describe ThinkingSphinx::Index do
 
       it "returns the ActiveRecord index" do
         ThinkingSphinx::Index.define(:user, :with => :real_time).
-          should == index
+          should == [index]
       end
 
       it "adds the index to the collection of indices" do
-        indices.should_receive(:<<).with(index)
-
         ThinkingSphinx::Index.define(:user, :with => :real_time)
+
+        config.indices.should include(index)
       end
 
       it "sets the block in the index" do
