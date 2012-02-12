@@ -1,50 +1,29 @@
 class ThinkingSphinx::RealTime::Index < Riddle::Configuration::RealtimeIndex
-  attr_reader :reference
-  attr_writer :definition_block
+  include ThinkingSphinx::Core::Index
+
   attr_accessor :fields, :attributes
 
   def initialize(reference, options = {})
-    @reference  = reference
-    @docinfo    = :extern
-    @options    = options
     @fields     = []
     @attributes = []
 
     Template.new(self).apply
 
-    super "#{reference}_core"
+    super reference, options
   end
 
-  def delta?
-    false
+  def unique_attribute_names
+    attributes.collect(&:name)
   end
 
-  def document_id_for_key(key)
-     key * config.indices.count + offset
+  private
+
+  def interpreter
+    ThinkingSphinx::RealTime::Interpreter
   end
 
-  def interpret_definition!
-    return if @interpreted_definition || @definition_block.nil?
-
-    ThinkingSphinx::RealTime::Interpreter.translate! self, @definition_block
-    @interpreted_definition = true
-  end
-
-  def model
-    @model ||= reference.to_s.camelize.constantize
-  end
-
-  def offset
-    @offset ||= config.next_offset(reference)
-  end
-
-  def render
-    self.class.settings.each do |setting|
-      value = config.settings[setting.to_s]
-      send("#{setting}=", value) unless value.nil?
-    end
-
-    interpret_definition!
+  def pre_render
+    super
 
     @rt_field = fields.collect &:name
 
@@ -62,20 +41,6 @@ class ThinkingSphinx::RealTime::Index < Riddle::Configuration::RealtimeIndex
         raise "Unknown attribute type '#{attribute.type(model)}'"
       end
     end
-
-    @path   ||= config.indices_location.join(name)
-
-    super
-  end
-
-  def unique_attribute_names
-    attributes.collect(&:name)
-  end
-
-  private
-
-  def config
-    ThinkingSphinx::Configuration.instance
   end
 end
 

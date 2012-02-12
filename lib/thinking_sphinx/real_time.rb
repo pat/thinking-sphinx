@@ -2,6 +2,7 @@ module ThinkingSphinx::RealTime
   module Callbacks; end
 end
 
+require 'thinking_sphinx/real_time/property'
 require 'thinking_sphinx/real_time/attribute'
 require 'thinking_sphinx/real_time/field'
 require 'thinking_sphinx/real_time/index'

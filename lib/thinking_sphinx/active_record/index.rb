@@ -1,14 +1,8 @@
 class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
+  include ThinkingSphinx::Core::Index
+
   attr_reader :reference
   attr_writer :definition_block
-
-  def initialize(reference, options = {})
-    @reference = reference
-    @docinfo   = :extern
-    @options   = options
-
-    super "#{reference}_#{name_suffix}"
-  end
 
   def append_source
     ThinkingSphinx::ActiveRecord::SQLSource.new(
@@ -26,38 +20,6 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
     @options[:delta_processor].try(:new, adapter)
   end
 
-  def document_id_for_key(key)
-     key * config.indices.count + offset
-  end
-
-  def interpret_definition!
-    return if @interpreted_definition || @definition_block.nil?
-
-    ThinkingSphinx::ActiveRecord::Interpreter.translate! self, @definition_block
-    @interpreted_definition = true
-  end
-
-  def model
-    @model ||= reference.to_s.camelize.constantize
-  end
-
-  def offset
-    @offset ||= config.next_offset(reference)
-  end
-
-  def render
-    self.class.settings.each do |setting|
-      value = config.settings[setting.to_s]
-      send("#{setting}=", value) unless value.nil?
-    end
-
-    interpret_definition!
-
-    @path ||= config.indices_location.join(name)
-
-    super
-  end
-
   def unique_attribute_names
     sources.collect(&:attributes).flatten.collect(&:name)
   end
@@ -69,8 +31,8 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
       adapter_for(model)
   end
 
-  def config
-    ThinkingSphinx::Configuration.instance
+  def interpreter
+    ThinkingSphinx::ActiveRecord::Interpreter
   end
 
   def name_suffix

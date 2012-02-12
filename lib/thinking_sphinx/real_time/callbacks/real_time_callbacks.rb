@@ -8,13 +8,9 @@ class ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks <
 
     real_time_indices.each do |index|
       columns, values = ['id'], [index.document_id_for_key(instance.id)]
-      index.fields.each do |field|
-        columns << field.name
-        values  << field.translate(instance)
-      end
-      index.attributes.each do |attribute|
-        columns << attribute.name
-        values  << attribute.translate(instance)
+      (index.fields + index.attributes).each do |property|
+        columns << property.name
+        values  << property.translate(instance)
       end
 
       sphinxql = Riddle::Query::Insert.new(index.name, columns, values).replace!

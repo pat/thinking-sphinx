@@ -12,7 +12,7 @@ describe ThinkingSphinx::Search::Translator do
       instance   = double('instance', :id => 24)
       model.stub!(:where => [instance])
 
-      raw << {'sphinx_internal_id' => 24, 'sphinx_internal_class' => model_name}
+      raw << {'sphinx_internal_id' => 24, 'sphinx_internal_class_attr' => model_name}
 
       translator.to_active_record.should == [instance]
     end
@@ -21,8 +21,8 @@ describe ThinkingSphinx::Search::Translator do
       model_name = double('article', :constantize => model)
       instance_a = double('instance', :id => 24)
       instance_b = double('instance', :id => 42)
-      raw << {'sphinx_internal_id' => 24, 'sphinx_internal_class' => model_name}
-      raw << {'sphinx_internal_id' => 42, 'sphinx_internal_class' => model_name}
+      raw << {'sphinx_internal_id' => 24, 'sphinx_internal_class_attr' => model_name}
+      raw << {'sphinx_internal_id' => 42, 'sphinx_internal_class_attr' => model_name}
 
       model.should_receive(:where).once.and_return([instance_a, instance_b])
 
@@ -38,8 +38,8 @@ describe ThinkingSphinx::Search::Translator do
       user_name     = double('user name', :constantize => user_model)
       user          = double('user instance', :id => 12)
 
-      raw << {'sphinx_internal_id' => 24, 'sphinx_internal_class' => article_name}
-      raw << {'sphinx_internal_id' => 12, 'sphinx_internal_class' => user_name}
+      raw << {'sphinx_internal_id' => 24, 'sphinx_internal_class_attr' => article_name}
+      raw << {'sphinx_internal_id' => 12, 'sphinx_internal_class_attr' => user_name}
 
       article_model.should_receive(:where).once.and_return([article])
       user_model.should_receive(:where).once.and_return([user])
@@ -52,8 +52,8 @@ describe ThinkingSphinx::Search::Translator do
       instance_1 = double('instance 1', :id => 1)
       instance_2 = double('instance 1', :id => 2)
 
-      raw << {'sphinx_internal_id' => 2, 'sphinx_internal_class' => model_name}
-      raw << {'sphinx_internal_id' => 1, 'sphinx_internal_class' => model_name}
+      raw << {'sphinx_internal_id' => 2, 'sphinx_internal_class_attr' => model_name}
+      raw << {'sphinx_internal_id' => 1, 'sphinx_internal_class_attr' => model_name}
 
       model.stub(:where => [instance_1, instance_2])
 
@@ -63,8 +63,8 @@ describe ThinkingSphinx::Search::Translator do
     it "raises a stale id exception if ActiveRecord doesn't return ids" do
       model_name = double('article', :constantize => model)
       instance = double('instance', :id => 24)
-      raw << {'sphinx_internal_id' => 24, 'sphinx_internal_class' => model_name}
-      raw << {'sphinx_internal_id' => 42, 'sphinx_internal_class' => model_name}
+      raw << {'sphinx_internal_id' => 24, 'sphinx_internal_class_attr' => model_name}
+      raw << {'sphinx_internal_id' => 42, 'sphinx_internal_class_attr' => model_name}
 
       model.should_receive(:where).once.and_return([instance])
 

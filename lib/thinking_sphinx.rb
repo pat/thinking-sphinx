@@ -14,6 +14,7 @@ end
 
 # Core
 require 'thinking_sphinx/callbacks'
+require 'thinking_sphinx/core'
 require 'thinking_sphinx/configuration'
 require 'thinking_sphinx/excerpter'
 require 'thinking_sphinx/index'
