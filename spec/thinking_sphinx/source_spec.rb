@@ -85,6 +85,10 @@ describe ThinkingSphinx::Source do
       @riddle.sql_host.should == config[:host]
       @riddle.sql_port.should == config[:port]
       @riddle.sql_sock.should == config[:socket]
+
+      @riddle.mysql_ssl_ca.should   == config[:sslca]
+      @riddle.mysql_ssl_cert.should == config[:sslcert]
+      @riddle.mysql_ssl_key.should  == config[:sslkey]
     end
 
     it "should use a environment user if nothing else is provided" do

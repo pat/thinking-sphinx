@@ -1,4 +1,5 @@
 Edge:
+* Load MySQL SSL settings from database.yml (James Brooks).
 * Adding Sphinx 2.0.3 support (identical to 2.1.0).
 * Dropping Rails 1.2 and 2.0.x support.
 * Association keys now are the association stacks as arrays - more reliable in Rubinius.
