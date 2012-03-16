@@ -22,6 +22,13 @@ describe ThinkingSphinx::AbstractAdapter do
       adapter.should be_a(ThinkingSphinx::PostgreSQLAdapter)
     end
 
+    it "returns a PostgreSQLAdapter object for :postgis" do
+      ThinkingSphinx::AbstractAdapter.stub(:adapter_for_model => :postgis)
+
+      adapter = ThinkingSphinx::AbstractAdapter.detect(model)
+      adapter.should be_a(ThinkingSphinx::PostgreSQLAdapter)
+    end
+
     it "instantiates the provided class if one is provided" do
       ThinkingSphinx::AbstractAdapter.stub(:adapter_for_model => CustomAdapter)
       CustomAdapter.should_receive(:new).and_return(stub('adapter'))
@@ -106,6 +113,13 @@ describe ThinkingSphinx::AbstractAdapter do
 
     it "translates a normal PostgreSQL adapter" do
       klass.stub(:name => 'ActiveRecord::ConnectionAdapters::PostgreSQLAdapter')
+
+      ThinkingSphinx::AbstractAdapter.standard_adapter_for_model(model).
+        should == :postgresql
+    end
+
+    it "translates the RGeo PostGIS adapter" do
+      klass.stub(:name => 'ActiveRecord::ConnectionAdapters::PostGISAdapter::MainAdapter')
 
       ThinkingSphinx::AbstractAdapter.standard_adapter_for_model(model).
         should == :postgresql
