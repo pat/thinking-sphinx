@@ -178,6 +178,12 @@ describe ThinkingSphinx::Index do
 
         index.to_riddle(0).last.local_indices.should include('beta_delta')
       end
+
+      it "should add additional local indexes if there are any" do
+        index = ThinkingSphinx::Index.new(Alpha)
+        index.additional_indices << "other_index_core"
+        index.to_riddle(0).last.local_indices.should include('other_index_core')
+      end
     end
   end
 end

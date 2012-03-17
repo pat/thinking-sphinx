@@ -442,6 +442,8 @@ module ThinkingSphinx
     def compose_results
       if options[:ids_only]
         compose_ids_results
+      elsif options[:attributes_only]
+        compose_attributes_results
       elsif options[:only]
         compose_only_results
       else
@@ -455,6 +457,16 @@ module ThinkingSphinx
     def compose_ids_results
       replace @results[:matches].collect { |match|
         match[:attributes]['sphinx_internal_id']
+      }
+    end
+
+    def compose_attributes_results
+      replace @results[:matches].collect { |match|
+        attributes = {}
+        match[:attributes].each do |name, value|
+          attributes[name.to_sym] = match[:attributes][name]
+        end
+        attributes
       }
     end
 

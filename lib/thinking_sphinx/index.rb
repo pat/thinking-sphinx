@@ -3,7 +3,7 @@ require 'thinking_sphinx/index/faux_column'
 
 module ThinkingSphinx
   class Index
-    attr_accessor :name, :model, :sources, :delta_object
+    attr_accessor :name, :model, :sources, :delta_object, :additional_indices
 
     # Create a new index instance by passing in the model it is tied to, and
     # a block to build it with (optional but recommended). For documentation
@@ -25,6 +25,7 @@ module ThinkingSphinx
       @sources      = []
       @options      = {}
       @delta_object = nil
+      @additional_indices = []
     end
 
     def fields
@@ -132,6 +133,7 @@ module ThinkingSphinx
     def to_riddle_for_distributed
       index = Riddle::Configuration::DistributedIndex.new name
       index.local_indices << core_name
+      index.local_indices += additional_indices
       index.local_indices.unshift delta_name if delta?
       index
     end
