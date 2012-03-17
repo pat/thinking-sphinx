@@ -206,3 +206,4 @@ Since I first released this library, there's been quite a few people who have su
 * Matthew Barnett
 * Ilia Lobsanov
 * Andrew Hunter
+* Simon Hürlimann
