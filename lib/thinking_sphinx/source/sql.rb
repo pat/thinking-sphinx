@@ -140,10 +140,7 @@ module ThinkingSphinx
       end
       
       def type_values
-        @model.connection.select_values <<-SQL
-SELECT DISTINCT #{@model.inheritance_column}
-FROM #{@model.table_name}
-        SQL
+        @model.descendants.map(&:to_s)
       end
       
       def types_to_crcs
