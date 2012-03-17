@@ -1,4 +1,6 @@
 Edge:
+* Can have just attribute values returned as search results using `:attributes_only => true` in a search call (Andrew Hunter).
+* Can specify additional local indices for the generated distributed index (usually one per model) (Andrew Hunter).
 * Supporting Sphinx 2.0.4 (Ilia Lobsanov).
 * Load MySQL SSL settings from database.yml (James Brooks).
 * Adding Sphinx 2.0.3 support (identical to 2.1.0).
