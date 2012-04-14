@@ -91,6 +91,11 @@ module ThinkingSphinx
       populate if @options[:populate]
     end
 
+    def ==(object)
+      populate
+      super
+    end
+
     def to_a
       populate
       @array
