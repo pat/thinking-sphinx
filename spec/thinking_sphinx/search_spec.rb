@@ -32,6 +32,15 @@ describe ThinkingSphinx::Search do
     end
   end
 
+  describe '#==' do
+    it "populates the search results when checking equality" do
+      search = ThinkingSphinx::Search.new
+      search == []
+
+      search.should be_populated
+    end
+  end
+
   describe '#populated?' do
     before :each do
       @search = ThinkingSphinx::Search.new
