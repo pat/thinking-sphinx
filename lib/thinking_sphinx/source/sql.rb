@@ -6,9 +6,9 @@ module ThinkingSphinx
       # the version filtered for delta values, send through :delta => true in
       # the options. Won't do much though if the index isn't set up to support a
       # delta sibling.
-      # 
+      #
       # Examples:
-      # 
+      #
       #   source.to_sql
       #   source.to_sql(:delta => true)
       #
@@ -32,10 +32,10 @@ module ThinkingSphinx
       # Simple helper method for the query range SQL - which is a statement that
       # returns minimum and maximum id values. These can be filtered by delta -
       # so pass in :delta => true to get the delta version of the SQL.
-      # 
+      #
       def to_sql_query_range(options={})
         return nil if @index.options[:disable_range]
-        
+
         min_statement = adapter.convert_nulls(
           "MIN(#{quote_column(@model.primary_key_for_sphinx)})", 1
         )
@@ -54,7 +54,7 @@ module ThinkingSphinx
 
       # Simple helper method for the query info SQL - which is a statement that
       # returns the single row for a corresponding id.
-      # 
+      #
       def to_sql_query_info(offset)
         "SELECT * FROM #{@model.quoted_table_name} WHERE " +
         "#{quote_column(@model.primary_key_for_sphinx)} = (($id - #{offset}) / #{ThinkingSphinx.context.indexed_models.size})"
@@ -64,7 +64,7 @@ module ThinkingSphinx
         unique_id_expr = ThinkingSphinx.unique_id_expression(adapter, offset)
 
         (
-          ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key_for_sphinx)} #{unique_id_expr} AS #{quote_column(@model.primary_key_for_sphinx)} "] + 
+          ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key_for_sphinx)} #{unique_id_expr} AS #{quote_column(@model.primary_key_for_sphinx)} "] +
           @fields.collect     { |field|     field.to_select_sql     } +
           @attributes.collect { |attribute| attribute.to_select_sql }
         ).compact.join(", ")
@@ -92,7 +92,7 @@ module ThinkingSphinx
         end
 
         (
-          ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key_for_sphinx)}"] + 
+          ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key_for_sphinx)}"] +
           @fields.collect     { |field|     field.to_group_sql     }.compact +
           @attributes.collect { |attribute| attribute.to_group_sql }.compact +
           @groupings + internal_groupings
@@ -118,10 +118,10 @@ module ThinkingSphinx
       def crc_column
         if @model.table_exists? &&
           @model.column_names.include?(@model.inheritance_column)
-          
+
           types = types_to_crcs
           return @model.to_crc32.to_s if types.empty?
-          
+
           adapter.case(adapter.convert_nulls(
             adapter.quote_with_table(@model.inheritance_column)),
             types, @model.to_crc32)
@@ -129,7 +129,7 @@ module ThinkingSphinx
           @model.to_crc32.to_s
         end
       end
-      
+
       def internal_class_column
         if @model.table_exists? &&
           @model.column_names.include?(@model.inheritance_column)
@@ -138,14 +138,14 @@ module ThinkingSphinx
           "'#{@model.name}'"
         end
       end
-      
+
       def type_values
-        @model.connection.select_values <<-SQL
+        @model.sphinx_types.presence or @model.connection.select_values <<-SQL
 SELECT DISTINCT #{@model.inheritance_column}
 FROM #{@model.table_name}
         SQL
       end
-      
+
       def types_to_crcs
         type_values.compact.inject({}) { |hash, type|
           hash[type] = type.to_crc32

@@ -1,4 +1,5 @@
 Edge:
+* Can explicitly specify available types for STI tables instead of automatically discovering them with "SELECT DISTINCT type FROM <table>" (Cedric Maion).
 * Can indicate whether Sphinx should use a socket for connections instead of TCP (Simon Hürlimann).
 * Can have just attribute values returned as search results using `:attributes_only => true` in a search call (Andrew Hunter).
 * Can specify additional local indices for the generated distributed index (usually one per model) (Andrew Hunter).
