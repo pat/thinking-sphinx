@@ -1,4 +1,5 @@
 Edge:
+* Can explicitly specify available types for STI tables instead of automatically discovering them with "SELECT DISTINCT type FROM <table>" (Cedric Maion).
 * Don't try to run rake tasks for Capistrano if there's no Rakefile - eg. on fresh deploys (Nathan Smith).
 * Populate search results before comparing with #==.
 * Can indicate whether Sphinx should use a socket for connections instead of TCP (Simon Hürlimann).
