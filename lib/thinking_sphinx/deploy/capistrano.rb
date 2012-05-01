@@ -92,7 +92,7 @@ DESC
       rails_env = fetch(:rails_env, "production")
       rake = fetch(:rake, "rake")
       tasks.each do |t|
-        run "if [ -d #{release_path} ]; then cd #{release_path}; else cd #{current_path}; fi; #{rake} RAILS_ENV=#{rails_env} #{t}"
+        run "if [ -d #{release_path} ]; then cd #{release_path}; else cd #{current_path}; fi; if [ -f Rakefile ]; then #{rake} RAILS_ENV=#{rails_env} #{t}; fi;"
       end
     end
   end

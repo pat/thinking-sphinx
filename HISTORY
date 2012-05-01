@@ -1,4 +1,6 @@
 Edge:
+* Don't try to run rake tasks for Capistrano if there's no Rakefile - eg. on fresh deploys (Nathan Smith).
+* Populate search results before comparing with #==.
 * Can indicate whether Sphinx should use a socket for connections instead of TCP (Simon Hürlimann).
 * Can have just attribute values returned as search results using `:attributes_only => true` in a search call (Andrew Hunter).
 * Can specify additional local indices for the generated distributed index (usually one per model) (Andrew Hunter).
