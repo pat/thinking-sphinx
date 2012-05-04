@@ -93,9 +93,9 @@ describe ThinkingSphinx::Source do
 
     it "should use a environment user if nothing else is provided" do
       Person.connection.stub!(:instance_variable_get => {
-        :user     => nil,
-        :username => nil
-      })
+          :user     => nil,
+          :username => nil
+        })
       @source = ThinkingSphinx::Source.new(@index)
 
       riddle = @source.to_riddle_for_core(1, 0)
@@ -164,6 +164,16 @@ describe ThinkingSphinx::Source do
 
       it "should include any defined groupings" do
         @query.should match(/GROUP BY.+`first_name`/)
+      end
+
+      it "should include descendants" do
+        index  = ThinkingSphinx::Index.new(Child)
+        source = ThinkingSphinx::Source.new(index, :sql_range_step => 1000)
+        riddle = source.to_riddle_for_core(1, 0)
+        query  = riddle.sql_query
+
+        query.should match(/WHERE.+`people`\.`type` IN \('Child', 'Teenager'\)/)
+        query.should_not match(/WHERE.+"users"."type" = 'Employee'/)
       end
     end
 

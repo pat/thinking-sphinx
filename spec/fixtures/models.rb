@@ -99,6 +99,9 @@ class Child < Person
   end
 end
 
+class Teenager < Child
+end
+
 class Alpha < ActiveRecord::Base
   has_many :betas, :class_name => 'Beta'
   has_many :thetas

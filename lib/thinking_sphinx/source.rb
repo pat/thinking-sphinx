@@ -27,11 +27,6 @@ module ThinkingSphinx
         @model, [], initial_joins
       )
 
-      unless @model.descends_from_active_record?
-        stored_class = @model.store_full_sti_class ? @model.name : @model.name.demodulize
-        @conditions << "#{@model.quoted_table_name}.#{quote_column(@model.inheritance_column)} = '#{stored_class}'"
-      end
-
       add_internal_attributes_and_facets
     end
 
