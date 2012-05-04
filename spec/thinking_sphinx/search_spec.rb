@@ -514,7 +514,7 @@ describe ThinkingSphinx::Search do
         filter = @client.filters.last
         filter.values.should == [
           Parent.to_crc32, Admin::Person.to_crc32,
-          Child.to_crc32, Person.to_crc32
+          Child.to_crc32, Teenager.to_crc32, Person.to_crc32
         ]
         filter.attribute.should == 'class_crc'
         filter.exclude?.should be_false
