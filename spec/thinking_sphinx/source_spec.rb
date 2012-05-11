@@ -172,7 +172,7 @@ describe ThinkingSphinx::Source do
         riddle = source.to_riddle_for_core(1, 0)
         query  = riddle.sql_query
 
-        query.should match(/WHERE.+`people`\.`type` IN \('Child', 'Teenager'\)/)
+        query.should match(/WHERE.+`people`\.`type`.+'Child'.+ 'Teenager'\)/)
         query.should_not match(/WHERE.+"users"."type" = 'Employee'/)
       end
     end

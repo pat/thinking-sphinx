@@ -1171,7 +1171,7 @@ describe ThinkingSphinx::Search do
           }
         }]
       }
-      Alpha.stub!(:find => [@alpha])
+      Alpha.stub :find => [@alpha], :unscoped => Alpha
     end
 
     it "should yield the match, group and count" do
@@ -1207,7 +1207,7 @@ describe ThinkingSphinx::Search do
           }, :weight => 12
         }]
       }
-      Alpha.stub!(:find => [@alpha])
+      Alpha.stub :find => [@alpha], :unscoped => Alpha
     end
 
     it "should yield the match and weight" do
@@ -1236,7 +1236,7 @@ describe ThinkingSphinx::Search do
           }, :weight => 12
         }]
       }
-      Alpha.stub!(:find => [@alpha])
+      Alpha.stub :find => [@alpha], :unscoped => Alpha
 
       @search = ThinkingSphinx::Search.new
     end
