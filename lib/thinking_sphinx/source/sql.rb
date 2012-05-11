@@ -121,7 +121,7 @@ GROUP BY #{ sql_group_clause }
           return @model.to_crc32.to_s if types.empty?
 
           adapter.case(adapter.convert_nulls(
-            adapter.quote_with_table(@model.inheritance_column)),
+            adapter.quote_with_table(@model.inheritance_column), @model.name),
             types, @model.to_crc32)
         else
           @model.to_crc32.to_s
@@ -129,16 +129,26 @@ GROUP BY #{ sql_group_clause }
       end
 
       def internal_class_column
+        quoted_name = "'#{@model.name}'"
+
         if @model.table_exists? &&
           @model.column_names.include?(@model.inheritance_column)
-          adapter.quote_with_table(@model.inheritance_column)
+
+          types = types_to_hash
+          return quoted_name if types.empty?
+
+          adapter.case(adapter.convert_nulls(
+            adapter.quote_with_table(@model.inheritance_column), @model.name),
+            types, quoted_name)
         else
-          "'#{@model.name}'"
+          quoted_name
         end
       end
 
       def type_values
-        @model.sphinx_types.presence or @model.connection.select_values <<-SQL
+        return @model.sphinx_types unless @model.sphinx_types.nil?
+
+        @model.connection.select_values <<-SQL
 SELECT DISTINCT #{@model.inheritance_column}
 FROM #{@model.table_name}
         SQL
@@ -147,6 +157,13 @@ FROM #{@model.table_name}
       def types_to_crcs
         type_values.compact.inject({}) { |hash, type|
           hash[type] = type.to_crc32
+          hash
+        }
+      end
+
+      def types_to_hash
+        type_values.compact.inject({}) { |hash, type|
+          hash[type] = "'#{type}'"
           hash
         }
       end
