@@ -420,21 +420,17 @@ describe ThinkingSphinx::ActiveRecord do
   end
 
   describe '#types_for_sphinx' do
-    before :each do
-      @person = Person.find(:first)
-    end
-
     after :each do
       Person.set_sphinx_types nil
     end
 
     it "should return nil by default" do
-      @person.sphinx_types.should == nil
+      Person.sphinx_types.should == nil
     end
 
     it "should return the specified value" do
       Person.set_sphinx_types %w(Person Parent)
-      @person.sphinx_types.should == %w(Person Parent)
+      Person.sphinx_types.should == %w(Person Parent)
     end
   end
 
