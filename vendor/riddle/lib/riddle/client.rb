@@ -136,7 +136,7 @@ module Riddle
     end
 
     # Can instantiate with a specific server and port - otherwise it assumes
-    # defaults of localhost and 3312 respectively. All other settings can be
+    # defaults of localhost and 9312 respectively. All other settings can be
     # accessed and changed via the attribute accessors.
     def initialize(servers = nil, port = nil, key = nil)
       Riddle.version_warning
@@ -165,7 +165,7 @@ module Riddle
       @filters        = []
       @group_by       = ''
       @group_function = :day
-      @group_clause   = '@group desc'
+      @group_clause   = '@weight DESC'
       @group_distinct = ''
       @cut_off        = 0
       @retry_count    = 0
@@ -495,6 +495,8 @@ module Riddle
     def open_socket
       raise "Already Connected" unless @socket.nil?
 
+      available_servers = servers.dup
+
       if @timeout == 0
         @socket = initialise_connection
       else
@@ -502,8 +504,8 @@ module Riddle
           Timeout.timeout(@timeout) { @socket = initialise_connection }
         rescue Timeout::Error, Riddle::ConnectionError => e
           failed_servers ||= []
-          failed_servers << servers.shift
-          retry if !servers.empty?
+          failed_servers << available_servers.shift
+          retry if !available_servers.empty?
 
           case e
           when Timeout::Error
