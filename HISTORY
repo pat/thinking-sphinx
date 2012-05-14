@@ -1,20 +1,6 @@
 Edge:
-* Updating Riddle references to 1.5.2.
-* Can explicitly specify available types for STI tables instead of automatically discovering them with "SELECT DISTINCT type FROM <table>" (Cedric Maion).
 * STI fix when generating WHERE clauses for sql_query.
-* Don't try to run rake tasks for Capistrano if there's no Rakefile - eg. on fresh deploys (Nathan Smith).
-* Populate search results before comparing with #==.
-* Can indicate whether Sphinx should use a socket for connections instead of TCP (Simon Hürlimann).
-* Can have just attribute values returned as search results using `:attributes_only => true` in a search call (Andrew Hunter).
-* Can specify additional local indices for the generated distributed index (usually one per model) (Andrew Hunter).
-* Supporting Sphinx 2.0.4 (Ilia Lobsanov).
-* Load MySQL SSL settings from database.yml (James Brooks).
-* Adding Sphinx 2.0.3 support (identical to 2.1.0).
-* Dropping Rails 1.2 and 2.0.x support.
-* Association keys now are the association stacks as arrays - more reliable in Rubinius.
-* Can now determine PostgreSQL versions with JRuby.
-* Many testing tweaks.
-* Allow for rank_expr option being passed through to Riddle.
+* 1.4.12 changes.
 
 2.0.11 - January 2nd 2011
 * Call #all on search results to force population of results, matching ActiveRecord::Relation#all in essence. (Adrian Macneil).
@@ -75,7 +61,24 @@ Edge:
 * Rails 3 support.
 * 1.4.0 changes.
 
-1.4.11 - January 2nd 2011
+1.4.12 - May 14th 2012
+* Updating Riddle references to 1.5.2.
+* Can explicitly specify available types for STI tables instead of automatically discovering them with "SELECT DISTINCT type FROM <table>" (Cedric Maion).
+* Don't try to run rake tasks for Capistrano if there's no Rakefile - eg. on fresh deploys (Nathan Smith).
+* Populate search results before comparing with #==.
+* Can indicate whether Sphinx should use a socket for connections instead of TCP (Simon Hürlimann).
+* Can have just attribute values returned as search results using `:attributes_only => true` in a search call (Andrew Hunter).
+* Can specify additional local indices for the generated distributed index (usually one per model) (Andrew Hunter).
+* Supporting Sphinx 2.0.4 (Ilia Lobsanov).
+* Load MySQL SSL settings from database.yml (James Brooks).
+* Adding Sphinx 2.0.3 support (identical to 2.1.0).
+* Dropping Rails 1.2 and 2.0.x support.
+* Association keys now are the association stacks as arrays - more reliable in Rubinius.
+* Can now determine PostgreSQL versions with JRuby.
+* Many testing tweaks.
+* Allow for rank_expr option being passed through to Riddle.
+
+1.4.11 - January 2nd 2012
 * Handle no results for total_pages and total_entries with defaults of 0.
 * No longer shuffle Sphinx addresses by default.
 * Fix coalescing of non-char values in PostgreSQL (Matthew Barnett).
