@@ -37,4 +37,13 @@ describe 'Searching on fields', :live => true do
     Book.search(:conditions => {:info => 'Night Pratchett'}).to_a.
       should == [book]
   end
+
+  it "returns results with matches from file fields" do
+    file_path = Rails.root.join('tmp', 'caption.txt')
+    File.open(file_path, 'w') { |file| file.print 'Cyberpunk at its best' }
+
+    book = Book.create! :title => 'Accelerando', :blurb_file => file_path.to_s
+
+    Book.search('cyberpunk').to_a.should == [book]
+  end
 end

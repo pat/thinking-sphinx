@@ -1,6 +1,6 @@
 h1. Thinking Sphinx
 
-Welcome to Thinking Sphinx version 3 - a complete rewrite from past versions. Right now it is a work-in-progress, missing many of the features in TS 2 and earlier. It's also currently built for Rails 3.1 only.
+Welcome to Thinking Sphinx version 3 - a complete rewrite from past versions. Right now it is a work-in-progress, missing many of the features in TS 2 and earlier. It's also currently built for Rails 3 only.
 
 Still interested? Well, read on!
 
@@ -90,7 +90,6 @@ A list of what still needs to be implemented, in no particular order:
 * Sinatra support
 * Grouped search results
 * Group enumerators (with group, with count, with both)
-* File fields
 * ActiveRecord :include and :select options being passed through on searches
 * Test Helpers
 * Overwritable toggle_delta? method on model
