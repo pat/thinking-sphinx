@@ -1,8 +1,8 @@
-Edge:
+2.0.12 - May 14th 2012
 * STI fix when generating WHERE clauses for sql_query.
 * 1.4.12 changes.
 
-2.0.11 - January 2nd 2011
+2.0.11 - January 2nd 2012
 * Call #all on search results to force population of results, matching ActiveRecord::Relation#all in essence. (Adrian Macneil).
 * 1.4.11 changes.
 
