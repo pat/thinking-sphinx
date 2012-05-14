@@ -124,7 +124,7 @@ Rails 2.0 or earlier and Merb support have been discontinued.
 
 h3. Ruby Versions
 
-Built on MRI 1.9.3, but tested on MRI 1.8.7, MRI 1.9.2, Rubinius and REE. Will never support 1.8.6, but will hopefully support JRuby (the one catch there is the different MySQL interfaces).
+Built on MRI 1.9.3 and tested against MRI 1.9.2 as well. No plans to support MRI 1.8, but would like to support Rubinius and JRuby (the one catch with the latter is the different MySQL interfaces).
 
 h3. Database Versions
 
