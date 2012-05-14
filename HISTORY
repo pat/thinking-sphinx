@@ -1,4 +1,4 @@
-Edge:
+1.4.12 - May 14th 2012
 * Updating Riddle references to 1.5.2.
 * Can explicitly specify available types for STI tables instead of automatically discovering them with "SELECT DISTINCT type FROM <table>" (Cedric Maion).
 * Don't try to run rake tasks for Capistrano if there's no Rakefile - eg. on fresh deploys (Nathan Smith).
@@ -15,7 +15,7 @@ Edge:
 * Many testing tweaks.
 * Allow for rank_expr option being passed through to Riddle.
 
-1.4.11 - January 2nd 2011
+1.4.11 - January 2nd 2012
 * Handle no results for total_pages and total_entries with defaults of 0.
 * No longer shuffle Sphinx addresses by default.
 * Fix coalescing of non-char values in PostgreSQL (Matthew Barnett).
