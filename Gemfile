@@ -1,9 +1,5 @@
 source :rubygems
 
-gem 'riddle',
-  :git => 'git://github.com/freelancing-god/riddle.git',
-  :ref => '6e4a109ae2caeae144bebb5b65c93a73b4d0ab60'
-
 gemspec
 
 gem 'combustion',
