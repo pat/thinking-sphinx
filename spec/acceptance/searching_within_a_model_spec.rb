@@ -36,6 +36,7 @@ end
 
 describe 'Searching within a model with a realtime index', :live => true do
   it "returns results" do
+    pending "Sphinx bug on OS X means I can't currently test this."
     product = Product.create! :name => 'Widget'
 
     Product.search.first.should == product

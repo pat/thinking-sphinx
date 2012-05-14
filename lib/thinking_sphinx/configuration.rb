@@ -18,7 +18,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     searchd.address   = settings['address']
     searchd.address   = '127.0.0.1' unless searchd.address.present?
     searchd.mysql41   = settings['mysql41'] || settings['port'] || 9306
-    searchd.workers   = 'threads'
+    # searchd.workers   = 'threads'
 
     @offsets = {}
   end
