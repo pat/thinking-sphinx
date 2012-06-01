@@ -109,7 +109,7 @@ module ThinkingSphinx
     end
 
     def create_array_accum_function
-      if server_version >= 80400
+      if server_version >= 80311
         return
       elsif server_version > 80200
         execute <<-SQL
