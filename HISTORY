@@ -1,3 +1,7 @@
+Edge:
+* Cast PostgreSQL timestamps to their floored integers (instead of rounding up).
+* Don't add array_accum to PostgreSQL v80311 (8.3.?) or newer.
+
 2.0.12 - May 14th 2012
 * STI fix when generating WHERE clauses for sql_query.
 * 1.4.12 changes.
