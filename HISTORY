@@ -1,3 +1,7 @@
+Edge:
+* Cast PostgreSQL timestamps to their floored integers (instead of rounding up).
+* Don't add array_accum to PostgreSQL v80311 (8.3.?) or newer.
+
 1.4.12 - May 14th 2012
 * Updating Riddle references to 1.5.2.
 * Can explicitly specify available types for STI tables instead of automatically discovering them with "SELECT DISTINCT type FROM <table>" (Cedric Maion).
