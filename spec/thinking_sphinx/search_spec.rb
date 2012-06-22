@@ -411,6 +411,28 @@ describe ThinkingSphinx::Search do
           'baz @foo bar @(foo,bar) baz', :star => true
         ).first
       end
+
+      it "should try retry query up to the hard_retry_count option times if it catches an exception" do
+        @client.should_receive(:query).exactly(4).and_raise("Test Exception")
+        expect { ThinkingSphinx::Search.new(:hard_retry_count => 3).first }.to raise_error("Test Exception")
+      end
+
+      it "should not retry query if hard_retry_count option is not set" do
+        @client.should_receive(:query).exactly(1).and_raise("Test Exception")
+        expect { ThinkingSphinx::Search.new.first }.to raise_error("Test Exception")
+      end
+
+      it "should allow the hard_retry_count to be globally set as a configuration option" do
+        @config.index_options[:hard_retry_count] = 2
+        @client.should_receive(:query).exactly(3).and_raise("Test Exception")
+        expect { ThinkingSphinx::Search.new.first }.to raise_error("Test Exception")
+      end
+
+      it "should give priority to the hard_retry_count search option over the globally configured option" do
+        @config.index_options[:hard_retry_count] = 4
+        @client.should_receive(:query).exactly(2).and_raise("Test Exception")
+        expect { ThinkingSphinx::Search.new(:hard_retry_count => 1).first }.to raise_error("Test Exception")
+      end
     end
 
     describe 'comment' do

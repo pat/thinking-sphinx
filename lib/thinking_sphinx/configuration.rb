@@ -60,7 +60,7 @@ module ThinkingSphinx
     IndexOptions  = Riddle::Configuration::Index.settings.map     { |setting|
       setting.to_s
     } - %w( source prefix_fields infix_fields )
-    CustomOptions = %w( disable_range use_64_bit )
+    CustomOptions = %w( disable_range use_64_bit hard_retry_count )
 
     attr_accessor :searchd_file_path, :allow_star, :app_root,
       :model_directories, :delayed_job_priority, :indexed_models, :use_64_bit,
