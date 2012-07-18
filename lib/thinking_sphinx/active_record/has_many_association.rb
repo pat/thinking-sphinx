@@ -2,15 +2,22 @@ module ThinkingSphinx
   module ActiveRecord
     module HasManyAssociation
       def search(*args)
-        options   = args.extract_options!
-        options[:with] ||= {}
-        options[:with].merge! default_filter
-        
-        args << options
-        @reflection.klass.search(*args)
+        @reflection.klass.search(*association_args(args))
+      end
+
+      def facets(*args)
+        @reflection.klass.facets(*association_args(args))
       end
 
       private
+
+      def association_args(args)
+        options = args.extract_options!
+        options[:with] ||= {}
+        options[:with].merge! default_filter
+        
+        args + [options]
+      end
       
       def attribute_for_foreign_key
         foreign_key = @reflection.primary_key_name
