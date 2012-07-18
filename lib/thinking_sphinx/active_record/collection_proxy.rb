@@ -2,15 +2,22 @@ module ThinkingSphinx
   module ActiveRecord
     module CollectionProxy
       def search(*args)
-        options   = args.extract_options!
-        options[:with] ||= {}
-        options[:with].merge! default_filter
+        proxy_association.klass.search(*association_args(args))
+      end
 
-        args << options
-        proxy_association.klass.search(*args)
+      def facets(*args)
+        proxy_association.klass.facets(*association_args(args))
       end
 
       private
+
+      def association_args(args)
+        options = args.extract_options!
+        options[:with] ||= {}
+        options[:with].merge! default_filter
+
+        args + [options]
+      end
 
       def attribute_for_foreign_key
         if proxy_association.reflection.through_reflection
