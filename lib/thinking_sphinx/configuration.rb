@@ -28,6 +28,7 @@ module ThinkingSphinx
   # html remove elements::  ''
   # searchd_binary_name::   searchd
   # indexer_binary_name::   indexer
+  # hard_retry_count::      0
   #
   # If you want to change these settings, create a YAML file at
   # config/sphinx.yml with settings for each environment, in a similar
@@ -64,7 +65,7 @@ module ThinkingSphinx
 
     attr_accessor :searchd_file_path, :allow_star, :app_root,
       :model_directories, :delayed_job_priority, :indexed_models, :use_64_bit,
-      :touched_reindex_file, :stop_timeout, :version, :shuffle
+      :touched_reindex_file, :stop_timeout, :version, :shuffle, :hard_retry_count
 
     attr_accessor :source_options, :index_options
 
@@ -111,6 +112,7 @@ module ThinkingSphinx
       self.delayed_job_priority = 0
       self.indexed_models       = []
       self.shuffle              = false
+      self.hard_retry_count     = 0
 
       self.source_options  = {}
       self.index_options   = {
