@@ -405,28 +405,41 @@ module ThinkingSphinx
     def populate
       return if @populated
       @populated = true
+      retries    = hard_retries
 
-      retry_on_stale_index do
-        begin
-          log "Querying: '#{query}'"
-          runtime = Benchmark.realtime {
-            @results = client.query query, indexes, comment
-          }
-          log "Found #{@results[:total_found]} results", :debug,
-            "Sphinx (#{sprintf("%f", runtime)}s)"
+      begin
+        retry_on_stale_index do
+          begin
+            log "Querying: '#{query}'"
+            runtime = Benchmark.realtime {
+              @results = client.query query, indexes, comment
+            }
+            log "Found #{@results[:total_found]} results", :debug,
+              "Sphinx (#{sprintf("%f", runtime)}s)"
 
-          log "Sphinx Daemon returned warning: #{warning}", :error if warning?
+            log "Sphinx Daemon returned warning: #{warning}", :error if warning?
 
-          if error?
-            log "Sphinx Daemon returned error: #{error}", :error
-            raise SphinxError.new(error, @results) unless options[:ignore_errors]
+            if error?
+              log "Sphinx Daemon returned error: #{error}", :error
+              raise SphinxError.new(error, @results) unless options[:ignore_errors]
+            end
+          rescue Errno::ECONNREFUSED => err
+            raise ThinkingSphinx::ConnectionError,
+              'Connection to Sphinx Daemon (searchd) failed.'
           end
-        rescue Errno::ECONNREFUSED => err
-          raise ThinkingSphinx::ConnectionError,
-            'Connection to Sphinx Daemon (searchd) failed.'
-        end
 
-        compose_results
+          compose_results
+        end
+      rescue => e
+        log 'Caught Sphinx exception: %s (%s %s left)' % [
+          e.message, retries, (retries == 1 ? 'try' : 'tries')
+        ]
+        retries -= 1
+        if retries >= 0
+          retry
+        else
+          raise e
+        end
       end
     end
 
@@ -845,6 +858,10 @@ module ThinkingSphinx
       else
         options[:retry_stale].to_i
       end
+    end
+
+    def hard_retries
+      options[:hard_retry_count] || config.hard_retry_count
     end
 
     def include_for_class(klass)
