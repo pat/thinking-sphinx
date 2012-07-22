@@ -2,6 +2,7 @@
 .bundle
 .rbx
 Gemfile.lock
+*.sublime-*
 pkg/*
 spec/internal/config/test.sphinx.conf
 spec/internal/db/sphinx
