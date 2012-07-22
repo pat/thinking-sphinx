@@ -14,6 +14,10 @@ class ThinkingSphinx::Search < Array
     ThinkingSphinx::Middlewares::ActiveRecordTranslator,
     ThinkingSphinx::Middlewares::Glazier
   ]
+  DEFAULT_MASKS = [
+    ThinkingSphinx::Masks::PaginationMask,
+    ThinkingSphinx::Masks::ScopesMask
+  ]
 
   instance_methods.select { |method|
     method.to_s[/^__/].nil? && !CORE_METHODS.include?(method.to_s)
@@ -21,13 +25,14 @@ class ThinkingSphinx::Search < Array
     undef_method method
   }
 
-  attr_reader :query, :options, :middlewares, :proxies
+  attr_reader   :options, :middlewares, :masks
+  attr_accessor :query
 
   def initialize(query = nil, options = {})
     query, options   = nil, query if query.is_a?(Hash)
     @query, @options = query, options
     @middlewares     = @options.delete(:middlewares) || DEFAULT_MIDDLEWARES
-    @proxies         = []
+    @masks           = @options.delete(:masks)       || DEFAULT_MASKS
 
     populate if options[:populate]
   end
@@ -41,10 +46,14 @@ class ThinkingSphinx::Search < Array
     @options[:offset] || ((current_page - 1) * per_page)
   end
 
+  alias_method :offset_value, :offset
+
   def per_page
     @options[:limit] ||= (@options[:per_page] || 20)
     @options[:limit].to_i
   end
+
+  alias_method :limit_value, :per_page
 
   def populate
     return self if @populated
@@ -88,9 +97,17 @@ class ThinkingSphinx::Search < Array
   end
 
   def method_missing(method, *args, &block)
+    mask_stack.each do |mask|
+      return mask.send(method, *args, &block) if mask.respond_to?(method)
+    end
+
     populate if !SAFE_METHODS.include?(method.to_s)
 
     context[:results].send(method, *args, &block)
+  end
+
+  def mask_stack
+    @mask_stack ||= masks.collect { |klass| klass.new self }
   end
 
   def middleware_stack
@@ -106,10 +123,5 @@ end
 require 'thinking_sphinx/search/context'
 require 'thinking_sphinx/search/excerpt_glaze'
 require 'thinking_sphinx/search/glaze'
-require 'thinking_sphinx/search/pagination'
 require 'thinking_sphinx/search/query'
-require 'thinking_sphinx/search/scopes'
 require 'thinking_sphinx/search/stale_ids_exception'
-
-ThinkingSphinx::Search.send :include, ThinkingSphinx::Search::Pagination
-ThinkingSphinx::Search.send :include, ThinkingSphinx::Search::Scopes
