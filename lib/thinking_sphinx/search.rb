@@ -1,54 +1,44 @@
 class ThinkingSphinx::Search < Array
-  CoreMethods = %w( == class class_eval extend frozen? id instance_eval
+  CORE_METHODS = %w( == class class_eval extend frozen? id instance_eval
     instance_of? instance_values instance_variable_defined?
     instance_variable_get instance_variable_set instance_variables is_a?
     kind_of? member? method methods nil? object_id respond_to?
     respond_to_missing? send should should_not type )
-  SafeMethods = %w( partition private_methods protected_methods public_methods
+  SAFE_METHODS = %w( partition private_methods protected_methods public_methods
     send class )
+  DEFAULT_MIDDLEWARES = [
+    ThinkingSphinx::Middlewares::StaleIds,
+    ThinkingSphinx::Middlewares::SphinxQL,
+    ThinkingSphinx::Middlewares::Geographer,
+    ThinkingSphinx::Middlewares::Inquirer,
+    ThinkingSphinx::Middlewares::ActiveRecordTranslator,
+    ThinkingSphinx::Middlewares::Glazier
+  ]
 
   instance_methods.select { |method|
-    method.to_s[/^__/].nil? && !CoreMethods.include?(method.to_s)
+    method.to_s[/^__/].nil? && !CORE_METHODS.include?(method.to_s)
   }.each { |method|
     undef_method method
   }
 
-  attr_reader :options, :query
+  attr_reader :query, :options, :middlewares, :proxies
 
   def initialize(query = nil, options = {})
     query, options   = nil, query if query.is_a?(Hash)
     @query, @options = query, options
-    @array           = []
+    @middlewares     = @options.delete(:middlewares) || DEFAULT_MIDDLEWARES
+    @proxies         = []
 
     populate if options[:populate]
   end
 
-  def current_page
-    @options[:page] = 1 if @options[:page].blank?
-    @options[:page].to_i
-  end
-
-  def excerpter
-    @excerpter ||= ThinkingSphinx::Excerpter.new inquirer.index_names.first,
-      excerpt_words, (options[:excerpts] || {})
-  end
-
   def meta
-    inquirer.meta
+    populate
+    context[:meta]
   end
 
   def offset
     @options[:offset] || ((current_page - 1) * per_page)
-  end
-
-  def page(number)
-    @options[:page] = number
-    self
-  end
-
-  def per(limit)
-    @options[:limit] = limit
-    self
   end
 
   def per_page
@@ -59,24 +49,19 @@ class ThinkingSphinx::Search < Array
   def populate
     return self if @populated
 
-    RetryOnStaleIds.new(self).try_with_stale do
-      @array.replace translator.to_active_record
-    end
+    middleware_stack.call context
     @populated = true
 
     self
   end
 
   def raw
-    inquirer.raw
-  end
-
-  def reset!
-    @inquirer, @translator = nil, nil
+    populate
+    context[:raw]
   end
 
   def respond_to?(method, include_private = false)
-    super || @array.respond_to?(method, include_private)
+    super || context[:results].respond_to?(method, include_private)
   end
 
   def stale_retries
@@ -92,32 +77,33 @@ class ThinkingSphinx::Search < Array
 
   def to_a
     populate
-    @array.collect &:unglazed
+    context[:results].collect &:unglazed
   end
 
   private
 
-  def excerpt_words
-    meta.keys.select { |key|
-      key[/^keyword\[/]
-    }.sort.collect { |key| meta[key] }.join(' ')
-  end
-
-  def inquirer
-    @inquirer ||= ThinkingSphinx::Search::Inquirer.new(self).populate
+  def context
+    @context ||= ThinkingSphinx::Search::Context.new self,
+      ThinkingSphinx::Configuration.instance
   end
 
   def method_missing(method, *args, &block)
-    populate if !SafeMethods.include?(method.to_s)
+    populate if !SAFE_METHODS.include?(method.to_s)
 
-    @array.send(method, *args, &block)
+    context[:results].send(method, *args, &block)
   end
 
-  def translator
-    @translator ||= ThinkingSphinx::Search::Translator.new(raw, excerpter)
+  def middleware_stack
+    local_middlewares = middlewares
+    @middleware_stack ||= Middleware::Builder.new do
+      local_middlewares.each do |mw|
+        use mw
+      end
+    end
   end
 end
 
+require 'thinking_sphinx/search/context'
 require 'thinking_sphinx/search/excerpt_glaze'
 require 'thinking_sphinx/search/geodist'
 require 'thinking_sphinx/search/glaze'

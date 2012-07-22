@@ -11,6 +11,11 @@ module ThinkingSphinx::Search::Pagination
     end
   end
 
+  def current_page
+    @options[:page] = 1 if @options[:page].blank?
+    @options[:page].to_i
+  end
+
   def first_page?
     current_page == 1
   end
@@ -25,6 +30,16 @@ module ThinkingSphinx::Search::Pagination
 
   def next_page?
     !next_page.nil?
+  end
+
+  def page(number)
+    @options[:page] = number
+    self
+  end
+
+  def per(limit)
+    @options[:limit] = limit
+    self
   end
 
   def previous_page

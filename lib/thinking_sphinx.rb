@@ -1,5 +1,6 @@
 require 'riddle'
 require 'blankslate'
+require 'middleware'
 require 'active_record'
 
 module ThinkingSphinx
@@ -18,6 +19,7 @@ require 'thinking_sphinx/core'
 require 'thinking_sphinx/configuration'
 require 'thinking_sphinx/excerpter'
 require 'thinking_sphinx/index'
+require 'thinking_sphinx/middlewares'
 require 'thinking_sphinx/rake_interface'
 require 'thinking_sphinx/scopes'
 require 'thinking_sphinx/search'

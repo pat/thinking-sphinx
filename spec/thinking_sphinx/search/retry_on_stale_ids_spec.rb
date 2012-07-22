@@ -26,12 +26,6 @@ describe ThinkingSphinx::Search::RetryOnStaleIds do
         }
       }
 
-      it "resets the search" do
-        search.should_receive(:reset!)
-
-        retrier.try_with_stale &block
-      end
-
       it "appends the ids to the without_ids filter" do
         retrier.try_with_stale &block
 
@@ -68,12 +62,6 @@ describe ThinkingSphinx::Search::RetryOnStaleIds do
           raise ThinkingSphinx::Search::StaleIdsException, [13] if @calls == 2
         }
       }
-
-      it "resets the search each time" do
-        search.should_receive(:reset!).twice
-
-        retrier.try_with_stale &block
-      end
 
       it "appends the ids to the without_ids filter" do
         retrier.try_with_stale &block
