@@ -1,58 +1,44 @@
-require 'spec_helper'
+module ThinkingSphinx
+  module Middlewares; end
+end
 
-describe ThinkingSphinx::Search::Inquirer do
-  let(:inquirer)   { ThinkingSphinx::Search::Inquirer.new search }
-  let(:search)     {
-    double('search', :query => '', :options => {}, :offset => 0, :per_page => 5)
-  }
-  let(:connection) { double('connection') }
-  let(:sphinx_sql) { double('sphinx sql', :to_sql => 'SELECT * FROM index') }
-  let(:config)     {
-    double('config', :connection => connection, :preload_indices => true,
-      :indices => [], :indices_for_references => [])
-  }
-  let(:query)      { double('query', :to_s => '') }
+module ActiveRecord
+  class Base; end
+end
+
+require 'active_support/core_ext/object/blank'
+require 'active_support/core_ext/string/inflections'
+require 'thinking_sphinx/middlewares/middleware'
+require 'thinking_sphinx/middlewares/sphinxql'
+
+describe ThinkingSphinx::Middlewares::SphinxQL do
+  let(:app)           { double('app', :call => true) }
+  let(:middleware)    { ThinkingSphinx::Middlewares::SphinxQL.new app }
+  let(:context)       { {} }
+  let(:search)        { double('search', :query => '', :options => {},
+    :offset => 0, :per_page => 5) }
+  let(:configuration) { double('configuration', :preload_indices => true,
+    :indices => [], :indices_for_references => []) }
+  let(:sphinx_sql)    { double('sphinx_sql', :from => true, :offset => true,
+    :limit => true, :where => true, :matching => true) }
+  let(:query)         { double('query') }
 
   before :each do
-    ThinkingSphinx::Configuration.stub :instance => config
-    ThinkingSphinx::Search::Query.stub :new => query
-    Riddle::Query.stub :connection => connection
-    Riddle::Query::Select.stub :new => sphinx_sql
+    stub_const 'Riddle::Query::Select', double(:new => sphinx_sql)
+    stub_const 'ThinkingSphinx::Search::Query', double(:new => query)
 
-    connection.stub(:query).and_return([], [])
-    sphinx_sql.stub :from => sphinx_sql, :offset => sphinx_sql,
-      :limit => sphinx_sql, :where => sphinx_sql, :matching => sphinx_sql
+    context.stub :search => search, :configuration => configuration
   end
 
-  describe '#populate' do
-    it "returns itself" do
-      inquirer.populate.should == inquirer
-    end
-
-    it "populates the data and meta sets from Sphinx" do
-      connection.unstub :query
-      connection.should_receive(:query).twice.and_return([], [])
-
-      inquirer.populate
-    end
-
-    it "passes through the SphinxQL from a Riddle::Query::Select object" do
-      connection.unstub :query
-      connection.should_receive(:query).with('SELECT * FROM index').once.
-        and_return([])
-      connection.should_receive(:query).with('SHOW META').once.and_return([])
-
-      inquirer.populate
-    end
-
+  describe '#call' do
     it "ensures the indices are loaded" do
-      config.should_receive(:preload_indices)
+      configuration.should_receive(:preload_indices)
 
-      inquirer.populate
+      middleware.call context
     end
 
     it "uses all indices if not scoped to any models" do
-      config.stub :indices => [
+      configuration.stub :indices => [
         double('index', :name => 'article_core'),
         double('index', :name => 'user_core')
       ]
@@ -60,36 +46,42 @@ describe ThinkingSphinx::Search::Inquirer do
       sphinx_sql.should_receive(:from).with('`article_core`', '`user_core`').
         and_return(sphinx_sql)
 
-      inquirer.populate
+      middleware.call context
     end
 
     it "uses indices for the given classes" do
       model = Class.new(ActiveRecord::Base) do
         def self.name; 'Article'; end
+        def self.column_names; []; end
+        def self.inheritance_column; 'type'; end
       end
 
       search.options[:classes] = [model]
 
-      config.should_receive(:indices_for_references).with(:article).
+      configuration.should_receive(:indices_for_references).with(:article).
         and_return([])
 
-      inquirer.populate
+      middleware.call context
     end
 
     it "requests indices for any superclasses" do
       supermodel = Class.new(ActiveRecord::Base) do
         def self.name; 'Article'; end
+        def self.column_names; []; end
+        def self.inheritance_column; 'type'; end
       end
       submodel   = Class.new(supermodel) do
         def self.name; 'OpinionArticle'; end
+        def self.column_names; []; end
+        def self.inheritance_column; 'type'; end
       end
 
       search.options[:classes] = [submodel]
 
-      config.should_receive(:indices_for_references).
+      configuration.should_receive(:indices_for_references).
         with(:opinion_article, :article).and_return([])
 
-      inquirer.populate
+      middleware.call context
     end
 
     it "generates a Sphinx query from the provided keyword and conditions" do
@@ -99,7 +91,7 @@ describe ThinkingSphinx::Search::Inquirer do
       ThinkingSphinx::Search::Query.should_receive(:new).
         with('tasty', {:title => 'pancakes'}, anything).and_return(query)
 
-      inquirer.populate
+      middleware.call context
     end
 
     it "matches on the generated query" do
@@ -107,7 +99,7 @@ describe ThinkingSphinx::Search::Inquirer do
 
       sphinx_sql.should_receive(:matching).with('waffles')
 
-      inquirer.populate
+      middleware.call context
     end
 
     it "requests a starred query if the :star option is set to true" do
@@ -116,7 +108,7 @@ describe ThinkingSphinx::Search::Inquirer do
       ThinkingSphinx::Search::Query.should_receive(:new).
         with(anything, anything, true).and_return(query)
 
-      inquirer.populate
+      middleware.call context
     end
 
     it "appends field conditions for the class when searching on subclasses" do
@@ -124,12 +116,16 @@ describe ThinkingSphinx::Search::Inquirer do
         :schema_cache => double('cache', :table_exists? => false))
       supermodel = Class.new(ActiveRecord::Base) do
         def self.name; 'Cat'; end
+        def self.inheritance_column; 'type'; end
       end
       supermodel.stub :connection => db_connection, :column_names => ['type']
       submodel   = Class.new(supermodel) do
         def self.name; 'Lion'; end
+        def self.inheritance_column; 'type'; end
+        def self.table_name; 'cats'; end
       end
-      submodel.stub :connection => db_connection, :column_names => ['type']
+      submodel.stub :connection => db_connection, :column_names => ['type'],
+        :descendants => []
 
       search.options[:classes] = [submodel]
 
@@ -137,14 +133,14 @@ describe ThinkingSphinx::Search::Inquirer do
         hash_including(:sphinx_internal_class => '(Lion)'), anything).
         and_return(query)
 
-      inquirer.populate
+      middleware.call context
     end
 
     it "filters out deleted values by default" do
       sphinx_sql.should_receive(:where).with(:sphinx_deleted => false).
         and_return(sphinx_sql)
 
-      inquirer.populate
+      middleware.call context
     end
 
     it "appends boolean attribute filters to the query" do
@@ -153,7 +149,7 @@ describe ThinkingSphinx::Search::Inquirer do
       sphinx_sql.should_receive(:where).with(hash_including(:visible => true)).
         and_return(sphinx_sql)
 
-      inquirer.populate
+      middleware.call context
     end
 
     it "appends exclusive filters to the query" do
@@ -162,7 +158,7 @@ describe ThinkingSphinx::Search::Inquirer do
       sphinx_sql.should_receive(:where_not).
         with(hash_including(:tag_ids => [2, 4, 8])).and_return(sphinx_sql)
 
-      inquirer.populate
+      middleware.call context
     end
 
     it "appends the without_ids option as an exclusive filter" do
@@ -172,7 +168,7 @@ describe ThinkingSphinx::Search::Inquirer do
         with(hash_including(:sphinx_internal_id => [1, 4, 9])).
         and_return(sphinx_sql)
 
-      inquirer.populate
+      middleware.call context
     end
 
     it "appends order clauses to the query" do
@@ -181,7 +177,7 @@ describe ThinkingSphinx::Search::Inquirer do
       sphinx_sql.should_receive(:order_by).with('created_at ASC').
         and_return(sphinx_sql)
 
-      inquirer.populate
+      middleware.call context
     end
 
     it "presumes attributes given as symbols should be sorted ascendingly" do
@@ -190,7 +186,7 @@ describe ThinkingSphinx::Search::Inquirer do
       sphinx_sql.should_receive(:order_by).with('updated_at ASC').
         and_return(sphinx_sql)
 
-      inquirer.populate
+      middleware.call context
     end
 
     it "uses the provided offset" do
@@ -198,7 +194,7 @@ describe ThinkingSphinx::Search::Inquirer do
 
       sphinx_sql.should_receive(:offset).with(50).and_return(sphinx_sql)
 
-      inquirer.populate
+      middleware.call context
     end
 
     it "uses the provided limit" do
@@ -206,7 +202,7 @@ describe ThinkingSphinx::Search::Inquirer do
 
       sphinx_sql.should_receive(:limit).with(24).and_return(sphinx_sql)
 
-      inquirer.populate
+      middleware.call context
     end
 
     it "adds the provided select statement" do
@@ -215,7 +211,7 @@ describe ThinkingSphinx::Search::Inquirer do
       sphinx_sql.should_receive(:values).with('foo as bar').
         and_return(sphinx_sql)
 
-      inquirer.populate
+      middleware.call context
     end
 
     it "uses any provided field weights" do
@@ -226,7 +222,7 @@ describe ThinkingSphinx::Search::Inquirer do
         sphinx_sql
       end
 
-      inquirer.populate
+      middleware.call context
     end
 
     it "uses any given ranker option" do
@@ -237,7 +233,7 @@ describe ThinkingSphinx::Search::Inquirer do
         sphinx_sql
       end
 
-      inquirer.populate
+      middleware.call context
     end
   end
 end

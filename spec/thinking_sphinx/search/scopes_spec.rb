@@ -1,18 +1,14 @@
 require 'spec_helper'
 
 describe ThinkingSphinx::Search::Scopes do
-  let(:search)      { ThinkingSphinx::Search.new 'foo' }
-  let(:translator)  { double('translator', :to_active_record => []) }
-  let(:inquirer)    { double('inquirer', :raw => []) }
-  let(:stale_retry) { double('retrier') }
+  let(:search)  { ThinkingSphinx::Search.new 'foo' }
+  let(:context) { {:results => []} }
+  let(:stack)   { double('stack', :call => true) }
 
   before :each do
-    ThinkingSphinx::Search::Translator.stub :new => translator
-    ThinkingSphinx::Search::Inquirer.stub :new => inquirer
-    ThinkingSphinx::Search::RetryOnStaleIds.stub :new => stale_retry
+    ThinkingSphinx::Search::Context.stub :new => context
 
-    inquirer.stub :populate => inquirer
-    stale_retry.stub(:try_with_stale).and_yield
+    stub_const 'Middleware::Builder', double(:new => stack)
   end
 
   describe '#search' do

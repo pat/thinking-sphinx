@@ -2,18 +2,13 @@ require 'spec_helper'
 
 describe ThinkingSphinx::Search do
   let(:search)      { ThinkingSphinx::Search.new }
-  let(:translator)  { double('translator', :to_active_record => []) }
-  let(:inquirer)    { double('inquirer', :raw => [], :meta => {},
-    :index_names => ['alpha']) }
-  let(:stale_retry) { double('retrier') }
+  let(:context)     { {:results => []} }
+  let(:stack)       { double('stack', :call => true) }
 
   before :each do
-    ThinkingSphinx::Search::Translator.stub :new => translator
-    ThinkingSphinx::Search::Inquirer.stub :new => inquirer
-    ThinkingSphinx::Search::RetryOnStaleIds.stub :new => stale_retry
+    ThinkingSphinx::Search::Context.stub :new => context
 
-    inquirer.stub :populate => inquirer
-    stale_retry.stub(:try_with_stale).and_yield
+    stub_const 'Middleware::Builder', double(:new => stack)
   end
 
   describe '#current_page' do
@@ -36,57 +31,27 @@ describe ThinkingSphinx::Search do
 
   describe '#empty?' do
     it "returns false if there is anything in the data set" do
-      translator.stub(:to_active_record => [double('instance')])
+      context[:results] << double
 
       search.should_not be_empty
     end
 
     it "returns true if the data set is empty" do
-      translator.stub(:to_active_record => [])
+      context[:results].clear
 
       search.should be_empty
     end
   end
 
-  describe '#excerpter' do
-    let(:excerpter) { double('excerpter') }
-
-    it "creates an excerpter with the first index and all keywords" do
-      inquirer.stub :index_names => ['alpha', 'beta', 'gamma']
-      inquirer.meta['keyword[0]'] = 'foo'
-      inquirer.meta['keyword[1]'] = 'bar'
-
-      ThinkingSphinx::Excerpter.should_receive(:new).
-        with('alpha', 'foo bar', anything).and_return(excerpter)
-
-      search.excerpter
-    end
-
-    it "returns the generated excerpter" do
-      ThinkingSphinx::Excerpter.stub :new => excerpter
-
-      search.excerpter.should == excerpter
-    end
-
-    it "passes through excerpts options" do
-      search = ThinkingSphinx::Search.new :excerpts => {:before_match => 'foo'}
-
-      ThinkingSphinx::Excerpter.should_receive(:new).
-        with(anything, anything, :before_match => 'foo').and_return(excerpter)
-
-      search.excerpter
-    end
-  end
-
   describe '#initialize' do
     it "lazily loads by default" do
-      inquirer.should_not_receive(:populate)
+      stack.should_not_receive(:call)
 
       ThinkingSphinx::Search.new
     end
 
     it "should automatically populate when :populate is set to true" do
-      inquirer.should_receive(:populate).and_return(inquirer)
+      stack.should_receive(:call).and_return(true)
 
       ThinkingSphinx::Search.new(:populate => true)
     end
@@ -149,14 +114,14 @@ describe ThinkingSphinx::Search do
   end
 
   describe '#populate' do
-    it "retrieves the ActiveRecord-translated results" do
-      translator.should_receive(:to_active_record).and_return([])
+    it "runs the middleware" do
+      stack.should_receive(:call).with(context).and_return(true)
 
       search.populate
     end
 
     it "does not retrieve results twice" do
-      translator.should_receive(:to_active_record).once.and_return([])
+      stack.should_receive(:call).with(context).once.and_return(true)
 
       search.populate
       search.populate
@@ -202,7 +167,7 @@ describe ThinkingSphinx::Search do
       unglazed = double('unglazed instance')
       glazed   = double('glazed instance', :unglazed => unglazed)
 
-      translator.stub(:to_active_record => [glazed])
+      context[:results] << glazed
 
       search.to_a.first.__id__.should == unglazed.__id__
     end

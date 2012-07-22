@@ -41,7 +41,7 @@ class ThinkingSphinx::Middlewares::StaleIds <
   def stale_retries
     case context.search.options[:retry_stale]
     when nil, TrueClass
-      3
+      2
     when FalseClass
       0
     else

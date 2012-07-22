@@ -2,15 +2,14 @@ require 'spec_helper'
 
 describe ThinkingSphinx::Search::Pagination do
   let(:search)       { ThinkingSphinx::Search.new }
-  let(:meta_results) { [] }
-  let(:translator)   { double('translator', :to_active_record => []) }
-  let(:inquirer)     { double('inquirer', :raw => [], :meta => {}) }
+  let(:meta_results) { {} }
+  let(:context)      { {:meta => meta_results} }
+  let(:stack)        { double('stack', :call => true) }
 
   before :each do
-    ThinkingSphinx::Search::Translator.stub :new => translator
-    ThinkingSphinx::Search::Inquirer.stub :new => inquirer
+    ThinkingSphinx::Search::Context.stub :new => context
 
-    inquirer.stub :populate => inquirer
+    stub_const 'Middleware::Builder', double(:new => stack)
   end
 
   describe '#first_page?' do
@@ -25,7 +24,7 @@ describe ThinkingSphinx::Search::Pagination do
 
   describe '#last_page?' do
     before :each do
-      inquirer.meta['total'] = '44'
+      meta_results['total'] = '44'
     end
 
     it "is true when there's no more pages" do
@@ -39,7 +38,7 @@ describe ThinkingSphinx::Search::Pagination do
 
   describe '#next_page' do
     before :each do
-      inquirer.meta['total'] = '44'
+      meta_results['total'] = '44'
     end
 
     it "should return one more than the current page" do
@@ -53,7 +52,7 @@ describe ThinkingSphinx::Search::Pagination do
 
   describe '#next_page?' do
     before :each do
-      inquirer.meta['total'] = '44'
+      meta_results['total'] = '44'
     end
 
     it "is true when there is a second page" do
@@ -67,7 +66,7 @@ describe ThinkingSphinx::Search::Pagination do
 
   describe '#previous_page' do
     before :each do
-      inquirer.meta['total'] = '44'
+      meta_results['total'] = '44'
     end
 
     it "should return one less than the current page" do
@@ -81,7 +80,7 @@ describe ThinkingSphinx::Search::Pagination do
 
   describe '#total_entries' do
     before :each do
-      inquirer.meta['total_found'] = '12'
+      meta_results['total_found'] = '12'
     end
 
     it "returns the total found from the search request metadata" do
@@ -91,8 +90,8 @@ describe ThinkingSphinx::Search::Pagination do
 
   describe '#total_pages' do
     before :each do
-      inquirer.meta['total']       = '40'
-      inquirer.meta['total_found'] = '44'
+      meta_results['total']       = '40'
+      meta_results['total_found'] = '44'
     end
 
     it "uses the total available from the search request metadata" do
@@ -104,7 +103,7 @@ describe ThinkingSphinx::Search::Pagination do
     end
 
     it "should return 0 if there is no index and therefore no results" do
-      inquirer.meta.clear
+      meta_results.clear
 
       search.total_pages.should == 0
     end

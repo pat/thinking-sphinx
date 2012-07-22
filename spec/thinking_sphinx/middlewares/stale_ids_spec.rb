@@ -1,33 +1,35 @@
-require 'spec_helper'
+module ThinkingSphinx
+  module Middlewares; end
+  class  Search; end
+end
 
-describe ThinkingSphinx::Search::RetryOnStaleIds do
-  let(:retrier) { ThinkingSphinx::Search::RetryOnStaleIds.new search }
-  let(:search)  {
-    double('search', :stale_retries => 2, :options => {}, :reset! => true)
-  }
+require 'thinking_sphinx/middlewares/middleware'
+require 'thinking_sphinx/middlewares/stale_ids'
+require 'thinking_sphinx/search/stale_ids_exception'
 
-  describe '#try_with_stale' do
-    let(:block) { Proc.new {} }
+describe ThinkingSphinx::Middlewares::StaleIds do
+  let(:app)        { double('app', :call => true) }
+  let(:middleware) { ThinkingSphinx::Middlewares::StaleIds.new app }
+  let(:context)    { {:raw => [], :results => []} }
+  let(:search)     { double('search', :options => {}) }
 
-    it "calls the given block" do
-      block.should_receive(:call)
-
-      retrier.try_with_stale do
-        block.call
-      end
+  describe '#call' do
+    before :each do
+      stub_const 'ActiveSupport::Notifications', double(:instrument => true)
+      context.stub :search => search
     end
 
     context 'one stale ids exception' do
-      let(:block) {
-        Proc.new {
+      before :each do
+        app.stub(:call) do
           @calls ||= 0
           @calls += 1
           raise ThinkingSphinx::Search::StaleIdsException, [12] if @calls == 1
-        }
-      }
+        end
+      end
 
       it "appends the ids to the without_ids filter" do
-        retrier.try_with_stale &block
+        middleware.call context
 
         search.options[:without_ids].should == [12]
       end
@@ -35,36 +37,24 @@ describe ThinkingSphinx::Search::RetryOnStaleIds do
       it "respects existing without_ids filters" do
         search.options[:without_ids] = [11]
 
-        retrier.try_with_stale &block
+        middleware.call context
 
         search.options[:without_ids].should == [11, 12]
-      end
-
-      it "stores the stale ids" do
-        retrier.try_with_stale &block
-
-        retrier.stale_ids.should == [12]
-      end
-
-      it "decrements the retry count" do
-        retrier.try_with_stale &block
-
-        retrier.retries.should == 1
       end
     end
 
     context  'two stale ids exceptions' do
-      let(:block) {
-        Proc.new {
+      before :each do
+        app.stub(:call) do
           @calls ||= 0
           @calls += 1
           raise ThinkingSphinx::Search::StaleIdsException, [12] if @calls == 1
           raise ThinkingSphinx::Search::StaleIdsException, [13] if @calls == 2
-        }
-      }
+        end
+      end
 
       it "appends the ids to the without_ids filter" do
-        retrier.try_with_stale &block
+        middleware.call context
 
         search.options[:without_ids].should == [12, 13]
       end
@@ -72,39 +62,27 @@ describe ThinkingSphinx::Search::RetryOnStaleIds do
       it "respects existing without_ids filters" do
         search.options[:without_ids] = [11]
 
-        retrier.try_with_stale &block
+        middleware.call context
 
         search.options[:without_ids].should == [11, 12, 13]
-      end
-
-      it "stores the stale ids" do
-        retrier.try_with_stale &block
-
-        retrier.stale_ids.should == [12, 13]
-      end
-
-      it "decrements the retry count" do
-        retrier.try_with_stale &block
-
-        retrier.retries.should == 0
       end
     end
 
     context 'three stale ids exceptions' do
-      let(:block) {
-        Proc.new {
+      before :each do
+        app.stub(:call) do
           @calls ||= 0
           @calls += 1
 
           raise ThinkingSphinx::Search::StaleIdsException, [12] if @calls == 1
           raise ThinkingSphinx::Search::StaleIdsException, [13] if @calls == 2
           raise ThinkingSphinx::Search::StaleIdsException, [14] if @calls == 3
-        }
-      }
+        end
+      end
 
       it "raises the final stale ids exceptions" do
         lambda {
-          retrier.try_with_stale &block
+          middleware.call context
         }.should raise_error(ThinkingSphinx::Search::StaleIdsException) { |err|
           err.ids.should == [14]
         }
