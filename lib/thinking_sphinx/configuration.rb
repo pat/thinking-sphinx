@@ -6,14 +6,14 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   def initialize
     super
 
-    @configuration_file = Rails.root.join('config', "#{Rails.env}.sphinx.conf")
+    @configuration_file = Rails.root.join 'config', "#{Rails.env}.sphinx.conf"
     @index_paths        = [Rails.root.join('app', 'indices')]
-    @indices_location   = Rails.root.join('db', 'sphinx', Rails.env)
+    @indices_location   = Rails.root.join 'db', 'sphinx', Rails.env
 
-    searchd.pid_file  = Rails.root.join('log', "#{Rails.env}.sphinx.pid")
-    searchd.log       = Rails.root.join('log', "#{Rails.env}.searchd.log")
-    searchd.query_log = Rails.root.join('log', "#{Rails.env}.searchd.query.log")
-    searchd.binlog_path = Rails.root.join('tmp', 'binlog', Rails.env)
+    searchd.pid_file  = Rails.root.join 'log', "#{Rails.env}.sphinx.pid"
+    searchd.log       = Rails.root.join 'log', "#{Rails.env}.searchd.log"
+    searchd.query_log = Rails.root.join 'log', "#{Rails.env}.searchd.query.log"
+    searchd.binlog_path = Rails.root.join 'tmp', 'binlog', Rails.env
 
     searchd.address   = settings['address']
     searchd.address   = '127.0.0.1' unless searchd.address.present?
