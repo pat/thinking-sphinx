@@ -98,40 +98,48 @@ h2. Limitations
 
 Basic indexing and searching should be fine. There's currently no facets or excerpts, and limited delta support. Many settings haven't yet been brought across. Many of the smaller features don't yet exist either. Some may actually not return... we'll see.
 
-A list of what still needs to be implemented, in no particular order:
+Lists of what still needs to be implemented, in no particular order but in groups of vague importance:
+
+Required for Pre-Release:
 
 * Facets
 * Bundled Searches
-* Delayed Deltas
-* Datetime Deltas
 * Attribute Updates
-* JRuby support
-* Abstract Inheritance support (maybe - not sure this is something many of people want).
 * Searching from association contexts
 * Searching by specific indices
 * Matching many values on a single MVA attribute (:with_all)
 * Matching none of many values on a single MVA attribute (:without_any)
-* Sinatra support
 * Test Helpers
-* Overwritable toggle_delta? method on model
-* Default Sphinx scopes
 * Relaxed error handling for deletions and delta calls
 * 64-bit integer detection
 * 64-bit integer attribute consistency
 * Handling of NULLs in group concatenation
 * Timezone support
-* Using :though association shortcuts in index definitions
-* Wordcount fields and attributes
 * Manual MVA type declarations
 * Timestamp MVAs
+
+Required for Release Candidate:
+
 * Query and Ranged Query sources for Attributes
-* Namespaced models support
-* Capistrano Tasks
-* Infixing and Prefixing of specific fields
-* Multiple sources for an index
-* sanitise_sql method in index definitions
-* Bitmask weighting helper
+* Using :though association shortcuts in index definitions
+* Overwritable toggle_delta? method on model
 * Query times for searches
+* Namespaced models support
+* Delayed Deltas
+* Datetime Deltas
+* Infixing and Prefixing of specific fields
+* Default Sphinx scopes
+* sanitise_sql method in index definitions
+* Multiple sources for an index
+* Bitmask weighting helper
+* JRuby support
+* Sinatra support
+* Wordcount fields and attributes
+
+May or may not be added:
+
+* Abstract Inheritance support (maybe - not sure this is something many of people want).
+* Capistrano Tasks
 
 h3. Sphinx Versions
 
