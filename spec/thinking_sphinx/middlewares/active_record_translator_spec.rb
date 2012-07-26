@@ -75,20 +75,5 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
 
       context[:results].should == [instance_2, instance_1]
     end
-
-    it "raises a stale id exception if ActiveRecord doesn't return ids" do
-      model_name = double('article', :constantize => model)
-      instance = double('instance', :id => 24)
-      context[:results] << raw_result(24, model_name)
-      context[:results] << raw_result(42, model_name)
-
-      model.should_receive(:where).once.and_return([instance])
-
-      lambda {
-        middleware.call context
-      }.should raise_error(ThinkingSphinx::Search::StaleIdsException) { |err|
-        err.ids.should == [42]
-      }
-    end
   end
 end

@@ -7,11 +7,12 @@ class ThinkingSphinx::Search < Array
   SAFE_METHODS = %w( partition private_methods protected_methods public_methods
     send class )
   DEFAULT_MIDDLEWARES = [
-    ThinkingSphinx::Middlewares::StaleIds,
+    ThinkingSphinx::Middlewares::StaleIdFilter,
     ThinkingSphinx::Middlewares::SphinxQL,
     ThinkingSphinx::Middlewares::Geographer,
     ThinkingSphinx::Middlewares::Inquirer,
     ThinkingSphinx::Middlewares::ActiveRecordTranslator,
+    ThinkingSphinx::Middlewares::StaleIdChecker,
     ThinkingSphinx::Middlewares::Glazier
   ]
   DEFAULT_MASKS = [

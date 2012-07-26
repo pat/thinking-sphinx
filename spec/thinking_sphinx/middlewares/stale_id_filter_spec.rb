@@ -4,12 +4,12 @@ module ThinkingSphinx
 end
 
 require 'thinking_sphinx/middlewares/middleware'
-require 'thinking_sphinx/middlewares/stale_ids'
+require 'thinking_sphinx/middlewares/stale_id_filter'
 require 'thinking_sphinx/search/stale_ids_exception'
 
-describe ThinkingSphinx::Middlewares::StaleIds do
+describe ThinkingSphinx::Middlewares::StaleIdFilter do
   let(:app)        { double('app', :call => true) }
-  let(:middleware) { ThinkingSphinx::Middlewares::StaleIds.new app }
+  let(:middleware) { ThinkingSphinx::Middlewares::StaleIdFilter.new app }
   let(:context)    { {:raw => [], :results => []} }
   let(:search)     { double('search', :options => {}) }
 

@@ -1,4 +1,4 @@
-class ThinkingSphinx::Middlewares::StaleIds <
+class ThinkingSphinx::Middlewares::StaleIdFilter <
   ThinkingSphinx::Middlewares::Middleware
 
   def call(context)
