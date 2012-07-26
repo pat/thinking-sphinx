@@ -31,8 +31,9 @@ class ThinkingSphinx::Search < Array
   def initialize(query = nil, options = {})
     query, options   = nil, query if query.is_a?(Hash)
     @query, @options = query, options
-    @middlewares     = @options.delete(:middlewares) || DEFAULT_MIDDLEWARES
-    @masks           = @options.delete(:masks)       || DEFAULT_MASKS
+    @middleware      = @options.delete(:middleware) ||
+      ThinkingSphinx::Configuration.instance.middleware
+    @masks           = @options.delete(:masks)      || DEFAULT_MASKS
 
     populate if options[:populate]
   end
@@ -58,7 +59,7 @@ class ThinkingSphinx::Search < Array
   def populate
     return self if @populated
 
-    middleware_stack.call context
+    @middleware.call context
     @populated = true
 
     self
@@ -108,15 +109,6 @@ class ThinkingSphinx::Search < Array
 
   def mask_stack
     @mask_stack ||= masks.collect { |klass| klass.new self }
-  end
-
-  def middleware_stack
-    local_middlewares = middlewares
-    @middleware_stack ||= Middleware::Builder.new do
-      local_middlewares.each do |mw|
-        use mw
-      end
-    end
   end
 end
 

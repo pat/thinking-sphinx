@@ -1,14 +1,14 @@
 require 'spec_helper'
 
 describe ThinkingSphinx::Search do
-  let(:search)      { ThinkingSphinx::Search.new }
-  let(:context)     { {:results => []} }
-  let(:stack)       { double('stack', :call => true) }
+  let(:search)        { ThinkingSphinx::Search.new }
+  let(:context)       { {:results => []} }
+  let(:stack)         { double('stack', :call => true) }
+  let(:configuration) { double('configuration', :middleware => stack) }
 
   before :each do
     ThinkingSphinx::Search::Context.stub :new => context
-
-    stub_const 'Middleware::Builder', double(:new => stack)
+    ThinkingSphinx::Configuration.stub :instance => configuration
   end
 
   describe '#current_page' do

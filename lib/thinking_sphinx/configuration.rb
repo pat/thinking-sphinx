@@ -50,6 +50,14 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     indices.select { |index| references.include?(index.reference) }
   end
 
+  def middleware
+    @middleware ||= Middleware::Builder.new do
+      ThinkingSphinx::Search::DEFAULT_MIDDLEWARES.each do |mw|
+        use mw
+      end
+    end
+  end
+
   def next_offset(reference)
     @offsets[reference] ||= @offsets.keys.count
   end
