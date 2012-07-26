@@ -26,6 +26,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
   before :each do
     stub_const 'Riddle::Query::Select', double(:new => sphinx_sql)
     stub_const 'ThinkingSphinx::Search::Query', double(:new => query)
+    stub_const 'ThinkingSphinx::Masks::GroupEnumeratorsMask', double
 
     context.stub :search => search, :configuration => configuration
   end
@@ -191,11 +192,22 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
 
     it "appends a group by clause to the query" do
       search.options[:group_by] = :foreign_id
+      search.stub :masks => []
 
       sphinx_sql.should_receive(:group_by).with('foreign_id').
         and_return(sphinx_sql)
 
       middleware.call context
+    end
+
+    it "adds the group enumerator mask when using :group_by" do
+      search.options[:group_by] = :foreign_id
+      search.stub :masks => []
+      sphinx_sql.stub :group_by => sphinx_sql
+
+      middleware.call context
+
+      search.masks.should include(ThinkingSphinx::Masks::GroupEnumeratorsMask)
     end
 
     it "appends a sort within group clause to the query" do
