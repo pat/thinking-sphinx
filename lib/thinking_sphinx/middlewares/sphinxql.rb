@@ -70,6 +70,19 @@ FROM #{klass.table_name}
     end
   end
 
+  def group_attribute
+    options[:group_by] ? options[:group_by].to_s : nil
+  end
+
+  def group_order_clause
+    case options[:order_group_by]
+    when Symbol
+      "#{options[:order_group_by]} ASC"
+    else
+      options[:order_group_by]
+    end
+  end
+
   def inclusive_filters
     @inclusive_filters ||= (options[:with] || {}).tap do |with|
       with[:sphinx_deleted] = false
@@ -130,6 +143,8 @@ FROM #{klass.table_name}
       select.where inclusive_filters     if inclusive_filters.any?
       select.where_not exclusive_filters if exclusive_filters.any?
       select.order_by order_clause       if order_clause.present?
+      select.group_by group_attribute    if group_attribute.present?
+      select.order_within_group_by group_order_clause if group_order_clause.present?
       select.offset context.search.offset
       select.limit  context.search.per_page
       select.with_options select_options if select_options.keys.any?

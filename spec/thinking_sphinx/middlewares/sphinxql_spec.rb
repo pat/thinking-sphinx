@@ -189,6 +189,24 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       middleware.call context
     end
 
+    it "appends a group by clause to the query" do
+      search.options[:group_by] = :foreign_id
+
+      sphinx_sql.should_receive(:group_by).with('foreign_id').
+        and_return(sphinx_sql)
+
+      middleware.call context
+    end
+
+    it "appends a sort within group clause to the query" do
+      search.options[:order_group_by] = :title
+
+      sphinx_sql.should_receive(:order_within_group_by).with('title ASC').
+        and_return(sphinx_sql)
+
+      middleware.call context
+    end
+
     it "uses the provided offset" do
       search.stub :offset => 50
 

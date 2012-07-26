@@ -71,7 +71,18 @@ results.excerpter.excerpt!('The Etymology of Foo')</code></pre>
 * Set INDEX_ONLY to true in your shell for the index task to re-index without regenerating the configuration file.
 * If you want to pass the old-style @:include@, @:joins@, @:select@ or @:order@ parameters through to the underlying ActiveRecord SQL queries for instantiating search results, they should go in a hash within the search option @:sql@:
 
-<pre><code>Article.search '', :sql => {:include => :user}</code></pre>
+<pre><code>Article.search :sql => {:include => :user}</code></pre>
+
+* SphinxQL only supports grouping by single attributes - but these attributes may be generated on the fly within the select statement (see the @:select@ option above). A grouped search uses the @:group_by@ option, and you can pass in the attribute name as either a symbol or a string:
+
+<pre><code>Article.search :group_by => :user_id</code></pre>
+
+* If you want to change the order of which result appears for each group, that can be done via the @:order_group_by@ option - which behaves just like @:order@ does:
+
+<pre><code>Article.search(
+  :group_by       => :user_id,
+  :order_group_by => 'created_at DESC'
+)</code></pre>
 
 h2. Limitations
 
@@ -91,7 +102,6 @@ A list of what still needs to be implemented, in no particular order:
 * Matching many values on a single MVA attribute (:with_all)
 * Matching none of many values on a single MVA attribute (:without_any)
 * Sinatra support
-* Grouped search results
 * Group enumerators (with group, with count, with both)
 * Test Helpers
 * Overwritable toggle_delta? method on model
