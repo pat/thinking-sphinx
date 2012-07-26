@@ -69,6 +69,9 @@ results.excerpter.excerpt!('The Etymology of Foo')</code></pre>
 
 * Support for latitude and longitude attributes named something other than 'lat' and 'lng' or 'latitude' and 'longitude' has been removed. May add it back in if requested, but would be surprised if it's a necessary feature.
 * Set INDEX_ONLY to true in your shell for the index task to re-index without regenerating the configuration file.
+* If you want to pass the old-style @:include@, @:joins@, @:select@ or @:order@ parameters through to the underlying ActiveRecord SQL queries for instantiating search results, they should go in a hash within the search option @:sql@:
+
+<pre><code>Article.search '', :sql => {:include => :user}</code></pre>
 
 h2. Limitations
 
@@ -90,7 +93,6 @@ A list of what still needs to be implemented, in no particular order:
 * Sinatra support
 * Grouped search results
 * Group enumerators (with group, with count, with both)
-* ActiveRecord :include and :select options being passed through on searches
 * Test Helpers
 * Overwritable toggle_delta? method on model
 * Default Sphinx scopes
@@ -120,7 +122,7 @@ h3. Rails Versions
 
 Currently TS 3 is built to support Rails 3.0 or newer. Sinatra is not yet supported, but it will be.
 
-Rails 2.0 or earlier and Merb support have been discontinued.
+TS 3 does not support Rails 2.x or earlier, or Merb - please refer to the TS 1.x releases for that.
 
 h3. Ruby Versions
 
@@ -140,4 +142,4 @@ For some ideas behind my current approach, have a look through @sketchpad.rb@ in
 
 h2. Licence
 
-Copyright (c) 2011, Combustion is developed and maintained by Pat Allan, and is released under the open MIT Licence. Many thanks to "all who have contributed patches":https://github.com/freelancing-god/thinking-sphinx/contributors.
+Copyright (c) 2011, Thinking Sphinx is developed and maintained by Pat Allan, and is released under the open MIT Licence. Many thanks to "all who have contributed patches":https://github.com/freelancing-god/thinking-sphinx/contributors.

@@ -41,9 +41,20 @@ class ThinkingSphinx::Middlewares::ActiveRecordTranslator <
   def results_for_models
     @results_for_models ||= model_names.inject({}) { |hash, name|
       ids        = ids_for_model(name)
-      hash[name] = name.constantize.where(:id => ids)
+      relation   = name.constantize.unscoped
+
+      relation = relation.includes sql_options[:include] if sql_options[:include]
+      relation = relation.joins  sql_options[:joins]  if sql_options[:joins]
+      relation = relation.order  sql_options[:order]  if sql_options[:order]
+      relation = relation.select sql_options[:select] if sql_options[:select]
+
+      hash[name] = relation.where(:id => ids)
 
       hash
     }
+  end
+
+  def sql_options
+    context.search.options[:sql] || {}
   end
 end

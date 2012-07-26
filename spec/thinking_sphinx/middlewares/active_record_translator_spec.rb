@@ -13,16 +13,22 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
     ThinkingSphinx::Middlewares::ActiveRecordTranslator.new app }
   let(:context)    { {:raw => [], :results => []} }
   let(:model)      { double('model') }
+  let(:search)     { double('search', :options => {}) }
 
   def raw_result(id, model_name)
     {'sphinx_internal_id' => id, 'sphinx_internal_class_attr' => model_name}
   end
 
   describe '#call' do
+    before :each do
+      context.stub :search => search
+      model.stub :unscoped => model
+    end
+
     it "translates records to ActiveRecord objects" do
       model_name = double('article', :constantize => model)
       instance   = double('instance', :id => 24)
-      model.stub!(:where => [instance])
+      model.stub :where => [instance]
 
       context[:results] << raw_result(24, model_name)
 
@@ -52,6 +58,9 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
       user_name     = double('user name', :constantize => user_model)
       user          = double('user instance', :id => 12)
 
+      article_model.stub :unscoped => article_model
+      user_model.stub :unscoped => user_model
+
       context[:results] << raw_result(24, article_name)
       context[:results] << raw_result(12, user_name)
 
@@ -74,6 +83,50 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
       middleware.call context
 
       context[:results].should == [instance_2, instance_1]
+    end
+
+    context do
+      let(:relation) { double('relation', :where => []) }
+
+      before :each do
+        model.stub :unscoped => relation
+
+        model_name = double('article', :constantize => model)
+        context[:results] << raw_result(1, model_name)
+      end
+
+      it "passes through SQL include options to the relation" do
+        search.options[:sql] = {:include => :association}
+
+        relation.should_receive(:includes).with(:association).
+          and_return(relation)
+
+        middleware.call context
+      end
+
+      it "passes through SQL join options to the relation" do
+        search.options[:sql] = {:joins => :association}
+
+        relation.should_receive(:joins).with(:association).and_return(relation)
+
+        middleware.call context
+      end
+
+      it "passes through SQL order options to the relation" do
+        search.options[:sql] = {:order => 'name DESC'}
+
+        relation.should_receive(:order).with('name DESC').and_return(relation)
+
+        middleware.call context
+      end
+
+      it "passes through SQL select options to the relation" do
+        search.options[:sql] = {:select => :column}
+
+        relation.should_receive(:select).with(:column).and_return(relation)
+
+        middleware.call context
+      end
     end
   end
 end
