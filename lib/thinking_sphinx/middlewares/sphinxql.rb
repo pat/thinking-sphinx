@@ -10,6 +10,10 @@ class ThinkingSphinx::Middlewares::SphinxQL <
     context[:indices]  = indices
     context[:sphinxql] = statement
 
+    if group_attribute.present?
+      context.search.masks << ThinkingSphinx::Masks::GroupEnumeratorsMask
+    end
+
     app.call context
   end
 

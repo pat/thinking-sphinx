@@ -84,6 +84,16 @@ results.excerpter.excerpt!('The Etymology of Foo')</code></pre>
   :order_group_by => 'created_at DESC'
 )</code></pre>
 
+* The @each_with_group@, @each_with_count@ and @each_with_group_and_count@ enumerators are available when using the @:group_by@ option (but are otherwise not available to search objects). Please note the spelling - older versions of Thinking Sphinx allowed for groupby and group, this is no longer the case.
+* @each_with_weight@ (again, note that it's weight, not weighting) is available, but not by default. Here's an example of how to have it part of the search object:
+
+<pre><code>search = Article.search('pancakes')
+search.masks << ThinkingSphinx::Masks::WeightEnumeratorMask
+
+search.each_with_weight do |article, weight|
+  # ...
+end</code></pre>
+
 h2. Limitations
 
 Basic indexing and searching should be fine. There's currently no facets or excerpts, and limited delta support. Many settings haven't yet been brought across. Many of the smaller features don't yet exist either. Some may actually not return... we'll see.
@@ -102,7 +112,6 @@ A list of what still needs to be implemented, in no particular order:
 * Matching many values on a single MVA attribute (:with_all)
 * Matching none of many values on a single MVA attribute (:without_any)
 * Sinatra support
-* Group enumerators (with group, with count, with both)
 * Test Helpers
 * Overwritable toggle_delta? method on model
 * Default Sphinx scopes
