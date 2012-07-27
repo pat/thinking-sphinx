@@ -75,17 +75,6 @@ class ThinkingSphinx::Search < Array
     super || context[:results].respond_to?(method, include_private)
   end
 
-  def stale_retries
-    @stale_retries ||= case options[:retry_stale]
-    when nil, TrueClass
-      3
-    when FalseClass
-      0
-    else
-      options[:retry_stale].to_i
-    end
-  end
-
   def to_a
     populate
     context[:results].collect &:unglazed

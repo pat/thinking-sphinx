@@ -138,30 +138,6 @@ describe ThinkingSphinx::Search do
     end
   end
 
-  describe '#stale_retries' do
-    it "returns 3 by default" do
-      search.stale_retries.should == 3
-    end
-
-    it "returns 3 when given true" do
-      search.options[:retry_stale] = true
-
-      search.stale_retries.should == 3
-    end
-
-    it "returns 0 when given false" do
-      search.options[:retry_stale] = false
-
-      search.stale_retries.should == 0
-    end
-
-    it "respects integer values" do
-      search.options[:retry_stale] = 7
-
-      search.stale_retries.should == 7
-    end
-  end
-
   describe '#to_a' do
     it "returns each of the standard ActiveRecord objects" do
       unglazed = double('unglazed instance')
