@@ -6,40 +6,32 @@ require 'thinking_sphinx/middlewares/middleware'
 require 'thinking_sphinx/middlewares/inquirer'
 
 describe ThinkingSphinx::Middlewares::Inquirer do
-  let(:app)           { double('app', :call => true) }
-  let(:middleware)    { ThinkingSphinx::Middlewares::Inquirer.new app }
-  let(:context)       { {:sphinxql => sphinx_sql} }
-  let(:sphinx_sql)    { double('sphinx_sql',
+  let(:app)            { double('app', :call => true) }
+  let(:middleware)     { ThinkingSphinx::Middlewares::Inquirer.new app }
+  let(:context)        { {:sphinxql => sphinx_sql} }
+  let(:sphinx_sql)     { double('sphinx_sql',
     :to_sql => 'SELECT * FROM index') }
-  let(:connection)    { double('connection') }
-  let(:configuration) { double('configuration', :connection => connection) }
-  let(:notifications) { double('notifications') }
+  let(:batch_inquirer) { double('batcher', :append_query => true,
+    :results => [[:raw], [{'Variable_name' => 'meta', 'Value' => 'value'}]]) }
+  let(:notifications)  { double('notifications') }
 
   before :each do
     notifications.stub(:instrument) do |notification, message, &block|
       block.call unless block.nil?
     end
+
+    batch_class = double
+    batch_class.stub(:new).and_yield(batch_inquirer).and_return(batch_inquirer)
+
     stub_const 'ActiveSupport::Notifications', notifications
     stub_const 'Riddle::Query', double(:meta => 'SHOW META')
-
-    context.stub :configuration => configuration
-    connection.stub(:query).and_return([:raw], [
-      {'Variable_name' => 'meta', 'Value' => 'value'}])
+    stub_const 'ThinkingSphinx::Search::BatchInquirer', batch_class
   end
 
   describe '#call' do
-    it "populates the data and meta sets from Sphinx" do
-      connection.unstub :query
-      connection.should_receive(:query).twice.and_return([], [])
-
-      middleware.call context
-    end
-
     it "passes through the SphinxQL from a Riddle::Query::Select object" do
-      connection.unstub :query
-      connection.should_receive(:query).with('SELECT * FROM index').once.
-        and_return([])
-      connection.should_receive(:query).with('SHOW META').once.and_return([])
+      batch_inquirer.should_receive(:append_query).with('SELECT * FROM index')
+      batch_inquirer.should_receive(:append_query).with('SHOW META')
 
       middleware.call context
     end

@@ -19,8 +19,11 @@ class ThinkingSphinx::Middlewares::Inquirer <
 
   private
 
-  def connection
-    @connection ||= context.configuration.connection
+  def batch
+    @batch ||= ThinkingSphinx::Search::BatchInquirer.new do |batch|
+      batch.append_query sphinxql
+      batch.append_query Riddle::Query.meta
+    end
   end
 
   def log(notification, message, &block)
@@ -30,21 +33,21 @@ class ThinkingSphinx::Middlewares::Inquirer <
   end
 
   def meta
-    @meta ||= connection.query(Riddle::Query.meta).inject({}) { |hash, row|
+    @meta ||= batch.results[1].inject({}) { |hash, row|
       hash[row['Variable_name']] = row['Value']
       hash
     }
   end
 
   def raw
-    @raw ||= connection.query sphinxql
+    @raw ||= batch.results[0]
   end
 
   def reset_memos
-    @connection = nil
-    @meta       = nil
-    @raw        = nil
-    @sphinxql   = nil
+    @batch    = nil
+    @meta     = nil
+    @raw      = nil
+    @sphinxql = nil
   end
 
   def sphinxql

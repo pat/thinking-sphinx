@@ -34,14 +34,17 @@ describe ThinkingSphinx::Configuration do
     let(:connection) { double('connection') }
 
     before :each do
-      Riddle::Query.stub :connection => connection
+      Mysql2::Client.stub :new => connection
     end
 
     it "connects using the searchd address and port" do
       config.searchd.stub :address => '127.0.0.1', :mysql41 => 121
 
-      Riddle::Query.should_receive(:connection).with('127.0.0.1', 121).
-        and_return(connection)
+      Mysql2::Client.should_receive(:new).with(
+        :host  => '127.0.0.1',
+        :port  => 121,
+        :flags => Mysql2::Client::MULTI_STATEMENTS
+      ).and_return(connection)
 
       config.connection
     end

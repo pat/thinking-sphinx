@@ -32,16 +32,25 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def connection
-    Riddle::Query.connection(
-      (searchd.address || '127.0.0.1'), searchd.mysql41
+    # If you use localhost, MySQL insists on a socket connection, but Sphinx
+    # requires a TCP connection. Using 127.0.0.1 fixes that.
+    address = searchd.address || '127.0.0.1'
+    address = '127.0.0.1' if address == 'localhost'
+
+    Mysql2::Client.new(
+      :host  => address,
+      :port  => searchd.mysql41,
+      :flags => Mysql2::Client::MULTI_STATEMENTS
     )
   end
 
   def controller
-    @controller ||= Riddle::Controller.new(self, configuration_file).tap do |rc|
+    @controller ||= begin
+      rc = Riddle::Controller.new self, configuration_file
       if settings['bin_path'].present?
         rc.bin_path = settings['bin_path'].gsub(/([^\/])$/, '\1/')
       end
+      rc
     end
   end
 
