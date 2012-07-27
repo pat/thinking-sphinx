@@ -1,14 +1,16 @@
 class ThinkingSphinx::Middlewares::ActiveRecordTranslator <
   ThinkingSphinx::Middlewares::Middleware
 
-  def call(context)
-    @context = context
-    reset_memos
+  def call(contexts)
+    contexts.each do |context|
+      @context = context
+      reset_memos
 
-    results_for_models # load now to avoid segfaults
-    context[:results] = context[:results].collect { |row| result_for row }
+      results_for_models # load now to avoid segfaults
+      context[:results] = context[:results].collect { |row| result_for row }
+    end
 
-    app.call context
+    app.call contexts
   end
 
   private

@@ -1,16 +1,18 @@
 class ThinkingSphinx::Middlewares::Glazier <
   ThinkingSphinx::Middlewares::Middleware
 
-  def call(context)
-    @context       = context
-    @excerpter     = nil
-    @excerpt_words = nil
+  def call(contexts)
+    contexts.each do |context|
+      @context       = context
+      @excerpter     = nil
+      @excerpt_words = nil
 
-    context[:results] = context[:results].collect { |result|
-      ThinkingSphinx::Search::Glaze.new result, excerpter, row_for(result)
-    }
+      context[:results] = context[:results].collect { |result|
+        ThinkingSphinx::Search::Glaze.new result, excerpter, row_for(result)
+      }
+    end
 
-    app.call context
+    app.call contexts
   end
 
   private

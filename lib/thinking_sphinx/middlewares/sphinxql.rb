@@ -3,18 +3,20 @@ class ThinkingSphinx::Middlewares::SphinxQL <
 
   SELECT_OPTIONS = [:field_weights, :ranker]
 
-  def call(context)
-    @context           = context
-    reset_memos
+  def call(contexts)
+    contexts.each do |context|
+      @context           = context
+      reset_memos
 
-    context[:indices]  = indices
-    context[:sphinxql] = statement
+      context[:indices]  = indices
+      context[:sphinxql] = statement
 
-    if group_attribute.present?
-      context.search.masks << ThinkingSphinx::Masks::GroupEnumeratorsMask
+      if group_attribute.present?
+        context.search.masks << ThinkingSphinx::Masks::GroupEnumeratorsMask
+      end
     end
 
-    app.call context
+    app.call contexts
   end
 
   private

@@ -1,13 +1,13 @@
 class ThinkingSphinx::Middlewares::StaleIdFilter <
   ThinkingSphinx::Middlewares::Middleware
 
-  def call(context)
-    @context   = context
+  def call(contexts)
+    @context   = contexts.first
     @stale_ids = []
     @retries   = stale_retries
 
     begin
-      app.call context
+      app.call contexts
     rescue ThinkingSphinx::Search::StaleIdsException => error
       raise error if @retries <= 0
 

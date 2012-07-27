@@ -1,13 +1,15 @@
 class ThinkingSphinx::Middlewares::Geographer <
   ThinkingSphinx::Middlewares::Middleware
 
-  def call(context)
-    @context         = context
-    @attribute_names = nil
+  def call(contexts)
+    contexts.each do |context|
+      @context         = context
+      @attribute_names = nil
 
-    context[:sphinxql].values geodist_clause if geo
+      context[:sphinxql].values geodist_clause if geo
+    end
 
-    app.call context
+    app.call contexts
   end
 
   def attribute_names

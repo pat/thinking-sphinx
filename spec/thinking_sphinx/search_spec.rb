@@ -115,13 +115,13 @@ describe ThinkingSphinx::Search do
 
   describe '#populate' do
     it "runs the middleware" do
-      stack.should_receive(:call).with(context).and_return(true)
+      stack.should_receive(:call).with([context]).and_return(true)
 
       search.populate
     end
 
     it "does not retrieve results twice" do
-      stack.should_receive(:call).with(context).once.and_return(true)
+      stack.should_receive(:call).with([context]).once.and_return(true)
 
       search.populate
       search.populate

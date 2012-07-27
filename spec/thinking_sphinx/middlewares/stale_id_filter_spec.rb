@@ -29,7 +29,7 @@ describe ThinkingSphinx::Middlewares::StaleIdFilter do
       end
 
       it "appends the ids to the without_ids filter" do
-        middleware.call context
+        middleware.call [context]
 
         search.options[:without_ids].should == [12]
       end
@@ -37,7 +37,7 @@ describe ThinkingSphinx::Middlewares::StaleIdFilter do
       it "respects existing without_ids filters" do
         search.options[:without_ids] = [11]
 
-        middleware.call context
+        middleware.call [context]
 
         search.options[:without_ids].should == [11, 12]
       end
@@ -54,7 +54,7 @@ describe ThinkingSphinx::Middlewares::StaleIdFilter do
       end
 
       it "appends the ids to the without_ids filter" do
-        middleware.call context
+        middleware.call [context]
 
         search.options[:without_ids].should == [12, 13]
       end
@@ -62,7 +62,7 @@ describe ThinkingSphinx::Middlewares::StaleIdFilter do
       it "respects existing without_ids filters" do
         search.options[:without_ids] = [11]
 
-        middleware.call context
+        middleware.call [context]
 
         search.options[:without_ids].should == [11, 12, 13]
       end
@@ -82,7 +82,7 @@ describe ThinkingSphinx::Middlewares::StaleIdFilter do
 
       it "raises the final stale ids exceptions" do
         lambda {
-          middleware.call context
+          middleware.call [context]
         }.should raise_error(ThinkingSphinx::Search::StaleIdsException) { |err|
           err.ids.should == [14]
         }

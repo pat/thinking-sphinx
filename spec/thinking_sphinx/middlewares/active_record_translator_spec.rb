@@ -32,7 +32,7 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
 
       context[:results] << raw_result(24, model_name)
 
-      middleware.call context
+      middleware.call [context]
 
       context[:results].should == [instance]
     end
@@ -46,7 +46,7 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
 
       model.should_receive(:where).once.and_return([instance_a, instance_b])
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "handles multiple models" do
@@ -67,7 +67,7 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
       article_model.should_receive(:where).once.and_return([article])
       user_model.should_receive(:where).once.and_return([user])
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "sorts the results according to Sphinx order, not database order" do
@@ -80,12 +80,12 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
 
       model.stub(:where => [instance_1, instance_2])
 
-      middleware.call context
+      middleware.call [context]
 
       context[:results].should == [instance_2, instance_1]
     end
 
-    context do
+    context 'SQL options' do
       let(:relation) { double('relation', :where => []) }
 
       before :each do
@@ -101,7 +101,7 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
         relation.should_receive(:includes).with(:association).
           and_return(relation)
 
-        middleware.call context
+        middleware.call [context]
       end
 
       it "passes through SQL join options to the relation" do
@@ -109,7 +109,7 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
 
         relation.should_receive(:joins).with(:association).and_return(relation)
 
-        middleware.call context
+        middleware.call [context]
       end
 
       it "passes through SQL order options to the relation" do
@@ -117,7 +117,7 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
 
         relation.should_receive(:order).with('name DESC').and_return(relation)
 
-        middleware.call context
+        middleware.call [context]
       end
 
       it "passes through SQL select options to the relation" do
@@ -125,7 +125,7 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
 
         relation.should_receive(:select).with(:column).and_return(relation)
 
-        middleware.call context
+        middleware.call [context]
       end
     end
   end

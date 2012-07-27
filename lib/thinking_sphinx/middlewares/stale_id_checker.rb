@@ -1,12 +1,14 @@
 class ThinkingSphinx::Middlewares::StaleIdChecker <
   ThinkingSphinx::Middlewares::Middleware
 
-  def call(context)
-    @context = context
+  def call(contexts)
+    contexts.each do |context|
+      @context = context
 
-    raise_exception if context[:results].any?(&:nil?)
+      raise_exception if context[:results].any?(&:nil?)
+    end
 
-    app.call context
+    app.call contexts
   end
 
   private

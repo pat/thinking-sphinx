@@ -29,7 +29,7 @@ describe ThinkingSphinx::Middlewares::Glazier do
     end
 
     it "replaces each result with a glazed version" do
-      middleware.call context
+      middleware.call [context]
 
       context[:results].should == [glazed_result]
     end
@@ -38,7 +38,7 @@ describe ThinkingSphinx::Middlewares::Glazier do
       ThinkingSphinx::Search::Glaze.should_receive(:new).
         with(result, excerpter, raw_result).and_return(glazed_result)
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "creates an excerpter with the first index and all keywords" do
@@ -49,7 +49,7 @@ describe ThinkingSphinx::Middlewares::Glazier do
       ThinkingSphinx::Excerpter.should_receive(:new).
         with('alpha', 'foo bar', anything).and_return(excerpter)
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "passes through excerpts options" do
@@ -58,7 +58,7 @@ describe ThinkingSphinx::Middlewares::Glazier do
       ThinkingSphinx::Excerpter.should_receive(:new).
         with(anything, anything, :before_match => 'foo').and_return(excerpter)
 
-      middleware.call context
+      middleware.call [context]
     end
   end
 end

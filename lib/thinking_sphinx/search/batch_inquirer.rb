@@ -2,7 +2,7 @@ class ThinkingSphinx::Search::BatchInquirer
   def initialize(&block)
     @queries = []
 
-    yield self
+    yield self if block_given?
   end
 
   def append_query(query)

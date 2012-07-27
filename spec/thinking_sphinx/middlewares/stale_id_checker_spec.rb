@@ -27,7 +27,7 @@ describe ThinkingSphinx::Middlewares::StaleIdChecker do
 
       app.should_receive(:call)
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "raises a stale id exception if ActiveRecord doesn't return ids" do
@@ -38,7 +38,7 @@ describe ThinkingSphinx::Middlewares::StaleIdChecker do
       context[:results] << nil
 
       lambda {
-        middleware.call context
+        middleware.call [context]
       }.should raise_error(ThinkingSphinx::Search::StaleIdsException) { |err|
         err.ids.should == [42]
       }

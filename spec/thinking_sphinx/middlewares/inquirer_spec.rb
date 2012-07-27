@@ -21,7 +21,7 @@ describe ThinkingSphinx::Middlewares::Inquirer do
     end
 
     batch_class = double
-    batch_class.stub(:new).and_yield(batch_inquirer).and_return(batch_inquirer)
+    batch_class.stub(:new).and_return(batch_inquirer)
 
     stub_const 'ActiveSupport::Notifications', notifications
     stub_const 'Riddle::Query', double(:meta => 'SHOW META')
@@ -33,23 +33,23 @@ describe ThinkingSphinx::Middlewares::Inquirer do
       batch_inquirer.should_receive(:append_query).with('SELECT * FROM index')
       batch_inquirer.should_receive(:append_query).with('SHOW META')
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "sets up the raw results" do
-      middleware.call context
+      middleware.call [context]
 
       context[:raw].should == [:raw]
     end
 
     it "sets up the meta results as a hash" do
-      middleware.call context
+      middleware.call [context]
 
       context[:meta].should == {'meta' => 'value'}
     end
 
     it "uses the raw values as the initial results" do
-      middleware.call context
+      middleware.call [context]
 
       context[:results].should == [:raw]
     end

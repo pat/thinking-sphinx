@@ -35,7 +35,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
     it "ensures the indices are loaded" do
       configuration.should_receive(:preload_indices)
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "uses all indices if not scoped to any models" do
@@ -47,7 +47,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       sphinx_sql.should_receive(:from).with('`article_core`', '`user_core`').
         and_return(sphinx_sql)
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "uses indices for the given classes" do
@@ -62,7 +62,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       configuration.should_receive(:indices_for_references).with(:article).
         and_return([])
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "requests indices for any superclasses" do
@@ -82,7 +82,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       configuration.should_receive(:indices_for_references).
         with(:opinion_article, :article).and_return([])
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "generates a Sphinx query from the provided keyword and conditions" do
@@ -92,7 +92,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       ThinkingSphinx::Search::Query.should_receive(:new).
         with('tasty', {:title => 'pancakes'}, anything).and_return(query)
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "matches on the generated query" do
@@ -100,7 +100,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
 
       sphinx_sql.should_receive(:matching).with('waffles')
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "requests a starred query if the :star option is set to true" do
@@ -109,7 +109,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       ThinkingSphinx::Search::Query.should_receive(:new).
         with(anything, anything, true).and_return(query)
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "appends field conditions for the class when searching on subclasses" do
@@ -134,14 +134,14 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
         hash_including(:sphinx_internal_class => '(Lion)'), anything).
         and_return(query)
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "filters out deleted values by default" do
       sphinx_sql.should_receive(:where).with(:sphinx_deleted => false).
         and_return(sphinx_sql)
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "appends boolean attribute filters to the query" do
@@ -150,7 +150,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       sphinx_sql.should_receive(:where).with(hash_including(:visible => true)).
         and_return(sphinx_sql)
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "appends exclusive filters to the query" do
@@ -159,7 +159,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       sphinx_sql.should_receive(:where_not).
         with(hash_including(:tag_ids => [2, 4, 8])).and_return(sphinx_sql)
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "appends the without_ids option as an exclusive filter" do
@@ -169,7 +169,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
         with(hash_including(:sphinx_internal_id => [1, 4, 9])).
         and_return(sphinx_sql)
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "appends order clauses to the query" do
@@ -178,7 +178,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       sphinx_sql.should_receive(:order_by).with('created_at ASC').
         and_return(sphinx_sql)
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "presumes attributes given as symbols should be sorted ascendingly" do
@@ -187,7 +187,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       sphinx_sql.should_receive(:order_by).with('updated_at ASC').
         and_return(sphinx_sql)
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "appends a group by clause to the query" do
@@ -197,7 +197,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       sphinx_sql.should_receive(:group_by).with('foreign_id').
         and_return(sphinx_sql)
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "adds the group enumerator mask when using :group_by" do
@@ -205,7 +205,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       search.stub :masks => []
       sphinx_sql.stub :group_by => sphinx_sql
 
-      middleware.call context
+      middleware.call [context]
 
       search.masks.should include(ThinkingSphinx::Masks::GroupEnumeratorsMask)
     end
@@ -216,7 +216,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       sphinx_sql.should_receive(:order_within_group_by).with('title ASC').
         and_return(sphinx_sql)
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "uses the provided offset" do
@@ -224,7 +224,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
 
       sphinx_sql.should_receive(:offset).with(50).and_return(sphinx_sql)
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "uses the provided limit" do
@@ -232,7 +232,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
 
       sphinx_sql.should_receive(:limit).with(24).and_return(sphinx_sql)
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "adds the provided select statement" do
@@ -241,7 +241,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       sphinx_sql.should_receive(:values).with('foo as bar').
         and_return(sphinx_sql)
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "uses any provided field weights" do
@@ -252,7 +252,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
         sphinx_sql
       end
 
-      middleware.call context
+      middleware.call [context]
     end
 
     it "uses any given ranker option" do
@@ -263,7 +263,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
         sphinx_sql
       end
 
-      middleware.call context
+      middleware.call [context]
     end
   end
 end

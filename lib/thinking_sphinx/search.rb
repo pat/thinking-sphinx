@@ -39,6 +39,11 @@ class ThinkingSphinx::Search < Array
     populate if options[:populate]
   end
 
+  def context
+    @context ||= ThinkingSphinx::Search::Context.new self,
+      ThinkingSphinx::Configuration.instance
+  end
+
   def meta
     populate
     context[:meta]
@@ -60,10 +65,14 @@ class ThinkingSphinx::Search < Array
   def populate
     return self if @populated
 
-    @middleware.call context
+    @middleware.call [context]
     @populated = true
 
     self
+  end
+
+  def populated!
+    @populated = true
   end
 
   def raw
@@ -82,11 +91,6 @@ class ThinkingSphinx::Search < Array
 
   private
 
-  def context
-    @context ||= ThinkingSphinx::Search::Context.new self,
-      ThinkingSphinx::Configuration.instance
-  end
-
   def method_missing(method, *args, &block)
     mask_stack.each do |mask|
       return mask.send(method, *args, &block) if mask.respond_to?(method)
@@ -102,6 +106,7 @@ class ThinkingSphinx::Search < Array
   end
 end
 
+require 'thinking_sphinx/search/batch'
 require 'thinking_sphinx/search/batch_inquirer'
 require 'thinking_sphinx/search/context'
 require 'thinking_sphinx/search/excerpt_glaze'
