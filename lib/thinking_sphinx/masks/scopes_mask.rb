@@ -9,8 +9,7 @@ class ThinkingSphinx::Masks::ScopesMask
 
   def search(query = nil, options = {})
     query, options = nil, query if query.is_a?(Hash)
-    merge! query, options
-    @search
+    ThinkingSphinx::Search::Merger.new(@search).merge! query, options
   end
 
   private
@@ -24,22 +23,6 @@ class ThinkingSphinx::Masks::ScopesMask
     @search.options[:classes].length == 1 &&
     @search.options[:classes].first.respond_to?(:sphinx_scopes) &&
     sphinx_scopes[scope].present?
-  end
-
-  def merge!(query, options)
-    @search.query = query unless query.nil?
-    options.each do |key, value|
-      case key
-      when :conditions, :with, :without
-        @search.options[key] ||= {}
-        @search.options[key].merge! value
-      when :without_ids
-        @search.options[key] ||= []
-        @search.options[key] += value
-      else
-        @search.options[key] = value
-      end
-    end
   end
 
   def method_missing(method, *args, &block)

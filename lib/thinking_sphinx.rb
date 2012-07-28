@@ -14,8 +14,7 @@ module ThinkingSphinx
 
   def self.search_for_ids(query = '', options = {})
     search = ThinkingSphinx::Search.new query, options
-    search.options[:ids_only] = true
-    search
+    ThinkingSphinx::Search::Merger.new(search).merge! nil, :ids_only => true
   end
 end
 

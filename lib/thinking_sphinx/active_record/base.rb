@@ -15,8 +15,7 @@ module ThinkingSphinx::ActiveRecord::Base
   module ClassMethods
     def search(query = nil, options = {})
       search = ThinkingSphinx.search query, options
-      search.options[:classes] = [self]
-      search
+      ThinkingSphinx::Search::Merger.new(search).merge! nil, :classes => [self]
     end
 
     def search_count(query = nil, options = {})
@@ -25,8 +24,7 @@ module ThinkingSphinx::ActiveRecord::Base
 
     def search_for_ids(query = nil, options = {})
       search = search query, options
-      search.options[:ids_only] = true
-      search
+      ThinkingSphinx::Search::Merger.new(search).merge! nil, :ids_only => true
     end
   end
 end

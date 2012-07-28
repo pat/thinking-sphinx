@@ -2,17 +2,13 @@ module ThinkingSphinx::ActiveRecord::AssociationProxy
   extend ActiveSupport::Concern
 
   def search(query = nil, options = {})
-    search = super
-    search.options[:with] ||= {}
-    search.options[:with].merge! association_filter
-    search
+    ThinkingSphinx::Search::Merger.new(super).merge! nil,
+      :with => association_filter
   end
 
   def search_for_ids(query = nil, options = {})
-    search = super
-    search.options[:with] ||= {}
-    search.options[:with].merge! association_filter
-    search
+    ThinkingSphinx::Search::Merger.new(super).merge! nil,
+      :with => association_filter
   end
 
   private
