@@ -85,6 +85,19 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       middleware.call [context]
     end
 
+    it "uses named indices if names are provided" do
+      configuration.stub :indices => [
+        double('index', :name => 'article_core'),
+        double('index', :name => 'user_core')
+      ]
+      search.options[:indices] = ['article_core']
+
+      sphinx_sql.should_receive(:from).with('`article_core`').
+        and_return(sphinx_sql)
+
+      middleware.call [context]
+    end
+
     it "generates a Sphinx query from the provided keyword and conditions" do
       search.stub :query => 'tasty'
       search.options[:conditions] = {:title => 'pancakes'}

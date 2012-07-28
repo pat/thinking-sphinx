@@ -41,6 +41,7 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
 
   def source_options
     {
+      :name            => name,
       :offset          => offset,
       :delta?          => @options[:delta?],
       :delta_processor => @options[:delta_processor],

@@ -107,6 +107,8 @@ batch.populate
 
 batch.searches #=> [[foo results], [bar results], [baz results]]</code></pre>
 
+* To search on specific indices, use the @:indices@ option, which expects an array of index names (including the @_core@ or @_delta@ suffixes).
+
 h2. Limitations
 
 Basic indexing and searching should be fine. There's currently no facets or excerpts, and limited delta support. Many settings haven't yet been brought across. Many of the smaller features don't yet exist either. Some may actually not return... we'll see.
@@ -117,7 +119,6 @@ Required for Pre-Release:
 
 * Facets
 * Attribute Updates
-* Searching by specific indices
 * Matching many values on a single MVA attribute (:with_all)
 * Matching none of many values on a single MVA attribute (:without_any)
 * Separate out glazier panes/decorators.

@@ -8,3 +8,13 @@ ThinkingSphinx::Index.define :article, :with => :active_record do
   set_property :min_infix_len => 4
   set_property :enable_star   => true
 end
+
+ThinkingSphinx::Index.define :article, :with => :active_record,
+  :name => 'stemmed_article' do
+
+  indexes title
+
+  has published, user_id
+
+  set_property :morphology => 'stem_en'
+end

@@ -32,6 +32,14 @@ describe 'Searching within a model', :live => true do
 
     Article.search('cake', :star => true).first.should == article
   end
+
+  it "allows for searching on specific indices" do
+    article = Article.create :title => 'Pancakes'
+    index
+
+    articles = Article.search('pancake', :indices => ['stemmed_article_core'])
+    articles.to_a.should == [article]
+  end
 end
 
 describe 'Searching within a model with a realtime index', :live => true do

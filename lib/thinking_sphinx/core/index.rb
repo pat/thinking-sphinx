@@ -11,7 +11,7 @@ module ThinkingSphinx::Core::Index
     @docinfo    = :extern
     @options    = options
 
-    super "#{reference}_#{name_suffix}"
+    super "#{options[:name] || reference}_#{name_suffix}"
   end
 
   def delta?

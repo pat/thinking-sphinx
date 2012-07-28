@@ -111,6 +111,11 @@ class ThinkingSphinx::Middlewares::SphinxQL <
 
     def indices
       context.configuration.preload_indices
+
+      return context.configuration.indices.select { |index|
+        options[:indices].include?(index.name)
+      } if options[:indices] && options[:indices].any?
+
       return context.configuration.indices if classes.empty?
 
       context.configuration.indices_for_references(*references)
