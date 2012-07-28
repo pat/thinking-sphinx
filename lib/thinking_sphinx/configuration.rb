@@ -60,11 +60,9 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def middleware
-    @middleware ||= Middleware::Builder.new do
-      ThinkingSphinx::Search::DEFAULT_MIDDLEWARES.each do |mw|
-        use mw
-      end
-    end
+    @middleware ||= ThinkingSphinx::Middlewares.stack_from_array(
+      ThinkingSphinx::Middlewares::DEFAULT
+    )
   end
 
   def next_offset(reference)

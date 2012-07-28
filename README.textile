@@ -113,7 +113,6 @@ Lists of what still needs to be implemented, in no particular order but in group
 
 Required for Pre-Release:
 
-* Search for just ids
 * Facets
 * Attribute Updates
 * Searching from association contexts

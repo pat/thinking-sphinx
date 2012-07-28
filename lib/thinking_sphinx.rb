@@ -11,6 +11,12 @@ module ThinkingSphinx
   def self.search(query = '', options = {})
     ThinkingSphinx::Search.new query, options
   end
+
+  def self.search_for_ids(query = '', options = {})
+    search = ThinkingSphinx::Search.new query, options
+    search.options[:ids_only] = true
+    search
+  end
 end
 
 # Core

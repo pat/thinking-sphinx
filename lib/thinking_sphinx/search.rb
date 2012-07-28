@@ -6,15 +6,6 @@ class ThinkingSphinx::Search < Array
     respond_to_missing? send should should_not type )
   SAFE_METHODS = %w( partition private_methods protected_methods public_methods
     send class )
-  DEFAULT_MIDDLEWARES = [
-    ThinkingSphinx::Middlewares::StaleIdFilter,
-    ThinkingSphinx::Middlewares::SphinxQL,
-    ThinkingSphinx::Middlewares::Geographer,
-    ThinkingSphinx::Middlewares::Inquirer,
-    ThinkingSphinx::Middlewares::ActiveRecordTranslator,
-    ThinkingSphinx::Middlewares::StaleIdChecker,
-    ThinkingSphinx::Middlewares::Glazier
-  ]
   DEFAULT_MASKS = [
     ThinkingSphinx::Masks::PaginationMask,
     ThinkingSphinx::Masks::ScopesMask
@@ -26,15 +17,14 @@ class ThinkingSphinx::Search < Array
     undef_method method
   }
 
-  attr_reader   :options, :middlewares, :masks
+  attr_reader   :options, :masks
   attr_accessor :query
 
   def initialize(query = nil, options = {})
     query, options   = nil, query if query.is_a?(Hash)
     @query, @options = query, options
-    @middleware      = @options.delete(:middleware) ||
-      ThinkingSphinx::Configuration.instance.middleware
-    @masks           = @options.delete(:masks)      || DEFAULT_MASKS
+    @masks           = @options.delete(:masks) || DEFAULT_MASKS
+    @middleware      = @options.delete(:middleware)
 
     populate if options[:populate]
   end
@@ -65,7 +55,7 @@ class ThinkingSphinx::Search < Array
   def populate
     return self if @populated
 
-    @middleware.call [context]
+    middleware.call [context]
     @populated = true
 
     self
@@ -86,10 +76,16 @@ class ThinkingSphinx::Search < Array
 
   def to_a
     populate
-    context[:results].collect &:unglazed
+    context[:results].collect { |result|
+      result.respond_to?(:unglazed) ? result.unglazed : result
+    }
   end
 
   private
+
+  def mask_stack
+    @mask_stack ||= masks.collect { |klass| klass.new self }
+  end
 
   def method_missing(method, *args, &block)
     mask_stack.each do |mask|
@@ -101,8 +97,16 @@ class ThinkingSphinx::Search < Array
     context[:results].send(method, *args, &block)
   end
 
-  def mask_stack
-    @mask_stack ||= masks.collect { |klass| klass.new self }
+  def middleware
+    @middleware ||= begin
+      if options[:ids_only]
+        ThinkingSphinx::Middlewares.stack_from_array(
+          ThinkingSphinx::Middlewares::IDS_ONLY
+        )
+      else
+        ThinkingSphinx::Configuration.instance.middleware
+      end
+    end
   end
 end
 

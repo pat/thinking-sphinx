@@ -11,18 +11,19 @@ module ThinkingSphinx::ActiveRecord::Base
 
   module ClassMethods
     def search(query = nil, options = {})
-      query, options = nil, query if query.is_a?(Hash)
-      ThinkingSphinx.search query, scoped_sphinx_options.merge(options)
+      search = ThinkingSphinx.search query, options
+      search.options[:classes] = [self]
+      search
     end
 
     def search_count(query = nil, options = {})
       search(query, options).total_entries
     end
 
-    private
-
-    def scoped_sphinx_options
-      {:classes => [self]}
+    def search_for_ids(query = nil, options = {})
+      search = search query, options
+      search.options[:ids_only] = true
+      search
     end
   end
 end

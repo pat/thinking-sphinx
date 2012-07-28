@@ -8,28 +8,30 @@ describe ThinkingSphinx::ActiveRecord::Base do
       def self.name; 'Model'; end
     end
   }
+  let(:search) { double('search', :options => {})}
 
   describe '.search' do
+    before :each do
+      ThinkingSphinx.stub :search => search
+    end
+
     it "returns a new search object" do
-      model.search.should be_a(ThinkingSphinx::Search)
+      model.search.should == search
     end
 
     it "passes through arguments to the search object initializer" do
-      ThinkingSphinx::Search.should_receive(:new).with('pancakes', anything)
+      ThinkingSphinx.should_receive(:search).with('pancakes', anything)
 
       model.search 'pancakes'
     end
 
     it "scopes the search to a given model" do
-      ThinkingSphinx::Search.should_receive(:new).
-        with(anything, hash_including(:classes => [model]))
-
-      model.search 'pancakes'
+      model.search('pancakes').options[:classes].should == [model]
     end
   end
 
   describe '.search_count' do
-    let(:search) { double('search', :total_entries => 12) }
+    let(:search) { double('search', :options => {}, :total_entries => 12) }
 
     before :each do
       ThinkingSphinx.stub :search => search
@@ -40,10 +42,9 @@ describe ThinkingSphinx::ActiveRecord::Base do
     end
 
     it "scopes the search to a given model" do
-      ThinkingSphinx.should_receive(:search).
-        with(anything, hash_including(:classes => [model])).and_return(search)
-
       model.search_count
+
+      search.options[:classes].should == [model]
     end
   end
 end
