@@ -3,11 +3,7 @@ class ThinkingSphinx::Middlewares::ActiveRecordTranslator <
 
   def call(contexts)
     contexts.each do |context|
-      @context = context
-      reset_memos
-
-      results_for_models # load now to avoid segfaults
-      context[:results] = context[:results].collect { |row| result_for row }
+      Inner.new(context).call
     end
 
     app.call contexts
@@ -15,48 +11,63 @@ class ThinkingSphinx::Middlewares::ActiveRecordTranslator <
 
   private
 
-  def ids_for_model(model_name)
-    context[:results].select { |row|
-      row['sphinx_internal_class_attr'] == model_name
-    }.collect { |row|
-      row['sphinx_internal_id']
-    }
-  end
+  class Inner
+    def initialize(context)
+      @context = context
+    end
 
-  def model_names
-    @model_names ||= context[:results].collect { |row|
-      row['sphinx_internal_class_attr']
-    }.uniq
-  end
+    def call
+      results_for_models # load now to avoid segfaults
+      context[:results] = context[:results].collect { |row| result_for row }
+    end
 
-  def reset_memos
-    @model_names        = nil
-    @results_for_models = nil
-  end
+    private
 
-  def result_for(row)
-    results_for_models[row['sphinx_internal_class_attr']].detect { |record|
-      record.id == row['sphinx_internal_id']
-    }
-  end
+    attr_reader :context
 
-  def results_for_models
-    @results_for_models ||= model_names.inject({}) { |hash, name|
-      ids        = ids_for_model(name)
-      relation   = name.constantize.unscoped
+    def ids_for_model(model_name)
+      context[:results].select { |row|
+        row['sphinx_internal_class_attr'] == model_name
+      }.collect { |row|
+        row['sphinx_internal_id']
+      }
+    end
 
-      relation = relation.includes sql_options[:include] if sql_options[:include]
-      relation = relation.joins  sql_options[:joins]  if sql_options[:joins]
-      relation = relation.order  sql_options[:order]  if sql_options[:order]
-      relation = relation.select sql_options[:select] if sql_options[:select]
+    def model_names
+      @model_names ||= context[:results].collect { |row|
+        row['sphinx_internal_class_attr']
+      }.uniq
+    end
 
-      hash[name] = relation.where(:id => ids)
+    def reset_memos
+      @model_names        = nil
+      @results_for_models = nil
+    end
 
-      hash
-    }
-  end
+    def result_for(row)
+      results_for_models[row['sphinx_internal_class_attr']].detect { |record|
+        record.id == row['sphinx_internal_id']
+      }
+    end
 
-  def sql_options
-    context.search.options[:sql] || {}
+    def results_for_models
+      @results_for_models ||= model_names.inject({}) { |hash, name|
+        ids        = ids_for_model(name)
+        relation   = name.constantize.unscoped
+
+        relation = relation.includes sql_options[:include] if sql_options[:include]
+        relation = relation.joins  sql_options[:joins]  if sql_options[:joins]
+        relation = relation.order  sql_options[:order]  if sql_options[:order]
+        relation = relation.select sql_options[:select] if sql_options[:select]
+
+        hash[name] = relation.where(:id => ids)
+
+        hash
+      }
+    end
+
+    def sql_options
+      context.search.options[:sql] || {}
+    end
   end
 end

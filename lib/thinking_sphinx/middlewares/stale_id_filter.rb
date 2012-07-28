@@ -12,7 +12,7 @@ class ThinkingSphinx::Middlewares::StaleIdFilter <
       raise error if @retries <= 0
 
       append_stale_ids error.ids
-      log_stale_ids
+      @context.log :message, log_message
 
       @retries -= 1 and retry
     end
@@ -25,11 +25,6 @@ class ThinkingSphinx::Middlewares::StaleIdFilter <
 
     context.search.options[:without_ids] ||= []
     context.search.options[:without_ids] |= ids
-  end
-
-  def log_stale_ids
-    ActiveSupport::Notifications.instrument 'message.thinking_sphinx',
-      :message => log_message
   end
 
   def log_message

@@ -13,17 +13,15 @@ describe ThinkingSphinx::Middlewares::Inquirer do
     :to_sql => 'SELECT * FROM index') }
   let(:batch_inquirer) { double('batcher', :append_query => true,
     :results => [[:raw], [{'Variable_name' => 'meta', 'Value' => 'value'}]]) }
-  let(:notifications)  { double('notifications') }
 
   before :each do
-    notifications.stub(:instrument) do |notification, message, &block|
+    context.stub(:log) do |notification, message, &block|
       block.call unless block.nil?
     end
 
     batch_class = double
     batch_class.stub(:new).and_return(batch_inquirer)
 
-    stub_const 'ActiveSupport::Notifications', notifications
     stub_const 'Riddle::Query', double(:meta => 'SHOW META')
     stub_const 'ThinkingSphinx::Search::BatchInquirer', batch_class
   end

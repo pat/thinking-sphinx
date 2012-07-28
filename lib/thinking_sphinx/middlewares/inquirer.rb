@@ -5,24 +5,13 @@ class ThinkingSphinx::Middlewares::Inquirer <
     @contexts = contexts
     @batch    = nil
 
-    log :query, combined_queries do
+    contexts.first.log :query, combined_queries do
       batch.results
     end
 
     index = 0
     contexts.each do |context|
-      raw = batch.results[index]
-      meta = batch.results[index + 1].inject({}) { |hash, row|
-        hash[row['Variable_name']] = row['Value']
-        hash
-      }
-
-      context[:results] = raw
-      context[:raw]     = raw
-      context[:meta]    = meta
-
-      total = meta['total_found']
-      log :message, "Found #{total} result#{'s' unless total == 1}"
+      Inner.new(context).call batch.results[index], batch.results[index + 1]
 
       index += 2
     end
@@ -49,9 +38,25 @@ class ThinkingSphinx::Middlewares::Inquirer <
     @contexts.collect { |context| context[:sphinxql].to_sql }.join('; ')
   end
 
-  def log(notification, message, &block)
-    ActiveSupport::Notifications.instrument(
-      "#{notification}.thinking_sphinx", notification => message, &block
-    )
+  class Inner
+    def initialize(context)
+      @context = context
+    end
+
+    def call(raw_results, meta_results)
+      context[:results] = raw_results
+      context[:raw]     = raw_results
+      context[:meta]    = meta_results.inject({}) { |hash, row|
+        hash[row['Variable_name']] = row['Value']
+        hash
+      }
+
+      total = context[:meta]['total_found']
+      context.log :message, "Found #{total} result#{'s' unless total == 1}"
+    end
+
+    private
+
+    attr_reader :context
   end
 end
