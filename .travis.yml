@@ -9,6 +9,5 @@ env:
   - DATABASE=mysql2
   - DATABASE=postgresql
 gemfile:
-  - gemfiles/rails_3_0.gemfile
   - gemfiles/rails_3_1.gemfile
   - gemfiles/rails_3_2.gemfile

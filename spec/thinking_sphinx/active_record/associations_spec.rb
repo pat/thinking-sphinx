@@ -1,11 +1,7 @@
 require 'spec_helper'
 
 describe ThinkingSphinx::ActiveRecord::Associations do
-  JoinDependency = if defined?(::ActiveRecord::Associations::JoinDependency)
-    ::ActiveRecord::Associations::JoinDependency
-  else
-    ::ActiveRecord::Associations::ClassMethods::JoinDependency
-  end
+  JoinDependency = ::ActiveRecord::Associations::JoinDependency
 
   let(:associations) { ThinkingSphinx::ActiveRecord::Associations.new model }
   let(:model)        { model_double 'articles' }

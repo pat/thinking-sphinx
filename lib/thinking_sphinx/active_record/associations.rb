@@ -1,9 +1,5 @@
 class ThinkingSphinx::ActiveRecord::Associations
-  JoinDependency = if defined?(::ActiveRecord::Associations::JoinDependency)
-    ::ActiveRecord::Associations::JoinDependency
-  else
-    ::ActiveRecord::Associations::ClassMethods::JoinDependency
-  end
+  JoinDependency = ::ActiveRecord::Associations::JoinDependency
 
   attr_reader :model
 
@@ -67,10 +63,6 @@ class ThinkingSphinx::ActiveRecord::Associations
   end
 
   def reflection_for(stack)
-    if parent_for(stack).respond_to?(:active_record)
-      parent_for(stack).active_record.reflections[stack.last]
-    else
-      parent_for(stack).joins.first.active_record.reflections[stack.last]
-    end
+    parent_for(stack).active_record.reflections[stack.last]
   end
 end

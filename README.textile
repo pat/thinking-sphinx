@@ -117,10 +117,10 @@ Required for Pre-Release:
 
 * Facets
 * Attribute Updates
-* Searching from association contexts
 * Searching by specific indices
 * Matching many values on a single MVA attribute (:with_all)
 * Matching none of many values on a single MVA attribute (:without_any)
+* Separate out glazier panes/decorators.
 * Test Helpers
 * Relaxed error handling for deletions and delta calls
 * 64-bit integer detection
@@ -160,9 +160,9 @@ TS 3 is built for Sphinx 2.x only. You cannot use 1.10-beta, 0.9.9 or anything e
 
 h3. Rails Versions
 
-Currently TS 3 is built to support Rails 3.0 or newer. Sinatra is not yet supported, but it will be.
+Currently TS 3 is built to support Rails/ActiveRecord 3.1 or newer. Sinatra is not yet supported, but it will be.
 
-TS 3 does not support Rails 2.x or earlier, or Merb - please refer to the TS 1.x releases for that.
+TS 3 does not support Rails 3.0, Rails 2.x or earlier, or Merb - please refer to the TS 1.x and 2.x releases in those situations.
 
 h3. Ruby Versions
 
