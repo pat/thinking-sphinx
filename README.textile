@@ -94,6 +94,17 @@ search.each_with_weight do |article, weight|
   # ...
 end</code></pre>
 
+* Batched/Bulk searches are done pretty similarly as in the past - here's a code sample that'll only hit Sphinx once:
+
+<pre><code>batch = ThinkingSphinx::Search::Batch.new
+# batch.search takes the same arguments as Model.search.
+batch.search 'foo'
+batch.search :conditions => {:name => 'bar'}
+batch.search 'baz', :with => {:active => true}
+
+# When you call batch#searches, the searches are all populated:
+batch.searches #=> [[foo results], [bar results], [baz results]]</code></pre>
+
 h2. Limitations
 
 Basic indexing and searching should be fine. There's currently no facets or excerpts, and limited delta support. Many settings haven't yet been brought across. Many of the smaller features don't yet exist either. Some may actually not return... we'll see.
@@ -102,8 +113,8 @@ Lists of what still needs to be implemented, in no particular order but in group
 
 Required for Pre-Release:
 
+* Search for just ids
 * Facets
-* Bundled Searches
 * Attribute Updates
 * Searching from association contexts
 * Searching by specific indices
