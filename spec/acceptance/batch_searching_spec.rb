@@ -7,8 +7,10 @@ describe 'Executing multiple searches in one Sphinx call', :live => true do
     index
 
     batch = ThinkingSphinx::Search::Batch.new
-    batch.search 'pancakes'
-    batch.search 'waffles'
+    batch.searches << Article.search('pancakes')
+    batch.searches << Article.search('waffles')
+
+    batch.populate
 
     batch.searches.first.should include(pancakes)
     batch.searches.first.should_not include(waffles)

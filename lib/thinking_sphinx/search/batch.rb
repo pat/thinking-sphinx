@@ -1,33 +1,26 @@
 class ThinkingSphinx::Search::Batch
+  attr_accessor :searches
+
   def initialize
     @searches = []
-  end
-
-  def search(*args)
-    @searches << ThinkingSphinx.search(*args)
-  end
-
-  def searches
-    populate
-    @searches
-  end
-
-  private
-
-  def contexts
-    @searches.collect &:context
-  end
-
-  def populated?
-    @populated
   end
 
   def populate
     return if populated?
 
     ThinkingSphinx::Middlewares::DEFAULT.call contexts
-    @searches.each &:populated!
+    searches.each &:populated!
 
     @populated = true
+  end
+
+  private
+
+  def contexts
+    searches.collect &:context
+  end
+
+  def populated?
+    @populated
   end
 end

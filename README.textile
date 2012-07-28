@@ -97,12 +97,14 @@ end</code></pre>
 * Batched/Bulk searches are done pretty similarly as in the past - here's a code sample that'll only hit Sphinx once:
 
 <pre><code>batch = ThinkingSphinx::Search::Batch.new
-# batch.search takes the same arguments as Model.search.
-batch.search 'foo'
-batch.search :conditions => {:name => 'bar'}
-batch.search 'baz', :with => {:active => true}
+batch.searches << Article.search('foo')
+batch.searches << Article.search(:conditions => {:name => 'bar'})
+batch.searches << Article.search_for_ids('baz')
 
-# When you call batch#searches, the searches are all populated:
+# When you call batch#populate, the searches are all populated with a single
+# Sphinx call.
+batch.populate
+
 batch.searches #=> [[foo results], [bar results], [baz results]]</code></pre>
 
 h2. Limitations
