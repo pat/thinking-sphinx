@@ -23,9 +23,9 @@ describe 'Searching with filters', :live => true do
     boys  = Book.create! :title => 'Anansi Boys'
     grave = Book.create! :title => 'The Graveyard Book'
 
-    gods.update_attribute  :created_at, 5.days.ago
-    boys.update_attribute  :created_at, 3.days.ago
-    grave.update_attribute :created_at, 1.day.ago
+    gods.update_column  :created_at, 5.days.ago
+    boys.update_column  :created_at, 3.days.ago
+    grave.update_column :created_at, 1.day.ago
     index
 
     Book.search(:with => {:created_at => 6.days.ago..2.days.ago}).to_a.
