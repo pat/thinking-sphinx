@@ -127,6 +127,7 @@ Required for Pre-Release:
 * Timezone support
 * Manual MVA type declarations
 * Timestamp MVAs
+* Search option and/or configuration option to define class descendants
 
 Required for Release Candidate:
 
