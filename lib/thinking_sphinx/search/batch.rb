@@ -25,7 +25,7 @@ class ThinkingSphinx::Search::Batch
   def populate
     return if populated?
 
-    ThinkingSphinx::Configuration.instance.middleware.call contexts
+    ThinkingSphinx::Middlewares::DEFAULT.call contexts
     @searches.each &:populated!
 
     @populated = true

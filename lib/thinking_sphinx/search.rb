@@ -100,11 +100,9 @@ class ThinkingSphinx::Search < Array
   def middleware
     @middleware ||= begin
       if options[:ids_only]
-        ThinkingSphinx::Middlewares.stack_from_array(
-          ThinkingSphinx::Middlewares::IDS_ONLY
-        )
+        ThinkingSphinx::Middlewares::IDS_ONLY
       else
-        ThinkingSphinx::Configuration.instance.middleware
+        ThinkingSphinx::Middlewares::DEFAULT
       end
     end
   end

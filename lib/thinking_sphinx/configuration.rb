@@ -59,12 +59,6 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     indices.select { |index| references.include?(index.reference) }
   end
 
-  def middleware
-    @middleware ||= ThinkingSphinx::Middlewares.stack_from_array(
-      ThinkingSphinx::Middlewares::DEFAULT
-    )
-  end
-
   def next_offset(reference)
     @offsets[reference] ||= @offsets.keys.count
   end

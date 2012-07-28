@@ -4,11 +4,11 @@ describe ThinkingSphinx::Search do
   let(:search)        { ThinkingSphinx::Search.new }
   let(:context)       { {:results => []} }
   let(:stack)         { double('stack', :call => true) }
-  let(:configuration) { double('configuration', :middleware => stack) }
 
   before :each do
     ThinkingSphinx::Search::Context.stub :new => context
-    ThinkingSphinx::Configuration.stub :instance => configuration
+
+    stub_const 'ThinkingSphinx::Middlewares::DEFAULT', stack
   end
 
   describe '#current_page' do
