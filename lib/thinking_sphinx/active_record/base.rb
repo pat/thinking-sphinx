@@ -7,6 +7,9 @@ module ThinkingSphinx::ActiveRecord::Base
     after_commit  ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks
 
     after_save    ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks
+
+    ::ActiveRecord::Associations::CollectionProxy.send :include,
+      ThinkingSphinx::ActiveRecord::AssociationProxy
   end
 
   module ClassMethods
