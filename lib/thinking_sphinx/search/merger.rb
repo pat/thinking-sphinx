@@ -7,7 +7,7 @@ class ThinkingSphinx::Search::Merger
     @search.query = query unless query.nil?
     options.each do |key, value|
       case key
-      when :conditions, :with, :without, :with_all
+      when :conditions, :with, :without, :with_all, :without_all
         @search.options[key] ||= {}
         @search.options[key].merge! value
       when :without_ids
