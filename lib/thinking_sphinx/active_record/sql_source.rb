@@ -34,15 +34,6 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
       adapter_for(@model)
   end
 
-  def attributes_with_types
-    @attributes_with_types ||= attributes.inject({}) { |hash, attribute|
-      hash[attribute] = ThinkingSphinx::ActiveRecord::AttributeType.new(
-        attribute, model
-      )
-      hash
-    }
-  end
-
   def delta_processor
     options[:delta_processor].try(:new, adapter)
   end
@@ -111,10 +102,10 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
       @sql_file_field   << field.name if field.file?
     end
 
-    attributes_with_types.each do |attribute, type|
-      presenter = ThinkingSphinx::ActiveRecord::AttributeSphinxPresenter.new(attribute, type)
+    attributes.each do |attribute|
+      presenter = ThinkingSphinx::ActiveRecord::AttributeSphinxPresenter.new(attribute)
 
-      attribute_array_for(type.collection_type) << presenter.declaration
+      attribute_array_for(presenter.collection_type) << presenter.declaration
     end
 
     @sql_query       = builder.sql_query

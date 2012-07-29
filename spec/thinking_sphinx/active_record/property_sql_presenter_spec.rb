@@ -16,11 +16,10 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
         field, adapter, associations
       )
     }
-    let(:field)     { double('field', :name => 'title', :columns => [column]) }
-    let(:column)    {
-      double('column', :string? => false, :__stack => [],
-        :__name => 'title')
-    }
+    let(:field)     { double('field', :name => 'title', :columns => [column],
+      :type => nil, :multi? => false) }
+    let(:column)    { double('column', :string? => false, :__stack => [],
+      :__name => 'title') }
 
     describe '#to_group' do
       it "returns the column name as a string" do
@@ -90,16 +89,13 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
   context 'with an attribute' do
     let(:presenter) {
       ThinkingSphinx::ActiveRecord::PropertySQLPresenter.new(
-        attribute, adapter, associations, double(:timestamp? => false)
+        attribute, adapter, associations
       )
     }
-    let(:attribute) {
-      double('attribute', :name => 'created_at', :columns => [column])
-    }
-    let(:column)    {
-      double('column', :string? => false, :__stack => [],
-        :__name => 'created_at')
-    }
+    let(:attribute) { double('attribute', :name => 'created_at',
+      :columns => [column], :type => :integer, :multi? => false) }
+    let(:column)    { double('column', :string? => false, :__stack => [],
+      :__name => 'created_at') }
 
     before :each do
       adapter.stub :cast_to_timestamp do |clause|
@@ -156,9 +152,7 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
       end
 
       it "ensures datetime attributes are converted to timestamps" do
-        presenter = ThinkingSphinx::ActiveRecord::PropertySQLPresenter.new(
-          attribute, adapter, associations, double(:timestamp? => true)
-        )
+        attribute.stub :type => :timestamp
 
         presenter.to_select.
           should == 'UNIX_TIMESTAMP(articles.created_at) AS created_at'

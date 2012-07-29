@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe ThinkingSphinx::ActiveRecord::SQLBuilder do
   let(:source)       { double('source', :model => model, :offset => 3,
-    :fields => [], :attributes_with_types => {}, :disable_range? => false,
+    :fields => [], :attributes => [], :disable_range? => false,
     :delta_processor => nil, :conditions => [], :groupings => [],
     :adapter => adapter, :associations => [], :primary_key => :id) }
   let(:model)        { double('model', :connection => connection,
@@ -82,7 +82,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
       end
 
       it "adds each attribute to the SELECT clause" do
-        source.attributes_with_types[double('attribute')] = double('type')
+        source.attributes << double('attribute')
         presenter.stub!(:to_select => '`created_at` AS `created_at`')
 
         relation.should_receive(:select) do |string|
@@ -147,7 +147,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
       end
 
       it "groups each attribute" do
-        source.attributes_with_types[double('attribute')] = double('type')
+        source.attributes << double('attribute')
         presenter.stub!(:to_group => '`created_at`')
 
         relation.should_receive(:group) do |string|
@@ -295,7 +295,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
       end
 
       it "adds each attribute to the SELECT clause" do
-        source.attributes_with_types[double('attribute')] = double('type')
+        source.attributes << double('attribute')
         presenter.stub!(:to_select => '"created_at" AS "created_at"')
 
         relation.should_receive(:select) do |string|
@@ -360,7 +360,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
       end
 
       it "groups each attribute" do
-        source.attributes_with_types[double('attribute')] = double('type')
+        source.attributes << double('attribute')
         presenter.stub!(:to_group => '"created_at"')
 
         relation.should_receive(:group) do |string|

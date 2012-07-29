@@ -1,12 +1,10 @@
 require 'spec_helper'
 
 describe ThinkingSphinx::ActiveRecord::Field do
-  let(:field)        { ThinkingSphinx::ActiveRecord::Field.new column }
-  let(:column)       {
-    double('column', :__name => :title, :__stack => [], :string? => false)
-  }
-  let(:associations) { double('associations', :alias_for => 'articles') }
-  let(:source)       { double('source') }
+  let(:field)        { ThinkingSphinx::ActiveRecord::Field.new model, column }
+  let(:column)       { double('column', :__name => :title, :__stack => [],
+    :string? => false) }
+  let(:model)        { double('model') }
 
   before :each do
     column.stub! :to_a => [column]
@@ -18,7 +16,8 @@ describe ThinkingSphinx::ActiveRecord::Field do
     end
 
     it "is true if file option is set" do
-      field = ThinkingSphinx::ActiveRecord::Field.new column, :file => true
+      field = ThinkingSphinx::ActiveRecord::Field.new model, column,
+        :file => true
       field.should be_file
     end
   end
@@ -29,7 +28,8 @@ describe ThinkingSphinx::ActiveRecord::Field do
     end
 
     it "is true if the field is sortable" do
-      field = ThinkingSphinx::ActiveRecord::Field.new column, :sortable => true
+      field = ThinkingSphinx::ActiveRecord::Field.new model, column,
+        :sortable => true
       field.should be_with_attribute
     end
   end

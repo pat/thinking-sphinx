@@ -1,37 +1,18 @@
 class ThinkingSphinx::ActiveRecord::AttributeType
-  SPHINX_TYPES = {
-    :integer   => :uint,
-    :boolean   => :bool,
-    :timestamp => :timestamp,
-    :float     => :float,
-    :string    => :string,
-    :bigint    => :bigint,
-    :ordinal   => :str2ordinal,
-    :wordcount => :str2wordcount
-  }
-
   def initialize(attribute, model)
     @attribute, @model = attribute, model
   end
 
-  def collection_type
-    multi? ? :multi : sphinx_type
-  end
-
   def multi?
-    attribute.options[:multi] || multi_from_associations
+    @multi ||= attribute.options[:multi] || multi_from_associations
   end
 
   def timestamp?
     type == :timestamp
   end
 
-  def sphinx_type
-    SPHINX_TYPES[type]
-  end
-
   def type
-    attribute.options[:type] || type_from_database
+    @type ||= attribute.options[:type] || type_from_database
   end
 
   private

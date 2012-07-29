@@ -1,14 +1,12 @@
 require 'spec_helper'
 
 describe ThinkingSphinx::ActiveRecord::SQLSource do
-  let(:model)      {
-    double('model', :connection => connection, :name => 'User',
-      :column_names => [], :inheritance_column => 'type')
-  }
-  let(:connection) { double('connection', :instance_variable_get => db_config) }
-  let(:db_config)  {
-    {:host => 'localhost', :user => 'root', :database => 'default'}
-  }
+  let(:model)      { double('model', :connection => connection,
+    :name => 'User', :column_names => [], :inheritance_column => 'type') }
+  let(:connection) {
+    double('connection', :instance_variable_get => db_config) }
+  let(:db_config)  { {:host => 'localhost', :user => 'root',
+    :database => 'default'} }
   let(:source)     { ThinkingSphinx::ActiveRecord::SQLSource.new(model) }
   let(:adapter)    { double('adapter') }
 
@@ -143,13 +141,11 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
   describe '#render' do
     let(:builder)   { double('builder', :sql_query_pre => []).as_null_object }
     let(:config)    { double('config', :settings => {}) }
-    let(:type)      { double('type') }
-    let(:presenter) { double('presenter') }
+    let(:presenter) { double('presenter', :collection_type => :uint) }
     let(:template)  { double('template', :apply => true) }
 
     before :each do
       ThinkingSphinx::ActiveRecord::SQLBuilder.stub! :new => builder
-      ThinkingSphinx::ActiveRecord::AttributeType.stub :new => type
       ThinkingSphinx::ActiveRecord::AttributeSphinxPresenter.stub :new => presenter
       ThinkingSphinx::ActiveRecord::SQLSource::Template.stub :new => template
       ThinkingSphinx::Configuration.stub :instance => config
@@ -282,8 +278,7 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
     it "adds integer attributes to sql_attr_uint" do
       source.attributes << double('attribute')
-      type.stub :collection_type => :uint
-      presenter.stub :declaration => 'count'
+      presenter.stub :declaration => 'count', :collection_type => :uint
 
       source.render
 
@@ -292,8 +287,7 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
     it "adds boolean attributes to sql_attr_bool" do
       source.attributes << double('attribute')
-      type.stub :collection_type => :bool
-      presenter.stub :declaration => 'published'
+      presenter.stub :declaration => 'published', :collection_type => :bool
 
       source.render
 
@@ -302,8 +296,7 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
     it "adds string attributes to sql_attr_string" do
       source.attributes << double('attribute')
-      type.stub :collection_type => :string
-      presenter.stub :declaration => 'name'
+      presenter.stub :declaration => 'name', :collection_type => :string
 
       source.render
 
@@ -312,8 +305,8 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
     it "adds timestamp attributes to sql_attr_timestamp" do
       source.attributes << double('attribute')
-      type.stub :collection_type => :timestamp
-      presenter.stub :declaration => 'created_at'
+      presenter.stub :declaration => 'created_at',
+        :collection_type => :timestamp
 
       source.render
 
@@ -322,8 +315,7 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
     it "adds float attributes to sql_attr_float" do
       source.attributes << double('attribute')
-      type.stub :collection_type => :float
-      presenter.stub :declaration => 'rating'
+      presenter.stub :declaration => 'rating', :collection_type => :float
 
       source.render
 
@@ -332,8 +324,7 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
     it "adds bigint attributes to sql_attr_bigint" do
       source.attributes << double('attribute')
-      type.stub :collection_type => :bigint
-      presenter.stub :declaration => 'super_id'
+      presenter.stub :declaration => 'super_id', :collection_type => :bigint
 
       source.render
 
@@ -342,8 +333,7 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
     it "adds ordinal strings to sql_attr_str2ordinal" do
       source.attributes << double('attribute')
-      type.stub :collection_type => :str2ordinal
-      presenter.stub :declaration => 'name'
+      presenter.stub :declaration => 'name', :collection_type => :str2ordinal
 
       source.render
 
@@ -352,8 +342,8 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
     it "adds multi-value attributes to sql_attr_multi" do
       source.attributes << double('attribute')
-      type.stub :collection_type => :multi
-      presenter.stub :declaration => 'uint tag_ids from field'
+      presenter.stub :declaration => 'uint tag_ids from field',
+        :collection_type => :multi
 
       source.render
 
@@ -362,8 +352,7 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
     it "adds word count attributes to sql_attr_str2wordcount" do
       source.attributes << double('attribute')
-      type.stub :collection_type => :str2wordcount
-      presenter.stub :declaration => 'name'
+      presenter.stub :declaration => 'name', :collection_type => :str2wordcount
 
       source.render
 

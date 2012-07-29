@@ -14,6 +14,7 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
 
   before :each do
     ThinkingSphinx::ActiveRecord::SQLSource.stub! :new => source
+    source.stub :model => model
   end
 
   describe '.translate!' do
@@ -78,14 +79,14 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
 
     it "creates a new attribute with the provided column" do
       ThinkingSphinx::ActiveRecord::Attribute.should_receive(:new).
-        with(column, {}).and_return(attribute)
+        with(model, column, {}).and_return(attribute)
 
       instance.has column
     end
 
     it "passes through options to the attribute" do
       ThinkingSphinx::ActiveRecord::Attribute.should_receive(:new).
-        with(column, :as => :other_name).and_return(attribute)
+        with(model, column, :as => :other_name).and_return(attribute)
 
       instance.has column, :as => :other_name
     end
@@ -128,14 +129,14 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
 
     it "creates a new field with the provided column" do
       ThinkingSphinx::ActiveRecord::Field.should_receive(:new).
-        with(column, {}).and_return(field)
+        with(model, column, {}).and_return(field)
 
       instance.indexes column
     end
 
     it "passes through options to the field" do
       ThinkingSphinx::ActiveRecord::Field.should_receive(:new).
-        with(column, :as => :other_name).and_return(field)
+        with(model, column, :as => :other_name).and_return(field)
 
       instance.indexes column, :as => :other_name
     end

@@ -17,14 +17,14 @@ class ThinkingSphinx::ActiveRecord::SQLSource::Template
 
   def add_attribute(column, name, type)
     source.attributes << ThinkingSphinx::ActiveRecord::Attribute.new(
-      ThinkingSphinx::ActiveRecord::Column.new(column),
+      source.model, ThinkingSphinx::ActiveRecord::Column.new(column),
       :as => name, :type => type
     )
   end
 
   def add_field(column, name, sortable = false)
     source.fields << ThinkingSphinx::ActiveRecord::Field.new(
-      ThinkingSphinx::ActiveRecord::Column.new(column),
+      source.model, ThinkingSphinx::ActiveRecord::Column.new(column),
       :as => name, :sortable => sortable
     )
   end

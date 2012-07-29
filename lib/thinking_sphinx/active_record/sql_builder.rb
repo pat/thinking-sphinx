@@ -100,9 +100,9 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
 
   def attribute_presenters
     @attribute_presenters ||= begin
-      source.attributes_with_types.collect { |attribute, type|
+      source.attributes.collect { |attribute|
         ThinkingSphinx::ActiveRecord::PropertySQLPresenter.new(
-          attribute, source.adapter, associations, type
+          attribute, source.adapter, associations
         )
       }
     end

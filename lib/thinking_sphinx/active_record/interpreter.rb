@@ -6,17 +6,15 @@ class ThinkingSphinx::ActiveRecord::Interpreter <
   end
 
   def has(*columns)
-    options = columns.extract_options!
-    __source.attributes += columns.collect { |column|
-      ThinkingSphinx::ActiveRecord::Attribute.new column, options
-    }
+    __source.attributes += build_properties(
+      ThinkingSphinx::ActiveRecord::Attribute, columns
+    )
   end
 
   def indexes(*columns)
-    options = columns.extract_options!
-    __source.fields += columns.collect { |column|
-      ThinkingSphinx::ActiveRecord::Field.new column, options
-    }
+    __source.fields += build_properties(
+      ThinkingSphinx::ActiveRecord::Field, columns
+    )
   end
 
   def join(*columns)
@@ -40,5 +38,10 @@ class ThinkingSphinx::ActiveRecord::Interpreter <
 
   def __source
     @source ||= @index.append_source
+  end
+
+  def build_properties(klass, columns)
+    options = columns.extract_options!
+    columns.collect { |column| klass.new(__source.model, column, options) }
   end
 end
