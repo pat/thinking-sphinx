@@ -119,7 +119,6 @@ Required for Pre-Release:
 
 * Facets
 * Attribute Updates
-* Matching many values on a single MVA attribute (:with_all)
 * Matching none of many values on a single MVA attribute (:without_any)
 * Separate out glazier panes/decorators.
 * Test Helpers

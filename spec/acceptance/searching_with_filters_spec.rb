@@ -48,4 +48,21 @@ describe 'Searching with filters', :live => true do
 
     Book.search(:without => {:year => [2001, 2005]}).to_a.should == [grave]
   end
+
+  it "limits results with MVAs having all of the given values" do
+    pancakes = Article.create :title => 'Pancakes'
+    waffles  = Article.create :title => 'Waffles'
+
+    food = Tag.create :name => 'food'
+    flat = Tag.create :name => 'flat'
+
+    Tagging.create :tag => food, :article => pancakes
+    Tagging.create :tag => flat, :article => pancakes
+    Tagging.create :tag => food, :article => waffles
+
+    index
+
+    articles = Article.search :with_all => {:tag_ids => [food.id, flat.id]}
+    articles.to_a.should == [pancakes]
+  end
 end

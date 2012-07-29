@@ -159,16 +159,17 @@ class ThinkingSphinx::Middlewares::SphinxQL <
     def statement
       Riddle::Query::Select.new.tap do |select|
         select.from *index_names.collect { |index| "`#{index}`" }
-        select.values values               if values.present?
-        select.matching extended_query     if extended_query.present?
-        select.where inclusive_filters     if inclusive_filters.any?
-        select.where_not exclusive_filters if exclusive_filters.any?
-        select.order_by order_clause       if order_clause.present?
-        select.group_by group_attribute    if group_attribute.present?
+        select.values values                if values.present?
+        select.matching extended_query      if extended_query.present?
+        select.where inclusive_filters      if inclusive_filters.any?
+        select.where_all options[:with_all] if options[:with_all]
+        select.where_not exclusive_filters  if exclusive_filters.any?
+        select.order_by order_clause        if order_clause.present?
+        select.group_by group_attribute     if group_attribute.present?
         select.order_within_group_by group_order_clause if group_order_clause.present?
         select.offset context.search.offset
         select.limit  context.search.per_page
-        select.with_options select_options if select_options.keys.any?
+        select.with_options select_options  if select_options.keys.any?
       end
     end
 

@@ -4,6 +4,7 @@ ThinkingSphinx::Index.define :article, :with => :active_record do
   indexes user.articles.title, :as => :related_titles
 
   has published, user_id
+  has taggings.tag_id, :as => :tag_ids
 
   set_property :min_infix_len => 4
   set_property :enable_star   => true
@@ -15,6 +16,7 @@ ThinkingSphinx::Index.define :article, :with => :active_record,
   indexes title
 
   has published, user_id
+  has taggings.tag_id, :as => :tag_ids
 
   set_property :morphology => 'stem_en'
 end
