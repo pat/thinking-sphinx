@@ -12,27 +12,17 @@ describe 'Accessing attributes directly via search results', :live => true do
     Book.create! :title => 'American Gods', :year => 2001
     index
 
-    if ActiveRecord::Base.configurations['test']['adapter'][/postgres/]
-      Book.search('gods').first.weight.should == 2500
-    else # mysql
-      Book.search('gods').first.weight.should == 3500
-    end
+    Book.search('gods').first.weight.should == 3500
   end
 
   it "can enumerate with the weight" do
     gods = Book.create! :title => 'American Gods', :year => 2001
     index
 
-    expectations = [[gods]]
-    if ActiveRecord::Base.configurations['test']['adapter'][/postgres/]
-      expectations.first << 2500
-    else # mysql
-      expectations.first << 3500
-    end
-
     search = Book.search('gods')
     search.masks << ThinkingSphinx::Masks::WeightEnumeratorMask
 
+    expectations = [[gods, 3500]]
     search.each_with_weight do |result, weight|
       expectation = expectations.shift
 
