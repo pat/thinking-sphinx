@@ -49,6 +49,26 @@ describe 'Searching with filters', :live => true do
     Book.search(:without => {:year => [2001, 2005]}).to_a.should == [grave]
   end
 
+  it "limits results by ranged filters on timestamp MVAs" do
+    pancakes = Article.create :title => 'Pancakes'
+    waffles  = Article.create :title => 'Waffles'
+
+    food = Tag.create :name => 'food'
+    flat = Tag.create :name => 'flat'
+
+    Tagging.create(:tag => food, :article => pancakes).
+      update_column :created_at, 5.days.ago
+    Tagging.create :tag => flat, :article => pancakes
+    Tagging.create(:tag => food, :article => waffles).
+      update_column :created_at, 3.days.ago
+
+    index
+
+    Article.search(
+      :with => {:taggings_at => 1.days.ago..1.day.from_now}
+    ).to_a.should == [pancakes]
+  end
+
   it "limits results with MVAs having all of the given values" do
     pancakes = Article.create :title => 'Pancakes'
     waffles  = Article.create :title => 'Waffles'

@@ -128,7 +128,6 @@ Required for Pre-Release:
 * Handling of NULLs in group concatenation
 * Timezone support
 * Manual MVA type declarations
-* Timestamp MVAs
 * Attributes and Fields from separate queries
 * Search option and/or configuration option to define class descendants
 

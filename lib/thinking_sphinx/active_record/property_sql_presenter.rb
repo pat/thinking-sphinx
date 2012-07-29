@@ -24,11 +24,17 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
     }
   end
 
+  def aggregate_separator
+    (type && type.multi?) ? ',' : ' '
+  end
+
   def casted_column_with_table
     clause = columns_with_table
-    clause = adapter.cast_to_timestamp(clause)      if type && type.timestamp?
-    clause = adapter.concatenate(clause, ' ')       if concatenating?
-    clause = adapter.group_concatenate(clause, ' ') if aggregate?
+    clause = adapter.cast_to_timestamp(clause) if type && type.timestamp?
+    clause = adapter.concatenate(clause, ' ')  if concatenating?
+    if aggregate?
+      clause = adapter.group_concatenate(clause, aggregate_separator)
+    end
 
     clause
   end
