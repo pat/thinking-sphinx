@@ -2,10 +2,10 @@ class ThinkingSphinx::ActiveRecord::Field <
   ThinkingSphinx::ActiveRecord::Property
 
   def file?
-    @options[:file]
+    options[:file]
   end
 
   def with_attribute?
-    @options[:sortable]
+    options[:sortable]
   end
 end

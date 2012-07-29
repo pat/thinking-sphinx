@@ -34,6 +34,15 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
       adapter_for(@model)
   end
 
+  def attributes_with_types
+    @attributes_with_types ||= attributes.inject({}) { |hash, attribute|
+      hash[attribute] = ThinkingSphinx::ActiveRecord::AttributeType.new(
+        attribute, model
+      )
+      hash
+    }
+  end
+
   def delta_processor
     options[:delta_processor].try(:new, adapter)
   end
@@ -79,22 +88,7 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
   private
 
   def attribute_array_for(type)
-    case type
-    when :string, :timestamp, :float, :bigint
-      instance_variable_get "@sql_attr_#{type}".to_sym
-    when :integer
-      @sql_attr_uint
-    when :boolean
-      @sql_attr_bool
-    when :ordinal
-      @sql_attr_str2ordinal
-    when :multi
-      @sql_attr_multi
-    when :wordcount
-      @sql_attr_str2wordcount
-    else
-      raise "Unknown attribute type '#{type}'"
-    end
+    instance_variable_get "@sql_attr_#{type}".to_sym
   end
 
   def builder
@@ -117,8 +111,10 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
       @sql_file_field   << field.name if field.file?
     end
 
-    attributes.each do |attribute|
-      attribute_array_for(attribute.type_for(model)) << attribute.name
+    attributes_with_types.each do |attribute, type|
+      presenter = ThinkingSphinx::ActiveRecord::AttributeSphinxPresenter.new(attribute, type)
+
+      attribute_array_for(type.collection_type) << presenter.declaration
     end
 
     @sql_query       = builder.sql_query

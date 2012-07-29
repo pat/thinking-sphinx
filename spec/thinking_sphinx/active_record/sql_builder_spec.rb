@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe ThinkingSphinx::ActiveRecord::SQLBuilder do
   let(:source)       { double('source', :model => model, :offset => 3,
-    :fields => fields, :attributes => attributes, :disable_range? => false,
+    :fields => [], :attributes_with_types => {}, :disable_range? => false,
     :delta_processor => nil, :conditions => [], :groupings => [],
     :adapter => adapter, :associations => [], :primary_key => :id) }
   let(:model)        { double('model', :connection => connection,
@@ -13,11 +13,8 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
   let(:relation)     { double('relation') }
   let(:config)       { double('config', :indices => indices) }
   let(:indices)      { double('indices', :count => 5) }
-  let(:fields)       { [] }
-  let(:attributes)   { [] }
-  let(:presenter)    {
-    double('presenter', :to_select => '`name` AS `name`', :to_group => '`name`')
-  }
+  let(:presenter)    { double('presenter', :to_select => '`name` AS `name`',
+    :to_group => '`name`') }
   let(:adapter)      { double('adapter') }
   let(:associations) { double('associations', :join_values => []) }
   let(:builder)      { ThinkingSphinx::ActiveRecord::SQLBuilder.new source }
@@ -74,7 +71,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
       end
 
       it "adds each field to the SELECT clause" do
-        fields << double('field')
+        source.fields << double('field')
 
         relation.should_receive(:select) do |string|
           string.should match(/`name` AS `name`/)
@@ -85,7 +82,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
       end
 
       it "adds each attribute to the SELECT clause" do
-        attributes << double('attribute', :type_for => :integer)
+        source.attributes_with_types[double('attribute')] = double('type')
         presenter.stub!(:to_select => '`created_at` AS `created_at`')
 
         relation.should_receive(:select) do |string|
@@ -139,7 +136,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
       end
 
       it "groups each field" do
-        fields << double('field')
+        source.fields << double('field')
 
         relation.should_receive(:group) do |string|
           string.should match(/`name`/)
@@ -150,7 +147,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
       end
 
       it "groups each attribute" do
-        attributes << double('attribute', :type_for => :integer)
+        source.attributes_with_types[double('attribute')] = double('type')
         presenter.stub!(:to_group => '`created_at`')
 
         relation.should_receive(:group) do |string|
@@ -287,7 +284,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
       end
 
       it "adds each field to the SELECT clause" do
-        fields << double('field')
+        source.fields << double('field')
 
         relation.should_receive(:select) do |string|
           string.should match(/"name" AS "name"/)
@@ -298,7 +295,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
       end
 
       it "adds each attribute to the SELECT clause" do
-        attributes << double('attribute', :type_for => :integer)
+        source.attributes_with_types[double('attribute')] = double('type')
         presenter.stub!(:to_select => '"created_at" AS "created_at"')
 
         relation.should_receive(:select) do |string|
@@ -352,7 +349,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
       end
 
       it "groups each field" do
-        fields << double('field')
+        source.fields << double('field')
 
         relation.should_receive(:group) do |string|
           string.should match(/"name"/)
@@ -363,7 +360,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
       end
 
       it "groups each attribute" do
-        attributes << double('attribute', :type_for => :integer)
+        source.attributes_with_types[double('attribute')] = double('type')
         presenter.stub!(:to_group => '"created_at"')
 
         relation.should_receive(:group) do |string|

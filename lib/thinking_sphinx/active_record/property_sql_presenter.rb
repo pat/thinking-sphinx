@@ -26,7 +26,7 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
 
   def casted_column_with_table
     clause = columns_with_table
-    clause = adapter.cast_to_timestamp(clause)      if type == :timestamp
+    clause = adapter.cast_to_timestamp(clause)      if type && type.timestamp?
     clause = adapter.concatenate(clause, ' ')       if concatenating?
     clause = adapter.group_concatenate(clause, ' ') if aggregate?
 

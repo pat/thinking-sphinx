@@ -90,7 +90,7 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
   context 'with an attribute' do
     let(:presenter) {
       ThinkingSphinx::ActiveRecord::PropertySQLPresenter.new(
-        attribute, adapter, associations, :integer
+        attribute, adapter, associations, double(:timestamp? => false)
       )
     }
     let(:attribute) {
@@ -157,7 +157,7 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
 
       it "ensures datetime attributes are converted to timestamps" do
         presenter = ThinkingSphinx::ActiveRecord::PropertySQLPresenter.new(
-          attribute, adapter, associations, :timestamp
+          attribute, adapter, associations, double(:timestamp? => true)
         )
 
         presenter.to_select.

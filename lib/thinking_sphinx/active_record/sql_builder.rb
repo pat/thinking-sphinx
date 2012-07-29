@@ -99,12 +99,13 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
   end
 
   def attribute_presenters
-    @attribute_presenters ||= source.attributes.collect { |attribute|
-      ThinkingSphinx::ActiveRecord::PropertySQLPresenter.new(
-        attribute, source.adapter, associations,
-        attribute.type_for(source.model)
-      )
-    }
+    @attribute_presenters ||= begin
+      source.attributes_with_types.collect { |attribute, type|
+        ThinkingSphinx::ActiveRecord::PropertySQLPresenter.new(
+          attribute, source.adapter, associations, type
+        )
+      }
+    end
   end
 
   def field_presenters
@@ -155,29 +156,4 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
       source.groupings + internal_groupings
     ).join(', ')
   end
-
-  # def all_associations
-  #   []
-  # end
-  #
-  # def join_dependency_class
-  #   if rails_3_1?
-  #     ::ActiveRecord::Associations::JoinDependency
-  #   else
-  #     ::ActiveRecord::Associations::ClassMethods::JoinDependency
-  #   end
-  # end
-  #
-  # def initial_joins
-  #   if rails_3_1?
-  #     []
-  #   else
-  #     nil
-  #   end
-  # end
-  #
-  # def rails_3_1?
-  #   ::ActiveRecord::Associations.constants.include?(:JoinDependency) ||
-  #   ::ActiveRecord::Associations.constants.include?('JoinDependency')
-  # end
 end
