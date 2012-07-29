@@ -25,8 +25,8 @@ module ThinkingSphinx::Core::Index
   def interpret_definition!
     return if @interpreted_definition || @definition_block.nil?
 
-    interpreter.translate! self, @definition_block
     @interpreted_definition = true
+    interpreter.translate! self, @definition_block
   end
 
   def model
@@ -42,6 +42,11 @@ module ThinkingSphinx::Core::Index
 
     @path ||= config.indices_location.join(name)
 
+    super
+  end
+
+  def sources
+    interpret_definition!
     super
   end
 
