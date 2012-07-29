@@ -77,7 +77,7 @@ describe ThinkingSphinx::ActiveRecord::AttributeType do
     end
 
     it "detects integer types from the database" do
-      db_column.stub!(:type => :integer)
+      db_column.stub!(:type => :integer, :sql_type => 'integer(11)')
 
       type.type.should == :integer
     end
@@ -122,6 +122,18 @@ describe ThinkingSphinx::ActiveRecord::AttributeType do
       db_column.stub!(:type => :decimal)
 
       type.type.should == :float
+    end
+
+    it "detects big ints as big ints" do
+      db_column.stub :type => :bigint
+
+      type.type.should == :bigint
+    end
+
+    it "detects large integers as big ints" do
+      db_column.stub :type => :integer, :sql_type => 'bigint(20)'
+
+      type.type.should == :bigint
     end
 
     it "respects provided type setting" do

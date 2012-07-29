@@ -15,6 +15,10 @@ class ThinkingSphinx::ActiveRecord::AttributeType
     @type ||= attribute.options[:type] || type_from_database
   end
 
+  def type=(value)
+    @type = attribute.options[:type] = value
+  end
+
   private
 
   attr_reader :attribute, :model
@@ -41,11 +45,15 @@ class ThinkingSphinx::ActiveRecord::AttributeType
   end
 
   def type_from_database
-    db_type = klass.columns.detect { |db_column|
+    db_column = klass.columns.detect { |db_column|
       db_column.name == attribute.columns.first.__name.to_s
-    }.type
+    }
 
-    case db_type
+    if db_column.type == :integer && db_column.sql_type[/bigint/i]
+      return :bigint
+    end
+
+    case db_column.type
     when :datetime, :date
       :timestamp
     when :text
@@ -53,7 +61,7 @@ class ThinkingSphinx::ActiveRecord::AttributeType
     when :decimal
       :float
     else
-      db_type
+      db_column.type
     end
   end
 end

@@ -78,6 +78,8 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   def render
     preload_indices
 
+    ThinkingSphinx::Configuration::ConsistentIds.new(indices).reconcile
+
     super
   end
 
@@ -102,3 +104,5 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     Rails.root.join 'config', 'thinking_sphinx.yml'
   end
 end
+
+require 'thinking_sphinx/configuration/consistent_ids'

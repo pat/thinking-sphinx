@@ -1,7 +1,7 @@
 class ThinkingSphinx::ActiveRecord::Attribute <
   ThinkingSphinx::ActiveRecord::Property
 
-  delegate :type, :multi?, :to => :typist
+  delegate :type, :type=, :multi?, :to => :typist
 
   private
 
