@@ -10,6 +10,8 @@ class ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks <
         :sphinx_deleted => true
       )
     end
+  rescue Mysql2::Error => error
+    # This isn't vital, so don't raise the error.
   end
 
   private

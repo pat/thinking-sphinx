@@ -14,6 +14,8 @@ class ThinkingSphinx::Deltas::DefaultDelta
       index.name, index.document_id_for_key(instance.id),
       :sphinx_deleted => true
     )
+  rescue Mysql2::Error => error
+    # This isn't vital, so don't raise the error.
   end
 
   def index(index)

@@ -122,7 +122,6 @@ Required for Pre-Release:
 * Attribute Updates
 * Separate out glazier panes/decorators.
 * Test Helpers
-* Relaxed error handling for deletions and delta calls
 * 64-bit integer detection
 * 64-bit integer attribute consistency
 * Manual MVA type declarations

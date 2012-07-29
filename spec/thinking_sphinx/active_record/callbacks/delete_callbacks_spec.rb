@@ -70,5 +70,11 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks do
 
       callbacks.after_destroy
     end
+
+    it "doesn't care about Sphinx errors" do
+      connection.stub(:query).and_raise(Mysql2::Error.new(''))
+
+      lambda { callbacks.after_destroy }.should_not raise_error
+    end
   end
 end
