@@ -108,6 +108,7 @@ batch.populate
 batch.searches #=> [[foo results], [bar results], [baz results]]</code></pre>
 
 * To search on specific indices, use the @:indices@ option, which expects an array of index names (including the @_core@ or @_delta@ suffixes).
+* @:without_any@ has become @:without_all@ - and is implemented, but Sphinx doesn't yet support the required logic.
 
 h2. Limitations
 
@@ -119,7 +120,6 @@ Required for Pre-Release:
 
 * Facets
 * Attribute Updates
-* Matching none of many values on a single MVA attribute (:without_any)
 * Separate out glazier panes/decorators.
 * Test Helpers
 * Relaxed error handling for deletions and delta calls

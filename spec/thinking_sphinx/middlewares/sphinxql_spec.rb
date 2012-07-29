@@ -194,6 +194,15 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       middleware.call [context]
     end
 
+    it "appends MVA matches without all of the given values" do
+      search.options[:without_all] = {:tag_ids => [1, 7]}
+
+      sphinx_sql.should_receive(:where_not_all).
+        with(:tag_ids => [1, 7]).and_return(sphinx_sql)
+
+      middleware.call [context]
+    end
+
     it "appends order clauses to the query" do
       search.options[:order] = 'created_at ASC'
 

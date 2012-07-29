@@ -65,4 +65,25 @@ describe 'Searching with filters', :live => true do
     articles = Article.search :with_all => {:tag_ids => [food.id, flat.id]}
     articles.to_a.should == [pancakes]
   end
+
+  it "limits results with MVAs that don't contain all the given values" do
+    # Matching results may have some of the given values, but cannot have all
+    # of them. Certainly an edge case.
+    pending "SphinxQL doesn't yet support OR in its WHERE clause"
+
+    pancakes = Article.create :title => 'Pancakes'
+    waffles  = Article.create :title => 'Waffles'
+
+    food = Tag.create :name => 'food'
+    flat = Tag.create :name => 'flat'
+
+    Tagging.create :tag => food, :article => pancakes
+    Tagging.create :tag => flat, :article => pancakes
+    Tagging.create :tag => food, :article => waffles
+
+    index
+
+    articles = Article.search :without_all => {:tag_ids => [food.id, flat.id]}
+    articles.to_a.should == [waffles]
+  end
 end

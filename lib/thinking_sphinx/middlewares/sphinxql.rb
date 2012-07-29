@@ -164,6 +164,7 @@ class ThinkingSphinx::Middlewares::SphinxQL <
         select.where inclusive_filters      if inclusive_filters.any?
         select.where_all options[:with_all] if options[:with_all]
         select.where_not exclusive_filters  if exclusive_filters.any?
+        select.where_not_all options[:without_all] if options[:without_all]
         select.order_by order_clause        if order_clause.present?
         select.group_by group_attribute     if group_attribute.present?
         select.order_within_group_by group_order_clause if group_order_clause.present?
