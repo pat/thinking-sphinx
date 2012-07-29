@@ -125,8 +125,6 @@ Required for Pre-Release:
 * Relaxed error handling for deletions and delta calls
 * 64-bit integer detection
 * 64-bit integer attribute consistency
-* Handling of NULLs in group concatenation
-* Timezone support
 * Manual MVA type declarations
 * Attributes and Fields from separate queries
 * Search option and/or configuration option to define class descendants
@@ -151,6 +149,7 @@ Required for Release Candidate:
 
 May or may not be added:
 
+* Timezone support (for databases not using UTC)
 * Abstract Inheritance support (maybe - not sure this is something many of people want).
 * Capistrano Tasks
 

@@ -19,14 +19,14 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter do
   describe '#cast_to_timestamp' do
     it "converts to unix timestamps" do
       adapter.cast_to_timestamp('created_at').
-        should == 'cast(extract(epoch from created_at) as int)'
+        should == 'extract(epoch from created_at)::int'
     end
   end
 
   describe '#concatenate' do
     it "concatenates with the given separator" do
       adapter.concatenate('foo, bar, baz', ',').
-        should == "foo || ',' || bar || ',' || baz"
+        should == "COALESCE(foo, '') || ',' || COALESCE(bar, '') || ',' || COALESCE(baz, '')"
     end
   end
 

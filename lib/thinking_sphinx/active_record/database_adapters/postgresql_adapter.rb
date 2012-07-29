@@ -6,11 +6,13 @@ class ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter <
   end
 
   def cast_to_timestamp(clause)
-    "cast(extract(epoch from #{clause}) as int)"
+    "extract(epoch from #{clause})::int"
   end
 
   def concatenate(clause, separator = ' ')
-    clause.split(', ').join(" || '#{separator}' || ")
+    clause.split(', ').collect { |part|
+      convert_nulls(part, "''")
+    }.join(" || '#{separator}' || ")
   end
 
   def convert_nulls(clause, default = '')

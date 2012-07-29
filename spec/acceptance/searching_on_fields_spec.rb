@@ -38,6 +38,13 @@ describe 'Searching on fields', :live => true do
       should == [book]
   end
 
+  it "handles NULLs in concatenated fields" do
+    book = Book.create! :title => 'Night Watch'
+    index
+
+    Book.search(:conditions => {:info => 'Night Watch'}).to_a.should == [book]
+  end
+
   it "returns results with matches from file fields" do
     file_path = Rails.root.join('tmp', 'caption.txt')
     File.open(file_path, 'w') { |file| file.print 'Cyberpunk at its best' }
