@@ -109,6 +109,7 @@ batch.searches #=> [[foo results], [bar results], [baz results]]</code></pre>
 
 * To search on specific indices, use the @:indices@ option, which expects an array of index names (including the @_core@ or @_delta@ suffixes).
 * @:without_any@ has become @:without_all@ - and is implemented, but Sphinx doesn't yet support the required logic.
+* If you're creating a multi-value attribute manually (using a SQL snippet), then in the definition pass in @:multi => true@, but @:type@ should be set as well, to one of the MVA types that Sphinx supports (@:integer@, @:timestamp@, or @:boolean@).
 
 h2. Limitations
 
@@ -123,13 +124,11 @@ Required for Pre-Release:
 * Separate out glazier panes/decorators.
 * Test Helpers
 * 64-bit integer attribute consistency
-* Manual MVA type declarations
-* Attributes and Fields from separate queries
 * Search option and/or configuration option to define class descendants
 
 Required for Release Candidate:
 
-* Query and Ranged Query sources for Attributes
+* Query and Ranged Query sources for Attributes and Fields
 * Using :though association shortcuts in index definitions
 * Overwritable toggle_delta? method on model
 * Query times for searches

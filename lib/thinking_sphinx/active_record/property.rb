@@ -2,7 +2,12 @@ class ThinkingSphinx::ActiveRecord::Property
   attr_reader :columns, :options
 
   def initialize(model, columns, options = {})
-    @model, @columns, @options = model, Array(columns), options
+    @model, @options = model, options
+
+    @columns = Array(columns).collect { |column|
+      column.respond_to?(:__name) ? column :
+        ThinkingSphinx::ActiveRecord::Column.new(column)
+    }
   end
 
   def multi?

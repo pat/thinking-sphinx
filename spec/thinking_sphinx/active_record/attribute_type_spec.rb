@@ -9,13 +9,67 @@ describe ThinkingSphinx::ActiveRecord::AttributeType do
     ThinkingSphinx::ActiveRecord::AttributeType.new attribute, model }
   let(:attribute) { double('attribute', :columns => [column], :options => {}) }
   let(:model)     { double('model', :columns => [db_column]) }
-  let(:column)    {
-    double('column', :__name => :created_at, :string? => false, :__stack => [])
-  }
-  let(:db_column) {
-    double('column', :name => 'created_at', :type => :integer) }
+  let(:column)    { double('column', :__name => :created_at, :string? => false,
+    :__stack => []) }
+  let(:db_column) { double('column', :name => 'created_at',
+    :type => :integer) }
 
-  describe '#type_for' do
+  describe '#multi?' do
+    let(:association) { double('association', :klass => double) }
+
+    before :each do
+      column.__stack << :foo
+
+      model.stub :reflect_on_association => association
+    end
+
+    it "returns true if there are has_many associations" do
+      association.stub :macro => :has_many
+
+      type.should be_multi
+    end
+
+    it "returns true if there are has_and_belongs_to_many associations" do
+      association.stub :macro => :has_and_belongs_to_many
+
+      type.should be_multi
+    end
+
+    it "returns false if there are no associations" do
+      column.__stack.clear
+
+      type.should_not be_multi
+    end
+
+    it "returns false if there are only belongs_to associations" do
+      association.stub :macro => :belongs_to
+
+      type.should_not be_multi
+    end
+
+    it "returns false if there are only has_one associations" do
+      association.stub :macro => :has_one
+
+      type.should_not be_multi
+    end
+
+    it "returns true if deeper associations have many" do
+      column.__stack << :bar
+      deep_association = double(:klass => double, :macro => :has_many)
+      association.stub :macro => :belongs_to,
+        :klass => double(:reflect_on_association => deep_association)
+
+      type.should be_multi
+    end
+
+    it "respects the provided setting" do
+      attribute.options[:multi] = true
+
+      type.should be_multi
+    end
+  end
+
+  describe '#type' do
     it "returns the type option provided" do
       attribute.options[:type] = :datetime
 
@@ -68,6 +122,12 @@ describe ThinkingSphinx::ActiveRecord::AttributeType do
       db_column.stub!(:type => :decimal)
 
       type.type.should == :float
+    end
+
+    it "respects provided type setting" do
+      attribute.options[:type] = :timestamp
+
+      type.type.should == :timestamp
     end
   end
 end

@@ -47,4 +47,16 @@ describe 'specifying SQL for index definitions' do
     query = index.sources.first.sql_query
     query.should match(/WHERE .+title != 'secret'.+ GROUP BY/)
   end
+
+  it "handles manual MVA declarations" do
+    index = ThinkingSphinx::ActiveRecord::Index.new(:article)
+    index.definition_block = Proc.new {
+      indexes title
+      has "taggings.tag_ids", :as => :tag_ids, :type => :integer,
+        :multi => true
+    }
+    index.render
+
+    index.sources.first.sql_attr_multi.should == ['uint tag_ids from field']
+  end
 end
