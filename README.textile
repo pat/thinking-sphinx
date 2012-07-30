@@ -56,7 +56,12 @@ If you want to excerpt any string without going through an object, you can use t
 <pre><code>results = ThinkingSphinx.search 'foo'
 results.excerpter.excerpt!('The Etymology of Foo')</code></pre>
 
-* When indexing models on classes that are using single-table inheritance (STI), make sure you have a database index on the @type@ column. Thinking Sphinx will need to determine which subclasses are available, and we can't rely on Rails having loaded all models at any given point, so it queries the database.
+* When indexing models on classes that are using single-table inheritance (STI), make sure you have a database index on the @type@ column. Thinking Sphinx will need to determine which subclasses are available, and we can't rely on Rails having loaded all models at any given point, so it queries the database. If you don't want this to happen, set :skip_sti to true in your search call, and ensure that the :classes option holds all classes that could be returned.
+
+<pre><code>ThinkingSphinx.search 'pancakes',
+  :skip_sti => true,
+  :classes => [User, AdminUser, SupportUser]</code></pre>
+
 * The option @:rank_mode@ has now become @:ranker@ - and the options (as strings or symbols) are as follows: proximity_bm25, bm25, none, wordcount, proximity, matchany, and fieldmask.
 * There are no explicit sorting modes - all sorting must be on attributes followed by ASC or DESC. For example: @:order => '@weight DESC, created_at ASC'@.
 * If you specify just an attribute name as a symbol for the @:order@ option, it will be given the ascending direction by default. So, @:order => :created_at@ is equivalent to @:order => 'created_at ASC'@.
@@ -122,7 +127,6 @@ Required for Pre-Release:
 * Facets
 * Attribute Updates
 * Separate out glazier panes/decorators.
-* Search option and/or configuration option to define class descendants
 
 Required for Release Candidate:
 

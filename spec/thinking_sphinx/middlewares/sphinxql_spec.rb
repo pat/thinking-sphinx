@@ -150,6 +150,18 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       middleware.call [context]
     end
 
+    it "does not query the database for subclasses if :skip_sti is set to true" do
+      model = double('model', :connection => double,
+        :ancestors => [ActiveRecord::Base], :name => 'Animal')
+
+      search.options[:classes]  = [model]
+      search.options[:skip_sti] = true
+
+      model.connection.should_not_receive(:select_values)
+
+      middleware.call [context]
+    end
+
     it "filters out deleted values by default" do
       sphinx_sql.should_receive(:where).with(:sphinx_deleted => false).
         and_return(sphinx_sql)

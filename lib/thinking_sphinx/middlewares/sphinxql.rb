@@ -58,7 +58,11 @@ class ThinkingSphinx::Middlewares::SphinxQL <
     end
 
     def descendants
-      @descendants ||= classes.select { |klass|
+      @descendants ||= options[:skip_sti] ? [] : descendants_from_tables
+    end
+
+    def descendants_from_tables
+      classes.select { |klass|
         klass.column_names.include?(klass.inheritance_column)
       }.collect { |klass|
         klass.connection.select_values(<<-SQL).compact.each(&:constantize)
