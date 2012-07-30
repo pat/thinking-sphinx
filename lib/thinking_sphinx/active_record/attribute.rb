@@ -7,7 +7,7 @@ class ThinkingSphinx::ActiveRecord::Attribute <
   private
 
   def typist
-    @typist ||= ThinkingSphinx::ActiveRecord::AttributeType.new self, @model
+    @typist ||= ThinkingSphinx::ActiveRecord::Attribute::Type.new self, @model
   end
 
   def values
@@ -15,4 +15,6 @@ class ThinkingSphinx::ActiveRecord::Attribute <
   end
 end
 
-require 'thinking_sphinx/active_record/attribute_values'
+require 'thinking_sphinx/active_record/attribute/sphinx_presenter'
+require 'thinking_sphinx/active_record/attribute/type'
+require 'thinking_sphinx/active_record/attribute/values'

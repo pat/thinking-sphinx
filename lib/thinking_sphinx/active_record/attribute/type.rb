@@ -1,4 +1,4 @@
-class ThinkingSphinx::ActiveRecord::AttributeType
+class ThinkingSphinx::ActiveRecord::Attribute::Type
   UPDATEABLE_TYPES = [:integer, :timestamp, :boolean, :float]
 
   def initialize(attribute, model)

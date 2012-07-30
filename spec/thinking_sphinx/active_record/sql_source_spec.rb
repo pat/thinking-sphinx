@@ -146,7 +146,7 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
     before :each do
       ThinkingSphinx::ActiveRecord::SQLBuilder.stub! :new => builder
-      ThinkingSphinx::ActiveRecord::AttributeSphinxPresenter.stub :new => presenter
+      ThinkingSphinx::ActiveRecord::Attribute::SphinxPresenter.stub :new => presenter
       ThinkingSphinx::ActiveRecord::SQLSource::Template.stub :new => template
       ThinkingSphinx::Configuration.stub :instance => config
     end

@@ -1,12 +1,14 @@
 module ThinkingSphinx
-  module ActiveRecord; end
+  module ActiveRecord
+    class Attribute; end
+  end
 end
 
-require 'thinking_sphinx/active_record/attribute_type'
+require 'thinking_sphinx/active_record/attribute/type'
 
-describe ThinkingSphinx::ActiveRecord::AttributeType do
+describe ThinkingSphinx::ActiveRecord::Attribute::Type do
   let(:type) {
-    ThinkingSphinx::ActiveRecord::AttributeType.new attribute, model }
+    ThinkingSphinx::ActiveRecord::Attribute::Type.new attribute, model }
   let(:attribute) { double('attribute', :columns => [column], :options => {}) }
   let(:model)     { double('model', :columns => [db_column]) }
   let(:column)    { double('column', :__name => :created_at, :string? => false,
