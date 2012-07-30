@@ -2,7 +2,7 @@ module ThinkingSphinx::Core::Index
   extend ActiveSupport::Concern
 
   included do
-    attr_reader :reference
+    attr_reader :reference, :offset
     attr_writer :definition_block
   end
 
@@ -10,6 +10,7 @@ module ThinkingSphinx::Core::Index
     @reference  = reference
     @docinfo    = :extern
     @options    = options
+    @offset     = config.next_offset(reference)
 
     super "#{options[:name] || reference}_#{name_suffix}"
   end
@@ -31,10 +32,6 @@ module ThinkingSphinx::Core::Index
 
   def model
     @model ||= reference.to_s.camelize.constantize
-  end
-
-  def offset
-    @offset ||= config.next_offset(reference)
   end
 
   def render

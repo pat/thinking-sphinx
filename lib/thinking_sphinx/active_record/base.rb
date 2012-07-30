@@ -4,6 +4,7 @@ module ThinkingSphinx::ActiveRecord::Base
   included do
     after_destroy ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks
     before_save   ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks
+    after_update  ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks
     after_commit  ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks
 
     after_save    ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks

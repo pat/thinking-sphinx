@@ -3,9 +3,8 @@ require 'spec_helper'
 describe ThinkingSphinx::ActiveRecord::Index do
   let(:index)        { ThinkingSphinx::ActiveRecord::Index.new :user }
   let(:indices_path) { double('indices path', :join => '') }
-  let(:config)       {
-    double('config', :settings => {}, :indices_location => indices_path)
-  }
+  let(:config)       { double('config', :settings => {},
+    :indices_location => indices_path, :next_offset => 8) }
 
   before :each do
     ThinkingSphinx::Configuration.stub :instance => config

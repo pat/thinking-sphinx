@@ -1,4 +1,6 @@
 class ThinkingSphinx::ActiveRecord::AttributeType
+  UPDATEABLE_TYPES = [:integer, :timestamp, :boolean, :float]
+
   def initialize(attribute, model)
     @attribute, @model = attribute, model
   end
@@ -17,6 +19,10 @@ class ThinkingSphinx::ActiveRecord::AttributeType
 
   def type=(value)
     @type = attribute.options[:type] = value
+  end
+
+  def updateable?
+    UPDATEABLE_TYPES.include?(type) && single_column_reference?
   end
 
   private
@@ -42,6 +48,12 @@ class ThinkingSphinx::ActiveRecord::AttributeType
     associations.any? { |association|
       [:has_many, :has_and_belongs_to_many].include?(association.macro)
     }
+  end
+
+  def single_column_reference?
+    attribute.columns.length == 1               &&
+    attribute.columns.first.__stack.length == 0 &&
+    !attribute.columns.first.string?
   end
 
   def type_from_database

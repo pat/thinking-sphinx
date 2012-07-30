@@ -15,7 +15,8 @@ class SphinxController
     end
 
     config.searchd.mysql41 = 9307
-    config.settings['quiet_deltas'] = true
+    config.settings['quiet_deltas']      = true
+    config.settings['attribute_updates'] = true
   end
 
   def start
