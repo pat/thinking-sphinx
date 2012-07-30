@@ -29,6 +29,7 @@ require 'thinking_sphinx/middlewares'
 require 'thinking_sphinx/rake_interface'
 require 'thinking_sphinx/scopes'
 require 'thinking_sphinx/search'
+require 'thinking_sphinx/test'
 require 'thinking_sphinx/version'
 # Extended
 require 'thinking_sphinx/active_record'

@@ -21,9 +21,8 @@ describe ThinkingSphinx::Deltas::DefaultDelta do
   describe '#delete' do
     let(:config)     { double('config', :connection => connection) }
     let(:connection) { double('connection', :query => nil) }
-    let(:index)      {
-      double('index', :name => 'foo_core', :document_id_for_key => 14)
-    }
+    let(:index)      { double('index', :name => 'foo_core',
+      :document_id_for_key => 14) }
     let(:instance)   { double('instance', :id => 7) }
 
     before :each do
@@ -66,7 +65,8 @@ describe ThinkingSphinx::Deltas::DefaultDelta do
   end
 
   describe '#index' do
-    let(:config)     { double('config', :controller => controller) }
+    let(:config)     { double('config', :controller => controller,
+      :settings => {}) }
     let(:controller) { double('controller') }
 
     before :each do
@@ -74,7 +74,7 @@ describe ThinkingSphinx::Deltas::DefaultDelta do
     end
 
     it "indexes the given index" do
-      controller.should_receive(:index).with('foo_delta')
+      controller.should_receive(:index).with('foo_delta', :verbose => true)
 
       delta.index double('index', :name => 'foo_delta')
     end

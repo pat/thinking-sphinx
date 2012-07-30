@@ -122,7 +122,6 @@ Required for Pre-Release:
 * Facets
 * Attribute Updates
 * Separate out glazier panes/decorators.
-* Test Helpers
 * Search option and/or configuration option to define class descendants
 
 Required for Release Candidate:

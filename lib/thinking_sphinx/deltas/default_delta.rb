@@ -19,7 +19,7 @@ class ThinkingSphinx::Deltas::DefaultDelta
   end
 
   def index(index)
-    controller.index index.name
+    controller.index index.name, :verbose => !config.settings['quiet_deltas']
   end
 
   def reset_query
