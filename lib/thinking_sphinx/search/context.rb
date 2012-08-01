@@ -4,7 +4,10 @@ class ThinkingSphinx::Search::Context
   def initialize(search, configuration = nil)
     @search        = search
     @configuration = configuration || ThinkingSphinx::Configuration.instance
-    @memory        = {:results => [], :panes => []}
+    @memory        = {
+      :results => [],
+      :panes   => ThinkingSphinx::Configuration::Defaults::PANES
+    }
   end
 
   def [](key)

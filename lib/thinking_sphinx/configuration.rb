@@ -16,8 +16,9 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     searchd.binlog_path = Rails.root.join 'tmp', 'binlog', Rails.env
 
     searchd.address   = settings['address']
-    searchd.address   = '127.0.0.1' unless searchd.address.present?
-    searchd.mysql41   = settings['mysql41'] || settings['port'] || 9306
+    searchd.address   = Defaults::ADDRESS unless searchd.address.present?
+    searchd.mysql41   = settings['mysql41'] || settings['port'] ||
+      Defaults::PORT
     # searchd.workers   = 'threads'
 
     @offsets = {}
@@ -106,3 +107,4 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 end
 
 require 'thinking_sphinx/configuration/consistent_ids'
+require 'thinking_sphinx/configuration/defaults'
