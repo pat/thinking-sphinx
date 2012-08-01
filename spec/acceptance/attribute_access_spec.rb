@@ -5,14 +5,20 @@ describe 'Accessing attributes directly via search results', :live => true do
     Book.create! :title => 'American Gods', :year => 2001
     index
 
-    Book.search('gods').first.sphinx_attributes[:year].should == 2001
+    search = Book.search('gods')
+    search.context[:panes] << ThinkingSphinx::Panes::AttributesPane
+
+    search.first.sphinx_attributes['year'].should == 2001
   end
 
   it "provides direct access to the search weight/relevance scores" do
     Book.create! :title => 'American Gods', :year => 2001
     index
 
-    Book.search('gods').first.weight.should == 3500
+    search = Book.search('gods')
+    search.context[:panes] << ThinkingSphinx::Panes::WeightPane
+
+    search.first.weight.should == 3500
   end
 
   it "can enumerate with the weight" do

@@ -1,10 +1,15 @@
-require 'spec_helper'
+module ThinkingSphinx
+  class Search; end
+end
+
+require 'blankslate'
+require 'thinking_sphinx/search/glaze'
 
 describe ThinkingSphinx::Search::Glaze do
-  let(:object)    { double('object') }
-  let(:excerpter) { double('excerpter') }
-  let(:raw)       { {} }
-  let(:glaze)     { ThinkingSphinx::Search::Glaze.new object, excerpter, raw }
+  let(:glaze)   { ThinkingSphinx::Search::Glaze.new context, object, raw, [] }
+  let(:object)  { double('object') }
+  let(:raw)     { {} }
+  let(:context) { {} }
 
   describe '#!=' do
     it "is true for objects that don't match" do
@@ -16,111 +21,36 @@ describe ThinkingSphinx::Search::Glaze do
     end
   end
 
-  describe '#distance' do
-    it "returns the object's geodistance attribute by default" do
-      raw['geodist'] = 123.45
-
-      glaze.distance.should == 123.45
-    end
-
-    it "converts string geodistances to floats" do
-      raw['geodist'] = '123.450'
-
-      glaze.distance.should == 123.45
-    end
-
-    it "respects an existing distance method" do
-      klass = Class.new do
-        def distance
-          10
-        end
-      end
-
-      ThinkingSphinx::Search::Glaze.new(klass.new).distance.should == 10
-    end
-  end
-
-  describe '#excerpts' do
-    let(:excerpt_glaze) { double('excerpt glaze') }
+  describe '#method_missing' do
+    let(:glaze)    {
+      ThinkingSphinx::Search::Glaze.new context, object, raw, [klass, klass] }
+    let(:klass)    { double('pane class') }
+    let(:pane_one) { double('pane one', :foo => 'one') }
+    let(:pane_two) { double('pane two', :foo => 'two', :bar => 'two') }
 
     before :each do
-      ThinkingSphinx::Search::ExcerptGlaze.stub :new => excerpt_glaze
+      klass.stub(:new).and_return(pane_one, pane_two)
     end
 
-    it "returns an excerpt glazing" do
-      glaze.excerpts.should == excerpt_glaze
+    it "respects objects existing methods" do
+      object.stub :foo => 'original'
+
+      glaze.foo.should == 'original'
     end
 
-    it "respects an existing excerpts method" do
-      klass = Class.new do
-        def excerpts
-          :custom_excerpts
-        end
-      end
-
-      ThinkingSphinx::Search::Glaze.new(klass.new).excerpts.
-        should == :custom_excerpts
-    end
-  end
-
-  describe '#geodist' do
-    it "returns the object's geodistance attribute by default" do
-      raw['geodist'] = 123.45
-
-      glaze.geodist.should == 123.45
+    it "uses the first pane that responds to the method" do
+      glaze.foo.should == 'one'
+      glaze.bar.should == 'two'
     end
 
-    it "converts string geodistances to floats" do
-      raw['geodist'] = '123.450'
-
-      glaze.geodist.should == 123.45
-    end
-
-    it "respects an existing geodist method" do
-      klass = Class.new do
-        def geodist
-          10
-        end
-      end
-
-      ThinkingSphinx::Search::Glaze.new(klass.new).geodist.should == 10
+    it "raises the method missing error otherwise" do
+      lambda { glaze.baz }.should raise_error(NoMethodError)
     end
   end
 
-  describe '#sphinx_attributes' do
-    it "returns the object's sphinx attributes by default" do
-      raw['foo'] = 24
-
-      glaze.sphinx_attributes.should == {'foo' => 24}
-    end
-
-    it "respects an existing sphinx_attributes method" do
-      klass = Class.new do
-        def sphinx_attributes
-          :special_attributes
-        end
-      end
-
-      ThinkingSphinx::Search::Glaze.new(klass.new).sphinx_attributes.
-        should == :special_attributes
-    end
-  end
-
-  describe '#weight' do
-    it "returns the object's weight by default" do
-      raw['weight'] = 101
-
-      glaze.weight.should == 101
-    end
-
-    it "respects an existing sphinx_attributes method" do
-      klass = Class.new do
-        def weight
-          202
-        end
-      end
-
-      ThinkingSphinx::Search::Glaze.new(klass.new).weight.should == 202
+  describe '#unglazed' do
+    it "returns the original object" do
+      glaze.unglazed.should == object
     end
   end
 end

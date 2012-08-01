@@ -17,28 +17,17 @@ class ThinkingSphinx::Middlewares::Glazier <
     end
 
     def call
+      return if context[:panes].empty?
+
       context[:results] = context[:results].collect { |result|
-        ThinkingSphinx::Search::Glaze.new result, excerpter, row_for(result)
+        ThinkingSphinx::Search::Glaze.new context, result, row_for(result),
+          context[:panes]
       }
     end
 
     private
 
     attr_reader :context
-
-    def excerpter
-      @excerpter ||= ThinkingSphinx::Excerpter.new(
-        context[:indices].first.name,
-        excerpt_words,
-        context.search.options[:excerpts] || {}
-      )
-    end
-
-    def excerpt_words
-      @excerpt_words ||= context[:meta].keys.select { |key|
-        key[/^keyword\[/]
-      }.sort.collect { |key| context[:meta][key] }.join(' ')
-    end
 
     def row_for(result)
       context[:raw].detect { |row|

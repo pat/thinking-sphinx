@@ -15,7 +15,10 @@ class ThinkingSphinx::Middlewares::Geographer <
     end
 
     def call
-      context[:sphinxql].values geodist_clause if geo
+      return unless geo
+
+      context[:sphinxql].values geodist_clause
+      context[:panes] << ThinkingSphinx::Panes::DistancePane
     end
 
     private
