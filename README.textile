@@ -46,15 +46,10 @@ end</code></pre>
   article.update_attributes(:title => 'pancakes')
 end</code></pre>
 
-* Excerpts through search results behaves the same way. Excerpt options (like @:before_match@, @:after_match@ and @:chunk_separator@) can be passed through when searching under the @:excerpts@ option:
+* Excerpts through search results behaves the same way, provided you add ExcerptsPane into the mix (read the section below on search results, glazes and panes). Excerpt options (like @:before_match@, @:after_match@ and @:chunk_separator@) can be passed through when searching under the @:excerpts@ option:
 
 <pre><code>ThinkingSphinx.search 'foo',
   :excerpts => {:chunk_separator => ' -- '}</code></pre>
-
-If you want to excerpt any string without going through an object, you can use the search result set's excerpter object:
-
-<pre><code>results = ThinkingSphinx.search 'foo'
-results.excerpter.excerpt!('The Etymology of Foo')</code></pre>
 
 * When indexing models on classes that are using single-table inheritance (STI), make sure you have a database index on the @type@ column. Thinking Sphinx will need to determine which subclasses are available, and we can't rely on Rails having loaded all models at any given point, so it queries the database. If you don't want this to happen, set :skip_sti to true in your search call, and ensure that the :classes option holds all classes that could be returned.
 
@@ -116,10 +111,39 @@ batch.searches #=> [[foo results], [bar results], [baz results]]</code></pre>
 * @:without_any@ has become @:without_all@ - and is implemented, but Sphinx doesn't yet support the required logic.
 * If you're creating a multi-value attribute manually (using a SQL snippet), then in the definition pass in @:multi => true@, but @:type@ should be set as well, to one of the MVA types that Sphinx supports (@:integer@, @:timestamp@, or @:boolean@).
 * Automatic updates of non-string attributes are still limited to those from columns on the model in question, and is disabled by default. To enable it, just set attribute_updates to true in your @config/sphinx.yml@.
+* Search result helper methods are no longer injected into the actual result objects. Read the section below on search results, glazes and panes.
+
+h2. Search Middleware
+
+This section needs information - go hunting in the source for the moment if you're keen on adding a layer around querying/result population process.
+
+h2. Search results, Glazes and Panes
+
+In versions of Thinking Sphinx prior to v3, each search result object had many methods inserted into it - for direct access to the weight, distance, sphinx attributes and excerpts. This is no longer the case, but there is a more modular approach available.
+
+Search results may now have a glaze object placed around them, which can then delegate methods to any number of panes the glaze has available. By default, there are no panes added (and thus, no glazing), but this can be modified:
+
+<pre><code># For every search
+ThinkingSphinx::Configuration::Defaults::PANES << ThinkingSphinx::Panes::WeightPane
+
+# Or for specific searches:
+search = ThinkingSphinx.search('pancakes')
+search.context[:panes] << ThinkingSphinx::Panes::WeightPane</code></pre>
+
+The available panes are as follows:
+
+* @WeightPane@ (methods: @weight@)
+* @DistancePane@ (methods: @distance@, @geodist@)
+* @AttributesPane@ (methods: @sphinx_attributes@)
+* @ExcerptsPane@ (methods: @excerpts@)
+
+All panes namespaced to @ThinkingSphinx::Panes@, and the @DistancePane@ is automatically added when you provide latitude/longitude values via the @:geo@ option.
+
+If you wish to add your own panes, go ahead. The only requirement is that the initializer must accept three arguments: the search context, the underlying search result object, and a hash of the raw values from Sphinx.
 
 h2. Limitations
 
-Basic indexing and searching should be fine. There's currently no facets or excerpts, and limited delta support. Many settings haven't yet been brought across. Many of the smaller features don't yet exist either. Some may actually not return... we'll see.
+Basic indexing and searching should be fine. There's currently no facets, and limited delta support. Many settings haven't yet been brought across. Many of the smaller features don't yet exist either. Some may actually not return... we'll see.
 
 Lists of what still needs to be implemented, in no particular order but in groups of vague importance:
 
