@@ -159,18 +159,18 @@ Required for Release Candidate:
 * Query times for searches
 * Namespaced models support
 * Delayed Deltas
-* Datetime Deltas
 * Infixing and Prefixing of specific fields
 * Default Sphinx scopes
 * sanitise_sql method in index definitions
 * Multiple sources for an index
-* Bitmask weighting helper
 * JRuby support
 * Sinatra support
 * Wordcount fields and attributes
 
 May or may not be added:
 
+* Datetime Deltas
+* Bitmask weighting helper
 * Timezone support (for databases not using UTC)
 * Abstract Inheritance support (maybe - not sure this is something many of people want).
 * Capistrano Tasks
