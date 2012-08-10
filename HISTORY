@@ -1,3 +1,6 @@
+2.0.13 - August 10th 2012
+* 1.4.13 changes.
+
 2.0.12 - May 14th 2012
 * STI fix when generating WHERE clauses for sql_query.
 * 1.4.12 changes.
