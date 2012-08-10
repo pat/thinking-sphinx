@@ -4,7 +4,9 @@ class Riddle::Query::Select
     @indices               = []
     @matching              = nil
     @wheres                = {}
+    @where_alls            = {}
     @where_nots            = {}
+    @where_not_alls        = {}
     @group_by              = nil
     @order_by              = nil
     @order_within_group_by = nil
@@ -33,8 +35,18 @@ class Riddle::Query::Select
     self
   end
 
+  def where_all(filters = {})
+    @where_alls.merge!(filters)
+    self
+  end
+
   def where_not(filters = {})
     @where_nots.merge!(filters)
+    self
+  end
+
+  def where_not_all(filters = {})
+    @where_not_alls.merge!(filters)
     self
   end
 
@@ -85,13 +97,13 @@ class Riddle::Query::Select
   private
 
   def wheres?
-    !(@wheres.empty? && @where_nots.empty? && @matching.nil?)
+    !(@wheres.empty? && @where_alls.empty? && @where_nots.empty? && @where_not_alls.empty? && @matching.nil?)
   end
 
   def combined_wheres
     if @matching.nil?
       wheres_to_s
-    elsif @wheres.empty? && @where_nots.empty?
+    elsif @wheres.empty? && @where_nots.empty? && @where_alls.empty? && @where_not_alls.empty?
       "MATCH('#{@matching}')"
     else
       "MATCH('#{@matching}') AND #{wheres_to_s}"
@@ -103,10 +115,20 @@ class Riddle::Query::Select
       @wheres.keys.collect { |key|
         filter_comparison_and_value key, @wheres[key]
       } +
+      @where_alls.collect { |key, values|
+        values.collect { |value|
+          filter_comparison_and_value key, value
+        }
+      } +
       @where_nots.keys.collect { |key|
         exclusive_filter_comparison_and_value key, @where_nots[key]
+      } +
+      @where_not_alls.collect { |key, values|
+        '(' + values.collect { |value|
+          exclusive_filter_comparison_and_value key, value
+        }.join(' OR ') + ')'
       }
-    ).join(' AND ')
+    ).flatten.join(' AND ')
   end
 
   def filter_comparison_and_value(attribute, value)
