@@ -73,6 +73,10 @@ module Riddle
       end
     end
 
+    def rotate
+      pid && Process.kill(:HUP, pid.to_i)
+    end
+
     def running?
       !!pid && !!Process.kill(0, pid.to_i)
     rescue

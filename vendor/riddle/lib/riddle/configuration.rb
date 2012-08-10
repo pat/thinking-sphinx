@@ -10,6 +10,8 @@ require 'riddle/configuration/source'
 require 'riddle/configuration/sql_source'
 require 'riddle/configuration/xml_source'
 
+require 'riddle/configuration/parser'
+
 module Riddle
   class Configuration
     class ConfigurationError < StandardError #:nodoc:
@@ -17,6 +19,10 @@ module Riddle
 
     attr_reader :indices, :searchd
     attr_accessor :indexer
+
+    def self.parse!(input)
+      Riddle::Configuration::Parser.new(input).parse!
+    end
 
     def initialize
       @indexer = Riddle::Configuration::Indexer.new

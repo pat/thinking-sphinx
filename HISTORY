@@ -1,8 +1,3 @@
-Edge:
-* Add support for association-filtered faceting (Andrew White).
-* Cast PostgreSQL timestamps to their floored integers (instead of rounding up).
-* Don't add array_accum to PostgreSQL v80311 (8.3.?) or newer.
-
 2.0.12 - May 14th 2012
 * STI fix when generating WHERE clauses for sql_query.
 * 1.4.12 changes.
@@ -65,6 +60,13 @@ Edge:
 * Only load Thinking Sphinx if ActiveRecord is loaded (Matthew Higgins).
 * Rails 3 support.
 * 1.4.0 changes.
+
+1.4.13 - August 10th 2012
+* Sphinx 2.0.5 support.
+* Hard retries for Sphinx exceptions (Andrew Hunter).
+* Add support for association-filtered faceting (Andrew White).
+* Cast PostgreSQL timestamps to their floored integers (instead of rounding up).
+* Don't add array_accum to PostgreSQL v80311 (8.3.?) or newer.
 
 1.4.12 - May 14th 2012
 * Updating Riddle references to 1.5.2.
