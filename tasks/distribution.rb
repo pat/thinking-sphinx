@@ -8,7 +8,7 @@ Jeweler::Tasks.new do |gem|
   gem.author      = "Pat Allan"
   gem.email       = "pat@freelancing-gods.com"
   gem.homepage    = "http://ts.freelancing-gods.com"
-    
+
   # s.rubyforge_project = "thinking-sphinx"
   gem.files     = FileList[
     "rails/*.rb",
@@ -25,10 +25,10 @@ Jeweler::Tasks.new do |gem|
     "features/**/*.example.yml",
     "spec/**/*_spec.rb"
   ]
-  
+
   gem.post_install_message = <<-MESSAGE
 If you're upgrading, you should read this:
-http://freelancing-god.github.com/ts/en/upgrading.html
+http://pat.github.com/ts/en/upgrading.html
 
 MESSAGE
 end

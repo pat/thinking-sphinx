@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['Pat Allan']
   s.email       = ['pat@freelancing-gods.com']
-  s.homepage    = 'http://freelancing-god.github.com/ts/en/'
+  s.homepage    = 'http://pat.github.com/ts/en/'
   s.summary     = %q{ActiveRecord/Rails Sphinx library}
   s.description = %q{A concise and easy-to-use Ruby library that connects ActiveRecord to the Sphinx search daemon, managing configuration, indexing and searching.}
 
@@ -33,7 +33,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'yard',          '>= 0.7.2'
 
   s.post_install_message = %q{If you're upgrading, you should read this:
-http://freelancing-god.github.com/ts/en/upgrading.html
+http://pat.github.com/ts/en/upgrading.html
 
 }
 end
