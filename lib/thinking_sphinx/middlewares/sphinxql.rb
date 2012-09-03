@@ -31,22 +31,8 @@ class ThinkingSphinx::Middlewares::SphinxQL <
 
     attr_reader :context
 
-    def ancestors
-      classes_and_ancestors - classes
-    end
-
     def classes
       options[:classes] || []
-    end
-
-    def classes_and_ancestors
-      @classes_and_ancestors ||= classes.collect { |model|
-        model.ancestors.take_while { |klass|
-          klass != ActiveRecord::Base
-        }.select { |klass|
-          klass.class == Class
-        }
-      }.flatten
     end
 
     def classes_and_descendants
@@ -114,15 +100,7 @@ class ThinkingSphinx::Middlewares::SphinxQL <
     end
 
     def indices
-      context.configuration.preload_indices
-
-      return context.configuration.indices.select { |index|
-        options[:indices].include?(index.name)
-      } if options[:indices] && options[:indices].any?
-
-      return context.configuration.indices if classes.empty?
-
-      context.configuration.indices_for_references(*references)
+      @indices ||= ThinkingSphinx::IndexSet.new classes, options[:indices]
     end
 
     def options
@@ -136,21 +114,6 @@ class ThinkingSphinx::Middlewares::SphinxQL <
       else
         options[:order]
       end
-    end
-
-    def references
-      classes_and_ancestors.collect { |klass|
-        klass.name.underscore.to_sym
-      }
-    end
-
-    def reset_memos
-      @classes_and_ancestors = nil
-      @descendants           = nil
-      @exclusive_filters     = nil
-      @extended_query        = nil
-      @inclusive_filters     = nil
-      @select_options        = nil
     end
 
     def select_options

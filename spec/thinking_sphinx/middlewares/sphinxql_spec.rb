@@ -17,8 +17,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
   let(:context)       { {} }
   let(:search)        { double('search', :query => '', :options => {},
     :offset => 0, :per_page => 5) }
-  let(:configuration) { double('configuration', :preload_indices => true,
-    :indices => [], :indices_for_references => []) }
+  let(:index_set)     { [] }
   let(:sphinx_sql)    { double('sphinx_sql', :from => true, :offset => true,
     :limit => true, :where => true, :matching => true) }
   let(:query)         { double('query') }
@@ -27,19 +26,14 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
     stub_const 'Riddle::Query::Select', double(:new => sphinx_sql)
     stub_const 'ThinkingSphinx::Search::Query', double(:new => query)
     stub_const 'ThinkingSphinx::Masks::GroupEnumeratorsMask', double
+    stub_const 'ThinkingSphinx::IndexSet', double(:new => index_set)
 
-    context.stub :search => search, :configuration => configuration
+    context.stub :search => search
   end
 
   describe '#call' do
-    it "ensures the indices are loaded" do
-      configuration.should_receive(:preload_indices)
-
-      middleware.call [context]
-    end
-
-    it "uses all indices if not scoped to any models" do
-      configuration.stub :indices => [
+    it "uses the indexes for the FROM clause" do
+      index_set.replace [
         double('index', :name => 'article_core'),
         double('index', :name => 'user_core')
       ]
@@ -50,50 +44,14 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       middleware.call [context]
     end
 
-    it "uses indices for the given classes" do
-      model = Class.new(ActiveRecord::Base) do
-        def self.name; 'Article'; end
-        def self.column_names; []; end
-        def self.inheritance_column; 'type'; end
-      end
+    it "finds index objects for the given models and indices options" do
+      klass = double(:column_names => [], :inheritance_column => 'type',
+        :name => 'User')
+      search.options[:classes] = [klass]
+      search.options[:indices] = ['user_core']
 
-      search.options[:classes] = [model]
-
-      configuration.should_receive(:indices_for_references).with(:article).
-        and_return([])
-
-      middleware.call [context]
-    end
-
-    it "requests indices for any superclasses" do
-      supermodel = Class.new(ActiveRecord::Base) do
-        def self.name; 'Article'; end
-        def self.column_names; []; end
-        def self.inheritance_column; 'type'; end
-      end
-      submodel   = Class.new(supermodel) do
-        def self.name; 'OpinionArticle'; end
-        def self.column_names; []; end
-        def self.inheritance_column; 'type'; end
-      end
-
-      search.options[:classes] = [submodel]
-
-      configuration.should_receive(:indices_for_references).
-        with(:opinion_article, :article).and_return([])
-
-      middleware.call [context]
-    end
-
-    it "uses named indices if names are provided" do
-      configuration.stub :indices => [
-        double('index', :name => 'article_core'),
-        double('index', :name => 'user_core')
-      ]
-      search.options[:indices] = ['article_core']
-
-      sphinx_sql.should_receive(:from).with('`article_core`').
-        and_return(sphinx_sql)
+      ThinkingSphinx::IndexSet.should_receive(:new).
+        with([klass], ['user_core']).and_return(index_set)
 
       middleware.call [context]
     end
