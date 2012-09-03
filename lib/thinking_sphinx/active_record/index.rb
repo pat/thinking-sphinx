@@ -20,6 +20,11 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
     @options[:delta_processor].try(:new, adapter)
   end
 
+  def facets
+    @facets ||= sources.collect(&:attributes).flatten.select(&:facet?).
+      collect(&:name)
+  end
+
   def unique_attribute_names
     sources.collect(&:attributes).flatten.collect(&:name)
   end

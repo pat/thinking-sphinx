@@ -14,6 +14,11 @@ module ThinkingSphinx::ActiveRecord::Base
   end
 
   module ClassMethods
+    def facets(query = nil, options = {})
+      search = ThinkingSphinx.facets query, options
+      ThinkingSphinx::Search::Merger.new(search).merge! nil, :classes => [self]
+    end
+
     def search(query = nil, options = {})
       search = ThinkingSphinx.search query, options
       ThinkingSphinx::Search::Merger.new(search).merge! nil, :classes => [self]

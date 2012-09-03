@@ -8,6 +8,10 @@ module ThinkingSphinx
     search(query, options).total_entries
   end
 
+  def self.facets(query = '', options = {})
+    ThinkingSphinx::FacetSearch.new query, options
+  end
+
   def self.search(query = '', options = {})
     ThinkingSphinx::Search.new query, options
   end
@@ -24,6 +28,7 @@ require 'thinking_sphinx/callbacks'
 require 'thinking_sphinx/core'
 require 'thinking_sphinx/configuration'
 require 'thinking_sphinx/excerpter'
+require 'thinking_sphinx/facet_search'
 require 'thinking_sphinx/index'
 require 'thinking_sphinx/index_set'
 require 'thinking_sphinx/masks'

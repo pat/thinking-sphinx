@@ -27,6 +27,11 @@ ActiveRecord::Schema.define do
     t.float  :lng
   end
 
+  create_table(:colours, :force => true) do |t|
+    t.string :name
+    t.timestamps
+  end
+
   create_table(:products, :force => true) do |t|
     t.string :name
   end
@@ -39,6 +44,11 @@ ActiveRecord::Schema.define do
 
   create_table(:tags, :force => true) do |t|
     t.string :name
+    t.timestamps
+  end
+
+  create_table(:tees, :force => true) do |t|
+    t.integer :colour_id
     t.timestamps
   end
 
