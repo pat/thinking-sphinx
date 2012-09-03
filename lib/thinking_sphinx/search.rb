@@ -108,7 +108,6 @@ class ThinkingSphinx::Search < Array
   end
 end
 
-require 'thinking_sphinx/search/batch'
 require 'thinking_sphinx/search/batch_inquirer'
 require 'thinking_sphinx/search/context'
 require 'thinking_sphinx/search/glaze'

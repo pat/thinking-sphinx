@@ -6,7 +6,7 @@ describe 'Executing multiple searches in one Sphinx call', :live => true do
     waffles  = Article.create! :title => 'Waffles'
     index
 
-    batch = ThinkingSphinx::Search::Batch.new
+    batch = ThinkingSphinx::BatchedSearch.new
     batch.searches << Article.search('pancakes')
     batch.searches << Article.search('waffles')
 

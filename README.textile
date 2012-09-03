@@ -96,7 +96,7 @@ end</code></pre>
 
 * Batched/Bulk searches are done pretty similarly as in the past - here's a code sample that'll only hit Sphinx once:
 
-<pre><code>batch = ThinkingSphinx::Search::Batch.new
+<pre><code>batch = ThinkingSphinx::BatchedSearch.new
 batch.searches << Article.search('foo')
 batch.searches << Article.search(:conditions => {:name => 'bar'})
 batch.searches << Article.search_for_ids('baz')

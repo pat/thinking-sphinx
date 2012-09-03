@@ -1,4 +1,4 @@
-class ThinkingSphinx::Search::Batch
+class ThinkingSphinx::BatchedSearch
   attr_accessor :searches
 
   def initialize
@@ -6,7 +6,7 @@ class ThinkingSphinx::Search::Batch
   end
 
   def populate
-    return if populated?
+    return if populated? || searches.empty?
 
     ThinkingSphinx::Middlewares::DEFAULT.call contexts
     searches.each &:populated!
