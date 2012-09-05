@@ -112,12 +112,6 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
       @person.send(:index_delta)
     end
 
-    it "shouldn't update the deleted attribute if not in the index" do
-      @client.should_not_receive(:update)
-
-      @person.send(:index_delta)
-    end
-
     it "should update the deleted attribute if in the core index" do
       Person.stub!(:search_for_id => true)
       @client.should_receive(:update)
