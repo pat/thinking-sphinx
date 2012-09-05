@@ -273,7 +273,6 @@ describe ThinkingSphinx::ActiveRecord do
 
       @configuration.stub!(:client => @client)
       Person.sphinx_indexes.each { |index| index.stub!(:delta? => false) }
-      Person.stub!(:search_for_id => true)
     end
 
     it "should update the core index's deleted flag if in core index" do
@@ -284,19 +283,9 @@ describe ThinkingSphinx::ActiveRecord do
       @person.toggle_deleted
     end
 
-    it "shouldn't update the core index's deleted flag if the record isn't in it" do
-      Person.stub!(:search_for_id => false)
-      @client.should_not_receive(:update).with(
-        "person_core", ["sphinx_deleted"], {@person.sphinx_document_id => [1]}
-      )
-
-      @person.toggle_deleted
-    end
-
     it "shouldn't attempt to update the deleted flag if sphinx isn't running" do
       ThinkingSphinx.stub!(:sphinx_running? => false)
       @client.should_not_receive(:update)
-      Person.should_not_receive(:search_for_id)
 
       @person.toggle_deleted
     end
@@ -493,14 +482,6 @@ describe ThinkingSphinx::ActiveRecord do
       @client = stub('client')
       ThinkingSphinx.stub!(:sphinx_running? => true)
       ThinkingSphinx::Configuration.instance.stub!(:client => @client)
-      Alpha.stub!(:search_for_id => true)
-    end
-
-    it "should not update if the document isn't in the given index" do
-      Alpha.stub!(:search_for_id => false)
-      @client.should_not_receive(:update)
-
-      Alpha.delete_in_index('alpha_core', 42)
     end
 
     it "should direct the update to the supplied index" do
