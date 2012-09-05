@@ -1309,7 +1309,7 @@ describe ThinkingSphinx::Search do
         :matches => [],
         :words => {'one' => {}, 'two' => {}}
       })
-      @search = ThinkingSphinx::Search.new(:classes => [Alpha])
+      @search = ThinkingSphinx::Search.new('reading comprehension', :classes => [Alpha])
     end
 
     it "should return the Sphinx excerpt value" do
@@ -1341,9 +1341,9 @@ describe ThinkingSphinx::Search do
       @search.excerpt_for('string', Beta)
     end
 
-    it "should join the words together" do
+    it "should use the query string" do
       @client.should_receive(:excerpts) do |options|
-        options[:words].should == @search.results[:words].keys.join(' ')
+        options[:words].should == 'reading comprehension'
       end
 
       @search.excerpt_for('string', Beta)
