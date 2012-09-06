@@ -104,7 +104,14 @@ module ThinkingSphinx
       method = value_source || column.__name
       object = objects.one? ? objects.first : objects.detect { |item|
         result = item.send(method)
-        result && result.to_crc32 == attribute_value
+        case result
+        when String
+          result.to_crc32 == attribute_value
+        when NilClass
+          false
+        else
+          result == attribute_value
+        end
       }
 
       object.try(method)
