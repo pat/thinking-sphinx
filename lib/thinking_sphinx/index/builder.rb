@@ -1,4 +1,4 @@
-require 'blankslate'
+require 'blankslate' unless defined?(BasicObject)
 
 module ThinkingSphinx
   class Index
@@ -14,7 +14,7 @@ module ThinkingSphinx
     # set_property allows you to set some settings on a per-index basis. Check
     # out each method's documentation for better ideas of usage.
     #
-    class Builder < BlankSlate
+    class Builder < (defined?(BasicObject) ? BasicObject : BlankSlate)
       def self.generate(model, name = nil, &block)
         index  = ThinkingSphinx::Index.new(model)
         index.name = name unless name.nil?
