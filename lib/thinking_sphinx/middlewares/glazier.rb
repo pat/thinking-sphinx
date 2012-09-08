@@ -31,8 +31,8 @@ class ThinkingSphinx::Middlewares::Glazier <
 
     def row_for(result)
       context[:raw].detect { |row|
-        row['sphinx_internal_class_attr'] == result.class.name &&
-        row['sphinx_internal_id']         == result.id
+        row['sphinx_internal_class'] == result.class.name &&
+        row['sphinx_internal_id']    == result.id
       }
     end
   end

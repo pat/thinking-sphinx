@@ -14,7 +14,7 @@ describe ThinkingSphinx::Middlewares::StaleIdChecker do
   let(:model)      { double('model') }
 
   def raw_result(id, model_name)
-    {'sphinx_internal_id' => id, 'sphinx_internal_class_attr' => model_name}
+    {'sphinx_internal_id' => id, 'sphinx_internal_class' => model_name}
   end
 
   describe '#call' do

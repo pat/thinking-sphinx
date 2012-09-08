@@ -27,7 +27,7 @@ class ThinkingSphinx::Middlewares::ActiveRecordTranslator <
 
     def ids_for_model(model_name)
       context[:results].select { |row|
-        row['sphinx_internal_class_attr'] == model_name
+        row['sphinx_internal_class'] == model_name
       }.collect { |row|
         row['sphinx_internal_id']
       }
@@ -35,7 +35,7 @@ class ThinkingSphinx::Middlewares::ActiveRecordTranslator <
 
     def model_names
       @model_names ||= context[:results].collect { |row|
-        row['sphinx_internal_class_attr']
+        row['sphinx_internal_class']
       }.uniq
     end
 
@@ -45,7 +45,7 @@ class ThinkingSphinx::Middlewares::ActiveRecordTranslator <
     end
 
     def result_for(row)
-      results_for_models[row['sphinx_internal_class_attr']].detect { |record|
+      results_for_models[row['sphinx_internal_class']].detect { |record|
         record.id == row['sphinx_internal_id']
       }
     end

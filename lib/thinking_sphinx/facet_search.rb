@@ -18,17 +18,25 @@ class ThinkingSphinx::FacetSearch
 
     batch = ThinkingSphinx::BatchedSearch.new
     facets.each do |facet|
-      batch.searches << ThinkingSphinx::Search.new(query, options.merge(:group_by => facet))
+      search = ThinkingSphinx::Search.new query, options.merge(
+        :group_by => facet,
+        :indices  => index_names_for(facet)
+      )
+      batch.searches << search
     end
 
     batch.populate
 
     batch.searches.each do |search|
-      @hash[search.options[:group_by].to_sym] = search.raw.inject({}) { |set, row|
-        set[row['@groupby']] = row['@count']
+      key = search.options[:group_by]
+
+      @hash[key.to_sym] = search.raw.inject({}) { |set, row|
+        set[row[key]] = row['@count']
         set
       }
     end
+
+    @hash[:class] = @hash[:sphinx_internal_class]
 
     @populated = true
   end
@@ -42,7 +50,11 @@ class ThinkingSphinx::FacetSearch
   private
 
   def facets
-    indices.collect(&:facets).flatten
+    @facets ||= indices.collect(&:facets).flatten
+  end
+
+  def index_names_for(facet)
+    indices.select { |index| index.facets.include?(facet) }.collect &:name
   end
 
   def indices

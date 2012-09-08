@@ -16,7 +16,7 @@ describe ThinkingSphinx::Middlewares::Glazier do
   let(:search)        { double('search', :options => {}) }
   let(:glazed_result) { double('glazed result') }
   let(:raw_result) {
-    {'sphinx_internal_class_attr' => 'Article', 'sphinx_internal_id' => 10} }
+    {'sphinx_internal_class' => 'Article', 'sphinx_internal_id' => 10} }
 
   describe '#call' do
     before :each do

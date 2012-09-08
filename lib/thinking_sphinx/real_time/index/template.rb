@@ -8,9 +8,8 @@ class ThinkingSphinx::RealTime::Index::Template
   def apply
     add_field class_column, :sphinx_internal_class
 
-    add_attribute class_column, :sphinx_internal_class_attr, :string
-    add_attribute :id,          :sphinx_internal_id,         :integer
-    add_attribute 0,            :sphinx_deleted,             :integer
+    add_attribute :id, :sphinx_internal_id, :integer
+    add_attribute 0,   :sphinx_deleted,     :integer
   end
 
   private

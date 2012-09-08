@@ -16,7 +16,7 @@ class ThinkingSphinx::Search::Translator
 
   def ids_for_model(model_name)
     raw.select { |row|
-      row['sphinx_internal_class_attr'] == model_name
+      row['sphinx_internal_class'] == model_name
     }.collect { |row|
       row['sphinx_internal_id']
     }
@@ -24,12 +24,12 @@ class ThinkingSphinx::Search::Translator
 
   def model_names
     @model_names ||= raw.collect { |row|
-      row['sphinx_internal_class_attr']
+      row['sphinx_internal_class']
     }.uniq
   end
 
   def result_for(row)
-    results_for_models[row['sphinx_internal_class_attr']].detect { |record|
+    results_for_models[row['sphinx_internal_class']].detect { |record|
       record.id == row['sphinx_internal_id']
     }
   end

@@ -1,7 +1,7 @@
 require 'acceptance/spec_helper'
 
 describe 'Faceted searching', :live => true do
-  it "provides facet breakdowns across marked attributes" do
+  it "provides facet breakdowns across marked integer attributes" do
     blue  = Colour.create! :name => 'blue'
     red   = Colour.create! :name => 'red'
     green = Colour.create! :name => 'green'
@@ -14,8 +14,30 @@ describe 'Faceted searching', :live => true do
     Tee.create! :colour => green
     index
 
-    Tee.facets.to_hash.should == {
-      :colour_id => {blue.id => 2, red.id => 1, green.id => 3}
+    Tee.facets.to_hash[:colour_id].should == {
+      blue.id => 2, red.id => 1, green.id => 3
+    }
+  end
+
+  it "provides facet breakdowns across classes" do
+    Tee.create!
+    Tee.create!
+    City.create!
+    index
+
+    ThinkingSphinx.facets.to_hash[:class].should == {
+      'Tee' => 2, 'City' => 1
+    }
+  end
+
+  it "handles field facets" do
+    Book.create :title => 'American Gods', :author => 'Neil Gaiman'
+    Book.create :title => 'Anansi Boys',   :author => 'Neil Gaiman'
+    Book.create :title => 'Snuff',         :author => 'Terry Pratchett'
+    index
+
+    Book.facets.to_hash[:author].should == {
+      'Neil Gaiman' => 2, 'Terry Pratchett' => 1
     }
   end
 end

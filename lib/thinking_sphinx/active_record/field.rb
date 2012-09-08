@@ -6,6 +6,6 @@ class ThinkingSphinx::ActiveRecord::Field <
   end
 
   def with_attribute?
-    options[:sortable]
+    options[:sortable] || options[:facet]
   end
 end

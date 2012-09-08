@@ -4,10 +4,6 @@ class ThinkingSphinx::ActiveRecord::Attribute <
   delegate :type, :type=, :multi?, :updateable?, :to => :typist
   delegate :value_for,                           :to => :values
 
-  def facet?
-    options[:facet]
-  end
-
   private
 
   def typist

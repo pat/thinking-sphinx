@@ -10,6 +10,10 @@ class ThinkingSphinx::ActiveRecord::Property
     }
   end
 
+  def facet?
+    options[:facet]
+  end
+
   def multi?
     false
   end

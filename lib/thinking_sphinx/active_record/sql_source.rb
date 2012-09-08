@@ -46,6 +46,10 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
     options[:disable_range?]
   end
 
+  def facets
+    properties.select(&:facet?).collect(&:name)
+  end
+
   def offset
     options[:offset]
   end
@@ -114,6 +118,10 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
     @sql_query_pre  += builder.sql_query_pre
 
     @prepared = true
+  end
+
+  def properties
+    fields + attributes
   end
 
   def set_database_settings

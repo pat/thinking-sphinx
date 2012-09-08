@@ -34,11 +34,6 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
     it "has the internal deleted attribute by default" do
       source.attributes.collect(&:name).should include('sphinx_deleted')
     end
-
-    it "has the internal class name attribute by default" do
-      source.attributes.collect(&:name).
-        should include('sphinx_internal_class_attr')
-    end
   end
 
   describe '#delta_processor' do
@@ -100,6 +95,12 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
         field.name == 'sphinx_internal_class'
       }.columns.first.__name.
         should == "ifnull(type, 'User')"
+    end
+
+    it "marks the internal class field as a facet" do
+      source.fields.detect { |field|
+        field.name == 'sphinx_internal_class'
+      }.options[:facet].should be_true
     end
   end
 
