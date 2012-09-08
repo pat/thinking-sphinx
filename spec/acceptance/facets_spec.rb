@@ -31,13 +31,33 @@ describe 'Faceted searching', :live => true do
   end
 
   it "handles field facets" do
-    Book.create :title => 'American Gods', :author => 'Neil Gaiman'
-    Book.create :title => 'Anansi Boys',   :author => 'Neil Gaiman'
-    Book.create :title => 'Snuff',         :author => 'Terry Pratchett'
+    Book.create! :title => 'American Gods', :author => 'Neil Gaiman'
+    Book.create! :title => 'Anansi Boys',   :author => 'Neil Gaiman'
+    Book.create! :title => 'Snuff',         :author => 'Terry Pratchett'
     index
 
     Book.facets.to_hash[:author].should == {
       'Neil Gaiman' => 2, 'Terry Pratchett' => 1
+    }
+  end
+
+  it "handles MVA facets" do
+    pancakes = Tag.create! :name => 'pancakes'
+    waffles  = Tag.create! :name => 'waffles'
+
+    user = User.create!
+    Tagging.create! :article => Article.create!(:user => user),
+      :tag => pancakes
+    Tagging.create! :article => Article.create!(:user => user),
+      :tag => waffles
+
+    user = User.create!
+    Tagging.create! :article => Article.create!(:user => user),
+      :tag => pancakes
+    index
+
+    User.facets.to_hash[:tag_ids].should == {
+      pancakes.id => 2, waffles.id => 1
     }
   end
 end

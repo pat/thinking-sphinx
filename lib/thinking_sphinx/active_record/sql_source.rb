@@ -47,7 +47,7 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
   end
 
   def facets
-    properties.select(&:facet?).collect(&:name)
+    properties.select(&:facet?)
   end
 
   def offset

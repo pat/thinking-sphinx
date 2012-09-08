@@ -1,13 +1,16 @@
 module ThinkingSphinx; end
 
 require 'thinking_sphinx/facet_search'
+require 'thinking_sphinx/facet'
 
 describe ThinkingSphinx::FacetSearch do
   let(:facet_search)  { ThinkingSphinx::FacetSearch.new '', {} }
   let(:batch)         { double('batch', :searches => [], :populate => true) }
   let(:index_set)     { [] }
-  let(:index)         { double('index', :facets => ['price_bracket'],
-      :name => 'foo_core') }
+  let(:index)         { double('index', :facets => [property],
+    :name => 'foo_core') }
+  let(:property)      { double('property', :name => 'price_bracket',
+    :multi? => false)}
 
   before :each do
     stub_const 'ThinkingSphinx::IndexSet',      double(:new => index_set)
@@ -22,7 +25,9 @@ describe ThinkingSphinx::FacetSearch do
       [{
         'sphinx_internal_class' => 'Foo',
         'price_bracket'         => 3,
-        '@count'                => 5
+        'tag_ids'               => '1,2',
+        '@count'                => 5,
+        '@groupby'              => 2
       }]
     end
   end
@@ -51,11 +56,19 @@ describe ThinkingSphinx::FacetSearch do
     end
 
     it "aliases the class facet from sphinx_internal_class" do
-      index.facets.replace ['sphinx_internal_class']
+      property.stub :name => 'sphinx_internal_class'
 
       facet_search.populate
 
       facet_search[:class].should == {'Foo' => 5}
+    end
+
+    it "uses the @groupby value for MVAs" do
+      property.stub :name => 'tag_ids', :multi? => true
+
+      facet_search.populate
+
+      facet_search[:tag_ids].should == {2 => 5}
     end
   end
 end
