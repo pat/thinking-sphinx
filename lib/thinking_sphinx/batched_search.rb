@@ -5,10 +5,10 @@ class ThinkingSphinx::BatchedSearch
     @searches = []
   end
 
-  def populate
+  def populate(middleware = ThinkingSphinx::Middlewares::DEFAULT)
     return if populated? || searches.empty?
 
-    ThinkingSphinx::Middlewares::DEFAULT.call contexts
+    middleware.call contexts
     searches.each &:populated!
 
     @populated = true

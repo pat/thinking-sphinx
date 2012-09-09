@@ -22,6 +22,12 @@ ThinkingSphinx::Middlewares::DEFAULT = ::Middleware::Builder.new do
   use ThinkingSphinx::Middlewares::Glazier
 end
 
+ThinkingSphinx::Middlewares::RAW_ONLY = ::Middleware::Builder.new do
+  use ThinkingSphinx::Middlewares::SphinxQL
+  use ThinkingSphinx::Middlewares::Geographer
+  use ThinkingSphinx::Middlewares::Inquirer
+end
+
 ThinkingSphinx::Middlewares::IDS_ONLY = ::Middleware::Builder.new do
   use ThinkingSphinx::Middlewares::SphinxQL
   use ThinkingSphinx::Middlewares::Geographer

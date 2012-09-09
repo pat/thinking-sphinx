@@ -35,7 +35,7 @@ class ThinkingSphinx::FacetSearch
       batch.searches << search
     end
 
-    batch.populate
+    batch.populate ThinkingSphinx::Middlewares::RAW_ONLY
 
     facets.each_with_index do |facet, index|
       @hash[facet.name.to_sym] = facet.results_from batch.searches[index].raw
