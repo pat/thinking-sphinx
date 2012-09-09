@@ -194,6 +194,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
     it "appends a group by clause to the query" do
       search.options[:group_by] = :foreign_id
       search.stub :masks => []
+      sphinx_sql.stub :values => sphinx_sql
 
       sphinx_sql.should_receive(:group_by).with('foreign_id').
         and_return(sphinx_sql)
@@ -204,7 +205,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
     it "adds the group enumerator mask when using :group_by" do
       search.options[:group_by] = :foreign_id
       search.stub :masks => []
-      sphinx_sql.stub :group_by => sphinx_sql
+      sphinx_sql.stub :group_by => sphinx_sql, :values => sphinx_sql
 
       middleware.call [context]
 

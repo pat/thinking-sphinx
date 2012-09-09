@@ -87,12 +87,14 @@ end</code></pre>
 * The @each_with_group@, @each_with_count@ and @each_with_group_and_count@ enumerators are available when using the @:group_by@ option (but are otherwise not available to search objects). Please note the spelling - older versions of Thinking Sphinx allowed for groupby and group, this is no longer the case.
 * @each_with_weight@ (again, note that it's weight, not weighting) is available, but not by default. Here's an example of how to have it part of the search object:
 
-<pre><code>search = Article.search('pancakes')
+<pre><code>search = Article.search('pancakes', :select => '*, @weight')
 search.masks << ThinkingSphinx::Masks::WeightEnumeratorMask
 
 search.each_with_weight do |article, weight|
   # ...
 end</code></pre>
+
+You'll also note here that I'm specifying the internal weight attribute. This is necessary for edge Sphinx post 2.0.5.
 
 * Batched/Bulk searches are done pretty similarly as in the past - here's a code sample that'll only hit Sphinx once:
 

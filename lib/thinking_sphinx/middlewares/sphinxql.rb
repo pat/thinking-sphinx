@@ -142,6 +142,7 @@ class ThinkingSphinx::Middlewares::SphinxQL <
     end
 
     def values
+      options[:select] ||= '*, @groupby, @count' if group_attribute.present?
       options[:select]
     end
   end

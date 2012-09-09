@@ -4,6 +4,6 @@ class ThinkingSphinx::Panes::WeightPane
   end
 
   def weight
-    @raw['weight']
+    @raw['@weight']
   end
 end

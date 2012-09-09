@@ -37,6 +37,7 @@ class ThinkingSphinx::FacetSearch
     batch = ThinkingSphinx::BatchedSearch.new
     facets.each do |facet|
       search = ThinkingSphinx::Search.new query, options.merge(
+        :select   => '*, @groupby, @count',
         :group_by => facet.name,
         :indices  => index_names_for(facet)
       )
