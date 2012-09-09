@@ -14,21 +14,13 @@ class ThinkingSphinx::FacetSearch
   end
 
   def for(facet_values)
-    filter_facets = facet_values.keys.inject({}) { |hash, key|
-      hash[key] = facets.detect { |facet| facet.name == key.to_s }
-      hash
+    filter_facets = facet_values.keys.collect { |key|
+      facets.detect { |facet| facet.name == key.to_s }
     }
 
-    filter_options = {
-      :indices    => index_names_for(*filter_facets.values),
-      :with       => {},
-      :conditions => {}
-    }
-    facet_values.keys.each { |key|
-      filter_options[filter_facets[key].filter_type][key] = facet_values[key]
-    }
-
-    ThinkingSphinx::Search.new query, options.merge(filter_options)
+    ThinkingSphinx::Search.new query, options.merge(
+      :indices => index_names_for(*filter_facets)
+    ).merge(Filter.new(facets, facet_values).to_hash)
   end
 
   def populate
@@ -83,5 +75,20 @@ class ThinkingSphinx::FacetSearch
   def indices
     @indices ||= ThinkingSphinx::IndexSet.new options[:classes],
       options[:indices]
+  end
+
+  class Filter
+    def initialize(facets, hash)
+      @facets, @hash = facets, hash
+    end
+
+    def to_hash
+      @hash.keys.inject({}) { |options, key|
+        type = @facets.detect { |facet| facet.name == key.to_s }.filter_type
+        options[type] ||= {}
+        options[type][key] = @hash[key]
+        options
+      }
+    end
   end
 end
