@@ -96,4 +96,27 @@ describe 'Faceted searching', :live => true do
 
     Book.facets.for(:author => 'Neil Gaiman').to_a.should == [gods, boys]
   end
+
+  it "allows enumeration" do
+    blue  = Colour.create! :name => 'blue'
+    red   = Colour.create! :name => 'red'
+
+    b1 = Tee.create! :colour => blue
+    b2 = Tee.create! :colour => blue
+    r1 = Tee.create! :colour => red
+    index
+
+    calls = 0
+    expectations = [
+      [:sphinx_internal_class, {'Tee' => 3}],
+      [:colour_id, {blue.id => 2, red.id => 1}],
+      [:class, {'Tee' => 3}]
+    ]
+    Tee.facets.each do |facet, hash|
+      facet.should == expectations[calls].first
+      hash.should == expectations[calls].last
+
+      calls += 1
+    end
+  end
 end

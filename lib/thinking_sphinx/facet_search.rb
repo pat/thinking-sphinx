@@ -1,4 +1,6 @@
 class ThinkingSphinx::FacetSearch
+  include Enumerable
+
   attr_reader :query, :options
 
   def initialize(query = nil, options = {})
@@ -11,6 +13,12 @@ class ThinkingSphinx::FacetSearch
     populate
 
     @hash[key]
+  end
+
+  def each(&block)
+    populate
+
+    @hash.each(&block)
   end
 
   def for(facet_values)
