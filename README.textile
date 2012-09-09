@@ -112,6 +112,7 @@ batch.searches #=> [[foo results], [bar results], [baz results]]</code></pre>
 * If you're creating a multi-value attribute manually (using a SQL snippet), then in the definition pass in @:multi => true@, but @:type@ should be set as well, to one of the MVA types that Sphinx supports (@:integer@, @:timestamp@, or @:boolean@).
 * Automatic updates of non-string attributes are still limited to those from columns on the model in question, and is disabled by default. To enable it, just set attribute_updates to true in your @config/sphinx.yml@.
 * Search result helper methods are no longer injected into the actual result objects. Read the section below on search results, glazes and panes.
+* If you're using string facets, make sure they're defined as fields, not strings. There is currently no support for multi-value string facets.
 
 h2. Search Middleware
 
@@ -147,10 +148,6 @@ Basic indexing and searching should be fine. There's currently no facets, and li
 
 Lists of what still needs to be implemented, in no particular order but in groups of vague importance:
 
-Required for Pre-Release:
-
-* Facets
-
 Required for Release Candidate:
 
 * Query and Ranged Query sources for Attributes and Fields
@@ -174,6 +171,7 @@ May or may not be added:
 * Timezone support (for databases not using UTC)
 * Abstract Inheritance support (maybe - not sure this is something many of people want).
 * Capistrano Tasks
+* Facet support for arrays of strings.
 
 h3. Sphinx Versions
 
