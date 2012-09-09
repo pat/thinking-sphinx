@@ -60,4 +60,40 @@ describe 'Faceted searching', :live => true do
       pancakes.id => 2, waffles.id => 1
     }
   end
+
+  it "can filter on integer facet results" do
+    blue  = Colour.create! :name => 'blue'
+    red   = Colour.create! :name => 'red'
+
+    b1 = Tee.create! :colour => blue
+    b2 = Tee.create! :colour => blue
+    r1 = Tee.create! :colour => red
+    index
+
+    Tee.facets.for(:colour_id => blue.id).to_a.should == [b1, b2]
+  end
+
+  it "can filter on MVA facet results" do
+    pancakes = Tag.create! :name => 'pancakes'
+    waffles  = Tag.create! :name => 'waffles'
+
+    u1 = User.create!
+    Tagging.create! :article => Article.create!(:user => u1), :tag => pancakes
+    Tagging.create! :article => Article.create!(:user => u1), :tag => waffles
+
+    u2 = User.create!
+    Tagging.create! :article => Article.create!(:user => u2), :tag => pancakes
+    index
+
+    User.facets.for(:tag_ids => waffles.id).to_a.should == [u1]
+  end
+
+  it "can filter on string facet results" do
+    gods  = Book.create! :title => 'American Gods', :author => 'Neil Gaiman'
+    boys  = Book.create! :title => 'Anansi Boys', :author => 'Neil Gaiman'
+    snuff = Book.create! :title => 'Snuff', :author => 'Terry Pratchett'
+    index
+
+    Book.facets.for(:author => 'Neil Gaiman').to_a.should == [gods, boys]
+  end
 end
