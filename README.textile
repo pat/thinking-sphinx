@@ -1,6 +1,6 @@
 h1. Thinking Sphinx
 
-Welcome to Thinking Sphinx version 3 - a complete rewrite from past versions. Right now it is a work-in-progress, missing many of the features in TS 2 and earlier. It's also currently built for Rails 3 only.
+Welcome to Thinking Sphinx version 3 - a complete rewrite from past versions. Right now it is a work-in-progress, though it does include most of the more popular features from TS 2 and earlier. It's also currently built for Rails 3.1 or newer only.
 
 Still interested? Well, read on!
 
@@ -146,7 +146,7 @@ If you wish to add your own panes, go ahead. The only requirement is that the in
 
 h2. Limitations
 
-Basic indexing and searching should be fine. There's currently no facets, and limited delta support. Many settings haven't yet been brought across. Many of the smaller features don't yet exist either. Some may actually not return... we'll see.
+Basic indexing and searching should be fine. There's currently only limited basic delta support. Some settings haven't yet been brought across. Many of the smaller features don't yet exist either. Some may actually not return... we'll see.
 
 Lists of what still needs to be implemented, in no particular order but in groups of vague importance:
 
@@ -203,4 +203,4 @@ For some ideas behind my current approach, have a look through @sketchpad.rb@ in
 
 h2. Licence
 
-Copyright (c) 2011, Thinking Sphinx is developed and maintained by Pat Allan, and is released under the open MIT Licence. Many thanks to "all who have contributed patches":https://github.com/freelancing-god/thinking-sphinx/contributors.
+Copyright (c) 2007-2012, Thinking Sphinx is developed and maintained by Pat Allan, and is released under the open MIT Licence. Many thanks to "all who have contributed patches":https://github.com/freelancing-god/thinking-sphinx/contributors.
