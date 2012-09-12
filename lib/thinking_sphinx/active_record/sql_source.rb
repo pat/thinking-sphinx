@@ -126,7 +126,8 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
 
   def set_database_settings
     @sql_host ||= database_settings[:host]     || 'localhost'
-    @sql_user ||= database_settings[:username] || database_settings[:user]
+    @sql_user ||= database_settings[:username] || database_settings[:user] ||
+      ENV['USER']
     @sql_pass ||= database_settings[:password].to_s.gsub('#', '\#')
     @sql_db   ||= database_settings[:database]
     @sql_port ||= database_settings[:port]
