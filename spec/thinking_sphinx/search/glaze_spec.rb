@@ -2,7 +2,6 @@ module ThinkingSphinx
   class Search; end
 end
 
-require 'blankslate'
 require 'thinking_sphinx/search/glaze'
 
 describe ThinkingSphinx::Search::Glaze do

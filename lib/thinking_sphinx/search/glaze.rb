@@ -1,4 +1,4 @@
-class ThinkingSphinx::Search::Glaze < BlankSlate
+class ThinkingSphinx::Search::Glaze < BasicObject
   def initialize(context, object, raw = {}, pane_classes = [])
     @object, @raw = object, raw
 

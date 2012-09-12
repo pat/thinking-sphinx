@@ -1,5 +1,4 @@
 require 'riddle'
-require 'blankslate'
 require 'middleware'
 require 'active_record'
 
