@@ -1,15 +1,17 @@
-class ThinkingSphinx::RealTime::Interpreter < ThinkingSphinx::Core::Interpreter
+class ThinkingSphinx::RealTime::Interpreter <
+  ::ThinkingSphinx::Core::Interpreter
+
   def has(*columns)
     options = columns.extract_options!
     @index.attributes += columns.collect { |column|
-      ThinkingSphinx::RealTime::Attribute.new column, options
+      ::ThinkingSphinx::RealTime::Attribute.new column, options
     }
   end
 
   def indexes(*columns)
     options = columns.extract_options!
     @index.fields += columns.collect { |column|
-      ThinkingSphinx::RealTime::Field.new column, options
+      ::ThinkingSphinx::RealTime::Field.new column, options
     }
   end
 

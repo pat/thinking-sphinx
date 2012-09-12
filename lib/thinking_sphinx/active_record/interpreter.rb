@@ -1,5 +1,5 @@
 class ThinkingSphinx::ActiveRecord::Interpreter <
-  ThinkingSphinx::Core::Interpreter
+  ::ThinkingSphinx::Core::Interpreter
 
   def group_by(*columns)
     __source.groupings += columns
@@ -7,19 +7,19 @@ class ThinkingSphinx::ActiveRecord::Interpreter <
 
   def has(*columns)
     __source.attributes += build_properties(
-      ThinkingSphinx::ActiveRecord::Attribute, columns
+      ::ThinkingSphinx::ActiveRecord::Attribute, columns
     )
   end
 
   def indexes(*columns)
     __source.fields += build_properties(
-      ThinkingSphinx::ActiveRecord::Field, columns
+      ::ThinkingSphinx::ActiveRecord::Field, columns
     )
   end
 
   def join(*columns)
     __source.associations += columns.collect { |column|
-      ThinkingSphinx::ActiveRecord::Association.new column
+      ::ThinkingSphinx::ActiveRecord::Association.new column
     }
   end
 
