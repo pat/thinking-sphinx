@@ -362,7 +362,7 @@ module ThinkingSphinx
       client.excerpts(
         {
           :docs   => [string.to_s],
-          :words  => results[:words].keys.join(' '),
+          :words  => query,
           :index  => index.split(',').first.strip
         }.merge(options[:excerpt_options] || {})
       ).first

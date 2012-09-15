@@ -23,6 +23,7 @@ require 'thinking_sphinx/source'
 require 'thinking_sphinx/search'
 require 'thinking_sphinx/search_methods'
 require 'thinking_sphinx/deltas'
+require 'thinking_sphinx/version'
 
 require 'thinking_sphinx/adapters/abstract_adapter'
 require 'thinking_sphinx/adapters/mysql_adapter'

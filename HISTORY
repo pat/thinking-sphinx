@@ -1,3 +1,9 @@
+Edge:
+* Use full query in excerpts so double-stemming of terms is avoided (Jason Rust).
+* Fix thinking_sphinx:version rake task.
+* Directly compare non-string non-nil facet values for facet filters.
+* Don't bother checking with Sphinx whether documents exist when trying to update them. We're catching failures already (and Sphinx usually doesn't care anyway).
+
 2.0.13 - August 10th 2012
 * 1.4.13 changes.
 
