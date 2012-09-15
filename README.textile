@@ -6,7 +6,7 @@ Still interested? Well, read on!
 
 h2. Installation
 
-There's no gem (prerelease or otherwise) at this point - so you'll need to use the git reference. Also, you'll need to specify the Mysql2 gem as well (this is not an inbuilt dependency because JRuby, when supported, will need something different):
+There's no gem (prerelease or otherwise) at this point - so you'll need to use the git repository reference. Also, you'll need to specify the Mysql2 gem as well (this is not an inbuilt dependency because JRuby, when supported, will need something different):
 
 <pre><code>gem 'mysql2', '0.3.12b4'
 gem 'thinking-sphinx',
