@@ -2,7 +2,6 @@ source :rubygems
 
 gemspec
 
-gem 'riddle', '1.5.3'
 gem 'combustion',
   :git => 'git://github.com/pat/combustion.git',
   :ref => '45f50e64c3'
