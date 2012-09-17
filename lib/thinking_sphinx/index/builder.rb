@@ -1,4 +1,4 @@
-require 'blankslate' unless defined?(BasicObject)
+require 'blankslate' unless defined?(::BasicObject)
 
 module ThinkingSphinx
   class Index
@@ -14,14 +14,14 @@ module ThinkingSphinx
     # set_property allows you to set some settings on a per-index basis. Check
     # out each method's documentation for better ideas of usage.
     #
-    class Builder < (defined?(BasicObject) ? BasicObject : BlankSlate)
+    class Builder < (defined?(::BasicObject) ? ::BasicObject : BlankSlate)
       def self.generate(model, name = nil, &block)
-        index  = ThinkingSphinx::Index.new(model)
+        index  = ::ThinkingSphinx::Index.new(model)
         index.name = name unless name.nil?
 
-        Builder.new(index, &block) if block_given?
+        new(index, &block) if block_given?
 
-        index.delta_object = ThinkingSphinx::Deltas.parse index
+        index.delta_object = ::ThinkingSphinx::Deltas.parse index
         index
       end
 
@@ -38,7 +38,7 @@ module ThinkingSphinx
 
       def define_source(&block)
         if @explicit_source
-          @source = ThinkingSphinx::Source.new(@index)
+          @source = ::ThinkingSphinx::Source.new(@index)
           @index.sources << @source
         else
           @explicit_source = true
@@ -101,7 +101,8 @@ module ThinkingSphinx
       def indexes(*args)
         options = args.extract_options!
         args.each do |columns|
-          field = Field.new(source, FauxColumn.coerce(columns), options)
+          field = ::ThinkingSphinx::Field.new(source,
+            ::ThinkingSphinx::Index::FauxColumn.coerce(columns), options)
 
           add_sort_attribute  field, options   if field.sortable
           add_facet_attribute field, options   if field.faceted
@@ -147,7 +148,8 @@ module ThinkingSphinx
       def has(*args)
         options = args.extract_options!
         args.each do |columns|
-          attribute = Attribute.new(source, FauxColumn.coerce(columns), options)
+          attribute = ::ThinkingSphinx::Attribute.new(source,
+            ::ThinkingSphinx::Index::FauxColumn.coerce(columns), options)
 
           add_facet_attribute attribute, options if attribute.faceted
         end
@@ -158,7 +160,8 @@ module ThinkingSphinx
         options[:facet] = true
 
         args.each do |columns|
-          attribute = Attribute.new(source, FauxColumn.coerce(columns), options)
+          attribute = ::ThinkingSphinx::Attribute.new(source,
+            ::ThinkingSphinx::Index::FauxColumn.coerce(columns), options)
 
           add_facet_attribute attribute, options
         end
@@ -166,7 +169,7 @@ module ThinkingSphinx
 
       def join(*args)
         args.each do |association|
-          Join.new(source, association)
+          ::ThinkingSphinx::Join.new(source, association)
         end
       end
 
@@ -238,7 +241,7 @@ module ThinkingSphinx
       # definitions.
       #
       def method_missing(method, *args)
-        FauxColumn.new(method, *args)
+        ::ThinkingSphinx::Index::FauxColumn.new(method, *args)
       end
 
       # A method to allow adding fields from associations which have names
@@ -248,7 +251,7 @@ module ThinkingSphinx
       # Example: indexes assoc(:properties).column
       #
       def assoc(assoc, *args)
-        FauxColumn.new(assoc, *args)
+        ::ThinkingSphinx::Index::FauxColumn.new(assoc, *args)
       end
 
       # Use this method to generate SQL for your attributes, conditions, etc.
@@ -265,14 +268,14 @@ module ThinkingSphinx
 
       def source
         @source ||= begin
-          source = ThinkingSphinx::Source.new(@index)
+          source = ::ThinkingSphinx::Source.new(@index)
           @index.sources << source
           source
         end
       end
 
       def set_single_property(key, value)
-        source_options = ThinkingSphinx::Configuration::SourceOptions
+        source_options = ::ThinkingSphinx::Configuration::SourceOptions
         if source_options.include?(key.to_s)
           source.options.merge! key => value
         else
@@ -290,12 +293,12 @@ module ThinkingSphinx
       end
 
       def add_internal_attribute(property, options, suffix, crc = false)
-        return unless ThinkingSphinx::Facet.translate?(property)
+        return unless ::ThinkingSphinx::Facet.translate?(property)
 
-        Attribute.new(source,
+        ::ThinkingSphinx::Attribute.new(source,
           property.columns.collect { |col| col.clone },
           options.merge(
-            :type => property.is_a?(Field) ? :string : options[:type],
+            :type => property.is_a?(::ThinkingSphinx::Field) ? :string : options[:type],
             :as   => property.unique_name.to_s.concat(suffix).to_sym,
             :crc  => crc
           ).except(:facet)
