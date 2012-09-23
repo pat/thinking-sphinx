@@ -6,12 +6,12 @@ namespace :ts do
 
   desc 'Generate the Sphinx configuration file'
   task :configure => :environment do
-    interface.configure(ENV['INDEX_ONLY'] == 'true')
+    interface.configure
   end
 
   desc 'Generate the Sphinx configuration file and process all indices'
   task :index => :environment do
-    interface.index
+    interface.index(ENV['INDEX_ONLY'] != 'true')
   end
 
   desc 'Stop Sphinx, index and then restart Sphinx'
