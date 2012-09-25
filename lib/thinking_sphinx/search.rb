@@ -12,7 +12,7 @@ module ThinkingSphinx
       instance_of? instance_values instance_variable_defined?
       instance_variable_get instance_variable_set instance_variables is_a?
       kind_of? member? method methods nil? object_id respond_to?
-      respond_to_missing? send should type )
+      respond_to_missing? send should tap type )
     SafeMethods = %w( partition private_methods protected_methods
       public_methods send class )
 
