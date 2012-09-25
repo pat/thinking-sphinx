@@ -8,6 +8,11 @@ describe ThinkingSphinx::ActiveRecord::Base do
       def self.name; 'Model'; end
     end
   }
+  let(:sub_model) {
+    Class.new(model) do
+      def self.name; 'SubModel'; end
+    end
+  }
   let(:search) { double('search', :options => {})}
 
   describe '.search' do
@@ -27,6 +32,12 @@ describe ThinkingSphinx::ActiveRecord::Base do
 
     it "scopes the search to a given model" do
       model.search('pancakes').options[:classes].should == [model]
+    end
+    
+    it "merges the :classes option with the model" do
+      search_options = {:classes=>[sub_model]}
+      search.stub :options => search_options
+      model.search('pancakes', search_options).options[:classes].should == [sub_model, model]
     end
   end
 

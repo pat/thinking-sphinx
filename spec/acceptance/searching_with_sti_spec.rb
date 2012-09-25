@@ -43,4 +43,13 @@ describe 'Searching across STI models', :live => true do
 
     Bird.search.to_a.should == [duck]
   end
+
+  it "obeys :classes if supplied" do
+    platypus = Animal.create :name => 'Platypus'
+    duck     = Bird.create :name => 'Duck'
+    emu      = FlightlessBird.create :name => 'Emu'
+    index
+
+    Bird.search(nil, :skip_sti => true, :classes=>[Bird, FlightlessBird]).to_a.should == [duck, emu]
+  end
 end
