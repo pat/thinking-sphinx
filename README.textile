@@ -201,4 +201,4 @@ For some ideas behind my current approach, have a look through @sketchpad.rb@ in
 
 h2. Licence
 
-Copyright (c) 2007-2012, Thinking Sphinx is developed and maintained by Pat Allan, and is released under the open MIT Licence. Many thanks to "all who have contributed patches":https://github.com/freelancing-god/thinking-sphinx/contributors.
+Copyright (c) 2007-2012, Thinking Sphinx is developed and maintained by Pat Allan, and is released under the open MIT Licence. Many thanks to "all who have contributed patches":https://github.com/pat/thinking-sphinx/contributors.
