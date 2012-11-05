@@ -38,11 +38,11 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     address = searchd.address || '127.0.0.1'
     address = '127.0.0.1' if address == 'localhost'
 
-    Mysql2::Client.new(
+    Mysql2::Client.new({
       :host  => address,
       :port  => searchd.mysql41,
       :flags => Mysql2::Client::MULTI_STATEMENTS
-    )
+    }.merge(settings['connection_options'] || {}))
   end
 
   def controller

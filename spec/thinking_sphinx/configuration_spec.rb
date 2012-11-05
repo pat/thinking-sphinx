@@ -52,6 +52,21 @@ describe ThinkingSphinx::Configuration do
     it "returns the connection" do
       config.connection.should == connection
     end
+
+    it "respects any connection options in the settings" do
+      write_configuration(
+        'connection_options' => {:username => 'pat', :port => 9312}
+      )
+
+      Mysql2::Client.should_receive(:new).with(
+        :host     => '127.0.0.1',
+        :port     => 9312,
+        :flags    => Mysql2::Client::MULTI_STATEMENTS,
+        :username => 'pat'
+      ).and_return(connection)
+
+      config.connection
+    end
   end
 
   describe '#controller' do
