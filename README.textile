@@ -6,13 +6,10 @@ Still interested? Well, read on!
 
 h2. Installation
 
-There's no gem (prerelease or otherwise) at this point - so you'll need to use the git repository reference. Also, you'll need to specify the Mysql2 gem as well (this is not an inbuilt dependency because JRuby, when supported, will need something different):
+There's only a pre-release gem available at this point - or you can use the git repository reference (the edge branch is what you're after). Also, you'll need to specify the Mysql2 gem as well (this is not an inbuilt dependency because JRuby, when supported, will need something different):
 
-<pre><code>gem 'mysql2', '0.3.12b4'
-gem 'thinking-sphinx',
-  :git    => 'git://github.com/freelancing-god/thinking-sphinx.git',
-  :branch => 'edge',
-  :ref    => 'current-commit-ref'</code></pre>
+<pre><code>gem 'mysql2',          '0.3.12b4'
+gem 'thinking-sphinx', '3.0.0.pre'</code></pre>
 
 h2. Usage
 
