@@ -1,7 +1,7 @@
 class ThinkingSphinx::Configuration < Riddle::Configuration
   attr_accessor :configuration_file, :indices_location
-
   attr_reader :index_paths
+  attr_writer :controller
 
   def initialize
     super
