@@ -34,16 +34,17 @@ describe ThinkingSphinx::Context do
     it "should report name errors but not raise them" do
       class_name.stub(:constantize).and_raise(NameError)
       STDERR.stub!(:puts => '')
-      STDERR.should_receive(:puts).with('Warning: Error loading a.rb:')
+      STDERR.should_receive(:puts).with('ThinkingSphinx: error loading a.rb')
 
       lambda {
         ts_context.prepare
       }.should_not raise_error
     end
 
-    it "should retry if the first load fails and contains a directory" do
-      model_name_lower.should_receive(:gsub!).twice.and_return(true, nil)
+    it "should report load errors but not raise them" do
       class_name.stub(:constantize).and_raise(LoadError)
+      STDERR.stub!(:puts => '')
+      STDERR.should_receive(:puts).with('ThinkingSphinx: error loading a.rb')
 
       lambda {
         ts_context.prepare
