@@ -66,6 +66,7 @@ class ThinkingSphinx::Context
           # Make sure that STI subclasses in subfolders are loaded.
           if camelized_model.gsub!(/.+::/, '').nil?
             STDERR.puts "ThinkingSphinx: error loading #{file}"
+            next
           else
             retry
           end
