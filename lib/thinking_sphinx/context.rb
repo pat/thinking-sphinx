@@ -62,9 +62,13 @@ class ThinkingSphinx::Context
 
         begin
           camelized_model.constantize
-        rescue LoadError
+        rescue LoadError, NameError
           # Make sure that STI subclasses in subfolders are loaded.
-          model_name.gsub!(/.*[\/\\]/, '').nil? ? next : retry
+          if camelized_model.gsub!(/.+::/, '').nil?
+            STDERR.puts "ThinkingSphinx: error loading #{file}"
+          else
+            retry
+          end
         rescue Exception => err
           STDERR.puts "Warning: Error loading #{file}:"
           STDERR.puts err.message
