@@ -5,7 +5,7 @@ class ThinkingSphinx::Test
   end
 
   def self.start
-    config.build
+    config.render_to_file
     config.controller.index
     config.controller.start
   end
