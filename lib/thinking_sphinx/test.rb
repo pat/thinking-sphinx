@@ -1,7 +1,7 @@
 class ThinkingSphinx::Test
   def self.init(suppress_delta_output = true)
     FileUtils.mkdir_p config.indices_location
-    config.settings['quiet_deltas'] = true
+    config.settings['quiet_deltas'] = suppress_delta_output
   end
 
   def self.start
