@@ -30,7 +30,9 @@ class ThinkingSphinx::ActiveRecord::SQLSource::Template
 
   def class_column
     if inheriting?
-      source.adapter.convert_nulls model.inheritance_column, "'#{model.name}'"
+      adapter = source.adapter
+      quoted_column = "#{adapter.quoted_table_name}.#{adapter.quote(model.inheritance_column)}"
+      source.adapter.convert_nulls quoted_column, "'#{model.sti_name}'"
     else
       "'#{model.name}'"
     end
