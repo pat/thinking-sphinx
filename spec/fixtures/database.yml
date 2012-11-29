@@ -1,0 +1,4 @@
+username: root
+password:
+host: localhost
+database: thinking_sphinx

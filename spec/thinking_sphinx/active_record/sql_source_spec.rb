@@ -86,15 +86,16 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
     end
 
     it "uses the inheritance column if it exists for the sphinx class field" do
+      adapter.stub :quoted_table_name => '"users"', :quote => '"type"'
       adapter.stub(:convert_nulls) { |clause, default|
         "ifnull(#{clause}, #{default})"
       }
-      model.stub :column_names => ['type']
+      model.stub :column_names => ['type'], :sti_name => 'User'
 
       source.fields.detect { |field|
         field.name == 'sphinx_internal_class'
       }.columns.first.__name.
-        should == "ifnull(type, 'User')"
+        should == "ifnull(\"users\".\"type\", 'User')"
     end
 
     it "marks the internal class field as a facet" do
