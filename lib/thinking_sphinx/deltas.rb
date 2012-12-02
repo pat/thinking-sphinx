@@ -2,6 +2,7 @@ module ThinkingSphinx::Deltas
   def self.config
     ThinkingSphinx::Configuration.instance
   end
+  
   def self.processor_for(delta)
     case delta
     when TrueClass

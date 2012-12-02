@@ -113,6 +113,29 @@ batch.searches #=> [[foo results], [bar results], [baz results]]</code></pre>
 * Automatic updates of non-string attributes are still limited to those from columns on the model in question, and is disabled by default. To enable it, just set attribute_updates to true in your @config/sphinx.yml@.
 * Search result helper methods are no longer injected into the actual result objects. Read the section below on search results, glazes and panes.
 * If you're using string facets, make sure they're defined as fields, not strings. There is currently no support for multi-value string facets.
+* To have fine-grained control over when deltas are invoked, create a sub-class of your chosen delta class (the standard is @ThinkingSphinx::Deltas::DefaultDelta@) and customise the @toggle@ and @toggled?@ methods, both of which accept a single parameter being the ActiveRecord instance.
+
+<pre><code>class OccasionalDeltas < ThinkingSphinx::Deltas::DefaultDelta
+  # Invoked via a before_save callback. The default behaviour is to set the
+  # delta column to true.
+  def toggle(instance)
+    super unless instance.title_changed?
+  end
+  
+  # Invoked via an after_commit callback. The default behaviour is to check
+  # whether the delta column is set to true. If this method returns true, the
+  # indexer is fired.
+  def toggled?(instance)
+    return false unless instance.title_changed?
+    
+    super
+  end
+end
+
+# And in your index definition:
+ThinkingSphinx::Index.define :article, :with => :active_record, :delta => OccasionalDeltas do
+  # ...
+end</code></pre>
 
 h2. Search Middleware
 
@@ -152,7 +175,6 @@ Required for Release Candidate:
 
 * Query and Ranged Query sources for Attributes and Fields
 * Using :though association shortcuts in index definitions
-* Overwritable toggle_delta? method on model
 * Query times for searches
 * Namespaced models support
 * Delayed Deltas
