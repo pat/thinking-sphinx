@@ -8,7 +8,11 @@ class ThinkingSphinx::Index
   end
 
   def initialize(reference, options, &block)
-    @reference, @options, @block = reference, options, block
+    defaults = ThinkingSphinx::Configuration.instance.
+      settings['index_options'] || {}
+    defaults.symbolize_keys!
+    
+    @reference, @options, @block = reference, defaults.merge(options), block
   end
 
   def indices

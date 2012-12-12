@@ -1,14 +1,15 @@
 require 'spec_helper'
 
 describe ThinkingSphinx::Index do
+  let(:configuration)  { Struct.new(:indices, :settings).new([], {}) }
+  
+  before :each do
+    ThinkingSphinx::Configuration.stub :instance => configuration
+  end
+  
   describe '.define' do
     let(:index)   { double('index', :definition_block= => nil) }
-    let(:config)  { Struct.new(:indices).new([]) }
-
-    before :each do
-      ThinkingSphinx::Configuration.stub :instance => config
-    end
-
+    
     context 'with ActiveRecord' do
       before :each do
         ThinkingSphinx::ActiveRecord::Index.stub :new => index
@@ -29,7 +30,7 @@ describe ThinkingSphinx::Index do
       it "adds the index to the collection of indices" do
         ThinkingSphinx::Index.define(:user, :with => :active_record)
 
-        config.indices.should include(index)
+        configuration.indices.should include(index)
       end
 
       it "sets the block in the index" do
@@ -73,8 +74,8 @@ describe ThinkingSphinx::Index do
             :with  => :active_record,
             :delta => true
 
-          config.indices.should include(index)
-          config.indices.should include(delta_index)
+          configuration.indices.should include(index)
+          configuration.indices.should include(delta_index)
         end
 
         it "sets the block in the index" do
@@ -110,7 +111,7 @@ describe ThinkingSphinx::Index do
       it "adds the index to the collection of indices" do
         ThinkingSphinx::Index.define(:user, :with => :real_time)
 
-        config.indices.should include(index)
+        configuration.indices.should include(index)
       end
 
       it "sets the block in the index" do
@@ -120,6 +121,18 @@ describe ThinkingSphinx::Index do
           indexes name
         end
       end
+    end
+  end
+  
+  describe '#initialize' do
+    it "is fine with no defaults from settings" do
+      ThinkingSphinx::Index.new(:user, {}).options.should == {}
+    end
+    
+    it "respects defaults from settings" do
+      configuration.settings['index_options'] = {'delta' => true}
+      
+      ThinkingSphinx::Index.new(:user, {}).options.should == {:delta => true}
     end
   end
 end
