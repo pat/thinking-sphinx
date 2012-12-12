@@ -11,6 +11,12 @@ describe ThinkingSphinx::Deltas do
       klass = Class.new
       ThinkingSphinx::Deltas.processor_for(klass).should == klass
     end
+    
+    it "instantiates a class from the name as a string" do
+      ThinkingSphinx::Deltas.
+        processor_for('ThinkingSphinx::Deltas::DefaultDelta').
+        should == ThinkingSphinx::Deltas::DefaultDelta
+    end
   end
 
   describe '.suspend' do

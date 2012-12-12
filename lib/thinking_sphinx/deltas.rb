@@ -9,6 +9,8 @@ module ThinkingSphinx::Deltas
       ThinkingSphinx::Deltas::DefaultDelta
     when Class
       delta
+    when String
+      delta.constantize
     else
       nil
     end
