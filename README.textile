@@ -121,13 +121,13 @@ batch.searches #=> [[foo results], [bar results], [baz results]]</code></pre>
   def toggle(instance)
     super unless instance.title_changed?
   end
-  
+
   # Invoked via an after_commit callback. The default behaviour is to check
   # whether the delta column is set to true. If this method returns true, the
   # indexer is fired.
   def toggled?(instance)
     return false unless instance.title_changed?
-    
+
     super
   end
 end
@@ -176,7 +176,6 @@ Lists of what still needs to be implemented, in no particular order but in group
 Required for Release Candidate:
 
 * Query and Ranged Query sources for Attributes and Fields
-* Using :though association shortcuts in index definitions
 * Infixing and Prefixing of specific fields
 * Default Sphinx scopes
 * sanitise_sql method in index definitions
