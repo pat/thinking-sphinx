@@ -1,2 +1,10 @@
+Edge:
+* [FEATURE] Namespaced model support.
+* [FEATURE] Default settings for index definition arguments can be set in config/thinking_sphinx.yml.
+* [FIX] Correctly escape nulls in inheritance column (Darcy Laycock).
+* [FIX] Use ThinkingSphinx::Configuration#render_to_file instead of ThinkingSphinx::Configuration#build in test helpers (Darcy Laycock).
+* [FIX] Suppressing delta output in test helpers now works (Darcy Laycock).
+* [FEATURE] A custom Riddle/Sphinx controller can be supplied. Useful for Flying Sphinx to have an API layer over Sphinx commands, without needing custom gems for different Thinking Sphinx/Flying Sphinx combinations.
+
 2012-10-06: 3.0.0.pre
 * First pre-release. Not quite feature complete, but the important stuff is certainly covered. See the README for more the finer details.
