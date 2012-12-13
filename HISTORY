@@ -1,4 +1,9 @@
 Edge:
+* [FEATURE] A sphinx scope can be defined as the default.
+* [FEATURE] An index can have multiple sources, by using define_source within the index definition.
+* [FEATURE] sanitize_sql is available within an index definition.
+* [FEATURE] Providing :prefixes => true or :infixes => true as an option when declaring a field means just the noted fields have infixes/prefixes applied.
+* [FEATURE] ThinkingSphinx::Search#query_time returns the time Sphinx took to make the query.
 * [FEATURE] Namespaced model support.
 * [FEATURE] Default settings for index definition arguments can be set in config/thinking_sphinx.yml.
 * [FIX] Correctly escape nulls in inheritance column (Darcy Laycock).
