@@ -4,7 +4,9 @@ class ThinkingSphinx::Search::Merger
   end
 
   def merge!(query = nil, options = {})
-    @search.query = query unless query.nil?
+    query, options = nil, query if query.is_a?(Hash)
+    @search.query  = query unless query.nil?
+
     options.each do |key, value|
       case key
       when :conditions, :with, :without, :with_all, :without_all

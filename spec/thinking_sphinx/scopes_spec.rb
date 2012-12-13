@@ -35,4 +35,11 @@ describe ThinkingSphinx::Scopes do
       model.sphinx_scopes[:foo].call.should == 27
     end
   end
+
+  describe '#default_sphinx_scope' do
+    it "gets and sets the default scope depending on the argument" do
+      model.default_sphinx_scope :foo
+      model.default_sphinx_scope.should == :foo
+    end
+  end
 end

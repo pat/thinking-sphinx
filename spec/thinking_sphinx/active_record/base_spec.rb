@@ -13,31 +13,37 @@ describe ThinkingSphinx::ActiveRecord::Base do
       def self.name; 'SubModel'; end
     end
   }
-  let(:search) { double('search', :options => {})}
 
   describe '.search' do
-    before :each do
-      ThinkingSphinx.stub :search => search
-    end
-
     it "returns a new search object" do
-      model.search.should == search
+      model.search.should be_a(ThinkingSphinx::Search)
     end
 
-    it "passes through arguments to the search object initializer" do
-      ThinkingSphinx.should_receive(:search).with('pancakes', anything)
-
-      model.search 'pancakes'
+    it "passes through arguments to the search object" do
+      model.search('pancakes').query.should == 'pancakes'
     end
 
     it "scopes the search to a given model" do
       model.search('pancakes').options[:classes].should == [model]
     end
-    
+
     it "merges the :classes option with the model" do
-      search_options = {:classes=>[sub_model]}
-      search.stub :options => search_options
-      model.search('pancakes', search_options).options[:classes].should == [sub_model, model]
+      model.search('pancakes', :classes => [sub_model]).
+        options[:classes].should == [sub_model, model]
+    end
+
+    it "applies the default scope if there is one" do
+      model.stub :default_sphinx_scope => :default,
+        :sphinx_scopes => {:default => Proc.new { {:order => :created_at} }}
+
+      model.search.options[:order].should == :created_at
+    end
+
+    it "does not apply a default scope if one is not set" do
+      model.stub :default_sphinx_scope => nil,
+        :default => {:order => :created_at}
+
+      model.search.options[:order].should be_nil
     end
   end
 

@@ -28,7 +28,16 @@ You'll notice the first argument is the model name downcased and as a symbol, an
 
 Other changes:
 * SphinxQL is now used instead of the old socket connections (hence the dependency on the @mysql2@ gem).
-* You'll need to include @ThinkingSphinx::Scopes@ into your models if you want to use Sphinx scopes.
+* You'll need to include @ThinkingSphinx::Scopes@ into your models if you want to use Sphinx scopes. Default scopes can be set as follows:
+
+<pre><code>class Person < ActiveRecord::Base
+  include ThinkingSphinx::Scopes
+
+  sphinx_scope(:date_order) { {:order => :created_at} }
+  default_sphinx_scope :date_order
+  # ...
+end</code></pre>
+
 * The match mode is always extended - SphinxQL doesn't know any other way.
 * ActiveRecord::Base.set_sphinx_primary_key is now an option in the index definition (alongside @:with@ in the above example): @:primary_key@ - and therefore is no longer inheritable between models.
 * If you're explicitly setting a time attribute's type, instead of @:datetime@ it should now be @:timestamp@.
@@ -176,7 +185,6 @@ Lists of what still needs to be implemented, in no particular order but in group
 Required for Release Candidate:
 
 * Query and Ranged Query sources for Attributes and Fields
-* Default Sphinx scopes
 * JRuby support
 * Sinatra support
 * Wordcount fields and attributes

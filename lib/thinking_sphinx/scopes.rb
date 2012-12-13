@@ -2,6 +2,12 @@ module ThinkingSphinx::Scopes
   extend ActiveSupport::Concern
 
   module ClassMethods
+    def default_sphinx_scope(scope_name = nil)
+      return @default_sphinx_scope unless scope_name
+
+      @default_sphinx_scope = scope_name
+    end
+
     def sphinx_scope(name, &block)
       sphinx_scopes[name] = block
     end

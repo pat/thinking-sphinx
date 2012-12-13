@@ -20,8 +20,11 @@ module ThinkingSphinx::ActiveRecord::Base
     end
 
     def search(query = nil, options = {})
-      search = ThinkingSphinx.search query, options
-      ThinkingSphinx::Search::Merger.new(search).merge! nil, :classes => [self]
+      merger = ThinkingSphinx::Search::Merger.new ThinkingSphinx.search
+
+      merger.merge! *default_sphinx_scope_response if default_sphinx_scope?
+      merger.merge! query, options
+      merger.merge! nil, :classes => [self]
     end
 
     def search_count(query = nil, options = {})
@@ -31,6 +34,16 @@ module ThinkingSphinx::ActiveRecord::Base
     def search_for_ids(query = nil, options = {})
       search = search query, options
       ThinkingSphinx::Search::Merger.new(search).merge! nil, :ids_only => true
+    end
+
+    private
+
+    def default_sphinx_scope?
+      respond_to?(:default_sphinx_scope) && default_sphinx_scope
+    end
+
+    def default_sphinx_scope_response
+      [sphinx_scopes[default_sphinx_scope].call].flatten
     end
   end
 end
