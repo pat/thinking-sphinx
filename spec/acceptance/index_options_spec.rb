@@ -53,7 +53,7 @@ describe 'Index options' do
           indexes title, content
         end
       }
-      puts index.render
+      index.render
     end
 
     it "stores each source definition" do

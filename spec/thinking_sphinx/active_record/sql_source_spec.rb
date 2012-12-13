@@ -7,7 +7,8 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
     double('connection', :instance_variable_get => db_config) }
   let(:db_config)  { {:host => 'localhost', :user => 'root',
     :database => 'default'} }
-  let(:source)     { ThinkingSphinx::ActiveRecord::SQLSource.new(model) }
+  let(:source)     { ThinkingSphinx::ActiveRecord::SQLSource.new(model,
+    :position => 3) }
   let(:adapter)    { double('adapter') }
 
   before :each do
@@ -106,29 +107,15 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
   end
 
   describe '#name' do
-    it "defaults to the model name downcased with the core suffix" do
-      source.name.should == 'user_core'
+    it "defaults to the model name downcased with the given position" do
+      source.name.should == 'user_3'
     end
 
-    it "changes the suffix to delta if set to true" do
+    it "allows for custom names, but adds the position suffix" do
       source = ThinkingSphinx::ActiveRecord::SQLSource.new model,
-        :delta? => true
+        :name => 'people', :position => 2
 
-      source.name.should == 'user_delta'
-    end
-
-    it "allows for custom names, but adds the core suffix" do
-      source = ThinkingSphinx::ActiveRecord::SQLSource.new model,
-        :name => 'people'
-
-      source.name.should == 'people_core'
-    end
-
-    it "allows for custom names and adds the delta suffix if a delta source" do
-      source = ThinkingSphinx::ActiveRecord::SQLSource.new model,
-        :name => 'people', :delta? => true
-
-      source.name.should == 'people_delta'
+      source.name.should == 'people_2'
     end
   end
 
