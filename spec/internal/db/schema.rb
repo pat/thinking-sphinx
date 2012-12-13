@@ -1,4 +1,9 @@
 ActiveRecord::Schema.define do
+  create_table(:admin_people, :force => true) do |t|
+    t.string :name
+    t.timestamps
+  end
+
   create_table(:animals, :force => true) do |t|
     t.string :name
     t.string :type

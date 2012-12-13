@@ -7,12 +7,12 @@ module ThinkingSphinx::Core::Index
   end
 
   def initialize(reference, options = {})
-    @reference  = reference
+    @reference  = reference.to_sym
     @docinfo    = :extern
     @options    = options
     @offset     = config.next_offset(reference)
 
-    super "#{options[:name] || reference}_#{name_suffix}"
+    super "#{options[:name] || reference.to_s.gsub('/', '_')}_#{name_suffix}"
   end
 
   def delta?

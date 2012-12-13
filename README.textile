@@ -137,6 +137,8 @@ ThinkingSphinx::Index.define :article, :with => :active_record, :delta => Occasi
   # ...
 end</code></pre>
 
+* When you're defining indices for namespaced models, use a lowercase string with /'s for namespacing as the model reference: @ThinkingSphinx::Index.define 'blog/article', :with => :active_record@.
+
 h2. Search Middleware
 
 This section needs information - go hunting in the source for the moment if you're keen on adding a layer around querying/result population process.
@@ -176,7 +178,6 @@ Required for Release Candidate:
 * Query and Ranged Query sources for Attributes and Fields
 * Using :though association shortcuts in index definitions
 * Query times for searches
-* Namespaced models support
 * Infixing and Prefixing of specific fields
 * Default Sphinx scopes
 * sanitise_sql method in index definitions
