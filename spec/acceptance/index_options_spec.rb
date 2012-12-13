@@ -41,4 +41,28 @@ describe 'Index options' do
       end
     end
   end
+
+  context "multiple source definitions" do
+    before :each do
+      index.definition_block = Proc.new {
+        define_source do
+          indexes title
+        end
+
+        define_source do
+          indexes title, content
+        end
+      }
+      puts index.render
+    end
+
+    it "stores each source definition" do
+      index.sources.length.should == 2
+    end
+
+    it "treats each source as separate" do
+      index.sources.first.fields.length.should == 2
+      index.sources.last.fields.length.should  == 3
+    end
+  end
 end

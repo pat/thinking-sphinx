@@ -10,6 +10,7 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
   # - :disable_range?
   # - :group_concat_max_len
   # - :utf8?
+  # - :position
   #
   def initialize(model, options = {})
     @model             = model
@@ -24,7 +25,7 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
 
     Template.new(self).apply
 
-    name = "#{options[:name] || model.name.downcase}_#{name_suffix}"
+    name = "#{options[:name] || model.name.downcase}_#{options[:position]}"
 
     super name, type
   end
@@ -92,10 +93,6 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
 
   def config
     ThinkingSphinx::Configuration.instance
-  end
-
-  def name_suffix
-    delta? ? 'delta' : 'core'
   end
 
   def prepare_for_render

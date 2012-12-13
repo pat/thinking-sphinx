@@ -6,7 +6,7 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
 
   def append_source
     ThinkingSphinx::ActiveRecord::SQLSource.new(
-      model, source_options
+      model, source_options.merge(:position => sources.length)
     ).tap do |source|
       sources << source
     end

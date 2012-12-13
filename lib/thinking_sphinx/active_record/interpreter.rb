@@ -1,6 +1,11 @@
 class ThinkingSphinx::ActiveRecord::Interpreter <
   ::ThinkingSphinx::Core::Interpreter
 
+  def define_source(&block)
+    @source = @index.append_source
+    instance_eval &block
+  end
+
   def group_by(*columns)
     __source.groupings += columns
   end

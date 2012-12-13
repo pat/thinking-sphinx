@@ -177,7 +177,6 @@ Required for Release Candidate:
 
 * Query and Ranged Query sources for Attributes and Fields
 * Default Sphinx scopes
-* Multiple sources for an index
 * JRuby support
 * Sinatra support
 * Wordcount fields and attributes
