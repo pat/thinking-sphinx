@@ -40,6 +40,13 @@ describe 'Searching within a model', :live => true do
     articles = Article.search('pancake', :indices => ['stemmed_article_core'])
     articles.to_a.should == [article]
   end
+
+  it "can search on namespaced models" do
+    person = Admin::Person.create :name => 'James Bond'
+    index
+
+    Admin::Person.search('Bond').to_a.should == [person]
+  end
 end
 
 describe 'Searching within a model with a realtime index', :live => true do

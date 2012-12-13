@@ -8,11 +8,12 @@ class SphinxController
     config.render_to_file && index
 
     ThinkingSphinx::Configuration.reset
-    ActiveSupport::Dependencies.clear
 
-    config.index_paths.each do |path|
-      Dir["#{path}/**/*.rb"].each { |file| $LOADED_FEATURES.delete file }
+    ActiveSupport::Dependencies.loaded.each do |path|
+      $LOADED_FEATURES.delete "#{path}.rb"
     end
+
+    ActiveSupport::Dependencies.clear
 
     config.searchd.mysql41 = 9307
     config.settings['quiet_deltas']      = true
