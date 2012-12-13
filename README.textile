@@ -177,7 +177,6 @@ Required for Release Candidate:
 
 * Query and Ranged Query sources for Attributes and Fields
 * Using :though association shortcuts in index definitions
-* Query times for searches
 * Infixing and Prefixing of specific fields
 * Default Sphinx scopes
 * sanitise_sql method in index definitions
