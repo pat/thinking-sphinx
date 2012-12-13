@@ -25,7 +25,7 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
   end
 
   def unique_attribute_names
-    sources.collect(&:attributes).flatten.collect(&:name)
+    attributes.collect(&:name)
   end
 
   private
@@ -33,6 +33,14 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
   def adapter
     @adapter ||= ThinkingSphinx::ActiveRecord::DatabaseAdapters.
       adapter_for(model)
+  end
+
+  def attributes
+    sources.collect(&:attributes).flatten
+  end
+
+  def fields
+    sources.collect(&:fields).flatten
   end
 
   def interpreter

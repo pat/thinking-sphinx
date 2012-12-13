@@ -39,6 +39,9 @@ module ThinkingSphinx::Core::Index
 
     @path ||= config.indices_location.join(name)
 
+    self.infix_fields  = fields.select(&:infixing?).collect(&:name)
+    self.prefix_fields = fields.select(&:prefixing?).collect(&:name)
+
     super
   end
 

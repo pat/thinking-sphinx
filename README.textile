@@ -176,7 +176,6 @@ Lists of what still needs to be implemented, in no particular order but in group
 Required for Release Candidate:
 
 * Query and Ranged Query sources for Attributes and Fields
-* Infixing and Prefixing of specific fields
 * Default Sphinx scopes
 * sanitise_sql method in index definitions
 * Multiple sources for an index
