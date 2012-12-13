@@ -177,7 +177,6 @@ Required for Release Candidate:
 
 * Query and Ranged Query sources for Attributes and Fields
 * Default Sphinx scopes
-* sanitise_sql method in index definitions
 * Multiple sources for an index
 * JRuby support
 * Sinatra support

@@ -71,4 +71,16 @@ describe 'specifying SQL for index definitions' do
 
     index.sources.first.sql_attr_multi.should == ['uint tag_ids from field']
   end
+
+  it "provides the sanitize_sql helper within the index definition block" do
+    index = ThinkingSphinx::ActiveRecord::Index.new(:article)
+    index.definition_block = Proc.new {
+      indexes title
+      where sanitize_sql(["title != ?", 'secret'])
+    }
+    index.render
+
+    query = index.sources.first.sql_query
+    query.should match(/WHERE .+title != 'secret'.+ GROUP BY/)
+  end
 end

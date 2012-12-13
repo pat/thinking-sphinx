@@ -23,6 +23,10 @@ class ThinkingSphinx::ActiveRecord::Interpreter <
     }
   end
 
+  def sanitize_sql(*arguments)
+    __source.model.send :sanitize_sql, *arguments
+  end
+
   def set_property(properties)
     properties.each do |key, value|
       @index.send("#{key}=", value)   if @index.class.settings.include?(key)
