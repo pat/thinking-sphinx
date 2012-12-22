@@ -178,13 +178,7 @@ If you wish to add your own panes, go ahead. The only requirement is that the in
 
 h2. Limitations
 
-Basic indexing and searching should be fine. There's currently only limited basic delta support. Some settings haven't yet been brought across. Many of the smaller features don't yet exist either. Some may actually not return... we'll see.
-
-Lists of what still needs to be implemented, in no particular order but in groups of vague importance:
-
-Required for Release Candidate:
-
-* Query and Ranged Query sources for Attributes and Fields
+Almost all functionality from v2 releases are implemented, though it's worth noting that some settings haven't yet been brought across, and a handful of the smaller features don't yet exist either. Some may actually not return... we'll see.
 
 May or may not be added:
 
@@ -197,7 +191,7 @@ May or may not be added:
 
 h3. Sphinx Versions
 
-TS 3 is built for Sphinx 2.x only. You cannot use 1.10-beta, 0.9.9 or anything earlier than that.
+TS 3 is built for Sphinx 2.x only. You cannot use 1.10-beta, 0.9.9 or anything earlier than that. 2.0.5 or newer is recommended.
 
 h3. Rails Versions
 
