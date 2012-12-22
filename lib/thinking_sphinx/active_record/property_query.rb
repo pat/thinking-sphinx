@@ -1,8 +1,21 @@
 class ThinkingSphinx::ActiveRecord::PropertyQuery
-  def initialize(property, source)
-    @property, @source = property, source
+  def initialize(property, source, type = nil)
+    @property, @source, @type = property, source, type
 
     raise "Could not determine SQL for MVA" if reflections.empty?
+  end
+
+  def to_s
+    identifier = [type, property.name].compact.join(' ')
+
+    case property.source_type
+    when :query
+      "#{identifier} from query; #{to_sql}"
+    when :ranged_query
+      "#{identifier} from ranged-query; #{to_sql true}; #{range_sql}"
+    else
+      raise "Unsupported source type: #{property.source_type}"
+    end
   end
 
   def range_sql
@@ -20,12 +33,14 @@ class ThinkingSphinx::ActiveRecord::PropertyQuery
       relation = relation.where("#{quoted_foreign_key} <= $end")
     end
 
+    relation = relation.order("#{quoted_foreign_key} ASC") if type.nil?
+
     relation.to_sql
   end
 
   private
 
-  attr_reader :property, :source
+  attr_reader :property, :source, :type
 
   def base_association
     reflections.first

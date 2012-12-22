@@ -90,7 +90,7 @@ describe 'separate queries for MVAs' do
   let(:count)  { ThinkingSphinx::Configuration.instance.indices.count }
   let(:source) { index.sources.first }
 
-  it "generates an appropriate SQL query for an MVA attribute" do
+  it "generates an appropriate SQL query for an MVA" do
     index.definition_block = Proc.new {
       indexes title
       has taggings.tag_id, :as => :tag_ids, :source => :query
@@ -106,7 +106,7 @@ describe 'separate queries for MVAs' do
     query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .taggings.\..tag_id. AS .tag_ids. FROM .taggings.\s?$/)
   end
 
-  it "generates a SQL query with joins when appropriate for MVA attributes" do
+  it "generates a SQL query with joins when appropriate for MVAs" do
     index.definition_block = Proc.new {
       indexes title
       has taggings.tag.id, :as => :tag_ids, :source => :query
@@ -179,7 +179,7 @@ describe 'separate queries for MVAs' do
     query.should match(/^SELECT .books_genres.\..book_id. \* #{count} \+ #{source.offset} AS .id., .genres.\..id. AS .genre_ids. FROM .books_genres. INNER JOIN .genres. ON .genres.\..id. = .books_genres.\..genre_id.\s?$/)
   end
 
-  it "generates an appropriate range SQL queries for an MVA attribute" do
+  it "generates an appropriate range SQL queries for an MVA" do
     index.definition_block = Proc.new {
       indexes title
       has taggings.tag_id, :as => :tag_ids, :source => :ranged_query
@@ -196,7 +196,7 @@ describe 'separate queries for MVAs' do
     range.should match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
   end
 
-  it "generates a SQL query with joins when appropriate for MVA attributes" do
+  it "generates a SQL query with joins when appropriate for MVAs" do
     index.definition_block = Proc.new {
       indexes title
       has taggings.tag.id, :as => :tag_ids, :source => :ranged_query
@@ -210,6 +210,67 @@ describe 'separate queries for MVAs' do
 
     declaration.should == 'uint tag_ids from ranged-query'
     query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. \s?WHERE \(.taggings.\..article_id. >= \$start\) AND \(.taggings.\..article_id. <= \$end\)$/)
+    range.should match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
+  end
+end
+
+describe 'separate queries for field' do
+  let(:index)  { ThinkingSphinx::ActiveRecord::Index.new(:article) }
+  let(:count)  { ThinkingSphinx::Configuration.instance.indices.count }
+  let(:source) { index.sources.first }
+
+  it "generates a SQL query with joins when appropriate for MVF" do
+    index.definition_block = Proc.new {
+      indexes taggings.tag.name, :as => :tags, :source => :query
+    }
+    index.render
+
+    field = source.sql_joined_field.detect { |field| field[/tags/] }
+    declaration, query = field.split(/;\s+/)
+
+    declaration.should == 'tags from query'
+    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..name. AS .tags. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. ORDER BY .taggings.\..article_id. ASC\s?$/)
+  end
+
+  it "respects has_many :through joins for MVF queries" do
+    index.definition_block = Proc.new {
+      indexes tags.name, :as => :tags, :source => :query
+    }
+    index.render
+
+    field = source.sql_joined_field.detect { |field| field[/tags/] }
+    declaration, query = field.split(/;\s+/)
+
+    declaration.should == 'tags from query'
+    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..name. AS .tags. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. ORDER BY .taggings.\..article_id. ASC\s?$/)
+  end
+
+  it "can handle multiple joins for MVF queries" do
+    index = ThinkingSphinx::ActiveRecord::Index.new(:user)
+    index.definition_block = Proc.new {
+      indexes articles.tags.name, :as => :tags, :source => :query
+    }
+    index.render
+    source = index.sources.first
+
+    field = source.sql_joined_field.detect { |field| field[/tags/] }
+    declaration, query = field.split(/;\s+/)
+
+    declaration.should == 'tags from query'
+    query.should match(/^SELECT .articles.\..user_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..name. AS .tags. FROM .articles. INNER JOIN .taggings. ON .taggings.\..article_id. = .articles.\..id. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. ORDER BY .articles.\..user_id. ASC\s?$/)
+  end
+
+  it "generates a SQL query with joins when appropriate for MVFs" do
+    index.definition_block = Proc.new {
+      indexes taggings.tag.name, :as => :tags, :source => :ranged_query
+    }
+    index.render
+
+    field = source.sql_joined_field.detect { |field| field[/tags/] }
+    declaration, query, range = field.split(/;\s+/)
+
+    declaration.should == 'tags from ranged-query'
+    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..name. AS .tags. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. \s?WHERE \(.taggings.\..article_id. >= \$start\) AND \(.taggings.\..article_id. <= \$end\) ORDER BY .taggings.\..article_id. ASC$/)
     range.should match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
   end
 end
