@@ -15,6 +15,10 @@ describe ThinkingSphinx::RealTime::Index do
       index.attributes.collect(&:name).should include('sphinx_internal_id')
     end
 
+    it "has the class name attribute by default" do
+      index.attributes.collect(&:name).should include('sphinx_internal_class')
+    end
+
     it "has the internal deleted attribute by default" do
       index.attributes.collect(&:name).should include('sphinx_deleted')
     end
@@ -37,7 +41,7 @@ describe ThinkingSphinx::RealTime::Index do
 
   describe '#fields' do
     it "has the internal class field by default" do
-      index.fields.collect(&:name).should include('sphinx_internal_class')
+      index.fields.collect(&:name).should include('sphinx_internal_class_name')
     end
   end
 
@@ -147,8 +151,9 @@ describe ThinkingSphinx::RealTime::Index do
 
   describe '#unique_attribute_names' do
     it "returns all attribute names" do
-      index.unique_attribute_names.
-        should == ['sphinx_internal_id', 'sphinx_deleted']
+      index.unique_attribute_names.should == [
+        'sphinx_internal_id', 'sphinx_internal_class', 'sphinx_deleted'
+      ]
     end
   end
 end

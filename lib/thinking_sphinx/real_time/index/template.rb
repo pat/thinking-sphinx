@@ -6,10 +6,11 @@ class ThinkingSphinx::RealTime::Index::Template
   end
 
   def apply
-    add_field class_column, :sphinx_internal_class
+    add_field class_column, :sphinx_internal_class_name
 
-    add_attribute :id, :sphinx_internal_id, :integer
-    add_attribute 0,   :sphinx_deleted,     :integer
+    add_attribute :id,          :sphinx_internal_id,    :integer
+    add_attribute class_column, :sphinx_internal_class, :string
+    add_attribute 0,            :sphinx_deleted,        :integer
   end
 
   private

@@ -32,8 +32,18 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       source.attributes.collect(&:name).should include('sphinx_internal_id')
     end
 
+    it "has the class name attribute by default" do
+      source.attributes.collect(&:name).should include('sphinx_internal_class')
+    end
+
     it "has the internal deleted attribute by default" do
       source.attributes.collect(&:name).should include('sphinx_deleted')
+    end
+
+    it "marks the internal class attribute as a facet" do
+      source.attributes.detect { |attribute|
+        attribute.name == 'sphinx_internal_class'
+      }.options[:facet].should be_true
     end
   end
 
@@ -77,12 +87,13 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
   describe '#fields' do
     it "has the internal class field by default" do
-      source.fields.collect(&:name).should include('sphinx_internal_class')
+      source.fields.collect(&:name).
+        should include('sphinx_internal_class_name')
     end
 
     it "sets the sphinx class field to use a string of the class name" do
       source.fields.detect { |field|
-        field.name == 'sphinx_internal_class'
+        field.name == 'sphinx_internal_class_name'
       }.columns.first.__name.should == "'User'"
     end
 
@@ -94,15 +105,9 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       model.stub :column_names => ['type'], :sti_name => 'User'
 
       source.fields.detect { |field|
-        field.name == 'sphinx_internal_class'
+        field.name == 'sphinx_internal_class_name'
       }.columns.first.__name.
         should == "ifnull(\"users\".\"type\", 'User')"
-    end
-
-    it "marks the internal class field as a facet" do
-      source.fields.detect { |field|
-        field.name == 'sphinx_internal_class'
-      }.options[:facet].should be_true
     end
   end
 

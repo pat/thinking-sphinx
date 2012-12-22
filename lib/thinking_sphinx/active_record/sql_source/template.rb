@@ -6,10 +6,11 @@ class ThinkingSphinx::ActiveRecord::SQLSource::Template
   end
 
   def apply
-    add_field class_column, :sphinx_internal_class, :facet => true
+    add_field class_column, :sphinx_internal_class_name
 
-    add_attribute :id, :sphinx_internal_id, nil
-    add_attribute '0', :sphinx_deleted,     :integer
+    add_attribute :id,          :sphinx_internal_id,    nil
+    add_attribute class_column, :sphinx_internal_class, :string, :facet => true
+    add_attribute '0',          :sphinx_deleted,        :integer
   end
 
   private

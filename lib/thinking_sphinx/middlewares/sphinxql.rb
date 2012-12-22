@@ -69,7 +69,7 @@ class ThinkingSphinx::Middlewares::SphinxQL <
 
     def extended_query
       conditions = options[:conditions] || {}
-      conditions[:sphinx_internal_class] = class_condition if classes.any?
+      conditions[:sphinx_internal_class_name] = class_condition if classes.any?
       @extended_query ||= begin
         ThinkingSphinx::Search::Query.new(context.search.query, conditions,
           options[:star]).to_s

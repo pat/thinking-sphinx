@@ -102,7 +102,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       search.options[:classes] = [submodel]
 
       ThinkingSphinx::Search::Query.should_receive(:new).with(anything,
-        hash_including(:sphinx_internal_class => '(Lion)'), anything).
+        hash_including(:sphinx_internal_class_name => '(Lion)'), anything).
         and_return(query)
 
       middleware.call [context]
