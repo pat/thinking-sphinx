@@ -1,6 +1,6 @@
-class ThinkingSphinx::ActiveRecord::Attribute::Query
-  def initialize(attribute, source)
-    @attribute, @source = attribute, source
+class ThinkingSphinx::ActiveRecord::PropertyQuery
+  def initialize(property, source)
+    @property, @source = property, source
 
     raise "Could not determine SQL for MVA" if reflections.empty?
   end
@@ -13,7 +13,7 @@ class ThinkingSphinx::ActiveRecord::Attribute::Query
   def to_sql(ranged = false)
     relation = base_association.klass.unscoped
     relation = relation.joins joins unless joins.blank?
-    relation = relation.select "#{quoted_foreign_key} #{offset} AS #{quote_column('id')}, #{quoted_primary_key} AS #{quote_column(attribute.name)}"
+    relation = relation.select "#{quoted_foreign_key} #{offset} AS #{quote_column('id')}, #{quoted_primary_key} AS #{quote_column(property.name)}"
 
     if ranged
       relation = relation.where("#{quoted_foreign_key} >= $start")
@@ -25,14 +25,14 @@ class ThinkingSphinx::ActiveRecord::Attribute::Query
 
   private
 
-  attr_reader :attribute, :source
+  attr_reader :property, :source
 
   def base_association
     reflections.first
   end
 
   def column
-    @column ||= attribute.columns.first
+    @column ||= property.columns.first
   end
 
   def reflections

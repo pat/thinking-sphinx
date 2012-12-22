@@ -22,6 +22,10 @@ class ThinkingSphinx::ActiveRecord::Property
     (options[:as] || columns.first.__name).to_s
   end
 
+  def source_type
+    options[:source]
+  end
+
   def type
     nil
   end

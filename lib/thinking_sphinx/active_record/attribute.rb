@@ -4,10 +4,6 @@ class ThinkingSphinx::ActiveRecord::Attribute <
   delegate :type, :type=, :multi?, :updateable?, :to => :typist
   delegate :value_for,                           :to => :values
 
-  def source_type
-    options[:source]
-  end
-
   private
 
   def typist
