@@ -9,4 +9,8 @@ class ThinkingSphinx::ActiveRecord::Field <
   def with_attribute?
     options[:sortable] || options[:facet]
   end
+
+  def wordcount?
+    options[:wordcount]
+  end
 end

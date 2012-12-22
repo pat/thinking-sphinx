@@ -185,7 +185,6 @@ Lists of what still needs to be implemented, in no particular order but in group
 Required for Release Candidate:
 
 * Query and Ranged Query sources for Attributes and Fields
-* Wordcount fields and attributes
 
 May or may not be added:
 

@@ -99,8 +99,9 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
     set_database_settings
 
     fields.each do |field|
-      @sql_field_string << field.name if field.with_attribute?
-      @sql_file_field   << field.name if field.file?
+      @sql_field_string << field.name        if field.with_attribute?
+      @sql_field_str2wordcount << field.name if field.wordcount?
+      @sql_file_field   << field.name        if field.file?
     end
 
     attributes.each do |attribute|

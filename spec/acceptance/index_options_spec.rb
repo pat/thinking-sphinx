@@ -65,4 +65,23 @@ describe 'Index options' do
       index.sources.last.fields.length.should  == 3
     end
   end
+
+  context 'wordcount fields and attributes' do
+    before :each do
+      index.definition_block = Proc.new {
+        indexes title, :wordcount => true
+
+        has content, :type => :wordcount
+      }
+      index.render
+    end
+
+    it "declares wordcount fields" do
+      index.sources.first.sql_field_str2wordcount.should == ['title']
+    end
+
+    it "declares wordcount attributes" do
+      index.sources.first.sql_attr_str2wordcount.should == ['content']
+    end
+  end
 end

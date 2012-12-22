@@ -246,8 +246,8 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
     end
 
     it "adds fields with attributes to sql_field_string" do
-      source.fields << double('field',
-        :name => 'title', :with_attribute? => true, :file? => false)
+      source.fields << double('field', :name => 'title',
+        :with_attribute? => true, :file? => false, :wordcount? => false)
 
       source.render
 
@@ -255,12 +255,21 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
     end
 
     it "adds any joined or file fields" do
-      source.fields << double('field',
-        :name => 'title', :file? => true, :with_attribute? => false)
+      source.fields << double('field', :name => 'title', :file? => true,
+        :with_attribute? => false, :wordcount? => false)
 
       source.render
 
       source.sql_file_field.should include('title')
+    end
+
+    it "adds wordcounted fields to sql_field_str2wordcount" do
+      source.fields << double('field', :name => 'title',
+        :with_attribute? => false, :file? => false, :wordcount? => true)
+
+      source.render
+
+      source.sql_field_str2wordcount.should include('title')
     end
 
     it "adds any joined fields"
