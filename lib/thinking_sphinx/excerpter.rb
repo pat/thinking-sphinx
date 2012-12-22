@@ -20,6 +20,6 @@ class ThinkingSphinx::Excerpter
   private
 
   def connection
-    @connection ||= ThinkingSphinx::Configuration.instance.connection
+    @connection ||= ThinkingSphinx::Connection.new
   end
 end

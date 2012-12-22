@@ -31,9 +31,9 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks do
   end
 
   describe '#after_destroy' do
-    let(:config)     { double('config', :connection => connection,
-      :indices_for_references => [index], :preload_indices => true) }
-    let(:connection) { double('connection', :query => nil) }
+    let(:config)     { double('config', :indices_for_references => [index],
+      :preload_indices => true) }
+    let(:connection) { double('connection', :execute => nil) }
     let(:index)      {
       double('index', :name => 'foo_core', :document_id_for_key => 14)
     }
@@ -41,11 +41,12 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks do
 
     before :each do
       ThinkingSphinx::Configuration.stub :instance => config
+      ThinkingSphinx::Connection.stub    :new => connection
       Riddle::Query.stub :update => 'UPDATE STATEMENT'
     end
 
     it "updates the deleted flag to false" do
-      connection.should_receive(:query).with('UPDATE STATEMENT')
+      connection.should_receive(:execute).with('UPDATE STATEMENT')
 
       callbacks.after_destroy
     end
@@ -72,7 +73,7 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks do
     end
 
     it "doesn't care about Sphinx errors" do
-      connection.stub(:query).and_raise(Mysql2::Error.new(''))
+      connection.stub(:execute).and_raise(Mysql2::Error.new(''))
 
       lambda { callbacks.after_destroy }.should_not raise_error
     end

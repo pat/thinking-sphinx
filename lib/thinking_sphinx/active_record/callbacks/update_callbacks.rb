@@ -42,7 +42,7 @@ class ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks <
     sphinxql = Riddle::Query.update(
       index.name, index.document_id_for_key(instance.id), attributes
     )
-    configuration.connection.query(sphinxql)
+    ThinkingSphinx::Connection.new.execute(sphinxql)
   rescue Mysql2::Error => error
     # This isn't vital, so don't raise the error.
   end

@@ -5,7 +5,7 @@ class ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks <
 
   def after_destroy
     indices.each do |index|
-      connection.query Riddle::Query.update(
+      connection.execute Riddle::Query.update(
         index.name, index.document_id_for_key(instance.id),
         :sphinx_deleted => true
       )
@@ -21,7 +21,7 @@ class ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks <
   end
 
   def connection
-    @connection ||= config.connection
+    @connection ||= ThinkingSphinx::Connection.new
   end
 
   def indices

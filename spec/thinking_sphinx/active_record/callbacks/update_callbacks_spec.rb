@@ -15,10 +15,10 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks do
       ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks.new instance }
     let(:instance)      { double('instance', :class => klass, :id => 2) }
     let(:klass)         { double(:name => 'Article') }
-    let(:configuration) { double('configuration', :connection => connection,
+    let(:configuration) { double('configuration',
       :settings => {'attribute_updates' => true},
       :indices_for_references => [index]) }
-    let(:connection)    { double('connection', :query => '') }
+    let(:connection)    { double('connection', :execute => '') }
     let(:index)         { double('index', :name => 'article_core',
       :sources => [source], :document_id_for_key => 3) }
     let(:source)        { double('source', :attributes => []) }
@@ -26,6 +26,7 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks do
     before :each do
       stub_const 'ThinkingSphinx::Configuration',
         double(:instance => configuration)
+      stub_const 'ThinkingSphinx::Connection', double(:new => connection)
       stub_const 'Riddle::Query', double(:update => 'SphinxQL')
 
       source.attributes.replace([
@@ -42,7 +43,7 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks do
     it "does not send any updates to Sphinx if updates are disabled" do
       configuration.settings['attribute_updates'] = false
 
-      connection.should_not_receive(:query)
+      connection.should_not_receive(:execute)
 
       callbacks.after_update
     end
@@ -55,13 +56,13 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks do
     end
 
     it "sends the update query through to Sphinx" do
-      connection.should_receive(:query).with('SphinxQL')
+      connection.should_receive(:execute).with('SphinxQL')
 
       callbacks.after_update
     end
 
     it "doesn't care if the update fails at Sphinx's end" do
-      connection.stub(:query).and_raise(Mysql2::Error.new(''))
+      connection.stub(:execute).and_raise(Mysql2::Error.new(''))
 
       lambda { callbacks.after_update }.should_not raise_error
     end

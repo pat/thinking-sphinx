@@ -19,19 +19,18 @@ describe ThinkingSphinx::Deltas::DefaultDelta do
   end
 
   describe '#delete' do
-    let(:config)     { double('config', :connection => connection) }
-    let(:connection) { double('connection', :query => nil) }
+    let(:connection) { double('connection', :execute => nil) }
     let(:index)      { double('index', :name => 'foo_core',
       :document_id_for_key => 14) }
     let(:instance)   { double('instance', :id => 7) }
 
     before :each do
-      ThinkingSphinx::Configuration.stub :instance => config
+      ThinkingSphinx::Connection.stub :new => connection
       Riddle::Query.stub :update => 'UPDATE STATEMENT'
     end
 
     it "updates the deleted flag to false" do
-      connection.should_receive(:query).with('UPDATE STATEMENT')
+      connection.should_receive(:execute).with('UPDATE STATEMENT')
 
       delta.delete index, instance
     end
@@ -58,7 +57,7 @@ describe ThinkingSphinx::Deltas::DefaultDelta do
     end
 
     it "doesn't care about Sphinx errors" do
-      connection.stub(:query).and_raise(Mysql2::Error.new(''))
+      connection.stub(:execute).and_raise(Mysql2::Error.new(''))
 
       lambda { delta.delete index, instance }.should_not raise_error
     end

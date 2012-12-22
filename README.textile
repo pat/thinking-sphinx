@@ -185,7 +185,6 @@ Lists of what still needs to be implemented, in no particular order but in group
 Required for Release Candidate:
 
 * Query and Ranged Query sources for Attributes and Fields
-* JRuby support
 * Sinatra support
 * Wordcount fields and attributes
 
@@ -211,6 +210,8 @@ TS 3 does not support Rails 3.0, Rails 2.x or earlier, or Merb - please refer to
 h3. Ruby Versions
 
 Built on MRI 1.9.3 and tested against MRI 1.9.2 as well. No plans to support MRI 1.8, but would like to support Rubinius and JRuby (the one catch with the latter is the different MySQL interfaces).
+
+There's also the complication that Sphinx 2.0.x releases don't work with JDBC (as JDBC sends several MySQL-specific comamnds through when initializing a connection). So, JRuby support won't appear until there's a stable Sphinx release that can interact with JDBC.
 
 h3. Database Versions
 

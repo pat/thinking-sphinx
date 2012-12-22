@@ -5,14 +5,14 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
     ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks.new instance
   }
   let(:instance)   { double('instance', :id => 12) }
-  let(:config)     { double('config', :indices_for_references => [index],
-    :connection => connection) }
+  let(:config)     { double('config', :indices_for_references => [index]) }
   let(:index)      { double('index', :name => 'my_index', :is_a? => true,
     :document_id_for_key => 123, :fields => [], :attributes => []) }
-  let(:connection) { double('connection', :query => true) }
+  let(:connection) { double('connection', :execute => true) }
 
   before :each do
     ThinkingSphinx::Configuration.stub :instance => config
+    ThinkingSphinx::Connection.stub :new => connection
   end
 
   describe '.after_save' do
@@ -68,7 +68,7 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
     end
 
     it "sends the insert through to the server" do
-      connection.should_receive(:query).with('REPLACE INTO my_index')
+      connection.should_receive(:execute).with('REPLACE INTO my_index')
 
       callbacks.after_save
     end

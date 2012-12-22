@@ -2,13 +2,12 @@ require 'spec_helper'
 
 describe ThinkingSphinx::Excerpter do
   let(:excerpter)  { ThinkingSphinx::Excerpter.new('index', 'all words') }
-  let(:config)     { double('config', :connection => connection) }
   let(:connection) {
     double('connection', :query => [{'snippet' => 'some highlighted words'}])
   }
 
   before :each do
-    ThinkingSphinx::Configuration.stub :instance => config
+    ThinkingSphinx::Connection.stub :new => connection
     Riddle::Query.stub :snippets => 'CALL SNIPPETS'
   end
 

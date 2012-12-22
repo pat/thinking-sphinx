@@ -13,15 +13,7 @@ class ThinkingSphinx::Search::BatchInquirer
     @results ||= begin
       @queries.freeze
 
-      results  = [connection.query(@queries.join('; '))]
-      results << connection.store_result while connection.next_result
-      results
+      ThinkingSphinx::Connection.new.query_all *@queries
     end
-  end
-
-  private
-
-  def connection
-    @connection ||= ThinkingSphinx::Configuration.instance.connection
   end
 end

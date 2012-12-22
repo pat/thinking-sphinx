@@ -1,3 +1,10 @@
+if RUBY_PLATFORM == 'java'
+  require 'java'
+  require 'jdbc/mysql'
+else
+  require 'mysql2'
+end
+
 require 'riddle'
 require 'middleware'
 require 'active_record'
@@ -26,6 +33,7 @@ require 'thinking_sphinx/batched_search'
 require 'thinking_sphinx/callbacks'
 require 'thinking_sphinx/core'
 require 'thinking_sphinx/configuration'
+require 'thinking_sphinx/connection'
 require 'thinking_sphinx/excerpter'
 require 'thinking_sphinx/facet'
 require 'thinking_sphinx/facet_search'

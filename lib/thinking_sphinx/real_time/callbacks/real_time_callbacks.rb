@@ -14,7 +14,7 @@ class ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks <
       end
 
       sphinxql = Riddle::Query::Insert.new(index.name, columns, values).replace!
-      connection.query sphinxql.to_sql
+      connection.execute sphinxql.to_sql
     end
   end
 
@@ -25,7 +25,7 @@ class ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks <
   end
 
   def connection
-    connection = config.connection
+    connection = ThinkingSphinx::Connection.new
   end
 
   def indices

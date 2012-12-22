@@ -10,7 +10,7 @@ class ThinkingSphinx::Deltas::DefaultDelta
   end
 
   def delete(index, instance)
-    config.connection.query Riddle::Query.update(
+    ThinkingSphinx::Connection.new.execute Riddle::Query.update(
       index.name, index.document_id_for_key(instance.id),
       :sphinx_deleted => true
     )
