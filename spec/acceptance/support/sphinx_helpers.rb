@@ -15,6 +15,9 @@ RSpec.configure do |config|
   config.include SphinxHelpers
 
   config.before :all do |group|
+    FileUtils.rm_rf ThinkingSphinx::Configuration.instance.indices_location
+    FileUtils.rm_rf ThinkingSphinx::Configuration.instance.searchd.binlog_path
+
     sphinx.setup && sphinx.start if group.class.metadata[:live]
   end
 
