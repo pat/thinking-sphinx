@@ -1,14 +1,24 @@
 class ThinkingSphinx::ActiveRecord::Attribute::Query
   def initialize(attribute, source)
     @attribute, @source = attribute, source
+
+    raise "Could not determine SQL for MVA" if reflections.empty?
   end
 
-  def to_sql
-    raise "Could not determine SQL for MVA" if reflections.empty?
+  def range_sql
+    base_association.klass.unscoped.
+      select("MIN(#{quoted_foreign_key}), MAX(#{quoted_foreign_key})").to_sql
+  end
 
+  def to_sql(ranged = false)
     relation = base_association.klass.unscoped
     relation = relation.joins joins unless joins.blank?
     relation = relation.select "#{quoted_foreign_key} #{offset} AS #{quote_column('id')}, #{quoted_primary_key} AS #{quote_column(attribute.name)}"
+
+    if ranged
+      relation = relation.where("#{quoted_foreign_key} >= $start")
+      relation = relation.where("#{quoted_foreign_key} <= $end")
+    end
 
     relation.to_sql
   end

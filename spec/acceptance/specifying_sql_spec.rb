@@ -178,4 +178,38 @@ describe 'separate queries for MVAs' do
     declaration.should == 'uint genre_ids from query'
     query.should match(/^SELECT .books_genres.\..book_id. \* #{count} \+ #{source.offset} AS .id., .genres.\..id. AS .genre_ids. FROM .books_genres. INNER JOIN .genres. ON .genres.\..id. = .books_genres.\..genre_id.\s?$/)
   end
+
+  it "generates an appropriate range SQL queries for an MVA attribute" do
+    index.definition_block = Proc.new {
+      indexes title
+      has taggings.tag_id, :as => :tag_ids, :source => :ranged_query
+    }
+    index.render
+
+    attribute = source.sql_attr_multi.detect { |attribute|
+      attribute[/tag_ids/]
+    }
+    declaration, query, range = attribute.split(/;\s+/)
+
+    declaration.should == 'uint tag_ids from ranged-query'
+    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .taggings.\..tag_id. AS .tag_ids. FROM .taggings. \s?WHERE \(.taggings.\..article_id. >= \$start\) AND \(.taggings.\..article_id. <= \$end\)$/)
+    range.should match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
+  end
+
+  it "generates a SQL query with joins when appropriate for MVA attributes" do
+    index.definition_block = Proc.new {
+      indexes title
+      has taggings.tag.id, :as => :tag_ids, :source => :ranged_query
+    }
+    index.render
+
+    attribute = source.sql_attr_multi.detect { |attribute|
+      attribute[/tag_ids/]
+    }
+    declaration, query, range = attribute.split(/;\s+/)
+
+    declaration.should == 'uint tag_ids from ranged-query'
+    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. \s?WHERE \(.taggings.\..article_id. >= \$start\) AND \(.taggings.\..article_id. <= \$end\)$/)
+    range.should match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
+  end
 end

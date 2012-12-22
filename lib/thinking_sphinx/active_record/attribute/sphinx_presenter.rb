@@ -35,14 +35,17 @@ class ThinkingSphinx::ActiveRecord::Attribute::SphinxPresenter
   def multi_declaration
     case @attribute.source_type
     when :query
-      "#{sphinx_type} #{@attribute.name} from query; #{query}"
+      "#{sphinx_type} #{@attribute.name} from query; #{query.to_sql}"
+    when :ranged_query
+      "#{sphinx_type} #{@attribute.name} from ranged-query; #{query.to_sql true}; #{query.range_sql}"
     else
       "#{sphinx_type} #{@attribute.name} from field"
     end
   end
 
   def query
-    ThinkingSphinx::ActiveRecord::Attribute::Query.new(@attribute, @source).
-      to_sql
+    @query ||= ThinkingSphinx::ActiveRecord::Attribute::Query.new(
+      @attribute, @source
+    )
   end
 end
