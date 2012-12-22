@@ -26,46 +26,7 @@ describe ThinkingSphinx::Configuration do
   describe '#configuration_file' do
     it "uses the Rails environment in the configuration file name" do
       config.configuration_file.
-        should == Rails.root.join('config', 'test.sphinx.conf')
-    end
-  end
-
-  describe '#connection' do
-    let(:connection) { double('connection') }
-
-    before :each do
-      Mysql2::Client.stub :new => connection
-    end
-
-    it "connects using the searchd address and port" do
-      config.searchd.stub :address => '127.0.0.1', :mysql41 => 121
-
-      Mysql2::Client.should_receive(:new).with(
-        :host  => '127.0.0.1',
-        :port  => 121,
-        :flags => Mysql2::Client::MULTI_STATEMENTS
-      ).and_return(connection)
-
-      config.connection
-    end
-
-    it "returns the connection" do
-      config.connection.should == connection
-    end
-
-    it "respects any connection options in the settings" do
-      write_configuration(
-        'connection_options' => {:username => 'pat', :port => 9312}
-      )
-
-      Mysql2::Client.should_receive(:new).with(
-        :host     => '127.0.0.1',
-        :port     => 9312,
-        :flags    => Mysql2::Client::MULTI_STATEMENTS,
-        :username => 'pat'
-      ).and_return(connection)
-
-      config.connection
+        should == File.join(Rails.root, 'config', 'test.sphinx.conf')
     end
   end
 
@@ -97,7 +58,7 @@ describe ThinkingSphinx::Configuration do
 
   describe '#index_paths' do
     it "uses app/indices in the Rails app by default" do
-      config.index_paths.should == [Rails.root.join('app', 'indices')]
+      config.index_paths.should == [File.join(Rails.root, 'app', 'indices')]
     end
   end
 
@@ -113,23 +74,25 @@ describe ThinkingSphinx::Configuration do
 
   describe '#indices_location' do
     it "stores index files in db/sphinx/ENVIRONMENT" do
-      config.indices_location.should == Rails.root.join('db', 'sphinx', 'test')
+      config.indices_location.
+        should == File.join(Rails.root, 'db', 'sphinx', 'test')
     end
   end
 
   describe '#initialize' do
     it "sets the daemon pid file within log for the Rails app" do
       config.searchd.pid_file.
-        should == Rails.root.join('log', 'test.sphinx.pid')
+        should == File.join(Rails.root, 'log', 'test.sphinx.pid')
     end
 
     it "sets the daemon log within log for the Rails app" do
-      config.searchd.log.should == Rails.root.join('log', 'test.searchd.log')
+      config.searchd.log.
+        should == File.join(Rails.root, 'log', 'test.searchd.log')
     end
 
     it "sets the query log within log for the Rails app" do
       config.searchd.query_log.
-        should == Rails.root.join('log', 'test.searchd.query.log')
+        should == File.join(Rails.root, 'log', 'test.searchd.query.log')
     end
   end
 

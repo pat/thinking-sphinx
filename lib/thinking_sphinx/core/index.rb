@@ -37,7 +37,7 @@ module ThinkingSphinx::Core::Index
   def render
     pre_render
 
-    @path ||= config.indices_location.join(name)
+    @path ||= File.join config.indices_location, name
 
     if respond_to?(:infix_fields)
       self.infix_fields  = fields.select(&:infixing?).collect(&:name)
