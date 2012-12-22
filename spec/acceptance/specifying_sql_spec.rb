@@ -155,4 +155,27 @@ describe 'separate queries for MVAs' do
     declaration.should == 'uint tag_ids from query'
     query.should match(/^SELECT .articles.\..user_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .articles. INNER JOIN .taggings. ON .taggings.\..article_id. = .articles.\..id. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id.\s?$/)
   end
+
+  it "can handle HABTM joins for MVA queries" do
+    pending "Efficient HABTM queries are tricky."
+    # We don't really have any need for other tables, but that doesn't lend
+    # itself nicely to Thinking Sphinx's DSL, nor ARel SQL generation. This is
+    # a low priority - manual SQL queries for this situation may work better.
+
+    index = ThinkingSphinx::ActiveRecord::Index.new(:book)
+    index.definition_block = Proc.new {
+      indexes title
+      has genres.id, :as => :genre_ids, :source => :query
+    }
+    index.render
+    source = index.sources.first
+
+    attribute = source.sql_attr_multi.detect { |attribute|
+      attribute[/genre_ids/]
+    }
+    declaration, query = attribute.split(/;\s+/)
+
+    declaration.should == 'uint genre_ids from query'
+    query.should match(/^SELECT .books_genres.\..book_id. \* #{count} \+ #{source.offset} AS .id., .genres.\..id. AS .genre_ids. FROM .books_genres. INNER JOIN .genres. ON .genres.\..id. = .books_genres.\..genre_id.\s?$/)
+  end
 end

@@ -26,6 +26,11 @@ ActiveRecord::Schema.define do
     t.timestamps
   end
 
+  create_table(:books_genres, :force => true, :id => false) do |t|
+    t.integer :book_id
+    t.integer :genre_id
+  end
+
   create_table(:cities, :force => true) do |t|
     t.string :name
     t.float  :lat
@@ -35,6 +40,10 @@ ActiveRecord::Schema.define do
   create_table(:colours, :force => true) do |t|
     t.string :name
     t.timestamps
+  end
+
+  create_table(:genres, :force => true) do |t|
+    t.string :name
   end
 
   create_table(:products, :force => true) do |t|

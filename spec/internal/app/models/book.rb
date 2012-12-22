@@ -1,6 +1,8 @@
 class Book < ActiveRecord::Base
   include ThinkingSphinx::Scopes
 
+  has_and_belongs_to_many :genres
+
   sphinx_scope(:by_query) { |query| query }
   sphinx_scope(:by_year) do |year|
     {:with => {:year => year}}

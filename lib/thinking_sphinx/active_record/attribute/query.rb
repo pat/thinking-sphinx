@@ -4,7 +4,7 @@ class ThinkingSphinx::ActiveRecord::Attribute::Query
   end
 
   def to_sql
-    raise "Could not determine SQL for MVA" if base_association.nil?
+    raise "Could not determine SQL for MVA" if reflections.empty?
 
     relation = base_association.klass.unscoped
     relation = relation.joins joins unless joins.blank?
@@ -23,10 +23,6 @@ class ThinkingSphinx::ActiveRecord::Attribute::Query
 
   def column
     @column ||= attribute.columns.first
-  end
-
-  def end_association
-    reflections.last
   end
 
   def reflections
@@ -64,7 +60,7 @@ class ThinkingSphinx::ActiveRecord::Attribute::Query
   end
 
   def quoted_primary_key
-    quote_with_table end_association.klass.table_name, column.__name
+    quote_with_table reflections.last.klass.table_name, column.__name
   end
 
   def quote_with_table(table, column)
