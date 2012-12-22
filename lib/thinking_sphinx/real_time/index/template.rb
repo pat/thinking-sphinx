@@ -9,16 +9,16 @@ class ThinkingSphinx::RealTime::Index::Template
     add_field class_column, :sphinx_internal_class_name
 
     add_attribute :id,          :sphinx_internal_id,    :integer
-    add_attribute class_column, :sphinx_internal_class, :string
+    add_attribute class_column, :sphinx_internal_class, :string, :facet => true
     add_attribute 0,            :sphinx_deleted,        :integer
   end
 
   private
 
-  def add_attribute(column, name, type)
+  def add_attribute(column, name, type, options = {})
     index.attributes << ThinkingSphinx::RealTime::Attribute.new(
       ThinkingSphinx::ActiveRecord::Column.new(*column),
-      :as => name, :type => type
+      options.merge(:as => name, :type => type)
     )
   end
 

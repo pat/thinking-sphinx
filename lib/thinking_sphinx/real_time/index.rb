@@ -12,6 +12,10 @@ class ThinkingSphinx::RealTime::Index < Riddle::Configuration::RealtimeIndex
     super reference, options
   end
 
+  def facets
+    properties.select(&:facet?)
+  end
+
   def unique_attribute_names
     attributes.collect(&:name)
   end
@@ -41,6 +45,10 @@ class ThinkingSphinx::RealTime::Index < Riddle::Configuration::RealtimeIndex
         raise "Unknown attribute type '#{attribute.type(model)}'"
       end
     end
+  end
+
+  def properties
+    fields + attributes
   end
 end
 
