@@ -1,4 +1,7 @@
-Edge:
+2012-12-22: 3.0.0.rc
+* [FEATURE] Source type support (query and ranged query) for both attributes and fields. Custom SQL strings can be supplied as well.
+* [FEATURE] Wordcount attributes and fields now supported.
+* [FEATURE] Support for Sinatra and other non-Rails frameworks.
 * [FEATURE] A sphinx scope can be defined as the default.
 * [FEATURE] An index can have multiple sources, by using define_source within the index definition.
 * [FEATURE] sanitize_sql is available within an index definition.
