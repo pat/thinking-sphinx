@@ -1,4 +1,6 @@
 class ThinkingSphinx::RealTime::Property
+  include ThinkingSphinx::Core::Property
+
   attr_reader :options
 
   def initialize(column, options = {})

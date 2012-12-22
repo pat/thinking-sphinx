@@ -1,4 +1,6 @@
 class ThinkingSphinx::ActiveRecord::Property
+  include ThinkingSphinx::Core::Property
+
   attr_reader :columns, :options
 
   def initialize(model, columns, options = {})
@@ -10,23 +12,11 @@ class ThinkingSphinx::ActiveRecord::Property
     }
   end
 
-  def facet?
-    options[:facet]
-  end
-
-  def multi?
-    false
-  end
-
   def name
     (options[:as] || columns.first.__name).to_s
   end
 
   def source_type
     options[:source]
-  end
-
-  def type
-    nil
   end
 end
