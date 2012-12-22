@@ -212,6 +212,41 @@ describe 'separate queries for MVAs' do
     query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. \s?WHERE \(.taggings.\..article_id. >= \$start\) AND \(.taggings.\..article_id. <= \$end\)$/)
     range.should match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
   end
+
+  it "respects custom SQL snippets as the query value" do
+    index.definition_block = Proc.new {
+      indexes title
+      has 'My Custom SQL Query', :as => :tag_ids, :source => :query,
+        :type => :integer, :multi => true
+    }
+    index.render
+
+    attribute = source.sql_attr_multi.detect { |attribute|
+      attribute[/tag_ids/]
+    }
+    declaration, query = attribute.split(/;\s+/)
+
+    declaration.should == 'uint tag_ids from query'
+    query.should == 'My Custom SQL Query'
+  end
+
+  it "respects custom SQL snippets as the ranged query value" do
+    index.definition_block = Proc.new {
+      indexes title
+      has 'My Custom SQL Query; And a Range', :as => :tag_ids,
+        :source => :ranged_query, :type => :integer, :multi => true
+    }
+    index.render
+
+    attribute = source.sql_attr_multi.detect { |attribute|
+      attribute[/tag_ids/]
+    }
+    declaration, query, range = attribute.split(/;\s+/)
+
+    declaration.should == 'uint tag_ids from ranged-query'
+    query.should == 'My Custom SQL Query'
+    range.should == 'And a Range'
+  end
 end
 
 describe 'separate queries for field' do
@@ -272,5 +307,33 @@ describe 'separate queries for field' do
     declaration.should == 'tags from ranged-query'
     query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..name. AS .tags. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. \s?WHERE \(.taggings.\..article_id. >= \$start\) AND \(.taggings.\..article_id. <= \$end\) ORDER BY .taggings.\..article_id. ASC$/)
     range.should match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
+  end
+
+  it "respects custom SQL snippets as the query value" do
+    index.definition_block = Proc.new {
+      indexes 'My Custom SQL Query', :as => :tags, :source => :query
+    }
+    index.render
+
+    field = source.sql_joined_field.detect { |field| field[/tags/] }
+    declaration, query = field.split(/;\s+/)
+
+    declaration.should == 'tags from query'
+    query.should == 'My Custom SQL Query'
+  end
+
+  it "respects custom SQL snippets as the ranged query value" do
+    index.definition_block = Proc.new {
+      indexes 'My Custom SQL Query; And a Range', :as => :tags,
+        :source => :ranged_query
+    }
+    index.render
+
+    field = source.sql_joined_field.detect { |field| field[/tags/] }
+    declaration, query, range = field.split(/;\s+/)
+
+    declaration.should == 'tags from ranged-query'
+    query.should == 'My Custom SQL Query'
+    range.should == 'And a Range'
   end
 end

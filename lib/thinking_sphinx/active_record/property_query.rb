@@ -1,41 +1,19 @@
 class ThinkingSphinx::ActiveRecord::PropertyQuery
   def initialize(property, source, type = nil)
     @property, @source, @type = property, source, type
-
-    raise "Could not determine SQL for MVA" if reflections.empty?
   end
 
   def to_s
     identifier = [type, property.name].compact.join(' ')
-
-    case property.source_type
-    when :query
-      "#{identifier} from query; #{to_sql}"
-    when :ranged_query
-      "#{identifier} from ranged-query; #{to_sql true}; #{range_sql}"
+    queries    = []
+    if column.string?
+      queries << column.__name
     else
-      raise "Unsupported source type: #{property.source_type}"
-    end
-  end
-
-  def range_sql
-    base_association.klass.unscoped.
-      select("MIN(#{quoted_foreign_key}), MAX(#{quoted_foreign_key})").to_sql
-  end
-
-  def to_sql(ranged = false)
-    relation = base_association.klass.unscoped
-    relation = relation.joins joins unless joins.blank?
-    relation = relation.select "#{quoted_foreign_key} #{offset} AS #{quote_column('id')}, #{quoted_primary_key} AS #{quote_column(property.name)}"
-
-    if ranged
-      relation = relation.where("#{quoted_foreign_key} >= $start")
-      relation = relation.where("#{quoted_foreign_key} <= $end")
+      queries << to_sql
+      queries << range_sql if ranged?
     end
 
-    relation = relation.order("#{quoted_foreign_key} ASC") if type.nil?
-
-    relation.to_sql
+    "#{identifier} from #{source_type}; #{queries.join('; ')}"
   end
 
   private
@@ -48,6 +26,12 @@ class ThinkingSphinx::ActiveRecord::PropertyQuery
 
   def column
     @column ||= property.columns.first
+  end
+
+  def extend_reflection(reflection)
+    return [reflection] unless reflection.through_reflection
+
+    [reflection.through_reflection, reflection.source_reflection]
   end
 
   def reflections
@@ -96,9 +80,33 @@ class ThinkingSphinx::ActiveRecord::PropertyQuery
     ActiveRecord::Base.connection.quote_column_name(column)
   end
 
-  def extend_reflection(reflection)
-    return [reflection] unless reflection.through_reflection
+  def ranged?
+    property.source_type == :ranged_query
+  end
 
-    [reflection.through_reflection, reflection.source_reflection]
+  def range_sql
+    base_association.klass.unscoped.
+      select("MIN(#{quoted_foreign_key}), MAX(#{quoted_foreign_key})").to_sql
+  end
+
+  def source_type
+    property.source_type.to_s.dasherize
+  end
+
+  def to_sql
+    raise "Could not determine SQL for MVA" if reflections.empty?
+
+    relation = base_association.klass.unscoped
+    relation = relation.joins joins unless joins.blank?
+    relation = relation.select "#{quoted_foreign_key} #{offset} AS #{quote_column('id')}, #{quoted_primary_key} AS #{quote_column(property.name)}"
+
+    if ranged?
+      relation = relation.where("#{quoted_foreign_key} >= $start")
+      relation = relation.where("#{quoted_foreign_key} <= $end")
+    end
+
+    relation = relation.order("#{quoted_foreign_key} ASC") if type.nil?
+
+    relation.to_sql
   end
 end
