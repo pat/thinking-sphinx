@@ -23,10 +23,11 @@ describe 'Faceted searching', :live => true do
     Tee.create!
     Tee.create!
     City.create!
+    Product.create!
     index
 
     ThinkingSphinx.facets.to_hash[:class].should == {
-      'Tee' => 2, 'City' => 1
+      'Tee' => 2, 'City' => 1, 'Product' => 1
     }
   end
 
