@@ -10,8 +10,8 @@ class ThinkingSphinx::ActiveRecord::Attribute::SphinxPresenter
     :wordcount => :str2wordcount
   }
 
-  def initialize(attribute)
-    @attribute = attribute
+  def initialize(attribute, source)
+    @attribute, @source = attribute, source
   end
 
   def collection_type
@@ -20,7 +20,7 @@ class ThinkingSphinx::ActiveRecord::Attribute::SphinxPresenter
 
   def declaration
     if @attribute.multi?
-      "#{sphinx_type} #{@attribute.name} from field"
+      multi_declaration
     else
       @attribute.name
     end
@@ -28,5 +28,21 @@ class ThinkingSphinx::ActiveRecord::Attribute::SphinxPresenter
 
   def sphinx_type
     SPHINX_TYPES[@attribute.type]
+  end
+
+  private
+
+  def multi_declaration
+    case @attribute.source_type
+    when :query
+      "#{sphinx_type} #{@attribute.name} from query; #{query}"
+    else
+      "#{sphinx_type} #{@attribute.name} from field"
+    end
+  end
+
+  def query
+    ThinkingSphinx::ActiveRecord::Attribute::Query.new(@attribute, @source).
+      to_sql
   end
 end

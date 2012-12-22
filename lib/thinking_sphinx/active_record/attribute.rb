@@ -4,6 +4,10 @@ class ThinkingSphinx::ActiveRecord::Attribute <
   delegate :type, :type=, :multi?, :updateable?, :to => :typist
   delegate :value_for,                           :to => :values
 
+  def source_type
+    options[:source]
+  end
+
   private
 
   def typist
@@ -15,6 +19,7 @@ class ThinkingSphinx::ActiveRecord::Attribute <
   end
 end
 
+require 'thinking_sphinx/active_record/attribute/query'
 require 'thinking_sphinx/active_record/attribute/sphinx_presenter'
 require 'thinking_sphinx/active_record/attribute/type'
 require 'thinking_sphinx/active_record/attribute/values'

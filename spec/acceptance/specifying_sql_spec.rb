@@ -84,3 +84,75 @@ describe 'specifying SQL for index definitions' do
     query.should match(/WHERE .+title != 'secret'.+ GROUP BY/)
   end
 end
+
+describe 'separate queries for MVAs' do
+  let(:index)  { ThinkingSphinx::ActiveRecord::Index.new(:article) }
+  let(:count)  { ThinkingSphinx::Configuration.instance.indices.count }
+  let(:source) { index.sources.first }
+
+  it "generates an appropriate SQL query for an MVA attribute" do
+    index.definition_block = Proc.new {
+      indexes title
+      has taggings.tag_id, :as => :tag_ids, :source => :query
+    }
+    index.render
+
+    attribute = source.sql_attr_multi.detect { |attribute|
+      attribute[/tag_ids/]
+    }
+    declaration, query = attribute.split(/;\s+/)
+
+    declaration.should == 'uint tag_ids from query'
+    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .taggings.\..tag_id. AS .tag_ids. FROM .taggings.\s?$/)
+  end
+
+  it "generates a SQL query with joins when appropriate for MVA attributes" do
+    index.definition_block = Proc.new {
+      indexes title
+      has taggings.tag.id, :as => :tag_ids, :source => :query
+    }
+    index.render
+
+    attribute = source.sql_attr_multi.detect { |attribute|
+      attribute[/tag_ids/]
+    }
+    declaration, query = attribute.split(/;\s+/)
+
+    declaration.should == 'uint tag_ids from query'
+    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id.\s?$/)
+  end
+
+  it "respects has_many :through joins for MVA queries" do
+    index.definition_block = Proc.new {
+      indexes title
+      has tags.id, :as => :tag_ids, :source => :query
+    }
+    index.render
+
+    attribute = source.sql_attr_multi.detect { |attribute|
+      attribute[/tag_ids/]
+    }
+    declaration, query = attribute.split(/;\s+/)
+
+    declaration.should == 'uint tag_ids from query'
+    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id.\s?$/)
+  end
+
+  it "can handle multiple joins for MVA queries" do
+    index = ThinkingSphinx::ActiveRecord::Index.new(:user)
+    index.definition_block = Proc.new {
+      indexes name
+      has articles.tags.id, :as => :tag_ids, :source => :query
+    }
+    index.render
+    source = index.sources.first
+
+    attribute = source.sql_attr_multi.detect { |attribute|
+      attribute[/tag_ids/]
+    }
+    declaration, query = attribute.split(/;\s+/)
+
+    declaration.should == 'uint tag_ids from query'
+    query.should match(/^SELECT .articles.\..user_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .articles. INNER JOIN .taggings. ON .taggings.\..article_id. = .articles.\..id. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id.\s?$/)
+  end
+end

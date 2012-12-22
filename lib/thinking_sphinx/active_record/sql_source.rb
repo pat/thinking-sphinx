@@ -105,7 +105,7 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
     end
 
     attributes.each do |attribute|
-      presenter = ThinkingSphinx::ActiveRecord::Attribute::SphinxPresenter.new(attribute)
+      presenter = ThinkingSphinx::ActiveRecord::Attribute::SphinxPresenter.new(attribute, self)
 
       attribute_array_for(presenter.collection_type) << presenter.declaration
     end
