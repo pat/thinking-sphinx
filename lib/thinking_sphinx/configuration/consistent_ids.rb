@@ -26,6 +26,8 @@ class ThinkingSphinx::Configuration::ConsistentIds
   end
 
   def sources
-    @sources ||= @indices.collect(&:sources).flatten
+    @sources ||= @indices.select { |index|
+      index.respond_to?(:sources)
+    }.collect(&:sources).flatten
   end
 end

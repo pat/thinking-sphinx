@@ -24,6 +24,11 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
     @facets ||= sources.collect(&:facets).flatten
   end
 
+  def sources
+    interpret_definition!
+    super
+  end
+
   def unique_attribute_names
     attributes.collect(&:name)
   end

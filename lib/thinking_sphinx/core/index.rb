@@ -47,11 +47,6 @@ module ThinkingSphinx::Core::Index
     super
   end
 
-  def sources
-    interpret_definition!
-    super
-  end
-
   private
 
   def config
