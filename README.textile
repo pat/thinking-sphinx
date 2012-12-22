@@ -185,7 +185,6 @@ Lists of what still needs to be implemented, in no particular order but in group
 Required for Release Candidate:
 
 * Query and Ranged Query sources for Attributes and Fields
-* Sinatra support
 * Wordcount fields and attributes
 
 May or may not be added:
@@ -203,7 +202,7 @@ TS 3 is built for Sphinx 2.x only. You cannot use 1.10-beta, 0.9.9 or anything e
 
 h3. Rails Versions
 
-Currently TS 3 is built to support Rails/ActiveRecord 3.1 or newer. Sinatra is not yet supported, but it will be.
+Currently TS 3 is built to support Rails/ActiveRecord 3.1 or newer. If you're using Sinatra and ActiveRecord instead of Rails, that's fine - just make sure you add the @:require => 'thinking_sphinx/sinatra'@ option when listing @thinking-sphinx@ in your Gemfile.
 
 TS 3 does not support Rails 3.0, Rails 2.x or earlier, or Merb - please refer to the TS 1.x and 2.x releases in those situations.
 

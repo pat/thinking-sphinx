@@ -1,19 +1,25 @@
 class ThinkingSphinx::Configuration < Riddle::Configuration
   attr_accessor :configuration_file, :indices_location
   attr_reader :index_paths
-  attr_writer :controller
+  attr_writer :controller, :framework
 
   def initialize
     super
 
-    @configuration_file = Rails.root.join 'config', "#{Rails.env}.sphinx.conf"
-    @index_paths        = [Rails.root.join('app', 'indices')]
-    @indices_location   = Rails.root.join 'db', 'sphinx', Rails.env
+    @configuration_file = File.join framework.root, 'config',
+      "#{framework.environment}.sphinx.conf"
+    @index_paths        = [File.join(framework.root, 'app', 'indices')]
+    @indices_location   = File.join framework.root, 'db', 'sphinx',
+      framework.environment
 
-    searchd.pid_file  = Rails.root.join 'log', "#{Rails.env}.sphinx.pid"
-    searchd.log       = Rails.root.join 'log', "#{Rails.env}.searchd.log"
-    searchd.query_log = Rails.root.join 'log', "#{Rails.env}.searchd.query.log"
-    searchd.binlog_path = Rails.root.join 'tmp', 'binlog', Rails.env
+    searchd.pid_file    = File.join framework.root, 'log',
+      "#{framework.environment}.sphinx.pid"
+    searchd.log         = File.join framework.root, 'log',
+      "#{framework.environment}.searchd.log"
+    searchd.query_log   = File.join framework.root, 'log',
+      "#{framework.environment}.searchd.query.log"
+    searchd.binlog_path = File.join framework.root, 'tmp', 'binlog',
+      framework.environment
 
     searchd.address   = settings['address']
     searchd.address   = Defaults::ADDRESS unless searchd.address.present?
@@ -32,19 +38,6 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     @instance = nil
   end
 
-  def connection
-    # If you use localhost, MySQL insists on a socket connection, but Sphinx
-    # requires a TCP connection. Using 127.0.0.1 fixes that.
-    address = searchd.address || '127.0.0.1'
-    address = '127.0.0.1' if address == 'localhost'
-
-    Mysql2::Client.new({
-      :host  => address,
-      :port  => searchd.mysql41,
-      :flags => Mysql2::Client::MULTI_STATEMENTS
-    }.merge(settings['connection_options'] || {}))
-  end
-
   def controller
     @controller ||= begin
       rc = Riddle::Controller.new self, configuration_file
@@ -53,6 +46,10 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
       end
       rc
     end
+  end
+
+  def framework
+    @framework ||= ThinkingSphinx::Frameworks.current
   end
 
   def indices_for_references(*references)
@@ -98,11 +95,11 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 
   def settings_to_hash
     contents = YAML.load(ERB.new(File.read(settings_file)).result)
-    contents && contents[Rails.env] || {}
+    contents && contents[framework.environment] || {}
   end
 
   def settings_file
-    Rails.root.join 'config', 'thinking_sphinx.yml'
+    File.join framework.root, 'config', 'thinking_sphinx.yml'
   end
 end
 
