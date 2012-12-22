@@ -246,7 +246,7 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
     end
 
     it "adds fields with attributes to sql_field_string" do
-      source.fields << double('field', :name => 'title',
+      source.fields << double('field', :name => 'title', :source_type => nil,
         :with_attribute? => true, :file? => false, :wordcount? => false)
 
       source.render
@@ -256,7 +256,7 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
     it "adds any joined or file fields" do
       source.fields << double('field', :name => 'title', :file? => true,
-        :with_attribute? => false, :wordcount? => false)
+        :with_attribute? => false, :wordcount? => false,  :source_type => nil)
 
       source.render
 
@@ -264,7 +264,7 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
     end
 
     it "adds wordcounted fields to sql_field_str2wordcount" do
-      source.fields << double('field', :name => 'title',
+      source.fields << double('field', :name => 'title', :source_type => nil,
         :with_attribute? => false, :file? => false, :wordcount? => true)
 
       source.render
@@ -272,7 +272,18 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       source.sql_field_str2wordcount.should include('title')
     end
 
-    it "adds any joined fields"
+    it "adds any joined fields" do
+      ThinkingSphinx::ActiveRecord::PropertyQuery.stub(
+        :new => double(:to_s => 'query for title')
+      )
+      source.fields << double('field', :name => 'title',
+        :source_type => :query, :with_attribute? => false, :file? => false,
+        :wordcount? => false)
+
+      source.render
+
+      source.sql_joined_field.should include('query for title')
+    end
 
     it "adds integer attributes to sql_attr_uint" do
       source.attributes << double('attribute')
