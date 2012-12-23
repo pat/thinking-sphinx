@@ -1,11 +1,12 @@
 class ThinkingSphinx::RealTime::Index < Riddle::Configuration::RealtimeIndex
   include ThinkingSphinx::Core::Index
 
-  attr_accessor :fields, :attributes
+  attr_accessor :fields, :attributes, :conditions
 
   def initialize(reference, options = {})
     @fields     = []
     @attributes = []
+    @conditions = []
 
     Template.new(self).apply
 

@@ -20,4 +20,8 @@ class ThinkingSphinx::RealTime::Interpreter <
       @index.send("#{key}=", value)   if @index.class.settings.include?(key)
     end
   end
+
+  def where(condition)
+    @index.conditions << condition
+  end
 end
