@@ -43,7 +43,7 @@ class ThinkingSphinx::RealTime::Index < Riddle::Configuration::RealtimeIndex
       when :float
         @rt_attr_float << attribute.name unless @rt_attr_float.include?(attribute.name)
       else
-        raise "Unknown attribute type '#{attribute.type(model)}'"
+        raise "Unknown attribute type '#{attribute.type}'"
       end
     end
   end
