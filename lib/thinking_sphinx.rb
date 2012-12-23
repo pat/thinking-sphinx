@@ -8,6 +8,7 @@ end
 require 'riddle'
 require 'middleware'
 require 'active_record'
+require 'innertube'
 
 module ThinkingSphinx
   def self.count(query = '', options = {})

@@ -21,6 +21,13 @@ module ThinkingSphinx::Connection
     ThinkingSphinx::Connection::MRI
   end
 
+  def self.pool
+    @pool ||= Innertube::Pool.new(
+      Proc.new { ThinkingSphinx::Connection.new },
+      Proc.new { |connection| connection.close }
+    )
+  end
+
   class MRI
     attr_reader :client
 
@@ -32,8 +39,15 @@ module ThinkingSphinx::Connection
       }.merge(options))
     end
 
+    def close
+      client.close
+    end
+
     def execute(statement)
       client.query statement
+    rescue
+      puts "Error with statement: #{statement}"
+      raise
     end
 
     def query(statement)
