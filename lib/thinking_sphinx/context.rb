@@ -54,7 +54,7 @@ class ThinkingSphinx::Context
       Dir["#{base}**/*.rb"].each do |file|
         model_name = file.gsub(/^#{base}([\w_\/\\]+)\.rb/, '\1')
 
-        next if model_name.nil?
+        next if model_name.nil? || model_name.match(/^concerns\//)
         camelized_model = model_name.camelize
         next if ::ActiveRecord::Base.descendants.detect { |model|
           model.name == camelized_model
