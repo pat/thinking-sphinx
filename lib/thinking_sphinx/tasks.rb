@@ -1,9 +1,4 @@
 namespace :ts do
-  desc 'The current version of Thinking Sphinx'
-  task :version do
-    puts "Thinking Sphinx v#{ThinkingSphinx::VERSION}"
-  end
-
   desc 'Generate the Sphinx configuration file'
   task :configure => :environment do
     interface.configure
@@ -16,6 +11,7 @@ namespace :ts do
 
   desc 'Stop Sphinx, index and then restart Sphinx'
   task :rebuild => [:stop, :index, :start]
+
   desc 'Restart the Sphinx daemon'
   task :restart => [:stop, :start]
 
