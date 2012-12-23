@@ -7,29 +7,18 @@ class ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks <
     return unless real_time_indices?
 
     real_time_indices.each do |index|
-      columns, values = ['id'], [index.document_id_for_key(instance.id)]
-      (index.fields + index.attributes).each do |property|
-        columns << property.name
-        values  << property.translate(instance)
-      end
-
-      sphinxql = Riddle::Query::Insert.new(index.name, columns, values).replace!
-      connection.execute sphinxql.to_sql
+      ThinkingSphinx::RealTime::Transcriber.new(index).copy instance
     end
   end
 
   private
 
-  def config
+  def configuration
     ThinkingSphinx::Configuration.instance
   end
 
-  def connection
-    connection = ThinkingSphinx::Connection.new
-  end
-
   def indices
-    @indices ||= config.indices_for_references reference
+    @indices ||= configuration.indices_for_references reference
   end
 
   def real_time_indices?
