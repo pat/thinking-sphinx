@@ -1,12 +1,35 @@
 class ThinkingSphinx::RakeInterface
   def configure
-    puts "Generating configuration to #{config.configuration_file}"
-    config.render_to_file
+    puts "Generating configuration to #{configuration.configuration_file}"
+    configuration.render_to_file
+  end
+
+  def generate
+    configuration.preload_indices
+    configuration.render
+
+    FileUtils.mkdir_p configuration.indices_location
+
+    configuration.indices.each do |index|
+      next unless index.is_a?(ThinkingSphinx::RealTime::Index)
+
+      puts "Generating index files for #{index.name}"
+      transcriber = ThinkingSphinx::RealTime::Transcriber.new index
+      Dir["#{index.path}*"].each { |file| FileUtils.rm file }
+
+      index.model.find_each do |instance|
+        transcriber.copy instance
+        print "."
+      end
+      print "\n"
+
+      controller.rotate
+    end
   end
 
   def index(reconfigure = true)
     configure if reconfigure
-    FileUtils.mkdir_p config.indices_location
+    FileUtils.mkdir_p configuration.indices_location
     controller.index :verbose => true
   end
 
@@ -37,11 +60,11 @@ class ThinkingSphinx::RakeInterface
 
   private
 
-  def config
+  def configuration
     ThinkingSphinx::Configuration.instance
   end
 
   def controller
-    config.controller
+    configuration.controller
   end
 end

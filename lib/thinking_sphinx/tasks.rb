@@ -9,6 +9,11 @@ namespace :ts do
     interface.index(ENV['INDEX_ONLY'] != 'true')
   end
 
+  desc 'Generate fresh index files for real-time indices'
+  task :generate => :environment do
+    interface.generate
+  end
+
   desc 'Stop Sphinx, index and then restart Sphinx'
   task :rebuild => [:stop, :index, :start]
 
