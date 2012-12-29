@@ -7,10 +7,11 @@ module ThinkingSphinx::Core::Index
   end
 
   def initialize(reference, options = {})
-    @reference  = reference.to_sym
-    @docinfo    = :extern
-    @options    = options
-    @offset     = config.next_offset(reference)
+    @reference    = reference.to_sym
+    @docinfo      = :extern
+    @charset_type = 'utf-8'
+    @options      = options
+    @offset       = config.next_offset(reference)
 
     super "#{options[:name] || reference.to_s.gsub('/', '_')}_#{name_suffix}"
   end
