@@ -139,7 +139,7 @@ describe ThinkingSphinx::RealTime::Index do
 
   describe '#render' do
     it "interprets the provided definition" do
-      index.should_receive(:interpret_definition!)
+      index.should_receive(:interpret_definition!).at_least(:once)
 
       begin
         index.render

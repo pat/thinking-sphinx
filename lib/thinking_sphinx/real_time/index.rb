@@ -1,7 +1,7 @@
 class ThinkingSphinx::RealTime::Index < Riddle::Configuration::RealtimeIndex
   include ThinkingSphinx::Core::Index
 
-  attr_accessor :fields, :attributes, :conditions
+  attr_writer :fields, :attributes, :conditions
 
   def initialize(reference, options = {})
     @fields     = []
@@ -13,8 +13,26 @@ class ThinkingSphinx::RealTime::Index < Riddle::Configuration::RealtimeIndex
     super reference, options
   end
 
+  def attributes
+    interpret_definition!
+
+    @attributes
+  end
+
+  def conditions
+    interpret_definition!
+
+    @conditions
+  end
+
   def facets
     properties.select(&:facet?)
+  end
+
+  def fields
+    interpret_definition!
+
+    @fields
   end
 
   def unique_attribute_names
