@@ -1,3 +1,10 @@
+Edge:
+* [FIX] Load real-time index definitions when listing fields, attributes, and/or conditions.
+* [CHANGE] UTF-8 is now the default charset again (as it was in earlier Thinking Sphinx versions).
+* [FEATURE] Initial realtime index support, including the ts:generate task for building index datasets. Sphinx 2.0.6 is required.
+* [CHANGE] Removing ts:version rake task.
+* [FEATURE] SphinxQL connection pooling via the Innertube gem.
+
 2012-12-22: 3.0.0.rc
 * [FEATURE] Source type support (query and ranged query) for both attributes and fields. Custom SQL strings can be supplied as well.
 * [FEATURE] Wordcount attributes and fields now supported.
