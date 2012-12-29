@@ -26,10 +26,10 @@ describe ThinkingSphinx::RealTime::Field do
       field.translate(object).should == 'value'
     end
 
-    it "returns the column's name if it's an integer" do
+    it "returns the column's name as a string if it's an integer" do
       column.stub :__name => 404
 
-      field.translate(object).should == 404
+      field.translate(object).should == '404'
     end
 
     it "returns the object's method matching the column's name" do
@@ -44,11 +44,11 @@ describe ThinkingSphinx::RealTime::Field do
       field.translate(object).should == 'the parent name'
     end
 
-    it "returns nil if any element in the object tree is nil" do
+    it "returns a blank string if any element in the object tree is nil" do
       column.stub :__name => :name, :__stack => [:parent]
       object.parent = nil
 
-      field.translate(object).should be_nil
+      field.translate(object).should == ''
     end
   end
 end

@@ -44,11 +44,11 @@ describe ThinkingSphinx::RealTime::Attribute do
       attribute.translate(object).should == 'the parent name'
     end
 
-    it "returns nil if any element in the object tree is nil" do
+    it "returns zero if any element in the object tree is nil" do
       column.stub :__name => :name, :__stack => [:parent]
       object.parent = nil
 
-      attribute.translate(object).should be_nil
+      attribute.translate(object).should be_zero
     end
   end
 
