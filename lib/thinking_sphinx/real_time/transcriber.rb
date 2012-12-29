@@ -4,16 +4,16 @@ class ThinkingSphinx::RealTime::Transcriber
   end
 
   def copy(instance)
+    return unless copy? instance
+
+    columns, values = ['id'], [index.document_id_for_key(instance.id)]
+    (index.fields + index.attributes).each do |property|
+      columns << property.name
+      values  << property.translate(instance)
+    end
+
+    sphinxql = Riddle::Query::Insert.new index.name, columns, values
     ThinkingSphinx::Connection.pool.take do |connection|
-      return unless copy? instance
-
-      columns, values = ['id'], [index.document_id_for_key(instance.id)]
-      (index.fields + index.attributes).each do |property|
-        columns << property.name
-        values  << property.translate(instance)
-      end
-
-      sphinxql = Riddle::Query::Insert.new index.name, columns, values
       connection.execute sphinxql.replace!.to_sql
     end
   end
@@ -23,7 +23,7 @@ class ThinkingSphinx::RealTime::Transcriber
   attr_reader :index
 
   def copy?(instance)
-    index.conditions.all? { |condition|
+    index.conditions.empty? || index.conditions.all? { |condition|
       case condition
       when Symbol
         instance.send(condition)

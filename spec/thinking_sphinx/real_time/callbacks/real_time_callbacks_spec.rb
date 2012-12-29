@@ -7,12 +7,13 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
   let(:instance)   { double('instance', :id => 12) }
   let(:config)     { double('config', :indices_for_references => [index]) }
   let(:index)      { double('index', :name => 'my_index', :is_a? => true,
-    :document_id_for_key => 123, :fields => [], :attributes => []) }
+    :document_id_for_key => 123, :fields => [], :attributes => [],
+    :conditions => []) }
   let(:connection) { double('connection', :execute => true) }
 
   before :each do
     ThinkingSphinx::Configuration.stub :instance => config
-    ThinkingSphinx::Connection.stub :new => connection
+    ThinkingSphinx::Connection.stub_chain(:pool, :take).and_yield connection
   end
 
   describe '.after_save' do
