@@ -1,15 +1,13 @@
 h1. Thinking Sphinx
 
-Welcome to Thinking Sphinx version 3 - a complete rewrite from past versions. Right now it is a work-in-progress, though it does include most of the more popular features from TS 2 and earlier. It's also currently built for Rails 3.1 or newer only.
-
-Still interested? Well, read on!
+Welcome to Thinking Sphinx version 3 - a complete rewrite from past versions, built for Rails 3.1 or newer only.
 
 h2. Installation
 
-There's only a pre-release gem available at this point - or you can use the git repository reference (the edge branch is what you're after). Also, you'll need to specify the Mysql2 gem as well (this is not an inbuilt dependency because JRuby, when supported, will need something different):
+It's a gem, so install it like you would any other gem. You will also need to specify the Mysql2 gem as well (this is not an inbuilt dependency because JRuby, when supported, will need something different):
 
 <pre><code>gem 'mysql2',          '0.3.12b4'
-gem 'thinking-sphinx', '3.0.0.pre'</code></pre>
+gem 'thinking-sphinx', '3.0.0'</code></pre>
 
 h2. Usage
 
