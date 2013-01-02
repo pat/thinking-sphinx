@@ -36,6 +36,7 @@ class ThinkingSphinx::ActiveRecord::Interpreter <
     properties.each do |key, value|
       @index.send("#{key}=", value)   if @index.class.settings.include?(key)
       __source.send("#{key}=", value) if __source.class.settings.include?(key)
+      __source.options[key] = value   if source_option?(key)
     end
   end
 
@@ -52,5 +53,9 @@ class ThinkingSphinx::ActiveRecord::Interpreter <
   def build_properties(klass, columns)
     options = columns.extract_options!
     columns.collect { |column| klass.new(__source.model, column, options) }
+  end
+
+  def source_option?(key)
+    ::ThinkingSphinx::ActiveRecord::SQLSource::OPTIONS.include?(key)
   end
 end

@@ -2,16 +2,9 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
   attr_reader :model, :database_settings, :options
   attr_accessor :fields, :attributes, :associations, :conditions, :groupings
 
-  # Options:
-  # - :name
-  # - :offset
-  # - :delta_processor
-  # - :delta?
-  # - :disable_range?
-  # - :group_concat_max_len
-  # - :utf8?
-  # - :position
-  #
+  OPTIONS = [:name, :offset, :delta_processor, :delta?, :disable_range?,
+    :group_concat_max_len, :utf8?, :position]
+
   def initialize(model, options = {})
     @model             = model
     @database_settings = model.connection.instance_variable_get(:@config).clone

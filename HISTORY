@@ -1,4 +1,5 @@
 Edge:
+* [FIX] Respect source options as well as underlying settings via the set_property method in index definitions.
 * [FIX] Load real-time index definitions when listing fields, attributes, and/or conditions.
 * [CHANGE] UTF-8 is now the default charset again (as it was in earlier Thinking Sphinx versions).
 * [FEATURE] Initial realtime index support, including the ts:generate task for building index datasets. Sphinx 2.0.6 is required.

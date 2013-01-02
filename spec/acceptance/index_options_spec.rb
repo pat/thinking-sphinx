@@ -84,4 +84,24 @@ describe 'Index options' do
       index.sources.first.sql_attr_str2wordcount.should == ['content']
     end
   end
+
+  context 'respecting source options' do
+    before :each do
+      index.definition_block = Proc.new {
+        indexes title
+
+        set_property :sql_range_step => 5
+        set_property :disable_range? => true
+      }
+      index.render
+    end
+
+    it "allows for core source settings" do
+      index.sources.first.sql_range_step.should == 5
+    end
+
+    it "allows for source options" do
+      index.sources.first.disable_range?.should be_true
+    end
+  end
 end
