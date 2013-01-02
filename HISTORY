@@ -1,4 +1,4 @@
-Edge:
+1.4.14 - January 2nd 2013
 * Allow sql_query_pre values to come through from config/sphinx.yml (George Ogata).
 * ThinkingSphinx::Search#tap doesn't delegate through to the underlying array.
 * Use fire_delta? instance method in the model (if it exists) to decide whether indexing should happen.
