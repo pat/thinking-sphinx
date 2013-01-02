@@ -26,15 +26,14 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     searchd.mysql41   = settings['mysql41'] || settings['port'] ||
       Defaults::PORT
     searchd.workers   = 'threads'
-    [:indexer, :searchd].each do |option| 
+ 
+   [:indexer, :searchd].each do |option|
       control = self.send(option)
-      settings.each do |key,value| 
-        assignee = "#{key}="
-        if control.respond_to?(assignee)
-          control.send(assignee, value)
-        end
+      settings.each do |key,value|        
+        control.send("#{key}=", value) if control.class_eval('settings').include?(key.to_sym)
       end
     end
+
     @offsets = {}
   end
 
