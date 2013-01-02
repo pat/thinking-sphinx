@@ -1,4 +1,4 @@
-Edge:
+2013-01-02: 3.0.0
 * [CHANGE] Updating Riddle dependency to 1.5.4.
 * [FIX] Respect source options as well as underlying settings via the set_property method in index definitions.
 * [FIX] Load real-time index definitions when listing fields, attributes, and/or conditions.
