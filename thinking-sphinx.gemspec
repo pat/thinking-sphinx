@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'builder',      '>= 2.1.2'
   s.add_runtime_dependency 'middleware',   '>= 0.1.0'
   s.add_runtime_dependency 'innertube',    '>= 1.0.2'
-  s.add_runtime_dependency 'riddle',       '>= 1.5.3'
+  s.add_runtime_dependency 'riddle',       '>= 1.5.4'
 
   s.add_development_dependency 'appraisal',        '~> 0.4.0'
   s.add_development_dependency 'combustion',       '~> 0.3.3'
