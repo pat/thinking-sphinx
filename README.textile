@@ -63,7 +63,7 @@ end</code></pre>
   :classes => [User, AdminUser, SupportUser]</code></pre>
 
 * The option @:rank_mode@ has now become @:ranker@ - and the options (as strings or symbols) are as follows: proximity_bm25, bm25, none, wordcount, proximity, matchany, and fieldmask.
-* There are no explicit sorting modes - all sorting must be on attributes followed by ASC or DESC. For example: @:order => '@weight DESC, created_at ASC'@.
+* There are no explicit sorting modes - all sorting must be on attributes followed by ASC or DESC. For example: <code>:order => '@weight DESC, created_at ASC'</code>.
 * If you specify just an attribute name as a symbol for the @:order@ option, it will be given the ascending direction by default. So, @:order => :created_at@ is equivalent to @:order => 'created_at ASC'@.
 * If you want to use a calculated expression for sorting, you must specify the expression as a new attribute, then use that attribute in your @:order@ option. This is done using the @:select@ option to specify extra columns available in the underlying SphinxQL (_not_ ActiveRecord/SQL) query.
 
