@@ -13,7 +13,7 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
     relation = relation.order('NULL') if source.type == 'mysql'
     relation = relation.joins associations.join_values
 
-    relation.to_sql
+    relation.to_sql.gsub(/\n/, "\\\n")
   end
 
   def sql_query_range

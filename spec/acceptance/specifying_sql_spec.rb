@@ -83,6 +83,24 @@ describe 'specifying SQL for index definitions' do
     query = index.sources.first.sql_query
     query.should match(/WHERE .+title != 'secret'.+ GROUP BY/)
   end
+
+  it "escapes new lines in SQL snippets" do
+    index = ThinkingSphinx::ActiveRecord::Index.new(:article)
+    index.definition_block = Proc.new {
+      indexes title
+      has <<-SQL, as: :custom_attribute,  type: :integer
+      ARRAY_AGG(
+        CONCAT(
+          something
+        )
+      )
+      SQL
+    }
+    index.render
+
+    query = index.sources.first.sql_query
+    query.should match(/\\\n/)
+  end
 end
 
 describe 'separate queries for MVAs' do
