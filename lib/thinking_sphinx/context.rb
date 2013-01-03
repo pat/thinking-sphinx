@@ -56,20 +56,15 @@ class ThinkingSphinx::Context
 
         next if model_name.nil?
         camelized_model = model_name.camelize
-        next if ::ActiveRecord::Base.descendants.detect { |model|
-          model.name == camelized_model
-        }
 
         begin
+          next if ::ActiveRecord::Base.descendants.detect { |model|
+            model.name == camelized_model
+          }
           camelized_model.constantize
         rescue LoadError, NameError
           # Make sure that STI subclasses in subfolders are loaded.
-          if camelized_model.gsub!(/.+::/, '').nil?
-            STDERR.puts "ThinkingSphinx: error loading #{file}"
-            next
-          else
-            retry
-          end
+          camelized_model.gsub!(/.+::/, '').nil? ?  next : retry
         rescue Exception => err
           STDERR.puts "Warning: Error loading #{file}:"
           STDERR.puts err.message
