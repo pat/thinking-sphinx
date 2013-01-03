@@ -94,6 +94,18 @@ describe ThinkingSphinx::Configuration do
       config.searchd.query_log.
         should == File.join(Rails.root, 'log', 'test.searchd.query.log')
     end
+
+    it "sets indexer settings if within thinking_sphinx.yml" do
+      write_configuration 'mem_limit' => '128M'
+
+      config.indexer.mem_limit.should == '128M'
+    end
+
+    it "sets searchd settings if within thinking_sphinx.yml" do
+      write_configuration 'workers' => 'none'
+
+      config.searchd.workers.should == 'none'
+    end
   end
 
   describe '#next_offset' do

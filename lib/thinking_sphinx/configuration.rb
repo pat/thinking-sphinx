@@ -26,11 +26,12 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     searchd.mysql41   = settings['mysql41'] || settings['port'] ||
       Defaults::PORT
     searchd.workers   = 'threads'
- 
-   [:indexer, :searchd].each do |option|
-      control = self.send(option)
-      settings.each do |key,value|        
-        control.send("#{key}=", value) if control.class_eval('settings').include?(key.to_sym)
+
+   [indexer, searchd].each do |object|
+      settings.each do |key, value|
+        next unless object.class.settings.include?(key.to_sym)
+
+        object.send("#{key}=", value)
       end
     end
 
