@@ -31,20 +31,16 @@ describe ThinkingSphinx::Context do
       }.should_not raise_error
     end
 
-    it "should report name errors but not raise them" do
+    it "should not raise name errors" do
       class_name.stub(:constantize).and_raise(NameError)
-      STDERR.stub!(:puts => '')
-      STDERR.should_receive(:puts).with('ThinkingSphinx: error loading a.rb')
 
       lambda {
         ts_context.prepare
       }.should_not raise_error
     end
 
-    it "should report load errors but not raise them" do
+    it "should not raise load errors" do
       class_name.stub(:constantize).and_raise(LoadError)
-      STDERR.stub!(:puts => '')
-      STDERR.should_receive(:puts).with('ThinkingSphinx: error loading a.rb')
 
       lambda {
         ts_context.prepare
