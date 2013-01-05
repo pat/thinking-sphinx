@@ -34,9 +34,19 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
     end
 
     it "adds source associations to the joins of the query" do
-      source.associations << double('association', :stack => [:user, :posts])
+      source.associations << double('association',
+        :stack => [:user, :posts], :string? => false)
 
       associations.should_receive(:add_join_to).with([:user, :posts])
+
+      builder.sql_query
+    end
+
+    it "adds string joins directly to the relation" do
+      source.associations << double('association',
+        :to_s => 'my string', :string? => true)
+
+      relation.should_receive(:joins).with(['my string']).and_return(relation)
 
       builder.sql_query
     end

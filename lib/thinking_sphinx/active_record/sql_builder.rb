@@ -12,6 +12,7 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
     relation = relation.group group_clause
     relation = relation.order('NULL') if source.type == 'mysql'
     relation = relation.joins associations.join_values
+    relation = relation.joins custom_joins.collect(&:to_s) if custom_joins.any?
 
     relation.to_sql.gsub(/\n/, "\\\n")
   end
@@ -67,10 +68,14 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
 
   def associations
     @associations ||= ThinkingSphinx::ActiveRecord::Associations.new(model).tap do |assocs|
-      source.associations.each do |association|
+      source.associations.reject(&:string?).each do |association|
         assocs.add_join_to association.stack
       end
     end
+  end
+
+  def custom_joins
+    @custom_joins ||= source.associations.select &:string?
   end
 
   def quote_column(column)

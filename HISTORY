@@ -1,4 +1,5 @@
 Edge:
+* [FEATURE] Allow custom strings for SQL joins in index definitions.
 * [FIX] New lines are maintained and escaped in custom source queries.
 * [FIX] Subclasses of indexed models fire delta callbacks properly.
 * [FIX] Thinking Sphinx can be loaded via thinking/sphinx, to satisfy Bundler.

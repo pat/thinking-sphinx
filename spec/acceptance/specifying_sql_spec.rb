@@ -36,6 +36,18 @@ describe 'specifying SQL for index definitions' do
     query.should match(/LEFT OUTER JOIN .tags./)
   end
 
+  it "handles custom join SQL statements" do
+    index = ThinkingSphinx::ActiveRecord::Index.new(:article)
+    index.definition_block = Proc.new {
+      indexes title
+      join "INNER JOIN foo ON foo.x = bar.y"
+    }
+    index.render
+
+    query = index.sources.first.sql_query
+    query.should match(/INNER JOIN foo ON foo.x = bar.y/)
+  end
+
   it "handles GROUP BY clauses" do
     index = ThinkingSphinx::ActiveRecord::Index.new(:article)
     index.definition_block = Proc.new {

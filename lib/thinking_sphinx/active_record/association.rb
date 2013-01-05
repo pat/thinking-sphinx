@@ -6,4 +6,12 @@ class ThinkingSphinx::ActiveRecord::Association
   def stack
     @column.__stack + [@column.__name]
   end
+
+  def string?
+    @column.is_a?(String)
+  end
+
+  def to_s
+    @column.to_s
+  end
 end
