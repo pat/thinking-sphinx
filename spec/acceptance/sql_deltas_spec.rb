@@ -40,4 +40,13 @@ describe 'SQL delta indexing', :live => true do
 
     Book.search('Harry').should be_empty
   end
+
+  it "automatically indexes new records of subclasses" do
+    book = Hardcover.create(
+      :title => 'American Gods', :author => 'Neil Gaiman'
+    )
+    sleep 0.25
+
+    Book.search('Gaiman').to_a.should == [book]
+  end
 end

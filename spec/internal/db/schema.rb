@@ -22,7 +22,8 @@ ActiveRecord::Schema.define do
     t.string  :author
     t.integer :year
     t.string  :blurb_file
-    t.boolean :delta, :default => true, :null => false
+    t.boolean :delta, :default => true,   :null => false
+    t.string  :type,  :default => 'Book', :null => false
     t.timestamps
   end
 

@@ -42,14 +42,10 @@ class ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks <
   end
 
   def indices
-    @indices ||= config.indices_for_references reference
+    @indices ||= ThinkingSphinx::IndexSet.new [instance.class], []
   end
 
   def processors
     delta_indices.collect &:delta_processor
-  end
-
-  def reference
-    instance.class.name.underscore.to_sym
   end
 end
