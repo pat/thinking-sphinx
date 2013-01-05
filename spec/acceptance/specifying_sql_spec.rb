@@ -265,6 +265,25 @@ describe 'separate queries for MVAs' do
     query.should == 'My Custom SQL Query'
     range.should == 'And a Range'
   end
+
+  it "escapes new lines in custom SQL snippets" do
+    index.definition_block = Proc.new {
+      indexes title
+      has <<-SQL, :as => :tag_ids, :source => :query, :type => :integer, :multi => true
+My Custom
+SQL Query
+      SQL
+    }
+    index.render
+
+    attribute = source.sql_attr_multi.detect { |attribute|
+      attribute[/tag_ids/]
+    }
+    declaration, query = attribute.split(/;\s+/)
+
+    declaration.should == 'uint tag_ids from query'
+    query.should == "My Custom\\\nSQL Query"
+  end
 end
 
 describe 'separate queries for field' do
@@ -353,5 +372,21 @@ describe 'separate queries for field' do
     declaration.should == 'tags from ranged-query'
     query.should == 'My Custom SQL Query'
     range.should == 'And a Range'
+  end
+
+  it "escapes new lines in custom SQL snippets" do
+    index.definition_block = Proc.new {
+      indexes <<-SQL, :as => :tags, :source => :query
+My Custom
+SQL Query
+      SQL
+    }
+    index.render
+
+    field = source.sql_joined_field.detect { |field| field[/tags/] }
+    declaration, query = field.split(/;\s+/)
+
+    declaration.should == 'tags from query'
+    query.should == "My Custom\\\nSQL Query"
   end
 end

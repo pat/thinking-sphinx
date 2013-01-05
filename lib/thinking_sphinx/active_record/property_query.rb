@@ -7,7 +7,7 @@ class ThinkingSphinx::ActiveRecord::PropertyQuery
     identifier = [type, property.name].compact.join(' ')
     queries    = []
     if column.string?
-      queries << column.__name
+      queries << column.__name.strip.gsub(/\n/, "\\\n")
     else
       queries << to_sql
       queries << range_sql if ranged?

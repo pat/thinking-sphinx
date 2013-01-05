@@ -1,4 +1,5 @@
 Edge:
+* [FIX] New lines are maintained and escaped in custom source queries.
 * [FIX] Subclasses of indexed models fire delta callbacks properly.
 * [FIX] Thinking Sphinx can be loaded via thinking/sphinx, to satisfy Bundler.
 * [FEATURE] indexer and searchd settings are added to the appropriate objects from config/thinking_sphinx.yml (@ygelfand).

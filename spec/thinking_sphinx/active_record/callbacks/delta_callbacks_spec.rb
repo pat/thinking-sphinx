@@ -46,7 +46,7 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks do
     }
 
     before :each do
-      config.stub :indices_for_references => [index]
+      ThinkingSphinx::IndexSet.stub :new => [index]
     end
 
     context 'without delta indices' do
@@ -72,7 +72,7 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks do
       before :each do
         ThinkingSphinx::Deltas.stub :suspended? => false
 
-        config.stub :indices_for_references => [core_index, delta_index]
+        ThinkingSphinx::IndexSet.stub :new => [core_index, delta_index]
       end
 
       it "only indexes delta indices" do
@@ -127,7 +127,7 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks do
     }
 
     before :each do
-      config.stub :indices_for_references => [index]
+      ThinkingSphinx::IndexSet.stub :new => [index]
     end
 
     it "sets delta to true if there are delta indices" do
