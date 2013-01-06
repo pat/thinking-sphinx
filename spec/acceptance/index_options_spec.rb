@@ -92,6 +92,7 @@ describe 'Index options' do
 
         set_property :sql_range_step => 5
         set_property :disable_range? => true
+        set_property :sql_query_pre => ["DO STUFF"]
       }
       index.render
     end
@@ -102,6 +103,10 @@ describe 'Index options' do
 
     it "allows for source options" do
       index.sources.first.disable_range?.should be_true
+    end
+
+    it "respects sql_query_pre values" do
+      index.sources.first.sql_query_pre.should == ["DO STUFF"]
     end
   end
 end
