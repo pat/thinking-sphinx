@@ -8,6 +8,20 @@ class ThinkingSphinx::ActiveRecord::Column
     @name
   end
 
+  def __path
+    @stack + [@name]
+  end
+
+  def __replace(stack, replacements)
+    return [self] if string? || __stack[0..stack.length-1] != stack
+
+    replacements.collect { |replacement|
+      ThinkingSphinx::ActiveRecord::Column.new(
+        *(replacement + __stack[stack.length..-1]), __name
+      )
+    }
+  end
+
   def __stack
     @stack
   end
