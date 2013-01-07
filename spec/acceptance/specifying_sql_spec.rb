@@ -113,6 +113,34 @@ describe 'specifying SQL for index definitions' do
     query = index.sources.first.sql_query
     query.should match(/\\\n/)
   end
+
+  it "joins each polymorphic relation" do
+    index = ThinkingSphinx::ActiveRecord::Index.new(:event)
+    index.definition_block = Proc.new {
+      indexes eventable.title, :as => :title
+      polymorphs eventable, :to => %w(Article Book)
+    }
+    index.render
+
+    query = index.sources.first.sql_query
+    query.should match(/LEFT OUTER JOIN .articles. ON .articles.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Article'/)
+    query.should match(/LEFT OUTER JOIN .books. ON .books.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Book'/)
+    query.should match(/articles\..title., books\..title./)
+  end
+
+  it "concatenates references where that have column" do
+    index = ThinkingSphinx::ActiveRecord::Index.new(:event)
+    index.definition_block = Proc.new {
+      indexes eventable.title, :as => :title
+      polymorphs eventable, :to => %w(Article User)
+    }
+    index.render
+
+    query = index.sources.first.sql_query
+    query.should match(/LEFT OUTER JOIN .articles. ON .articles.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Article'/)
+    query.should match(/LEFT OUTER JOIN .users. ON .users.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'User'/)
+    query.should_not match(/articles\..title., users\..title./)
+  end
 end
 
 describe 'separate queries for MVAs' do

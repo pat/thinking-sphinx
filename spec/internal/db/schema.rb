@@ -43,6 +43,11 @@ ActiveRecord::Schema.define do
     t.timestamps
   end
 
+  create_table(:events, :force => true) do |t|
+    t.string  :eventable_type
+    t.integer :eventable_id
+  end
+
   create_table(:genres, :force => true) do |t|
     t.string :name
   end
