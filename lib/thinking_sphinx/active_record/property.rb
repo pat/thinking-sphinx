@@ -12,6 +12,12 @@ class ThinkingSphinx::ActiveRecord::Property
     }
   end
 
+  def rebase(associations, options)
+    @columns = columns.inject([]) do |array, column|
+      array += column.__replace associations, options[:to]
+    end
+  end
+
   def name
     (options[:as] || columns.first.__name).to_s
   end

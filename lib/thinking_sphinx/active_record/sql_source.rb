@@ -1,6 +1,7 @@
 class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
   attr_reader :model, :database_settings, :options
-  attr_accessor :fields, :attributes, :associations, :conditions, :groupings
+  attr_accessor :fields, :attributes, :associations, :conditions, :groupings,
+    :polymorphs
 
   OPTIONS = [:name, :offset, :delta_processor, :delta?, :disable_range?,
     :group_concat_max_len, :utf8?, :position]
@@ -15,6 +16,7 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
     @associations      = []
     @conditions        = []
     @groupings         = []
+    @polymorphs        = []
 
     Template.new(self).apply
 
@@ -89,6 +91,8 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
   end
 
   def prepare_for_render
+    polymorphs.each &:morph!
+
     set_database_settings
 
     fields.each do |field|

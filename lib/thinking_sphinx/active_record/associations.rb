@@ -32,6 +32,12 @@ class ThinkingSphinx::ActiveRecord::Associations
     @joins.values
   end
 
+  def model_for(stack)
+    return model if stack.empty?
+
+    join_for(stack).reflection.klass
+  end
+
   private
 
   def base
@@ -42,7 +48,11 @@ class ThinkingSphinx::ActiveRecord::Associations
     @joins[stack] ||= begin
       JoinDependency::JoinAssociation.new(
         reflection_for(stack), base, parent_join_for(stack)
-      ).tap { |join| join.join_type = Arel::OuterJoin }
+      ).tap { |join|
+        join.join_type = Arel::OuterJoin
+
+        rewrite_conditions_for join
+      }
     end
   end
 
@@ -64,5 +74,13 @@ class ThinkingSphinx::ActiveRecord::Associations
 
   def reflection_for(stack)
     parent_for(stack).active_record.reflections[stack.last]
+  end
+
+  def rewrite_conditions_for(join)
+    conditions = Array(join.conditions).flatten
+    conditions.each do |condition|
+      condition.gsub! /::ts_join_alias::/,
+        model.connection.quote_table_name(join.parent.aliased_table_name)
+    end
   end
 end

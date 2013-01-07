@@ -28,6 +28,12 @@ class ThinkingSphinx::ActiveRecord::Interpreter <
     }
   end
 
+  def polymorphs(column, options)
+    __source.polymorphs << ::ThinkingSphinx::ActiveRecord::Polymorpher.new(
+      __source, column, options[:to]
+    )
+  end
+
   def sanitize_sql(*arguments)
     __source.model.send :sanitize_sql, *arguments
   end
