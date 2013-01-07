@@ -40,6 +40,7 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
 
   def column_with_table(column)
     return column.__name if column.string?
+    return nil unless associations.model_for(column.__stack).column_names.include?(column.__name.to_s)
 
     "#{associations.alias_for(column.__stack)}.#{adapter.quote column.__name}"
   end
@@ -47,7 +48,7 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
   def columns_with_table
     property.columns.collect { |column|
       column_with_table(column)
-    }.join(', ')
+    }.compact.join(', ')
   end
 
   def concatenating?
