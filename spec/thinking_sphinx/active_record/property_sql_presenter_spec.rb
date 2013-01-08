@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
-  let(:adapter)      { double('adapter') }
-  let(:associations) {
-    double('associations', :alias_for => 'articles', :aggregate_for? => false)
-  }
+  let(:adapter)      { double 'adapter' }
+  let(:associations) { double 'associations', :alias_for => 'articles',
+    :aggregate_for? => false, :model_for => model }
+  let(:model)        { double :column_names => ['title', 'created_at'] }
 
   before :each do
     adapter.stub(:quote) { |column| column }
@@ -83,6 +83,18 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
         presenter.to_select.
           should == "CONCAT_WS(' ', articles.title, articles.title) AS title"
       end
+
+      it "does not include columns that don't exist" do
+        adapter.stub :concatenate do |clause, separator|
+          "CONCAT_WS('#{separator}', #{clause})"
+        end
+
+        field.stub!(:columns => [column, double('column', :string? => false,
+          :__stack => [], :__name => 'body')])
+
+        presenter.to_select.
+          should == "CONCAT_WS(' ', articles.title) AS title"
+      end
     end
   end
 
@@ -156,6 +168,18 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
 
         presenter.to_select.
           should == 'UNIX_TIMESTAMP(articles.created_at) AS created_at'
+      end
+
+      it "does not include columns that don't exist" do
+        adapter.stub :concatenate do |clause, separator|
+          "CONCAT_WS('#{separator}', #{clause})"
+        end
+
+        attribute.stub!(:columns => [column, double('column',
+          :string? => false, :__stack => [], :__name => 'updated_at')])
+
+        presenter.to_select.
+          should == "CONCAT_WS(' ', articles.created_at) AS created_at"
       end
     end
   end

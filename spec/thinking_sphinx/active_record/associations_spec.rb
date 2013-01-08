@@ -16,7 +16,8 @@ describe ThinkingSphinx::ActiveRecord::Associations do
     double 'join',
       :join_type=         => nil,
       :aliased_table_name => table_alias,
-      :reflection         => double('reflection')
+      :reflection         => double('reflection'),
+      :conditions         => []
   end
 
   def model_double(table_name = nil)

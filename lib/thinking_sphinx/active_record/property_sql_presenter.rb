@@ -38,9 +38,14 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
     clause
   end
 
+  def column_exists?(column)
+    associations.model_for(column.__stack).column_names.
+      include?(column.__name.to_s)
+  end
+
   def column_with_table(column)
     return column.__name if column.string?
-    return nil unless associations.model_for(column.__stack).column_names.include?(column.__name.to_s)
+    return nil unless column_exists?(column)
 
     "#{associations.alias_for(column.__stack)}.#{adapter.quote column.__name}"
   end
