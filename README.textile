@@ -145,6 +145,11 @@ ThinkingSphinx::Index.define :article, :with => :active_record, :delta => Occasi
 end</code></pre>
 
 * When you're defining indices for namespaced models, use a lowercase string with /'s for namespacing as the model reference: @ThinkingSphinx::Index.define 'blog/article', :with => :active_record@.
+* Polymorphic associations used within index definitions must be declared with the corresponding models. This is much better than the old approach of querying the database on the *_type column to determine what models to join against.
+
+<pre><code>indexes events.eventable.name
+
+polymorphs events.eventable, :to => %w(Page Post User)</code></pre>
 
 h2. Search Middleware
 
