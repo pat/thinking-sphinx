@@ -4,49 +4,38 @@ class ThinkingSphinx::ActiveRecord::Polymorpher
   end
 
   def morph!
-    keys = class_names.collect { |class_name|
-      name = "#{column.__name}_#{class_name.downcase}".to_sym
-
-      klass.reflections[name] ||= ActiveRecord::Reflection::
-        AssociationReflection.new(reflection.macro, name,
-        casted_options(class_name), reflection.active_record)
-
-      name
-    }
-
-    stacks = keys.collect { |key| column.__stack + [key] }
-
-    (source.fields + source.attributes).each do |property|
-      property.rebase column.__path, :to => stacks
-    end
+    append_reflections
+    morph_properties
   end
 
   private
 
   attr_reader :source, :column, :class_names
 
-  def casted_options(class_name)
-    options = reflection.options.clone
-    options[:polymorphic]   = nil
-    options[:class_name]    = class_name
-    options[:foreign_key] ||= "#{reflection.name}_id"
-
-    case options[:conditions]
-    when nil
-      options[:conditions] = "::ts_join_alias::.#{quoted_foreign_type} = '#{class_name}'"
-    when Array
-      options[:conditions] << "::ts_join_alias::.#{quoted_foreign_type} = '#{class_name}'"
-    when Hash
-      options[:conditions].merge!(reflection.foreign_type => class_name)
-    else
-      options[:conditions] << " AND ::ts_join_alias::.#{quoted_foreign_type} = '#{class_name}'"
+  def append_reflections
+    mappings.each do |class_name, name|
+      klass.reflections[name] ||= ThinkingSphinx::ActiveRecord::
+        FilteredReflection.clone_with_filter(reflection, name, class_name)
     end
-
-    options
   end
 
-  def quoted_foreign_type
-    klass.connection.quote_column_name reflection.foreign_type
+  def mappings
+    @mappings ||= class_names.inject({}) do |hash, class_name|
+      hash[class_name] = "#{column.__name}_#{class_name.downcase}".to_sym
+      hash
+    end
+  end
+
+  def morphed_stacks
+    @morphed_stacks ||= mappings.values.collect { |key|
+      column.__stack + [key]
+    }
+  end
+
+  def morph_properties
+    (source.fields + source.attributes).each do |property|
+      property.rebase column.__path, :to => morphed_stacks
+    end
   end
 
   def reflection
