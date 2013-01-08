@@ -16,9 +16,7 @@ class ThinkingSphinx::ActiveRecord::Column
     return [self] if string? || __stack[0..stack.length-1] != stack
 
     replacements.collect { |replacement|
-      ThinkingSphinx::ActiveRecord::Column.new(
-        *(replacement + __stack[stack.length..-1]), __name
-      )
+      self.class.new *(replacement + __stack[stack.length..-1]), __name
     }
   end
 
