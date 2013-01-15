@@ -40,7 +40,10 @@ class ThinkingSphinx::Middlewares::SphinxQL <
     end
 
     def class_condition
-      '(' + classes_and_descendants.collect(&:name).join('|') + ')'
+      class_names = classes_and_descendants.collect(&:name).collect { |name|
+        name[/:/] ? "\"#{name}\"" : name
+      }
+      '(' + class_names.join('|') + ')'
     end
 
     def descendants

@@ -108,6 +108,31 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       middleware.call [context]
     end
 
+    it "quotes namespaced models in the class name condition" do
+      db_connection = double('db connection', :select_values => [],
+        :schema_cache => double('cache', :table_exists? => false))
+      supermodel = Class.new(ActiveRecord::Base) do
+        def self.name; 'Animals::Cat'; end
+        def self.inheritance_column; 'type'; end
+      end
+      supermodel.stub :connection => db_connection, :column_names => ['type']
+      submodel   = Class.new(supermodel) do
+        def self.name; 'Animals::Lion'; end
+        def self.inheritance_column; 'type'; end
+        def self.table_name; 'cats'; end
+      end
+      submodel.stub :connection => db_connection, :column_names => ['type'],
+        :descendants => []
+
+      search.options[:classes] = [submodel]
+
+      ThinkingSphinx::Search::Query.should_receive(:new).with(anything,
+        hash_including(:sphinx_internal_class_name => '("Animals::Lion")'), anything).
+        and_return(query)
+
+      middleware.call [context]
+    end
+
     it "does not query the database for subclasses if :skip_sti is set to true" do
       model = double('model', :connection => double,
         :ancestors => [ActiveRecord::Base], :name => 'Animal')
