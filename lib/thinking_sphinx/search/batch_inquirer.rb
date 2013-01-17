@@ -13,7 +13,9 @@ class ThinkingSphinx::Search::BatchInquirer
     @results ||= begin
       @queries.freeze
 
-      ThinkingSphinx::Connection.new.query_all *@queries
+      ThinkingSphinx::Connection.pool.take do |connection|
+        connection.query_all *@queries
+      end
     end
   end
 end
