@@ -28,6 +28,23 @@ module ThinkingSphinx::Connection
     )
   end
 
+  def self.take
+    begin
+      retries = 0
+      pool.take do |connection|
+        begin
+          yield connection
+        rescue Mysql2::Error
+          raise Innertube::Pool::BadResource
+        end
+      end
+    rescue Innertube::Pool::BadResource
+      retries += 1
+      retry if retries < 3
+      raise
+    end
+  end
+
   class MRI
     attr_reader :client
 

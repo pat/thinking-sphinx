@@ -13,7 +13,7 @@ class ThinkingSphinx::RealTime::Transcriber
     end
 
     sphinxql = Riddle::Query::Insert.new index.name, columns, values
-    ThinkingSphinx::Connection.pool.take do |connection|
+    ThinkingSphinx::Connection.take do |connection|
       connection.execute sphinxql.replace!.to_sql
     end
   end
