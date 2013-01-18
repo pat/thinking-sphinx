@@ -13,8 +13,8 @@ class ThinkingSphinx::ActiveRecord::FilteredReflection <
 
     def filtered
       options.delete :polymorphic
-      options[:class_name]  = class_name
-      options[:foreign_key] = "#{reflection.name}_id"
+      options[:class_name]    = class_name
+      options[:foreign_key] ||= "#{reflection.name}_id"
 
       case options[:conditions]
       when nil
