@@ -22,11 +22,11 @@ class ThinkingSphinx::Search::Glaze < BasicObject
   private
 
   def method_missing(method, *args, &block)
-    if @object.respond_to?(method)
+    pane = @panes.detect { |pane| pane.respond_to?(method) }
+    if @object.respond_to?(method) || pane.nil?
       @object.send(method, *args, &block)
     else
-      pane = @panes.detect { |pane| pane.respond_to?(method) }
-      pane.nil? ? super : pane.send(method, *args, &block)
+      pane.send(method, *args, &block)
     end
   end
 end

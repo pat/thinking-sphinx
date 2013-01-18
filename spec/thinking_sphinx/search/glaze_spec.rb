@@ -43,6 +43,9 @@ describe ThinkingSphinx::Search::Glaze do
     end
 
     it "raises the method missing error otherwise" do
+      object.stub :respond_to? => false
+      object.stub(:baz).and_raise(NoMethodError)
+
       lambda { glaze.baz }.should raise_error(NoMethodError)
     end
   end
