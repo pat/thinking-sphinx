@@ -50,6 +50,7 @@ describe 'Searching on fields', :live => true do
     File.open(file_path, 'w') { |file| file.print 'Cyberpunk at its best' }
 
     book = Book.create! :title => 'Accelerando', :blurb_file => file_path.to_s
+    index
 
     Book.search('cyberpunk').to_a.should == [book]
   end
