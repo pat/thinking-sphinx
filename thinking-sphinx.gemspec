@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'activerecord', ['< 3.0.0', '>= 1.15.6']
   s.add_runtime_dependency 'after_commit', '>= 1.0.7'
   s.add_runtime_dependency 'riddle',       '>= 1.5.3'
+  s.add_runtime_dependency 'innertube',    '~> 1.0.2'
 
   s.add_development_dependency 'appraisal',     '0.4.0'
   s.add_development_dependency 'cucumber',      '1.0.2'

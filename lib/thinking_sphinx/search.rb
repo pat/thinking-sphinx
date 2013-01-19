@@ -344,13 +344,15 @@ module ThinkingSphinx
       populate
 
       index = options[:index] || "#{model.core_index_names.first}"
-      client.excerpts(
-        {
-          :docs   => [string.to_s],
-          :words  => query,
-          :index  => index.split(',').first.strip
-        }.merge(options[:excerpt_options] || {})
-      ).first
+      take_client do |client|
+        client.excerpts(
+          {
+            :docs   => [string.to_s],
+            :words  => query,
+            :index  => index.split(',').first.strip
+          }.merge(options[:excerpt_options] || {})
+        ).first
+      end
     end
 
     def search(*args)
@@ -376,10 +378,16 @@ module ThinkingSphinx
       ThinkingSphinx::FacetSearch.new(*args)
     end
 
-    def client
-      client = options[:client] || config.client
-
-      prepare client
+    def take_client
+      if options[:client]
+        prepare options[:client]
+        yield options[:client]
+      else
+        ThinkingSphinx::Connection.take do |client|
+          prepare client
+          yield client
+        end
+      end
     end
 
     def append_to(client)
@@ -412,7 +420,10 @@ module ThinkingSphinx
           begin
             log "Querying: '#{query}'"
             runtime = Benchmark.realtime {
-              @results = client.query query, indexes, comment
+              @results = nil
+              take_client do |client|
+                @results = client.query query, indexes, comment
+              end
             }
             log "Found #{@results[:total_found]} results", :debug,
               "Sphinx (#{sprintf("%f", runtime)}s)"
@@ -454,7 +465,7 @@ module ThinkingSphinx
         replace instances_from_matches
         add_excerpter
         add_sphinx_attributes
-        add_matching_fields if client.rank_mode == :fieldmask
+        add_matching_fields if options[:rank_mode] == :fieldmask
       end
     end
 
