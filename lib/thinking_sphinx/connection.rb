@@ -1,26 +1,28 @@
 class ThinkingSphinx::Connection
   def self.pool
     @pool ||= Innertube::Pool.new(
-      Proc.new { ThinkingSphinx::Connection.new },
+      Proc.new { Rails.logger.debug '>>> CONNECTING <<<'; ThinkingSphinx::Connection.new },
       Proc.new { |connection| connection.close }
     )
   end
 
   def self.take
+    retries  = 0
+    original = nil
     begin
-      retries = 0
       pool.take do |connection|
         connection.reset
         begin
           yield connection
-        rescue Riddle::ConnectionError, Riddle::ResponseError
+        rescue Riddle::ConnectionError, Riddle::ResponseError => error
+          original = error
           raise Innertube::Pool::BadResource
         end
       end
     rescue Innertube::Pool::BadResource
       retries += 1
       retry if retries < 3
-      raise
+      raise original
     end
   end
 
