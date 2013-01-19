@@ -6,18 +6,19 @@ describe ThinkingSphinx::Search do
     @config = ThinkingSphinx::Configuration.instance
     @client = Riddle::Client.new
 
-    @config.stub!(:client => @client)
+    ThinkingSphinx::Connection.stub(:take).and_yield(@client)
+
     @client.stub!(:query => {:matches => [], :total_found => 41, :total => 41})
   end
 
   it "not request results from the client if not accessing items" do
-    @config.should_not_receive(:client)
+    ThinkingSphinx::Connection.should_not_receive(:take)
 
     ThinkingSphinx::Search.new.class
   end
 
   it "should request results if access is required" do
-    @config.should_receive(:client)
+    ThinkingSphinx::Connection.should_receive(:take).and_yield(@client)
 
     ThinkingSphinx::Search.new.first
   end
@@ -1431,19 +1432,6 @@ describe ThinkingSphinx::Search do
 
     it "should return the Search object" do
       @search.freeze.should be_a(ThinkingSphinx::Search)
-    end
-  end
-
-  describe '#client' do
-    let(:client) { Riddle::Client.new }
-    it "should respect the client in options" do
-      search = ThinkingSphinx::Search.new :client => client
-      search.client.should == client
-    end
-
-    it "should get a new client from the configuration singleton by default" do
-      ThinkingSphinx::Configuration.instance.stub!(:client => client)
-      ThinkingSphinx::Search.new.client.should == client
     end
   end
 end

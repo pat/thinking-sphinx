@@ -142,7 +142,8 @@ describe ThinkingSphinx::ActiveRecord::Scopes do
       @config = ThinkingSphinx::Configuration.instance
       @client = Riddle::Client.new
 
-      @config.stub!(:client => @client)
+      ThinkingSphinx::Connection.stub(:take).and_yield(@client)
+
       @client.stub!(:query => {:matches => [], :total_found => 43})
       Alpha.sphinx_scope(:by_name) { |name| {:conditions => {:name => name}} }
       Alpha.sphinx_scope(:ids_only) { {:ids_only => true} }

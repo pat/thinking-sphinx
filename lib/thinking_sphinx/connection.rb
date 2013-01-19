@@ -28,8 +28,6 @@ class ThinkingSphinx::Connection
     client.open
   end
 
-  private
-
   def client
     @client ||= begin
       client = Riddle::Client.new shuffled_addresses, configuration.port,
@@ -39,6 +37,8 @@ class ThinkingSphinx::Connection
       client
     end
   end
+
+  private
 
   def client_key
     configuration.configuration.searchd.client_key

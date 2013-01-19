@@ -4,16 +4,16 @@ describe ThinkingSphinx::FacetSearch do
   let(:search) { stub('search', :append_to => nil, :empty? => true) }
   let(:config) { ThinkingSphinx::Configuration.instance }
   let(:client) { stub('client', :run => []) }
-  
+
   before :each do
-    config.stub!(:client => client)
+    ThinkingSphinx::Connection.stub!(:take).and_yield(client)
   end
-  
+
   describe 'populate' do
     before :each do
       config.configuration.searchd.max_matches = 10_000
     end
-        
+
     it "should request all shared facets in a multi-model request by default" do
       ThinkingSphinx.stub!(:search => search)
       if Riddle.loaded_version.to_i < 2
@@ -22,28 +22,28 @@ describe ThinkingSphinx::FacetSearch do
         ThinkingSphinx::FacetSearch.new.facet_names.should == ['sphinx_internal_class']
       end
     end
-    
+
     it "should request all facets in a multi-model request if specified" do
       ThinkingSphinx.stub!(:search => search)
       names = ThinkingSphinx::FacetSearch.new(:all_facets => true).facet_names
-      
+
       if Riddle.loaded_version.to_i < 2
         names.should == ['class_crc', 'city_facet', 'state_facet', 'birthday']
       else
         names.should == ['sphinx_internal_class', 'city_facet', 'state_facet', 'birthday']
       end
     end
-    
+
     it "should use the system-set max_matches for limit on facet calls" do
       ThinkingSphinx.should_receive(:search) do |options|
         options[:max_matches].should  == 10_000
         options[:limit].should        == 10_000
         search
       end
-      
+
       ThinkingSphinx::FacetSearch.new
     end
-    
+
     it "should use the default max-matches if there is no explicit setting" do
       config.configuration.searchd.max_matches = nil
       ThinkingSphinx.should_receive(:search) do |options|
@@ -51,32 +51,32 @@ describe ThinkingSphinx::FacetSearch do
         options[:limit].should        == 1000
         search
       end
-      
+
       ThinkingSphinx::FacetSearch.new
     end
-    
+
     it "should ignore user-provided max_matches and limit on facet calls" do
       ThinkingSphinx.should_receive(:search) do |options|
         options[:max_matches].should  == 10_000
         options[:limit].should        == 10_000
         search
       end
-      
+
       ThinkingSphinx::FacetSearch.new(
         :max_matches    => 500,
         :limit          => 200
       )
     end
-    
+
     it "should not use an explicit :page" do
       ThinkingSphinx.should_receive(:search) do |options|
         options[:page].should == 1
         search
       end
-      
+
       ThinkingSphinx::FacetSearch.new(:page => 3)
     end
-    
+
     describe "conflicting facets" do
       before :each do
         @index = ThinkingSphinx::Index::Builder.generate(Alpha) do
@@ -84,28 +84,28 @@ describe ThinkingSphinx::FacetSearch do
           has :value, :as => :city, :facet => true
         end
       end
-      
+
       after :each do
         Alpha.sphinx_facets.delete_at(-1)
       end
-      
+
       it "should raise an error if searching with facets of same name but different type" do
         lambda {
           facets = ThinkingSphinx.facets :all_facets => true
         }.should raise_error
       end
     end
-    
+
     describe ':facets option' do
       it "should limit facets to the requested set" do
         ThinkingSphinx.should_receive(:search).once.and_return(search)
-        
+
         ThinkingSphinx::FacetSearch.new(
           :classes => [Person], :facets => :state
         )
       end
     end
-    
+
     describe "empty result set for attributes" do
       before :each do
         ThinkingSphinx.stub!(:search => search)
@@ -113,7 +113,7 @@ describe ThinkingSphinx::FacetSearch do
           :classes => [Person], :facets => :state
         )
       end
-      
+
       it "should add key as attribute" do
         @facets.should have_key(:state)
       end
@@ -131,7 +131,7 @@ describe ThinkingSphinx::FacetSearch do
         search.stub!(:each_with_match).
           and_yield(@person, {:attributes => {'@groupby' => @person.city.to_crc32, '@count' => 1}})
         ThinkingSphinx::Search.stub!(:bundle_searches => [search])
-        
+
         @facets = ThinkingSphinx::FacetSearch.new(
           :classes => [Person], :facets => :city
         )
@@ -150,7 +150,7 @@ describe ThinkingSphinx::FacetSearch do
       end
     end
   end
-  
+
   describe "#for" do
     before do
       @person = Person.find(:first)
@@ -158,7 +158,7 @@ describe ThinkingSphinx::FacetSearch do
       search.stub!(:each_with_match).
         and_yield(@person, {:attributes => {'@groupby' => @person.city.to_crc32, '@count' => 1}})
       ThinkingSphinx::Search.stub!(:bundle_searches => [search])
-      
+
       @facets = ThinkingSphinx::FacetSearch.new(
         :classes => [Person], :facets => :city
       )
@@ -169,7 +169,7 @@ describe ThinkingSphinx::FacetSearch do
         options[:with].should have_key('city_facet')
         options[:with]['city_facet'].should == @person.city.to_crc32
       end
-      
+
       @facets.for(:city => @person.city)
     end
   end

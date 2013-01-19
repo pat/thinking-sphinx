@@ -271,7 +271,7 @@ describe ThinkingSphinx::ActiveRecord do
       @client.stub!(:update => true)
       @person = Person.find(:first)
 
-      @configuration.stub!(:client => @client)
+      ThinkingSphinx::Connection.stub(:take).and_yield(@client)
       Person.sphinx_indexes.each { |index| index.stub!(:delta? => false) }
     end
 
@@ -481,7 +481,7 @@ describe ThinkingSphinx::ActiveRecord do
     before :each do
       @client = stub('client')
       ThinkingSphinx.stub!(:sphinx_running? => true)
-      ThinkingSphinx::Configuration.instance.stub!(:client => @client)
+      ThinkingSphinx::Connection.stub(:take).and_yield(@client)
     end
 
     it "should direct the update to the supplied index" do
