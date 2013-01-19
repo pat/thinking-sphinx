@@ -78,7 +78,7 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
 
       @client = Riddle::Client.new
       @client.stub!(:update => true)
-      ThinkingSphinx::Configuration.instance.stub!(:client => @client)
+      ThinkingSphinx::Connection.stub(:take).and_yield @client
     end
 
     it "shouldn't index if delta indexing is disabled" do
