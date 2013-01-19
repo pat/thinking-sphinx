@@ -1,19 +1,15 @@
 module ThinkingSphinx
   class BundledSearch
-    attr_reader :client
-
     def initialize
       @searches = []
     end
 
     def search(*args)
       @searches << ThinkingSphinx.search(*args)
-      @searches.last.append_to client
     end
 
     def search_for_ids(*args)
       @searches << ThinkingSphinx.search_for_ids(*args)
-      @searches.last.append_to client
     end
 
     def searches
@@ -22,10 +18,6 @@ module ThinkingSphinx
     end
 
     private
-
-    def client
-      @client ||= ThinkingSphinx::Configuration.instance.client
-    end
 
     def populated?
       @populated
@@ -36,8 +28,12 @@ module ThinkingSphinx
 
       @populated = true
 
-      client.run.each_with_index do |results, index|
-        searches[index].populate_from_queue results
+      ThinkingSphinx::Connection.take do |client|
+        @searches.each { |search| search.append_to client }
+
+        client.run.each_with_index do |results, index|
+          searches[index].populate_from_queue results
+        end
       end
     end
   end

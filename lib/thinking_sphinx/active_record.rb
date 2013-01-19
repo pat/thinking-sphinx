@@ -270,9 +270,9 @@ module ThinkingSphinx
       def delete_in_index(index, document_id)
         return unless ThinkingSphinx.sphinx_running?
 
-        ThinkingSphinx::Configuration.instance.client.update(
-          index, ['sphinx_deleted'], {document_id => [1]}
-        )
+        ThinkingSphinx::Connection.take do |client|
+          client.update index, ['sphinx_deleted'], {document_id => [1]}
+        end
       rescue Riddle::ConnectionError, Riddle::ResponseError,
         ThinkingSphinx::SphinxError, Errno::ETIMEDOUT, Timeout::Error
         # Not the end of the world if Sphinx isn't running.

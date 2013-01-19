@@ -46,6 +46,10 @@ When /^I search for (\w+)$/ do |query|
   @query = query
 end
 
+When /^I clear the connection pool$/ do
+  ThinkingSphinx::Connection.pool.clear
+end
+
 When /^I search for "([^\"]*)"$/ do |query|
   @results = nil
   @query = query

@@ -359,13 +359,15 @@ module ThinkingSphinx
       populate
 
       index = options[:index] || "#{model.core_index_names.first}"
-      client.excerpts(
-        {
-          :docs   => [string.to_s],
-          :words  => query,
-          :index  => index.split(',').first.strip
-        }.merge(options[:excerpt_options] || {})
-      ).first
+      take_client do |client|
+        client.excerpts(
+          {
+            :docs   => [string.to_s],
+            :words  => query,
+            :index  => index.split(',').first.strip
+          }.merge(options[:excerpt_options] || {})
+        ).first
+      end
     end
 
     def search(*args)
@@ -391,10 +393,16 @@ module ThinkingSphinx
       ThinkingSphinx::FacetSearch.new(*args)
     end
 
-    def client
-      client = options[:client] || config.client
-
-      prepare client
+    def take_client
+      if options[:client]
+        prepare options[:client]
+        yield options[:client]
+      else
+        ThinkingSphinx::Connection.take do |client|
+          prepare client
+          yield client
+        end
+      end
     end
 
     def append_to(client)
@@ -425,12 +433,14 @@ module ThinkingSphinx
       begin
         retry_on_stale_index do
           begin
+            @results = nil
             log query do
-              @results = client.query query, indexes, comment
+              take_client do |client|
+                @results = client.query query, indexes, comment
+              end
             end
             total = @results[:total_found].to_i
             log "Found #{total} result#{'s' unless total == 1}"
-
             log "Sphinx Daemon returned warning: #{warning}" if warning?
 
             if error?
@@ -468,7 +478,7 @@ module ThinkingSphinx
         replace instances_from_matches
         add_excerpter
         add_sphinx_attributes
-        add_matching_fields if client.rank_mode == :fieldmask
+        add_matching_fields if options[:rank_mode] == :fieldmask
       end
     end
 

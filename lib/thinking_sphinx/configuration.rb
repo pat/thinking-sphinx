@@ -263,14 +263,6 @@ module ThinkingSphinx
 
     attr_accessor :timeout
 
-    def client
-      client = Riddle::Client.new shuffled_addresses, port,
-        configuration.searchd.client_key
-      client.max_matches = configuration.searchd.max_matches || 1000
-      client.timeout = timeout || 0
-      client
-    end
-
     def models_by_crc
       @models_by_crc ||= begin
         ThinkingSphinx.context.indexed_models.inject({}) do |hash, model|
@@ -345,17 +337,6 @@ module ThinkingSphinx
           source.sql_attr_uint.delete :sphinx_internal_id
         }
       }
-    end
-
-    def shuffled_addresses
-      return address unless shuffle
-
-      addresses = Array(address)
-      if addresses.respond_to?(:shuffle)
-        addresses.shuffle
-      else
-        address.sort_by { rand }
-      end
     end
 
     def initial_model_directories

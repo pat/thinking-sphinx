@@ -40,10 +40,11 @@ module ThinkingSphinx
       end
 
       def update_index(index_name, attribute_names, attribute_values)
-        config = ThinkingSphinx::Configuration.instance
-        config.client.update index_name, attribute_names, {
-          sphinx_document_id => attribute_values
-        }
+        ThinkingSphinx::Connection.take do |client|
+          client.update index_name, attribute_names, {
+            sphinx_document_id => attribute_values
+          }
+        end
       rescue Riddle::ConnectionError, Riddle::ResponseError,
         ThinkingSphinx::SphinxError, Errno::ETIMEDOUT
         # Not the end of the world if Sphinx isn't running.
