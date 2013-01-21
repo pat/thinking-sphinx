@@ -29,19 +29,22 @@ module ThinkingSphinx::Connection
   end
 
   def self.take
-    retries = 0
+    retries  = 0
+    original = nil
     begin
       pool.take do |connection|
         begin
           yield connection
-        rescue Mysql2::Error
+        rescue Mysql2::Error => error
+          original = ThinkingSphinx::SphinxError.new_from_mysql error
+          raise original if original.is_a?(ThinkingSphinx::QueryError)
           raise Innertube::Pool::BadResource
         end
       end
     rescue Innertube::Pool::BadResource
       retries += 1
       retry if retries < 3
-      raise
+      raise original
     end
   end
 
