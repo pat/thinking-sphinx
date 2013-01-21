@@ -24,6 +24,11 @@ end</code></pre>
 
 You'll notice the first argument is the model name downcased and as a symbol, and we are specifying the processor - @:active_record@. Everything inside the block is just like previous versions of Thinking Sphinx. Same goes for @config/thinking_sphinx.yml@ (formerly @config/sphinx.yml@).
 
+When you're defining indices for namespaced models, use a lowercase string with /'s for namespacing as the model reference:
+
+<pre><code># For a model named Blog::Article:
+ThinkingSphinx::Index.define 'blog/article', :with => :active_record</code></pre>
+
 Other changes:
 * SphinxQL is now used instead of the old socket connections (hence the dependency on the @mysql2@ gem).
 * You'll need to include @ThinkingSphinx::Scopes@ into your models if you want to use Sphinx scopes. Default scopes can be set as follows:
@@ -144,7 +149,6 @@ ThinkingSphinx::Index.define :article, :with => :active_record, :delta => Occasi
   # ...
 end</code></pre>
 
-* When you're defining indices for namespaced models, use a lowercase string with /'s for namespacing as the model reference: @ThinkingSphinx::Index.define 'blog/article', :with => :active_record@.
 * Polymorphic associations used within index definitions must be declared with the corresponding models. This is much better than the old approach of querying the database on the *_type column to determine what models to join against.
 
 <pre><code>indexes events.eventable.name
