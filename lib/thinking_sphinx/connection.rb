@@ -29,8 +29,8 @@ module ThinkingSphinx::Connection
   end
 
   def self.take
+    retries = 0
     begin
-      retries = 0
       pool.take do |connection|
         begin
           yield connection
