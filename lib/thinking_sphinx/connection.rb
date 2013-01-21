@@ -34,7 +34,7 @@ class ThinkingSphinx::Connection
     @client ||= begin
       client = Riddle::Client.new shuffled_addresses, configuration.port,
         client_key
-      client.max_matches = max_matches
+      client.max_matches = _max_matches
       client.timeout     = configuration.timeout || 0
       client
     end
@@ -50,7 +50,7 @@ class ThinkingSphinx::Connection
     ThinkingSphinx::Configuration.instance
   end
 
-  def max_matches
+  def _max_matches
     configuration.configuration.searchd.max_matches || 1000
   end
 
