@@ -1,26 +1,28 @@
 class ThinkingSphinx::Connection
   def self.pool
     @pool ||= Innertube::Pool.new(
-      Proc.new { ThinkingSphinx::Connection.new },
+      Proc.new { Rails.logger.debug '>>> CONNECTING <<<'; ThinkingSphinx::Connection.new },
       Proc.new { |connection| connection.close }
     )
   end
 
   def self.take
+    retries  = 0
+    original = nil
     begin
-      retries = 0
       pool.take do |connection|
         connection.reset
         begin
           yield connection
-        rescue Riddle::ConnectionError, Riddle::ResponseError
+        rescue Riddle::ConnectionError, Riddle::ResponseError => error
+          original = error
           raise Innertube::Pool::BadResource
         end
       end
     rescue Innertube::Pool::BadResource
       retries += 1
       retry if retries < 3
-      raise
+      raise original
     end
   end
 
@@ -32,7 +34,7 @@ class ThinkingSphinx::Connection
     @client ||= begin
       client = Riddle::Client.new shuffled_addresses, configuration.port,
         client_key
-      client.max_matches = max_matches
+      client.max_matches = _max_matches
       client.timeout     = configuration.timeout || 0
       client
     end
@@ -48,7 +50,7 @@ class ThinkingSphinx::Connection
     ThinkingSphinx::Configuration.instance
   end
 
-  def max_matches
+  def _max_matches
     configuration.configuration.searchd.max_matches || 1000
   end
 
