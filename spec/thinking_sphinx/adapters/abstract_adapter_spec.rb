@@ -127,6 +127,24 @@ describe ThinkingSphinx::AbstractAdapter do
         should == :postgresql
     end
 
+   it "translates a JDBC adapter with MySQL connection string to MySQL" do
+      klass.stub(:name => 'ActiveRecord::ConnectionAdapters::JdbcAdapter')
+      connection.stub(:config => {:adapter => 'jdbc',
+                                  :url => 'jdbc:mysql://127.0.0.1:3306/sphinx'})
+
+      ThinkingSphinx::AbstractAdapter.standard_adapter_for_model(model).
+        should == :mysql
+    end
+
+    it "translates a JDBC adapter with PostgresSQL connection string to PostgresSQL" do
+      klass.stub(:name => 'ActiveRecord::ConnectionAdapters::JdbcAdapter')
+      connection.stub(:config => {:adapter => 'jdbc',
+                                  :url => 'jdbc:postgresql://127.0.0.1:3306/sphinx'})
+
+      ThinkingSphinx::AbstractAdapter.standard_adapter_for_model(model).
+        should == :postgresql
+    end
+
     it "returns other JDBC adapters without translation" do
       klass.stub(:name => 'ActiveRecord::ConnectionAdapters::JdbcAdapter')
       connection.stub(:config => {:adapter => 'jdbcmssql'})
