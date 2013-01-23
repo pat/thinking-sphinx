@@ -15,7 +15,7 @@ class ThinkingSphinx::ActiveRecord::Associations
   def aggregate_for?(stack)
     return false if stack.empty?
 
-    joins_for(stack).any? { |join|
+    joins_for(stack).compact.any? { |join|
       [:has_many, :has_and_belongs_to_many].include?(
         join.reflection.macro
       )
@@ -29,13 +29,14 @@ class ThinkingSphinx::ActiveRecord::Associations
   end
 
   def join_values
-    @joins.values
+    @joins.values.compact
   end
 
   def model_for(stack)
     return model if stack.empty?
 
-    join_for(stack).reflection.klass
+    join = join_for(stack)
+    join.nil? ? nil : join.reflection.klass
   end
 
   private
@@ -46,8 +47,9 @@ class ThinkingSphinx::ActiveRecord::Associations
 
   def join_for(stack)
     @joins[stack] ||= begin
-      JoinDependency::JoinAssociation.new(
-        reflection_for(stack), base, parent_join_for(stack)
+      reflection = reflection_for stack
+      reflection.nil? ? nil : JoinDependency::JoinAssociation.new(
+        reflection, base, parent_join_for(stack)
       ).tap { |join|
         join.join_type = Arel::OuterJoin
 

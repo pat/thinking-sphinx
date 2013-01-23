@@ -141,6 +141,20 @@ describe 'specifying SQL for index definitions' do
     query.should match(/LEFT OUTER JOIN .users. ON .users.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'User'/)
     query.should_not match(/articles\..title., users\..title./)
   end
+
+  it "respects deeper associations through polymorphic joins" do
+    index = ThinkingSphinx::ActiveRecord::Index.new(:event)
+    index.definition_block = Proc.new {
+      indexes eventable.user.name, :as => :user_name
+      polymorphs eventable, :to => %w(Article Book)
+    }
+    index.render
+
+    query = index.sources.first.sql_query
+    query.should match(/LEFT OUTER JOIN .articles. ON .articles.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Article'/)
+    query.should match(/LEFT OUTER JOIN .users. ON .users.\..id. = .articles.\..user_id./)
+    query.should match(/users\..name./)
+  end
 end
 
 describe 'separate queries for MVAs' do

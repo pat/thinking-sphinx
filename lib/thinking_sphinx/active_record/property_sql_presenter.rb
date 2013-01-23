@@ -39,8 +39,8 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
   end
 
   def column_exists?(column)
-    associations.model_for(column.__stack).column_names.
-      include?(column.__name.to_s)
+    model = associations.model_for(column.__stack)
+    model && model.column_names.include?(column.__name.to_s)
   end
 
   def column_with_table(column)

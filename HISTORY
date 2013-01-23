@@ -1,4 +1,5 @@
 Edge:
+* [FIX] Referring to associations via polymorphic associations in an index definition now works.
 * [FEATURE] Mysql2::Errors are wrapped as ThinkingSphinx::SphinxErrors, with subclasses of SyntaxError and ParseError used appropriately. Syntax and parse errors do not prompt a retry on a new connection.
 * [CHANGE] Use connection pool for search queries. If a query fails, it will be retried on a new connection before raising if necessary.
 * [CHANGE] Glaze always passes methods through to the underlying ActiveRecord::Base object if they don't exist on any of the panes.
