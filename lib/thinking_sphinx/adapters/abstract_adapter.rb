@@ -51,6 +51,13 @@ module ThinkingSphinx
           :mysql
         when "jdbcpostgresql"
           :postgresql
+        when "jdbc"
+          match = /^jdbc:(?<adapter>mysql|postgresql):\/\//.match(model.connection.config[:url])
+          if match
+            match[:adapter].to_sym
+          else
+            model.connection.config[:adapter]
+          end
         else
           model.connection.config[:adapter].to_sym
         end
