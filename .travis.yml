@@ -9,8 +9,8 @@ before_script:
   - "mysql -e 'create database thinking_sphinx;' > /dev/null"
   - "psql -c 'create database thinking_sphinx;' -U postgres >/dev/null"
 env:
-  - DATABASE=mysql2 SPHINX_BIN=/usr/local/sphinx-2.0.6/bin SPHINX_VERSION=2.0.6
-  - DATABASE=postgresql SPHINX_BIN=/usr/local/sphinx-2.0.6/bin SPHINX_VERSION=2.0.6
+  - DATABASE=mysql2 SPHINX_BIN=/usr/local/sphinx-2.0.6/bin/ SPHINX_VERSION=2.0.6
+  - DATABASE=postgresql SPHINX_BIN=/usr/local/sphinx-2.0.6/bin/ SPHINX_VERSION=2.0.6
 gemfile:
   - gemfiles/rails_3_1.gemfile
   - gemfiles/rails_3_2.gemfile
