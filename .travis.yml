@@ -3,6 +3,7 @@ rvm:
   - 1.9.3
 before_install:
   - gem update --system
+  - sudo apt-get install libmysql++-dev postgresql-server-dev-9.1
   - curl -O http://fs-packages.s3.amazonaws.com/fs-sphinx-2.0.6_i386.deb
   - sudo dpkg -i fs-sphinx-2.0.6_i386.deb
 before_script:
