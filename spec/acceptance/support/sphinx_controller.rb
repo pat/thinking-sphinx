@@ -18,6 +18,7 @@ class SphinxController
     config.searchd.mysql41 = 9307
     config.settings['quiet_deltas']      = true
     config.settings['attribute_updates'] = true
+    config.controller.bin_path           = ENV['SPHINX_BIN'] || ''
   end
 
   def start
