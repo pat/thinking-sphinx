@@ -62,6 +62,7 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
       :offset          => offset,
       :delta?          => @options[:delta?],
       :delta_processor => @options[:delta_processor],
+      :disable_range?  => @options[:disable_range?],
       :primary_key     => @options[:primary_key] || model.primary_key || :id
     }
   end
