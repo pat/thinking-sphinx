@@ -1,4 +1,4 @@
-Edge:
+2013-02-04: 3.0.1
 * [FEATURE] Provide Capistrano deployment tasks (David Celis).
 * [FEATURE] Allow specifying of Sphinx version. Is only useful for Flying Sphinx purposes at this point - has no impact on Riddle or Sphinx.
 * [FEATURE] Support new JDBC configuration style (when JDBC can be used) (Kyle Stevens).
