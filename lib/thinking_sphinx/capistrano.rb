@@ -2,29 +2,29 @@ Capistrano::Configuration.instance(:must_exist).load do
   namespace :thinking_sphinx do
     desc 'Generate the Sphinx configuration file.'
     task :configure do
-      rake 'thinking_sphinx:configure'
+      rake 'ts:configure'
     end
 
     desc 'Build Sphinx indexes into the shared path and symlink them into your release.'
     task :index do
-      rake 'thinking_sphinx:index'
+      rake 'ts:index'
     end
     after 'thinking_sphinx:index', 'thinking_sphinx:symlink_indexes'
 
     desc 'Start the Sphinx search daemon.'
     task :start do
-      rake 'thinking_sphinx:start'
+      rake 'ts:start'
     end
     before 'thinking_sphinx:start', 'thinking_sphinx:configure'
 
     desc 'Stop the Sphinx search daemon.'
     task :stop do
-      rake 'thinking_sphinx:stop'
+      rake 'ts:stop'
     end
 
     desc 'Restart the Sphinx search daemon.'
     task :restart do
-      rake 'thinking_sphinx:stop thinking_sphinx:configure thinking_sphinx:start'
+      rake 'ts:stop ts:configure ts:start'
     end
 
     desc <<-DESC
@@ -32,10 +32,9 @@ Stop, reindex, and then start the Sphinx search daemon. This task must be execut
 if you alter the structure of your indexes.
     DESC
     task :rebuild do
-      rake 'thinking_sphinx:stop thinking_sphinx:reindex'
+      rake 'ts:rebuild'
     end
     after 'thinking_sphinx:rebuild', 'thinking_sphinx:symlink_indexes'
-    after 'thinking_sphinx:rebuild', 'thinking_sphinx:start'
 
     desc 'Create the shared folder for sphinx indexes.'
     task :shared_sphinx_folder do
