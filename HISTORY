@@ -14,6 +14,7 @@ Edge:
 * [FIX] Thinking Sphinx can be loaded via thinking/sphinx, to satisfy Bundler.
 * [FEATURE] indexer and searchd settings are added to the appropriate objects from config/thinking_sphinx.yml (@ygelfand).
 * [FIX] New lines are maintained and escaped in sql_query values.
+* [FEATURE] Provide Capistrano deployment tasks (@davidcelis).
 
 2013-01-02: 3.0.0
 * [CHANGE] Updating Riddle dependency to 1.5.4.
