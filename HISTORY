@@ -1,4 +1,5 @@
 Edge:
+* [FEATURE] Provide Capistrano deployment tasks (David Celis).
 * [FEATURE] Allow specifying of Sphinx version. Is only useful for Flying Sphinx purposes at this point - has no impact on Riddle or Sphinx.
 * [FEATURE] Support new JDBC configuration style (when JDBC can be used) (Kyle Stevens).
 * [FIX] Referring to associations via polymorphic associations in an index definition now works.
@@ -14,7 +15,6 @@ Edge:
 * [FIX] Thinking Sphinx can be loaded via thinking/sphinx, to satisfy Bundler.
 * [FEATURE] indexer and searchd settings are added to the appropriate objects from config/thinking_sphinx.yml (@ygelfand).
 * [FIX] New lines are maintained and escaped in sql_query values.
-* [FEATURE] Provide Capistrano deployment tasks (@davidcelis).
 
 2013-01-02: 3.0.0
 * [CHANGE] Updating Riddle dependency to 1.5.4.
