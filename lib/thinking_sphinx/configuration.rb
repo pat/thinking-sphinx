@@ -1,5 +1,5 @@
 class ThinkingSphinx::Configuration < Riddle::Configuration
-  attr_accessor :configuration_file, :indices_location
+  attr_accessor :configuration_file, :indices_location, :version
   attr_reader :index_paths
   attr_writer :controller, :framework
 
@@ -11,6 +11,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     @index_paths        = [File.join(framework.root, 'app', 'indices')]
     @indices_location   = File.join framework.root, 'db', 'sphinx',
       framework.environment
+    @version            = settings['version'] || '2.0.6'
 
     searchd.pid_file    = File.join framework.root, 'log',
       "#{framework.environment}.sphinx.pid"

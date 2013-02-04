@@ -1,4 +1,6 @@
 Edge:
+* [FEATURE] Allow specifying of Sphinx version. Is only useful for Flying Sphinx purposes at this point - has no impact on Riddle or Sphinx.
+* [FEATURE] Support new JDBC configuration style (when JDBC can be used) (Kyle Stevens).
 * [FIX] Referring to associations via polymorphic associations in an index definition now works.
 * [FEATURE] Mysql2::Errors are wrapped as ThinkingSphinx::SphinxErrors, with subclasses of SyntaxError and ParseError used appropriately. Syntax and parse errors do not prompt a retry on a new connection.
 * [CHANGE] Use connection pool for search queries. If a query fails, it will be retried on a new connection before raising if necessary.

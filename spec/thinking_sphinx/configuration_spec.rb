@@ -323,4 +323,16 @@ describe ThinkingSphinx::Configuration do
       end
     end
   end
+
+  describe '#version' do
+    it "defaults to 2.0.6" do
+      config.version.should == '2.0.6'
+    end
+
+    it "respects supplied YAML versions" do
+      write_configuration 'version' => '2.0.4'
+
+      config.version.should == '2.0.4'
+    end
+  end
 end
