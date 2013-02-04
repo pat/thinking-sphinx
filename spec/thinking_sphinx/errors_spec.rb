@@ -19,6 +19,13 @@ describe ThinkingSphinx::SphinxError do
         should be_a(ThinkingSphinx::ParseError)
     end
 
+    it "translates query errors" do
+      error.stub :message => 'index foo: query error: something is wrong'
+
+      ThinkingSphinx::SphinxError.new_from_mysql(error).
+        should be_a(ThinkingSphinx::QueryError)
+    end
+
     it "defaults to sphinx errors" do
       error.stub :message => 'index foo: unknown error: something is wrong'
 

@@ -5,6 +5,8 @@ class ThinkingSphinx::SphinxError < StandardError
       replacement = ThinkingSphinx::ParseError.new(error.message)
     when /syntax error/
       replacement = ThinkingSphinx::SyntaxError.new(error.message)
+    when /query error/
+      replacement = ThinkingSphinx::QueryError.new(error.message)
     else
       replacement = new(error.message)
     end
