@@ -1,4 +1,5 @@
 Edge:
+* [CHANGE] Custom conditions are no longer added to the sql_query_range value, as they may involve associations.
 * [FEATURE] Query errors are classified as such, instead of getting the base SphinxError.
 
 2013-02-04: 3.0.1

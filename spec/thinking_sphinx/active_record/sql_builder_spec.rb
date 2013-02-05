@@ -598,11 +598,11 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
       builder.sql_query_range
     end
 
-    it "adds source conditions" do
+    it "does not add source conditions" do
       source.conditions << 'created_at > NOW()'
 
       relation.should_receive(:where) do |string|
-        string.should match(/created_at > NOW()/)
+        string.should_not match(/created_at > NOW()/)
         relation
       end
 

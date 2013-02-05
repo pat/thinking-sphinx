@@ -129,10 +129,10 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
     ).compact.join(', ')
   end
 
-  def where_clause(without_range = false)
+  def where_clause(for_range = false)
     logic = []
 
-    unless without_range || source.disable_range?
+    unless for_range || source.disable_range?
       logic << "#{quoted_primary_key} >= $start"
       logic << "#{quoted_primary_key} <= $end"
     end
@@ -143,7 +143,7 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
     end
 
     logic << delta_processor.clause(source.delta?) if delta_processor
-    logic += source.conditions
+    logic += source.conditions unless for_range
 
     logic.compact.join(' AND ')
   end
