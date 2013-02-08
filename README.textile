@@ -28,7 +28,7 @@ ThinkingSphinx::Index.define :article, :with => :active_record do
   has published
 end</code></pre>
 
-You'll notice the first argument is the model name downcased and as a symbol, and we are specifying the processor - @:active_record@. Everything inside the block is just like previous versions of Thinking Sphinx. Same goes for @config/thinking_sphinx.yml@ (formerly @config/sphinx.yml@).
+You'll notice the first argument is the model name downcased and as a symbol, and we are specifying the processor - @:active_record@. Everything inside the block is just like previous versions of Thinking Sphinx. Same goes for most settings in @config/thinking_sphinx.yml@ (formerly @config/sphinx.yml@) unless noted below.
 
 When you're defining indices for namespaced models, use a lowercase string with /'s for namespacing as the model reference:
 
@@ -37,6 +37,8 @@ ThinkingSphinx::Index.define 'blog/article', :with => :active_record</code></pre
 
 Other changes:
 * SphinxQL is now used instead of the old socket connections (hence the dependency on the @mysql2@ gem).
+* Specifying a different port for Sphinx to use (in @config/thinking_sphinx.yml@) should be done with the mysql41 setting, not the port setting.
+* The searchd_log and searchd_query_log settings are now log and query_log (matching their Sphinx names).
 * You'll need to include @ThinkingSphinx::Scopes@ into your models if you want to use Sphinx scopes. Default scopes can be set as follows:
 
 <pre><code>class Person < ActiveRecord::Base
