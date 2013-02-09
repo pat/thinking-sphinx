@@ -2,6 +2,7 @@ module ThinkingSphinx
   class Search; end
 end
 
+require 'active_support/core_ext/object/blank'
 require './lib/thinking_sphinx/search/query'
 
 describe ThinkingSphinx::Search::Query do
@@ -55,5 +56,11 @@ describe ThinkingSphinx::Search::Query do
       query.to_s.should == ''
     end
 
+    it "allows mixing of blank and non-blank conditions" do
+      query = ThinkingSphinx::Search::Query.new 'tasty', :title => 'pancakes',
+        :ingredients => nil
+
+      query.to_s.should == 'tasty @title pancakes'
+    end
   end
 end
