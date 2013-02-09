@@ -13,7 +13,7 @@ class ThinkingSphinx::Search::Query
 
   def to_s
     (star_keyword(keywords) + ' ' + conditions.keys.collect { |key|
-      "@#{key} #{star_keyword conditions[key], key}"
+      "@#{key} #{star_keyword conditions[key], key}" unless ( conditions[key].nil? || conditions[key].empty? )
     }.join(' ')).strip
   end
 

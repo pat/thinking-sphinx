@@ -42,5 +42,18 @@ describe ThinkingSphinx::Search::Query do
 
       query.to_s.should == '@sphinx_internal_class article'
     end
+
+    it "handles null values by removing them from the conditions hash" do
+      query = ThinkingSphinx::Search::Query.new '', :title => nil
+
+      query.to_s.should == ''
+    end
+
+    it "handles empty string values by removing them from the conditions hash" do
+      query = ThinkingSphinx::Search::Query.new '', :title => ''
+
+      query.to_s.should == ''
+    end
+
   end
 end
