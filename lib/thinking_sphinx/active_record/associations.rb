@@ -81,6 +81,8 @@ class ThinkingSphinx::ActiveRecord::Associations
   def rewrite_conditions_for(join)
     conditions = Array(join.conditions).flatten
     conditions.each do |condition|
+      next unless condition.is_a?(String)
+
       condition.gsub! /::ts_join_alias::/,
         model.connection.quote_table_name(join.parent.aliased_table_name)
     end

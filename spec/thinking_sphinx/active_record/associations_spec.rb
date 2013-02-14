@@ -34,8 +34,11 @@ describe ThinkingSphinx::ActiveRecord::Associations do
   end
 
   describe '#add_join_to' do
-    it "adds just one join for a stack with a single association" do
+    before :each do
       JoinDependency::JoinAssociation.unstub :new
+    end
+
+    it "adds just one join for a stack with a single association" do
       JoinDependency::JoinAssociation.should_receive(:new).
         with(join.reflection, base, join_base).once.and_return(join)
 
@@ -43,7 +46,6 @@ describe ThinkingSphinx::ActiveRecord::Associations do
     end
 
     it "does not duplicate joins when given the same stack twice" do
-      JoinDependency::JoinAssociation.unstub :new
       JoinDependency::JoinAssociation.should_receive(:new).once.and_return(join)
 
       associations.add_join_to([:user])
@@ -52,7 +54,6 @@ describe ThinkingSphinx::ActiveRecord::Associations do
 
     context 'multiple joins' do
       it "adds two joins for a stack with two associations" do
-        JoinDependency::JoinAssociation.unstub :new
         JoinDependency::JoinAssociation.should_receive(:new).
           with(join.reflection, base, join_base).once.and_return(join)
         JoinDependency::JoinAssociation.should_receive(:new).
@@ -62,12 +63,56 @@ describe ThinkingSphinx::ActiveRecord::Associations do
       end
 
       it "extends upon existing joins when given stacks where parts are already mapped" do
-        JoinDependency::JoinAssociation.unstub :new
         JoinDependency::JoinAssociation.should_receive(:new).twice.
           and_return(join, sub_join)
 
         associations.add_join_to([:user])
         associations.add_join_to([:user, :posts])
+      end
+    end
+
+    context 'join with conditions' do
+      let(:connection) { double }
+      let(:parent)     { double :aliased_table_name => 'qux' }
+
+      before :each do
+        JoinDependency::JoinAssociation.stub :new => join
+
+        join.stub :parent => parent
+        model.stub :connection => connection
+        connection.stub(:quote_table_name) { |table| "\"#{table}\"" }
+      end
+
+      it "leaves standard conditions untouched" do
+        join.stub :conditions => 'foo = bar'
+
+        associations.add_join_to [:user]
+
+        join.conditions.should == 'foo = bar'
+      end
+
+      it "modifies filtered polymorphic conditions" do
+        join.stub :conditions => '::ts_join_alias::.foo = bar'
+
+        associations.add_join_to [:user]
+
+        join.conditions.should == '"qux".foo = bar'
+      end
+
+      it "modifies filtered polymorphic conditions within arrays" do
+        join.stub :conditions => ['::ts_join_alias::.foo = bar']
+
+        associations.add_join_to [:user]
+
+        join.conditions.should == ['"qux".foo = bar']
+      end
+
+      it "does not modify conditions as hashes" do
+        join.stub :conditions => [{:foo => 'bar'}]
+
+        associations.add_join_to [:user]
+
+        join.conditions.should == [{:foo => 'bar'}]
       end
     end
   end
