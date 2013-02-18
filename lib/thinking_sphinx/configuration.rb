@@ -8,7 +8,8 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 
     @configuration_file = File.join framework.root, 'config',
       "#{framework.environment}.sphinx.conf"
-    @index_paths        = [File.join(framework.root, 'app', 'indices')]
+    @index_paths        = engine_index_paths +
+      [File.join(framework.root, 'app', 'indices')]
     @indices_location   = File.join framework.root, 'db', 'sphinx',
       framework.environment
     @version            = settings['version'] || '2.0.6'
@@ -59,6 +60,14 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 
   def framework
     @framework ||= ThinkingSphinx::Frameworks.current
+  end
+
+  def engine_index_paths
+    return [] unless defined?(Rails)
+
+    Rails::Engine::Railties.engines.map{ |e|
+      e.paths['app/indices'].existent
+    }.flatten
   end
 
   def indices_for_references(*references)

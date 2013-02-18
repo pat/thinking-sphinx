@@ -58,7 +58,19 @@ describe ThinkingSphinx::Configuration do
 
   describe '#index_paths' do
     it "uses app/indices in the Rails app by default" do
-      config.index_paths.should == [File.join(Rails.root, 'app', 'indices')]
+      config.index_paths.should include(File.join(Rails.root, 'app', 'indices'))
+    end
+
+    it "uses app/indices in the Rails engines" do
+      engine =
+        stub(:engine, { :paths => { 'app/indices' =>
+          stub(:path, { :existent => '/engine/app/indices' } )
+        } } )
+
+      Rails::Engine::Railties.should_receive(:engines).
+        and_return([ engine ])
+
+      config.index_paths.should include('/engine/app/indices')
     end
   end
 
