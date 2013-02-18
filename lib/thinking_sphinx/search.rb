@@ -629,7 +629,8 @@ module ThinkingSphinx
       return '' if @options[:conditions].blank?
 
       ' ' + @options[:conditions].keys.collect { |key|
-        "@#{key} #{options[:conditions][key]}"
+        search_key = key.is_a?(::Array) ? "(#{key.join(',')})" : key
+        "@#{search_key} #{options[:conditions][key]}"
       }.join(' ')
     end
 
