@@ -3,6 +3,10 @@ class ThinkingSphinx::Masks::PaginationMask
     @search = search
   end
 
+  def can_handle?(method)
+    public_methods(false).include?(method)
+  end
+
   def current_page
     search.options[:page] = 1 if search.options[:page].blank?
     search.options[:page].to_i

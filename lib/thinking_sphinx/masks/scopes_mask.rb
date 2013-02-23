@@ -3,8 +3,8 @@ class ThinkingSphinx::Masks::ScopesMask
     @search = search
   end
 
-  def respond_to?(method, include_private = false)
-    super || can_apply_scope?(method)
+  def can_handle?(method)
+    public_methods(false).include?(method) || can_apply_scope?(method)
   end
 
   def search(query = nil, options = {})

@@ -93,7 +93,7 @@ class ThinkingSphinx::Search < Array
 
   def method_missing(method, *args, &block)
     mask_stack.each do |mask|
-      return mask.send(method, *args, &block) if mask.respond_to?(method)
+      return mask.send(method, *args, &block) if mask.can_handle?(method)
     end
 
     populate if !SAFE_METHODS.include?(method.to_s)
