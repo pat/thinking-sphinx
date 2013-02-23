@@ -1,7 +1,9 @@
 class ThinkingSphinx::Middlewares::SphinxQL <
   ThinkingSphinx::Middlewares::Middleware
 
-  SELECT_OPTIONS = [:field_weights, :ranker]
+  SELECT_OPTIONS = [:ranker, :max_matches, :cutoff, :max_query_time,
+    :retry_count, :retry_delay, :field_weights, :index_weights, :reverse_scan,
+    :comment]
 
   def call(contexts)
     contexts.each do |context|
@@ -102,6 +104,10 @@ class ThinkingSphinx::Middlewares::SphinxQL <
       indices.collect(&:name)
     end
 
+    def index_options
+      indices.first.options
+    end
+
     def indices
       @indices ||= ThinkingSphinx::IndexSet.new classes, options[:indices]
     end
@@ -120,10 +126,16 @@ class ThinkingSphinx::Middlewares::SphinxQL <
     end
 
     def select_options
-      @select_options ||= options.keys.inject({}) do |hash, key|
-        hash[key] = options[key] if SELECT_OPTIONS.include?(key)
+      @select_options ||= SELECT_OPTIONS.inject({}) do |hash, key|
+        hash[key] = settings[key.to_s] if settings.key? key.to_s
+        hash[key] = index_options[key] if index_options.key? key
+        hash[key] = options[key]       if options.key? key
         hash
       end
+    end
+
+    def settings
+      context.configuration.settings
     end
 
     def statement

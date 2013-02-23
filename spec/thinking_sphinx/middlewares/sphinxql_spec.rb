@@ -17,10 +17,11 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
   let(:context)       { {} }
   let(:search)        { double('search', :query => '', :options => {},
     :offset => 0, :per_page => 5) }
-  let(:index_set)     { [] }
+  let(:index_set)     { [double(:name => 'article_core', :options => {})] }
   let(:sphinx_sql)    { double('sphinx_sql', :from => true, :offset => true,
     :limit => true, :where => true, :matching => true) }
   let(:query)         { double('query') }
+  let(:configuration) { double('configuration', :settings => {}) }
 
   before :each do
     stub_const 'Riddle::Query::Select', double(:new => sphinx_sql)
@@ -28,14 +29,14 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
     stub_const 'ThinkingSphinx::Masks::GroupEnumeratorsMask', double
     stub_const 'ThinkingSphinx::IndexSet', double(:new => index_set)
 
-    context.stub :search => search
+    context.stub :search => search, :configuration => configuration
   end
 
   describe '#call' do
     it "uses the indexes for the FROM clause" do
       index_set.replace [
-        double('index', :name => 'article_core'),
-        double('index', :name => 'user_core')
+        double('index', :name => 'article_core', :options => {}),
+        double('index', :name => 'user_core', :options => {})
       ]
 
       sphinx_sql.should_receive(:from).with('`article_core`', '`user_core`').
@@ -278,6 +279,36 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
         options[:field_weights].should == {:title => 3}
         sphinx_sql
       end
+
+      middleware.call [context]
+    end
+
+    it "uses index-defined field weights if they're available" do
+      index_set.first.options[:field_weights] = {:title => 3}
+
+      sphinx_sql.should_receive(:with_options).with(
+        hash_including(:field_weights => {:title => 3})
+      ).and_return(sphinx_sql)
+
+      middleware.call [context]
+    end
+
+    it "uses index-defined max matches if it's available" do
+      index_set.first.options[:max_matches] = 100
+
+      sphinx_sql.should_receive(:with_options).with(
+        hash_including(:max_matches => 100)
+      ).and_return(sphinx_sql)
+
+      middleware.call [context]
+    end
+
+    it "uses configuration-level max matches if set" do
+      configuration.settings['max_matches'] = 120
+
+      sphinx_sql.should_receive(:with_options).with(
+        hash_including(:max_matches => 120)
+      ).and_return(sphinx_sql)
 
       middleware.call [context]
     end
