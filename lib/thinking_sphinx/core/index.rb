@@ -2,7 +2,7 @@ module ThinkingSphinx::Core::Index
   extend ActiveSupport::Concern
 
   included do
-    attr_reader :reference, :offset
+    attr_reader :reference, :offset, :options
     attr_writer :definition_block
   end
 
