@@ -1,43 +1,12 @@
 class ThinkingSphinx::Configuration < Riddle::Configuration
   attr_accessor :configuration_file, :indices_location, :version
   attr_reader :index_paths
-  attr_writer :controller, :framework
+  attr_writer :controller
 
   def initialize
     super
 
-    @configuration_file = File.join framework.root, 'config',
-      "#{framework.environment}.sphinx.conf"
-    @index_paths        = engine_index_paths +
-      [File.join(framework.root, 'app', 'indices')]
-    @indices_location   = File.join framework.root, 'db', 'sphinx',
-      framework.environment
-    @version            = settings['version'] || '2.0.6'
-
-    searchd.pid_file    = File.join framework.root, 'log',
-      "#{framework.environment}.sphinx.pid"
-    searchd.log         = File.join framework.root, 'log',
-      "#{framework.environment}.searchd.log"
-    searchd.query_log   = File.join framework.root, 'log',
-      "#{framework.environment}.searchd.query.log"
-    searchd.binlog_path = File.join framework.root, 'tmp', 'binlog',
-      framework.environment
-
-    searchd.address   = settings['address']
-    searchd.address   = Defaults::ADDRESS unless searchd.address.present?
-    searchd.mysql41   = settings['mysql41'] || settings['port'] ||
-      Defaults::PORT
-    searchd.workers   = 'threads'
-
-   [indexer, searchd].each do |object|
-      settings.each do |key, value|
-        next unless object.class.settings.include?(key.to_sym)
-
-        object.send("#{key}=", value)
-      end
-    end
-
-    @offsets = {}
+    setup
   end
 
   def self.instance
@@ -60,6 +29,12 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 
   def framework
     @framework ||= ThinkingSphinx::Frameworks.current
+  end
+
+  def framework=(framework)
+    @framework = framework
+    setup
+    framework
   end
 
   def engine_index_paths
@@ -118,6 +93,41 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 
   def settings_file
     File.join framework.root, 'config', 'thinking_sphinx.yml'
+  end
+
+  def setup
+    @configuration_file = File.join framework.root, 'config',
+      "#{framework.environment}.sphinx.conf"
+    @index_paths        = engine_index_paths +
+      [File.join(framework.root, 'app', 'indices')]
+    @indices_location   = File.join framework.root, 'db', 'sphinx',
+      framework.environment
+    @version            = settings['version'] || '2.0.6'
+
+    searchd.pid_file    = File.join framework.root, 'log',
+      "#{framework.environment}.sphinx.pid"
+    searchd.log         = File.join framework.root, 'log',
+      "#{framework.environment}.searchd.log"
+    searchd.query_log   = File.join framework.root, 'log',
+      "#{framework.environment}.searchd.query.log"
+    searchd.binlog_path = File.join framework.root, 'tmp', 'binlog',
+      framework.environment
+
+    searchd.address   = settings['address']
+    searchd.address   = Defaults::ADDRESS unless searchd.address.present?
+    searchd.mysql41   = settings['mysql41'] || settings['port'] ||
+      Defaults::PORT
+    searchd.workers   = 'threads'
+
+   [indexer, searchd].each do |object|
+      settings.each do |key, value|
+        next unless object.class.settings.include?(key.to_sym)
+
+        object.send("#{key}=", value)
+      end
+    end
+
+    @offsets = {}
   end
 end
 
