@@ -12,7 +12,7 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
   let(:middleware) {
     ThinkingSphinx::Middlewares::ActiveRecordTranslator.new app }
   let(:context)    { {:raw => [], :results => []} }
-  let(:model)      { double('model') }
+  let(:model)      { double('model', :primary_key => :id) }
   let(:search)     { double('search', :options => {}) }
 
   def raw_result(id, model_name)
@@ -50,11 +50,11 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
     end
 
     it "handles multiple models" do
-      article_model = double('article model')
+      article_model = double('article model', :primary_key => :id)
       article_name  = double('article name', :constantize => article_model)
       article       = double('article instance', :id => 24)
 
-      user_model    = double('user model')
+      user_model    = double('user model', :primary_key => :id)
       user_name     = double('user name', :constantize => user_model)
       user          = double('user instance', :id => 12)
 
