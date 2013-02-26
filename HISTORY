@@ -1,5 +1,13 @@
 Edge:
+* [FIX] Primary keys that are not 'id' now work correctly.
+* [CHANGE] Setting a custom framework will rebuild the core configuration around its provided settings (path and environment).
+* [CHANGE] Search masks don't rely on respond_to?, and so Object/Kernel methods are passed through to the underlying array instead.
+* [FIX] Search options specified in index definitions and thinking_sphinx.yml are now used in search requests (eg: max_matches, field_weights).
+* [FEATURE] Indexes defined in app/indices in engines are now loaded (Antonio Tapiador del Dujo).
+* [FIX] Custom association conditions are no longer presumed to be an array.
+* [CHANGE] Empty search conditions are now ignored, instead of being appended with no value (Nicholas Klick).
 * [CHANGE] Custom conditions are no longer added to the sql_query_range value, as they may involve associations.
+* [FIX] Capistrano tasks use the correct ts rake task prefix (David Celis).
 * [FEATURE] Query errors are classified as such, instead of getting the base SphinxError.
 
 2013-02-04: 3.0.1
