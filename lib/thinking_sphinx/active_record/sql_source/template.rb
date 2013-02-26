@@ -8,7 +8,7 @@ class ThinkingSphinx::ActiveRecord::SQLSource::Template
   def apply
     add_field class_column, :sphinx_internal_class_name
 
-    add_attribute :id,          :sphinx_internal_id,    nil
+    add_attribute primary_key,  :sphinx_internal_id,    nil
     add_attribute class_column, :sphinx_internal_class, :string, :facet => true
     add_attribute '0',          :sphinx_deleted,        :integer
   end
@@ -45,5 +45,9 @@ class ThinkingSphinx::ActiveRecord::SQLSource::Template
 
   def model
     source.model
+  end
+
+  def primary_key
+    source.model.primary_key.to_sym
   end
 end
