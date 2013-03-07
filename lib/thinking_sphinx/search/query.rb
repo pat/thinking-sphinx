@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 class ThinkingSphinx::Search::Query
   if Regexp.instance_methods.include?(:encoding)
     DefaultToken = Regexp.new('\p{Word}+')
