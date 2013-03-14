@@ -1,4 +1,5 @@
 Edge:
+* [CHANGE] Strings and regular expressions in ThinkingSphinx::Search::Query are now treated as UTF-8.
 * [FIX] Primary keys that are not 'id' now work correctly.
 * [CHANGE] Setting a custom framework will rebuild the core configuration around its provided settings (path and environment).
 * [CHANGE] Search masks don't rely on respond_to?, and so Object/Kernel methods are passed through to the underlying array instead.
