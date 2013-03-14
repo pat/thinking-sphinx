@@ -28,6 +28,12 @@ describe ThinkingSphinx::Configuration do
       config.configuration_file.
         should == File.join(Rails.root, 'config', 'test.sphinx.conf')
     end
+
+    it "respects provided settings" do
+      write_configuration 'configuration_file' => '/path/to/foo.conf'
+
+      config.configuration_file.should == '/path/to/foo.conf'
+    end
   end
 
   describe '#controller' do
@@ -88,6 +94,12 @@ describe ThinkingSphinx::Configuration do
     it "stores index files in db/sphinx/ENVIRONMENT" do
       config.indices_location.
         should == File.join(Rails.root, 'db', 'sphinx', 'test')
+    end
+
+    it "respects provided settings" do
+      write_configuration 'indices_location' => '/my/index/files'
+
+      config.indices_location.should == '/my/index/files'
     end
   end
 

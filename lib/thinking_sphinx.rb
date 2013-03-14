@@ -9,6 +9,7 @@ require 'riddle'
 require 'middleware'
 require 'active_record'
 require 'innertube'
+require 'active_support/core_ext/module/delegation'
 
 module ThinkingSphinx
   def self.count(query = '', options = {})

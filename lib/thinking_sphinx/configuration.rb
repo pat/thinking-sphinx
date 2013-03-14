@@ -3,6 +3,8 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   attr_reader :index_paths
   attr_writer :controller
 
+  delegate :environment, :to => :framework
+
   def initialize
     super
 
@@ -90,7 +92,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 
   def settings_to_hash
     contents = YAML.load(ERB.new(File.read(settings_file)).result)
-    contents && contents[framework.environment] || {}
+    contents && contents[environment] || {}
   end
 
   def settings_file
@@ -98,22 +100,22 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def setup
-    @configuration_file = File.join framework.root, 'config',
-      "#{framework.environment}.sphinx.conf"
+    @configuration_file = settings['configuration_file'] ||
+      File.join(framework.root, 'config', "#{environment}.sphinx.conf")
     @index_paths        = engine_index_paths +
       [File.join(framework.root, 'app', 'indices')]
-    @indices_location   = File.join framework.root, 'db', 'sphinx',
-      framework.environment
+    @indices_location   = settings['indices_location'] ||
+      File.join(framework.root, 'db', 'sphinx', environment)
     @version            = settings['version'] || '2.0.6'
 
     searchd.pid_file    = File.join framework.root, 'log',
-      "#{framework.environment}.sphinx.pid"
+      "#{environment}.sphinx.pid"
     searchd.log         = File.join framework.root, 'log',
-      "#{framework.environment}.searchd.log"
+      "#{environment}.searchd.log"
     searchd.query_log   = File.join framework.root, 'log',
-      "#{framework.environment}.searchd.query.log"
+      "#{environment}.searchd.query.log"
     searchd.binlog_path = File.join framework.root, 'tmp', 'binlog',
-      framework.environment
+      environment
 
     searchd.address   = settings['address']
     searchd.address   = Defaults::ADDRESS unless searchd.address.present?
