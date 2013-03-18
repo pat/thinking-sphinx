@@ -503,7 +503,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
 
     before :each do
       source.stub :options => {}, :delta_processor => nil, :delta? => false
-      adapter.stub :utf8_query_pre => 'SET UTF8'
+      adapter.stub :utf8_query_pre => ['SET UTF8']
     end
 
     it "adds a reset delta query if there is a delta processor and this is the core source" do
