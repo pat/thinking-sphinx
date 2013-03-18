@@ -133,6 +133,18 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
     end
   end
 
+  describe '#options' do
+    it "defaults to having utf8? set to false" do
+      source.options[:utf8?].should be_false
+    end
+
+    it "sets utf8? to true if the database encoding is utf8" do
+      db_config[:encoding] = 'utf8'
+
+      source.options[:utf8?].should be_true
+    end
+  end
+
   describe '#render' do
     let(:builder)   { double('builder', :sql_query_pre => []).as_null_object }
     let(:config)    { double('config', :settings => {}) }

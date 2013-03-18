@@ -9,7 +9,9 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
   def initialize(model, options = {})
     @model             = model
     @database_settings = model.connection.instance_variable_get(:@config).clone
-    @options           = options
+    @options           = {
+      :utf8? => (@database_settings[:encoding] == 'utf8')
+    }.merge options
 
     @fields            = []
     @attributes        = []

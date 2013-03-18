@@ -20,4 +20,8 @@ class ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter <
   def group_concatenate(clause, separator = ' ')
     "GROUP_CONCAT(#{clause} SEPARATOR '#{separator}')"
   end
+
+  def utf8_query_pre
+    ['SET NAMES utf8']
+  end
 end

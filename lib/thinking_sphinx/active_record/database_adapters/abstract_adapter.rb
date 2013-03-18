@@ -10,4 +10,8 @@ class ThinkingSphinx::ActiveRecord::DatabaseAdapters::AbstractAdapter
   def quoted_table_name
     @model.quoted_table_name
   end
+
+  def utf8_query_pre
+    []
+  end
 end

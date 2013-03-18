@@ -43,7 +43,7 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
 
     queries << delta_processor.reset_query if reset_delta
     queries << "SET SESSION group_concat_max_len = #{max_len}" if max_len
-    queries << source.adapter.utf8_query_pre if source.options[:utf8?]
+    queries += source.adapter.utf8_query_pre if source.options[:utf8?]
 
     queries.compact
   end
