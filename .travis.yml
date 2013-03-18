@@ -4,11 +4,9 @@ rvm:
   - 1.9.3
   - 2.0.0
 before_install:
-  - sudo apt-get install --assume-yes libmysql++-dev
-  - sudo apt-get install --assume-yes postgresql-server-dev-9.1
   - gem update --system
-  - curl -O http://fs-packages.s3.amazonaws.com/fs-sphinx-2.0.6_i386_12.04.deb
-  - sudo dpkg -i fs-sphinx-2.0.6_i386_12.04.deb
+  - curl -O http://fs-packages.s3.amazonaws.com/fs-sphinx-2.0.6_x86_64_12.04.deb
+  - sudo dpkg -i fs-sphinx-2.0.6_x86_64_12.04.deb
 before_script:
   - "mysql -e 'create database thinking_sphinx;' > /dev/null"
   - "psql -c 'create database thinking_sphinx;' -U postgres >/dev/null"
