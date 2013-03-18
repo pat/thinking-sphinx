@@ -79,7 +79,12 @@ class ThinkingSphinx::ActiveRecord::Associations
   end
 
   def rewrite_conditions_for(join)
-    conditions = Array(join.conditions).flatten
+    if join.respond_to?(:scope_chain)
+      conditions = Array(join.scope_chain).flatten
+    else
+      conditions = Array(join.conditions).flatten
+    end
+
     conditions.each do |condition|
       next unless condition.is_a?(String)
 
