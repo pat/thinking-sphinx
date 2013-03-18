@@ -1,8 +1,8 @@
 class ThinkingSphinx::ActiveRecord::FilteredReflection <
   ActiveRecord::Reflection::AssociationReflection
 
-  class Options
-    attr_reader :reflection, :class_name, :options
+  class Filter
+    attr_reader :reflection, :class_name
 
     delegate :foreign_type, :active_record, :to => :reflection
 
@@ -11,23 +11,36 @@ class ThinkingSphinx::ActiveRecord::FilteredReflection <
       @options = reflection.options.clone
     end
 
-    def filtered
-      options.delete :polymorphic
-      options[:class_name]    = class_name
-      options[:foreign_key] ||= "#{reflection.name}_id"
+    def options
+      @options.delete :polymorphic
+      @options[:class_name]    = class_name
+      @options[:foreign_key] ||= "#{reflection.name}_id"
+      @options[:foreign_type]  = reflection.foreign_type
 
-      case options[:conditions]
+      return @options if reflection.respond_to?(:scope)
+
+      case @options[:conditions]
       when nil
-        options[:conditions] = condition
+        @options[:conditions] = condition
       when Array
-        options[:conditions] << condition
+        @options[:conditions] << condition
       when Hash
-        options[:conditions].merge!(reflection.foreign_type => options[:class_name])
+        @options[:conditions].merge!(reflection.foreign_type => @options[:class_name])
       else
-        options[:conditions] << " AND #{condition}"
+        @options[:conditions] << " AND #{condition}"
       end
 
-      options
+      @options
+    end
+
+    def scope
+      lambda { |association|
+        reflection = association.reflection
+        where(
+          association.parent.aliased_table_name.to_sym =>
+          {reflection.foreign_type => reflection.class_name}
+        )
+      }
     end
 
     private
@@ -42,8 +55,13 @@ class ThinkingSphinx::ActiveRecord::FilteredReflection <
   end
 
   def self.clone_with_filter(reflection, name, class_name)
-    options = Options.new(reflection, class_name).filtered
+    filter = Filter.new(reflection, class_name)
 
-    new reflection.macro, name, options, reflection.active_record
+    if reflection.respond_to?(:scope)
+      new reflection.macro, name, filter.scope, filter.options,
+        reflection.active_record
+    else
+      new reflection.macro, name, filter.options, reflection.active_record
+    end
   end
 end
