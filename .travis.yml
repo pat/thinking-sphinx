@@ -1,6 +1,8 @@
+language: ruby
 rvm:
   - 1.9.2
   - 1.9.3
+  - 2.0.0
 before_install:
   - gem update --system
   - curl -O http://fs-packages.s3.amazonaws.com/fs-sphinx-2.0.6_i386_12.04.deb
@@ -14,3 +16,4 @@ env:
 gemfile:
   - gemfiles/rails_3_1.gemfile
   - gemfiles/rails_3_2.gemfile
+  - gemfiles/rails_4_0.gemfile
