@@ -1,4 +1,8 @@
 Edge:
+* [FEATURE] Ruby 2.0 support.
+* [FEATURE] Rails 4.0.0 beta1 support.
+* [FIX] :utf8? option within index definitions is now supported, and defaults to true if the database configuration's encoding is set to 'utf8'.
+* [FIX] indices_location and configuration_file values in thinking_sphinx.yml will be applied to the configuration.
 * [CHANGE] Strings and regular expressions in ThinkingSphinx::Search::Query are now treated as UTF-8.
 * [FIX] Primary keys that are not 'id' now work correctly.
 * [CHANGE] Setting a custom framework will rebuild the core configuration around its provided settings (path and environment).
