@@ -195,12 +195,10 @@ h2. Deployment with Capistrano
 
 Thinking Sphinx comes with several Capistrano tasks to help ease deployment of your applications. Just require the recipes:
 
-```ruby
-# config/deploy.rb
-require 'thinking_sphinx/capistrano'
-```
+<pre><code># config/deploy.rb
+require 'thinking_sphinx/capistrano'</code></pre>
 
-When running `cap deploy:setup` to get your server ready for deployments, Thinking Sphinx will also set up a shared folder for your indexes. Before finalizing a deployment, these indexes will be symlinked into the release path for use. When you deploy your application for the first time using `cap deploy:cold`, your indexes will be built for you and the search daemon will be started. Run `cap -T` to see all of the deployment tasks.
+When running @cap deploy:setup@ to get your server ready for deployments, Thinking Sphinx will also set up a shared folder for your indexes. Before finalizing a deployment, these indexes will be symlinked into the release path for use. When you deploy your application for the first time using @cap deploy:cold@, your indexes will be built for you and the search daemon will be started. Run @cap -T@ to see all of the deployment tasks.
 
 h2. Limitations
 
