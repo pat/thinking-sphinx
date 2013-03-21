@@ -195,12 +195,10 @@ h2. Deployment with Capistrano
 
 Thinking Sphinx comes with several Capistrano tasks to help ease deployment of your applications. Just require the recipes:
 
-```ruby
-# config/deploy.rb
-require 'thinking_sphinx/capistrano'
-```
+<pre><code># config/deploy.rb
+require 'thinking_sphinx/capistrano'</code></pre>
 
-When running `cap deploy:setup` to get your server ready for deployments, Thinking Sphinx will also set up a shared folder for your indexes. Before finalizing a deployment, these indexes will be symlinked into the release path for use. When you deploy your application for the first time using `cap deploy:cold`, your indexes will be built for you and the search daemon will be started. Run `cap -T` to see all of the deployment tasks.
+When running @cap deploy:setup@ to get your server ready for deployments, Thinking Sphinx will also set up a shared folder for your indexes. Before finalizing a deployment, these indexes will be symlinked into the release path for use. When you deploy your application for the first time using @cap deploy:cold@, your indexes will be built for you and the search daemon will be started. Run @cap -T@ to see all of the deployment tasks.
 
 h2. Limitations
 
@@ -228,7 +226,7 @@ h3. Ruby Versions
 
 Built on MRI 1.9.3 and tested against MRI 1.9.2 as well. No plans to support MRI 1.8, but would like to support Rubinius and JRuby (the one catch with the latter is the different MySQL interfaces).
 
-There's also the complication that Sphinx 2.0.x releases don't work with JDBC (as JDBC sends several MySQL-specific comamnds through when initializing a connection). So, JRuby support won't appear until there's a stable Sphinx release that can interact with JDBC.
+There's also the complication that Sphinx 2.0.x releases don't work with JDBC (as JDBC sends several MySQL-specific commands through when initializing a connection). So, JRuby support won't appear until there's a stable Sphinx release that can interact with JDBC.
 
 h3. Database Versions
 
