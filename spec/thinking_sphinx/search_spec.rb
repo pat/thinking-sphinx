@@ -111,6 +111,11 @@ describe ThinkingSphinx::Search do
     it "should allow for string arguments" do
       ThinkingSphinx::Search.new(:per_page => '10').per_page.should == 10
     end
+
+    it "allows setting of the per_page value" do
+      search.per_page(24)
+      search.per_page.should == 24
+    end
   end
 
   describe '#populate' do

@@ -45,7 +45,8 @@ class ThinkingSphinx::Search < Array
 
   alias_method :offset_value, :offset
 
-  def per_page
+  def per_page(value = nil)
+    @options[:limit] = value unless value.nil?
     @options[:limit] ||= (@options[:per_page] || 20)
     @options[:limit].to_i
   end

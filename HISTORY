@@ -1,4 +1,5 @@
 Edge:
+* [CHANGE] per_page now accepts an optional paging limit, to match WillPaginate's behaviour. If none is supplied, it just returns the page size.
 * [FEATURE] Ruby 2.0 support.
 * [FEATURE] Rails 4.0.0 beta1 support.
 * [FIX] :utf8? option within index definitions is now supported, and defaults to true if the database configuration's encoding is set to 'utf8'.
