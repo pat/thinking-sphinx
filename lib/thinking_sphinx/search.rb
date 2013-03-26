@@ -23,7 +23,7 @@ class ThinkingSphinx::Search < Array
   def initialize(query = nil, options = {})
     query, options   = nil, query if query.is_a?(Hash)
     @query, @options = query, options
-    @masks           = @options.delete(:masks) || DEFAULT_MASKS
+    @masks           = @options.delete(:masks) || DEFAULT_MASKS.clone
     @middleware      = @options.delete(:middleware)
 
     populate if options[:populate]
