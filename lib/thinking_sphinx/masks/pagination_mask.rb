@@ -7,13 +7,8 @@ class ThinkingSphinx::Masks::PaginationMask
     public_methods(false).include?(method)
   end
 
-  def current_page
-    search.options[:page] = 1 if search.options[:page].blank?
-    search.options[:page].to_i
-  end
-
   def first_page?
-    current_page == 1
+    search.current_page == 1
   end
 
   def last_page?
@@ -21,7 +16,7 @@ class ThinkingSphinx::Masks::PaginationMask
   end
 
   def next_page
-    current_page >= total_pages ? nil : current_page + 1
+    search.current_page >= total_pages ? nil : search.current_page + 1
   end
 
   def next_page?
@@ -39,7 +34,7 @@ class ThinkingSphinx::Masks::PaginationMask
   end
 
   def previous_page
-    current_page == 1 ? nil : current_page - 1
+    search.current_page == 1 ? nil : search.current_page - 1
   end
 
   def total_entries

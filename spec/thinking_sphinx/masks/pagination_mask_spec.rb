@@ -7,7 +7,7 @@ require 'thinking_sphinx/masks/pagination_mask'
 
 describe ThinkingSphinx::Masks::PaginationMask do
   let(:search) { double('search', :options => {}, :meta => {},
-    :per_page => 20) }
+    :per_page => 20, :current_page => 1) }
   let(:mask)   { ThinkingSphinx::Masks::PaginationMask.new search }
 
   describe '#first_page?' do
@@ -16,7 +16,7 @@ describe ThinkingSphinx::Masks::PaginationMask do
     end
 
     it "returns false on other pages" do
-      search.options[:page] = 2
+      search.stub :current_page => 2
 
       mask.should_not be_first_page
     end
@@ -28,7 +28,7 @@ describe ThinkingSphinx::Masks::PaginationMask do
     end
 
     it "is true when there's no more pages" do
-      search.options[:page] = 3
+      search.stub :current_page => 3
 
       mask.should be_last_page
     end
@@ -48,7 +48,7 @@ describe ThinkingSphinx::Masks::PaginationMask do
     end
 
     it "should return nil if on the last page" do
-      search.options[:page] = 3
+      search.stub :current_page => 3
 
       mask.next_page.should be_nil
     end
@@ -64,7 +64,7 @@ describe ThinkingSphinx::Masks::PaginationMask do
     end
 
     it "is false when there's no more pages" do
-      search.options[:page] = 3
+      search.stub :current_page => 3
 
       mask.next_page?.should be_false
     end
@@ -76,7 +76,7 @@ describe ThinkingSphinx::Masks::PaginationMask do
     end
 
     it "should return one less than the current page" do
-      search.options[:page] = 2
+      search.stub :current_page => 2
 
       mask.previous_page.should == 1
     end

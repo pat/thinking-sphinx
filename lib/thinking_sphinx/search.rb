@@ -34,6 +34,11 @@ class ThinkingSphinx::Search < Array
       ThinkingSphinx::Configuration.instance
   end
 
+  def current_page
+    options[:page] = 1 if options[:page].blank?
+    options[:page].to_i
+  end
+
   def meta
     populate
     context[:meta]
