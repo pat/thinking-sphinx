@@ -1,3 +1,9 @@
+Edge:
+* [FIX] All string values returned from Sphinx are now properly converted to UTF8.
+* [CHANGE] GroupEnumeratorsMask is now a default mask, as masks need to be in place before search results are populated/the middleware is called (and previously it was being added within a middleware call).
+* [FIX] The default search masks are now cloned for each search, instead of referring to the constant (and potentially modifying it often).
+* [CHANGE] The current_page method is now a part of ThinkingSphinx::Search, as it is used when populating results.
+
 2013-03-23: 3.0.2
 * [CHANGE] per_page now accepts an optional paging limit, to match WillPaginate's behaviour. If none is supplied, it just returns the page size.
 * [FEATURE] Ruby 2.0 support.
