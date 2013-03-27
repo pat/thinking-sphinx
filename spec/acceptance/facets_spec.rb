@@ -35,10 +35,11 @@ describe 'Faceted searching', :live => true do
     Book.create! :title => 'American Gods', :author => 'Neil Gaiman'
     Book.create! :title => 'Anansi Boys',   :author => 'Neil Gaiman'
     Book.create! :title => 'Snuff',         :author => 'Terry Pratchett'
+    Book.create! :title => '1Q84',          :author => '村上 春樹'
     index
 
     Book.facets.to_hash[:author].should == {
-      'Neil Gaiman' => 2, 'Terry Pratchett' => 1
+      'Neil Gaiman' => 2, 'Terry Pratchett' => 1, '村上 春樹' => 1
     }
   end
 

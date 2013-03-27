@@ -11,12 +11,14 @@ require 'thinking_sphinx/middlewares/inquirer'
 require 'thinking_sphinx/middlewares/sphinxql'
 require 'thinking_sphinx/middlewares/stale_id_checker'
 require 'thinking_sphinx/middlewares/stale_id_filter'
+require 'thinking_sphinx/middlewares/utf8'
 
 ThinkingSphinx::Middlewares::DEFAULT = ::Middleware::Builder.new do
   use ThinkingSphinx::Middlewares::StaleIdFilter
   use ThinkingSphinx::Middlewares::SphinxQL
   use ThinkingSphinx::Middlewares::Geographer
   use ThinkingSphinx::Middlewares::Inquirer
+  use ThinkingSphinx::Middlewares::UTF8
   use ThinkingSphinx::Middlewares::ActiveRecordTranslator
   use ThinkingSphinx::Middlewares::StaleIdChecker
   use ThinkingSphinx::Middlewares::Glazier
@@ -26,6 +28,7 @@ ThinkingSphinx::Middlewares::RAW_ONLY = ::Middleware::Builder.new do
   use ThinkingSphinx::Middlewares::SphinxQL
   use ThinkingSphinx::Middlewares::Geographer
   use ThinkingSphinx::Middlewares::Inquirer
+  use ThinkingSphinx::Middlewares::UTF8
 end
 
 ThinkingSphinx::Middlewares::IDS_ONLY = ::Middleware::Builder.new do
