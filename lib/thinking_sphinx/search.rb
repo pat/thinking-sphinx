@@ -8,7 +8,8 @@ class ThinkingSphinx::Search < Array
     send class )
   DEFAULT_MASKS = [
     ThinkingSphinx::Masks::PaginationMask,
-    ThinkingSphinx::Masks::ScopesMask
+    ThinkingSphinx::Masks::ScopesMask,
+    ThinkingSphinx::Masks::GroupEnumeratorsMask
   ]
 
   instance_methods.select { |method|
