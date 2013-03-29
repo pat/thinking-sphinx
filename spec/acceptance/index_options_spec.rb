@@ -109,4 +109,31 @@ describe 'Index options' do
       index.sources.first.sql_query_pre.should == ["DO STUFF"]
     end
   end
+
+  context 'respecting index options over core configuration' do
+    before :each do
+      ThinkingSphinx::Configuration.instance.settings['min_infix_len'] = 2
+
+      index.definition_block = Proc.new {
+        indexes title
+
+        set_property :min_infix_len => 1
+      }
+      index.render
+    end
+
+    after :each do
+      ThinkingSphinx::Configuration.instance.settings.delete 'min_infix_len'
+    end
+
+    it "prioritises index-level options over YAML options" do
+      index.min_infix_len.should == 1
+    end
+
+    it "keeps index-level options prioritised when rendered again" do
+      index.render
+
+      index.min_infix_len.should == 1
+    end
+  end
 end

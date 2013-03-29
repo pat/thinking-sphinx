@@ -25,10 +25,15 @@ module ThinkingSphinx::Core::Index
   end
 
   def interpret_definition!
-    return if @interpreted_definition || @definition_block.nil?
+    return if @interpreted_definition
+
+    self.class.settings.each do |setting|
+      value = config.settings[setting.to_s]
+      send("#{setting}=", value) unless value.nil?
+    end
 
     @interpreted_definition = true
-    interpreter.translate! self, @definition_block
+    interpreter.translate! self, @definition_block if @definition_block
   end
 
   def model
@@ -59,11 +64,6 @@ module ThinkingSphinx::Core::Index
   end
 
   def pre_render
-    self.class.settings.each do |setting|
-      value = config.settings[setting.to_s]
-      send("#{setting}=", value) unless value.nil?
-    end
-
     interpret_definition!
   end
 end
