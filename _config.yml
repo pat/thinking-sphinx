@@ -1,2 +1,5 @@
 pygments: true
 auto: true
+markdown: rdiscount
+rdiscount:
+  extensions: [smart]
