@@ -25,6 +25,8 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
     name = "#{options[:name] || model.name.downcase}_#{options[:position]}"
 
     super name, type
+
+    apply_defaults
   end
 
   def adapter
@@ -57,11 +59,6 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
   end
 
   def render
-    self.class.settings.each do |setting|
-      value = config.settings[setting.to_s]
-      send("#{setting}=", value) unless value.nil?
-    end
-
     prepare_for_render unless @prepared
 
     super
@@ -79,6 +76,13 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
   end
 
   private
+
+  def apply_defaults
+    self.class.settings.each do |setting|
+      value = config.settings[setting.to_s]
+      send("#{setting}=", value) unless value.nil?
+    end
+  end
 
   def attribute_array_for(type)
     instance_variable_get "@sql_attr_#{type}".to_sym

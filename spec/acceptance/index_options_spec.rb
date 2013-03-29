@@ -113,27 +113,40 @@ describe 'Index options' do
   context 'respecting index options over core configuration' do
     before :each do
       ThinkingSphinx::Configuration.instance.settings['min_infix_len'] = 2
+      ThinkingSphinx::Configuration.instance.settings['sql_range_step'] = 2
 
       index.definition_block = Proc.new {
         indexes title
 
         set_property :min_infix_len => 1
+        set_property :sql_range_step => 20
       }
       index.render
     end
 
     after :each do
       ThinkingSphinx::Configuration.instance.settings.delete 'min_infix_len'
+      ThinkingSphinx::Configuration.instance.settings.delete 'sql_range_step'
     end
 
     it "prioritises index-level options over YAML options" do
       index.min_infix_len.should == 1
     end
 
+    it "prioritises index-level source options" do
+      index.sources.first.sql_range_step.should == 20
+    end
+
     it "keeps index-level options prioritised when rendered again" do
       index.render
 
       index.min_infix_len.should == 1
+    end
+
+    it "keeps index-level options prioritised when rendered again" do
+      index.render
+
+      index.sources.first.sql_range_step.should == 20
     end
   end
 end
