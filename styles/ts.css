@@ -15,7 +15,7 @@ a {
 
 a:visited {
   color: #666;
-  
+
 }
 
 a:hover {
@@ -117,7 +117,7 @@ div#navigation .wrapper {
   width: 940px;
 }
 
-div#navigation .wrapper a#logo {  
+div#navigation .wrapper a#logo {
   color: #828282;
   display:block;
   float: left;
@@ -168,13 +168,13 @@ div#navigation ul li a:visited {
 
 div#navigation ul li.selected a,
 div#navigation ul li.selected a:visited {
-  text-decoration: none;  
+  text-decoration: none;
   color: #6c3;
 }
 
 div#navigation ul li.active a,
 div#navigation ul li.selected a:visited {
-  text-decoration: none;  
+  text-decoration: none;
   color: #444;
 }
 
@@ -286,7 +286,7 @@ div#footer {
   background: #efefef;
   border-top: 1px solid #ddd;
   border-bottom: 1px solid #ddd
-}  
+}
 
 div#footer .wrapper {
   background: transparent;
@@ -444,4 +444,10 @@ div#sidebar h2 {
 div#content div.pad {
   margin-left: 0;
   margin-right: 0;
+}
+
+div.note {
+  border-left: 2px solid #ccc;
+  margin: 0.5em;
+  padding: 0.5em;
 }
