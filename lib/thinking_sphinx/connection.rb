@@ -14,7 +14,7 @@ class ThinkingSphinx::Connection
         connection.reset
         begin
           yield connection
-        rescue Riddle::ConnectionError, Riddle::ResponseError => error
+        rescue Riddle::ConnectionError, Riddle::ResponseError, SystemCallError => error
           original = error
           raise Innertube::Pool::BadResource
         end
