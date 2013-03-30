@@ -451,3 +451,12 @@ div.note {
   margin: 0 0.5em;
   padding: 0 0.75em;
 }
+
+p.old {
+  background-color: #cc6666;
+  color: #000;
+  font-weight: bold;
+  font-size: 1.2em;
+  padding: 0.2em;
+  text-align: center;
+}

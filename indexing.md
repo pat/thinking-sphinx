@@ -28,6 +28,8 @@ end
 {% endhighlight %}
 
 <div class="note">
+  <p class="old">Thinking Sphinx v1/v2</p>
+
   <p><strong>Note</strong>: Index definitions for Thinking Sphinx versions before 3.0.0 went in the model files instead, inside a <code>define_index</code> call.</p>
 
   <p>Don't forget to place this block <em>below</em> your associations and any <code>accepts_nested_attributes_for</code> calls, otherwise any references to them for fields and attributes will not work.</p>
@@ -156,6 +158,8 @@ end
 These index definitions can be in the same file or separate files - it's up to you.
 
 <div class="note">
+  <p class="old">Thinking Sphinx v1/v2</p>
+
   <p><strong>Note</strong>: Defining multiple indices in Thinking Sphinx v2 or older is just a matter of using define_index multiple times, and supplying a unique name for each:</p>
 
   {% highlight ruby %}
