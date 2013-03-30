@@ -6,7 +6,7 @@ class ThinkingSphinx::Search::Context
     @configuration = configuration || ThinkingSphinx::Configuration.instance
     @memory        = {
       :results => [],
-      :panes   => ThinkingSphinx::Configuration::Defaults::PANES
+      :panes   => ThinkingSphinx::Configuration::Defaults::PANES.clone
     }
   end
 
