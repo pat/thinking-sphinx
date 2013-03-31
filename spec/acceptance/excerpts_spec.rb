@@ -11,4 +11,14 @@ describe 'Accessing excerpts for methods on a search result', :live => true do
     search.first.excerpts.title.
       should == 'American <span class="match">Gods</span>'
   end
+
+  it "handles UTF-8 text for excerpts" do
+    Book.create! :title => 'Война и миръ', :year => 1869
+    index
+
+    search = Book.search
+    search.context[:panes] << ThinkingSphinx::Panes::ExcerptsPane
+
+    search.first.excerpts.title.should == 'Война и миръ'
+  end
 end
