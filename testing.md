@@ -35,7 +35,7 @@ end
 
 The next step is to make sure Sphinx is set up for each test. Here's an example of a file for RSpec that could live at `spec/support/sphinx.rb`:
 
-{% highlight %}
+{% highlight ruby %}
 module SphinxHelpers
   def index
     ThinkingSphinx::Test.index
@@ -68,7 +68,7 @@ end
 
 Delta indexes (if you're using the default approach) will automatically update just like they do in a normal application environment, but a full index can be run by calling the `index` method.
 
-If you need to manually process specific indexes, just use the @index@ method, which defaults to all indexes unless you pass in specific names.
+If you need to manually process specific indexes, just use the `index` method, which defaults to all indexes unless you pass in specific names.
 
 {% highlight ruby %}
 ThinkingSphinx::Test.index # all indexes
@@ -77,7 +77,7 @@ ThinkingSphinx::Test.index 'article_core', 'article_delta'
 
 `ThinkingSphinx::Test.init` accepts a single argument `suppress_delta_output` that defaults to true. Just pass in false instead if you want to see delta output (for debugging purposes),
 
-If you don't want Sphinx running for all of your testsin, you can wrap the code that needs Sphinx in a block called by @ThinkingSphinx::Test.run@, which will start up and stop Sphinx either side of the block:
+If you don't want Sphinx running for all of your testsin, you can wrap the code that needs Sphinx in a block called by `ThinkingSphinx::Test.run`, which will start up and stop Sphinx either side of the block:
 
 {% highlight ruby %}
 test "Searching for Articles" do
