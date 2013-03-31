@@ -27,6 +27,15 @@ ThinkingSphinx::Index.define :article, :with => :active_record do
 end
 {% endhighlight %}
 
+You'll notice the first argument is the model name downcased and as a symbol, and we are specifying the processor - @:active_record@. Everything inside the block is just like previous versions of Thinking Sphinx, if you're familiar with that.
+
+When you're defining indices for namespaced models, use a lowercase string with /'s for namespacing as the model reference:
+
+{% highlight ruby %}
+# For a model named Blog::Article:
+ThinkingSphinx::Index.define 'blog/article', :with => :active_record
+{% endhighlight %}
+
 <div class="note">
   <p class="old">Thinking Sphinx v1/v2</p>
 
