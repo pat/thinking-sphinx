@@ -131,7 +131,7 @@ U+410..U+42F->U+430..U+44F, U+430..U+44F"
 
 To keep searching fast, Sphinx has a default limit of 1000 records being available via pagination, even if there are more matches than that. The reasons for this limit are [discussed in the Sphinx documentation](http://www.sphinxsearch.com/docs/current.html#conf-max-matches).
 
-However, you can change this value. Firstly, in your `config/thinkin_sphinx.yml` file, you need to set max_matches to your upper limit:
+However, you can change this value. Firstly, in your `config/thinking_sphinx.yml` file, you need to set max_matches to your upper limit:
 
 {% highlight yaml %}
 development:

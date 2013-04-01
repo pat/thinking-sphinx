@@ -44,4 +44,4 @@ end
 
 Installing Thinking Sphinx as a plugin is no longer recommended (and has not been for quite some time). In theory it should work for Rails 2.3 apps, but you'll need to manually clone the `v1` branch into `vendor/plugins`.
 
-[Return to [Installing Thinking Sphinx]](/installing_thinking_sphinx.html)
+[Return to [Installing Thinking Sphinx]](/thinking-sphinx/installing_thinking_sphinx.html)

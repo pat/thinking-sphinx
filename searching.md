@@ -25,7 +25,7 @@ title: Searching
 
 <h3 id="basic">Basic Searching</h3>
 
-Once you've [got an index set up](/indexing.html) on your model, and have [the Sphinx daemon running](/rake_tasks.html), then you can start to search, using a method on your model named just that.
+Once you've [got an index set up](indexing.html) on your model, and have [the Sphinx daemon running](rake_tasks.html), then you can start to search, using a method on your model named just that.
 
 {% highlight ruby %}
 Article.search 'pancakes'
@@ -130,7 +130,7 @@ Thinking Sphinx v3 and newer use Sphinx's SphinxQL for querying, and that _alway
 
 <div class="note">
   <p class="old">Thinking Sphinx v1/v2</p>
-  <p><strong>Note</strong>: If you are using an older version of Thinking Sphinx, then you have simpler match modes available, which are covered both in the Sphinx documentation and <a href="/searching/ts2.html#matchmodes">here</a>.</p>
+  <p><strong>Note</strong>: If you are using an older version of Thinking Sphinx, then you have simpler match modes available, which are covered both in the Sphinx documentation and <a href="searching/ts2.html#matchmodes">here</a>.</p>
 </div>
 
 <h3 id="ranking">Ranking Modes</h3>
@@ -202,7 +202,7 @@ And as shown in the above example, Sphinx's calculated ranking is available via 
 
 <div class="note">
   <p class="old">Thinking Sphinx v1/v2</p>
-  <p><strong>Note</strong>: If you are using an older version of Thinking Sphinx, then you have further sorting options available, which are covered both in the Sphinx documentation and <a href="/searching/ts2.html#sorting">here</a>.</p>
+  <p><strong>Note</strong>: If you are using an older version of Thinking Sphinx, then you have further sorting options available, which are covered both in the Sphinx documentation and <a href="searching/ts2.html#sorting">here</a>.</p>
 </div>
 
 <h3 id="fieldweights">Field Weights</h3>
@@ -284,7 +284,7 @@ ThinkingSphinx.search(
 
 <div class="note">
   <p class="old">Thinking Sphinx v1/v2</p>
-  <p><strong>Note</strong>: If you are using an older version of Thinking Sphinx, then you have further grouping options available, which are covered both in the Sphinx documentation and <a href="/searching/ts2.html#grouping">here</a>.</p>
+  <p><strong>Note</strong>: If you are using an older version of Thinking Sphinx, then you have further grouping options available, which are covered both in the Sphinx documentation and <a href="searching/ts2.html#grouping">here</a>.</p>
 </div>
 
 <h3 id="ids">Searching for Object Ids</h3>
@@ -335,7 +335,7 @@ Some specific types of errors are given specific subclass - `ThinkingSphinx::Que
 
 <div class="note">
   <p class="old">Thinking Sphinx v1/v2</p>
-  <p><strong>Note</strong>: If you are using an older version of Thinking Sphinx, then <a href="/searching/ts2.html#errors">errors are handled differently</a>.</p>
+  <p><strong>Note</strong>: If you are using an older version of Thinking Sphinx, then <a href="searching/ts2.html#errors">errors are handled differently</a>.</p>
 </div>
 
 <h3 id="advanced">Advanced Options</h3>

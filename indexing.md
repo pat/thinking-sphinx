@@ -184,7 +184,7 @@ end
 
 <h3 id="processing">Processing your Index</h3>
 
-Once you've got your index set up just how you like it, you can run [the rake task](/rake_tasks.html) to get Sphinx to process the data.
+Once you've got your index set up just how you like it, you can run [the rake task](rake_tasks.html) to get Sphinx to process the data.
 
 {% highlight sh %}
 rake ts:index

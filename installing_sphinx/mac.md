@@ -27,6 +27,6 @@ You may need to run the above command with sudo depending on your permissions se
 
 ### Other options
 
-If you don't have either Homebrew or MacPorts installed, then you could install either of them, or just [compile Sphinx yourself](/installing_sphinx.html#compiling). This will require the MacOS Developer Tools (but then, so will either of the package managers), but should work without much hassle.
+If you don't have either Homebrew or MacPorts installed, then you could install either of them, or just [compile Sphinx yourself](/thinking-sphinx/installing_sphinx.html#compiling). This will require the MacOS Developer Tools (but then, so will either of the package managers), but should work without much hassle.
 
-[Return to [Installing Sphinx]](/installing_sphinx.html)
+[Return to [Installing Sphinx]](/thinking-sphinx/installing_sphinx.html)

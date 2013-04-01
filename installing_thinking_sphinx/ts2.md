@@ -26,4 +26,4 @@ gem 'thinking-sphinx', '~> 2.0.14',
   :ref    => '55788f7b96'
 {% endhighlight %}
 
-[Return to [Installing Thinking Sphinx]](/installing_thinking_sphinx.html)
+[Return to [Installing Thinking Sphinx]](/thinking-sphinx/installing_thinking_sphinx.html)

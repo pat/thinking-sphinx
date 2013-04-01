@@ -9,6 +9,6 @@ Most Linux package managers have Sphinx available as a pre-built package, though
 
 There are also prebuilt binaries for Ubuntu, RHEL/CentOS and Debian [available](http://sphinxsearch.com/downloads/release/) on the Sphinx site.
 
-If you don't want to use your package manager, then you can [compile Sphinx yourself](/installing_sphinx.html#compiling).
+If you don't want to use your package manager, then you can [compile Sphinx yourself](/thinking-sphinx/installing_sphinx.html#compiling).
 
-[Return to [Installing Sphinx]](/installing_sphinx.html)
+[Return to [Installing Sphinx]](/thinking-sphinx/installing_sphinx.html)

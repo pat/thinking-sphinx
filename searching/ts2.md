@@ -8,7 +8,7 @@ title: Searching
 <div class="note">
   <p class="old">Thinking Sphinx v1/v2</p>
 
-  <p><strong>Note</strong>: These sections only apply to Thinking Sphinx v1/v2. The <a href="/searching.html">main searching documentation</a> is where to find instructions for v3 releases.
+  <p><strong>Note</strong>: These sections only apply to Thinking Sphinx v1/v2. The <a href="/thinking-sphinx/searching.html">main searching documentation</a> is where to find instructions for v3 releases.
 </div>
 
 * [Match Modes](#matchmodes)
@@ -54,7 +54,7 @@ Keep in mind that ANDs are used implicitly if no logic is given, and you can't q
 
 #### `:extended`
 
-Extended combines boolean searching with phrase searching, [field-specific searching](/searching.html#conditions), field position limits, proximity searching, quorum matching, strict order operator, exact form modifiers (since 0.9.9rc1) and field-start and field-end modifiers (since 0.9.9rc2).
+Extended combines boolean searching with phrase searching, [field-specific searching](/thinking-sphinx/searching.html#conditions), field position limits, proximity searching, quorum matching, strict order operator, exact form modifiers (since 0.9.9rc1) and field-start and field-end modifiers (since 0.9.9rc2).
 
 I highly recommend having a look at [Sphinx's syntax examples](http://www.sphinxsearch.com/docs/current.html#extended-syntax). Also keep in mind that if you use the `:conditions` option, then this match mode will be used automatically.
 

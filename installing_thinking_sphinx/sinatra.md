@@ -29,4 +29,4 @@ framework.root        = '/srv/www/app' # Defaults to Dir.pwd
 ThinkingSphinx::Configuration.instance.framework = framework
 {% endhighlight %}
 
-[Return to [Installing Thinking Sphinx]](/installing_thinking_sphinx.html)
+[Return to [Installing Thinking Sphinx]](/thinking-sphinx/installing_thinking_sphinx.html)

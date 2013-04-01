@@ -11,13 +11,13 @@ Thinking Sphinx has changed quite a bit over time, and if you're upgrading from 
 
 There's quite a bit that's changed in Thinking Sphinx 3.0, as it's a complete rewrite. First, the important changes:
 
-* [Index definitions](/indexing.html) now live in `app/indices`.
+* [Index definitions](indexing.html) now live in `app/indices`.
 * `config/sphinx.yml` is now `config/thinking_sphinx.yml`.
 * `mysql2` gem (at least 0.3.12b4) is required for connecting to Sphinx (using its mysql41 protocol).
 * Specifying a different port for Sphinx to use (in `config/thinking_sphinx.yml`) should be done with the mysql41 setting, not the port setting.
 * The match mode is always extended - SphinxQL doesn't know any other way.
 * If you're explicitly setting a time attribute's type, instead of `:datetime` it should now be `:timestamp`.
-* [Sorting options](/searching.html#sorting) and [grouping options](/searching.html#grouping) are much simpler.
+* [Sorting options](searching.html#sorting) and [grouping options](searching.html#grouping) are much simpler.
 * Delta arguments are passed in as an option of the `define` call, not within the block:
 
 {% highlight ruby %}
@@ -52,7 +52,7 @@ ThinkingSphinx.search 'pancakes',
 
 * The option `:rank_mode` has now become `:ranker` - and the options (as strings or symbols) are as follows: proximity_bm25, bm25, none, wordcount, proximity, matchany, fieldmask, sph04 and expr.
 * Support for latitude and longitude attributes named something other than 'lat' and 'lng' or 'latitude' and 'longitude' has been removed. It may be added back in if requested, but not expecting anyone to.
-* [ActiveRecord options](/searching.html#advanced) (`:include`, `:joins`, `:select`, `:order`) get passed in via `:sql`.
+* [ActiveRecord options](searching.html#advanced) (`:include`, `:joins`, `:select`, `:order`) get passed in via `:sql`.
 * `each_with_weight` (note that it's weight, not weighting) is available, but not by default. Here's an example of how to have it part of the search object:
 
 {% highlight ruby %}

@@ -6,7 +6,7 @@ title:  Installing Thinking Sphinx
 ## Installing Thinking Sphinx (Rails 3.1 or Newer)
 
 <div class="note">
-  <p><strong>Note</strong>: Thinking Sphinx v3.x (as documented here) is written for Ruby 1.9. If you are using Ruby 1.8.7 (or equivalent), please use a v2 release - covered in <a href="/installing_thinking_sphinx/ts2.html">the Rails 3.0 installation instructions</a>.</p>
+  <p><strong>Note</strong>: Thinking Sphinx v3.x (as documented here) is written for Ruby 1.9. If you are using Ruby 1.8.7 (or equivalent), please use a v2 release - covered in <a href="/thinking-sphinx/installing_thinking_sphinx/ts2.html">the Rails 3.0 installation instructions</a>.</p>
 </div>
 
 <div class="note">
@@ -41,4 +41,4 @@ gem 'thinking-sphinx', '~> 3.0.2',
 
 At the time of writing this, Rails 4.0.0.beta1 is available. The only version of Thinking Sphinx that currently supports Rails 4 is 3.0.2 - though there may still be changes to both Rails and Thinking Sphinx before the proper 4.0.0 version is released.
 
-[Return to [Installing Thinking Sphinx]](/installing_thinking_sphinx.html)
+[Return to [Installing Thinking Sphinx]](/thinking-sphinx/installing_thinking_sphinx.html)

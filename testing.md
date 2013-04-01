@@ -77,7 +77,7 @@ ThinkingSphinx::Test.index 'article_core', 'article_delta'
 
 `ThinkingSphinx::Test.init` accepts a single argument `suppress_delta_output` that defaults to true. Just pass in false instead if you want to see delta output (for debugging purposes),
 
-If you don't want Sphinx running for all of your testsin, you can wrap the code that needs Sphinx in a block called by `ThinkingSphinx::Test.run`, which will start up and stop Sphinx either side of the block:
+If you don't want Sphinx running for all of your tests, you can wrap the code that needs Sphinx in a block called by `ThinkingSphinx::Test.run`, which will start up and stop Sphinx either side of the block:
 
 {% highlight ruby %}
 test "Searching for Articles" do
