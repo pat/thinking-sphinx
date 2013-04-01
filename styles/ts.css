@@ -460,3 +460,7 @@ p.old {
   padding: 0.2em;
   text-align: center;
 }
+
+a.gyoza {
+  float: right;
+}
