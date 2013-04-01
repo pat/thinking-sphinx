@@ -31,18 +31,7 @@ end
 Other changes for those who have delved a bit further:
 
 * The `searchd_log` and `searchd_query_log` settings are now `log` and `query_log` (matching their Sphinx names).
-* You'll need to include `ThinkingSphinx::Scopes` into your models if you want to use Sphinx scopes. Default scopes can be set as follows:
-
-{% highlight ruby %}
-class Person < ActiveRecord::Base
-  include ThinkingSphinx::Scopes
-
-  sphinx_scope(:date_order) { {:order => :created_at} }
-  default_sphinx_scope :date_order
-  # ...
-end
-{% endhighlight %}
-
+* You'll need to include `ThinkingSphinx::Scopes` into your models if you want to use Sphinx scopes.
 * ActiveRecord::Base.set_sphinx_primary_key is now an option in the index definition (alongside the `:with` option): `:primary_key` - and therefore is no longer inheritable between models.
 * Suspended deltas are no longer called from the model, but like so instead:
 
