@@ -7,7 +7,7 @@ title: Facets
 
 <div class="note">
   <p class="old">Thinking Sphinx v1/v2</p>
-  <p><strong>Note</strong>: This page has not yet been updated with details for Thinking Sphinx v3.</p>
+  <p><strong>Note</strong>: This page has not yet been updated with details for Thinking Sphinx v3 because Pat is lazy and writing good documentation is hard.</p>
 </div>
 
 Facet Searches are search summaries - they provide a breakdown of result counts for each of the defined categories/facets.
