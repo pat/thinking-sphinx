@@ -52,20 +52,7 @@ ThinkingSphinx::Deltas.suspend :article do
 end
 {% endhighlight %}
 
-* Excerpts through search results behaves the same way, provided you add ExcerptsPane into the mix.
-
-{% highlight ruby %}
-search = ThinkingSphinx.search 'pancakes'
-search.context.panes << ThinkingSphinx::Panes::ExcerptsPane
-{% endhighlight %}
-
-* Excerpt options (like `:before_match`, `:after_match` and `:chunk_separator`) can be passed through when searching under the `:excerpts` option:
-
-{% highlight ruby %}
-ThinkingSphinx.search 'foo',
-  :excerpts => {:chunk_separator => ' -- '}
-{% endhighlight %}
-
+* Excerpts through search results behaves the same way, provided you add [an ExcerptsPane](excerpts.html) into the mix.
 * When indexing models on classes that are using single-table inheritance (STI), make sure you have a database index on the `type` column. Thinking Sphinx will need to determine which subclasses are available, and we can't rely on Rails having loaded all models at any given point, so it queries the database. If you don't want this to happen, set `:skip_sti` to true in your search call, and ensure that the `:classes` option holds all classes that could be returned.
 
 {% highlight ruby %}
