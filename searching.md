@@ -31,6 +31,15 @@ Once you've [got an index set up](indexing.html) on your model, and have [the Sp
 Article.search 'pancakes'
 {% endhighlight %}
 
+Sphinx does have some reserved characters (including the @ character), so you may need to escape your query terms. Riddle (a dependency of Thinking Sphinx) has escaping methods built-in:
+
+{% highlight ruby %}
+# For Thinking Sphinx v3 or newer:
+Article.search Riddle::Query.escape(params[:query])
+# For Thinking Sphinx before v3:
+Article.search Riddle.escape(params[:query])
+{% endhighlight %}
+
 Please note that Sphinx paginates search results, and the default page size is 20. You can find more information further down in the [pagination](#pagination) section.
 
 <h3 id="conditions">Field Conditions</h3>
