@@ -38,7 +38,8 @@ Instead of wrapping every single search result to add that helper method, you ca
 
 {% highlight ruby %}
 @articles  = Article.search params[:query]
-@excerpter = ThinkingSphinx::Excerpter.new 'article_core', params[:query]
+@excerpter = ThinkingSphinx::Excerpter.new 'article_core',
+  params[:query]
 {% endhighlight %}
 
 And then in your views, call `excerpt!` for each piece of text you wish to calculate excerpts for:
@@ -62,11 +63,12 @@ If you want to change the default options of excerpts, you can pass them in via 
   :chunk_separator => ' &#8230; ' # ellipsis
 }
 # or
-@excerpter = ThinkingSphinx::Excerpter.new 'article_core', params[:query], {
-  :before_match    => '<span class="match">',
-  :after_match     => '</span>',
-  :chunk_separator => ' &#8230; ' # ellipsis
-}
+@excerpter = ThinkingSphinx::Excerpter.new 'article_core',
+  params[:query], {
+    :before_match    => '<span class="match">',
+    :after_match     => '</span>',
+    :chunk_separator => ' &#8230; ' # ellipsis
+  }
 {% endhighlight %}
 
 The full set of options are covered in [the Sphinx documentation](http://sphinxsearch.com/docs/current.html#api-func-buildexcerpts)
