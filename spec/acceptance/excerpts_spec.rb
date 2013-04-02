@@ -16,9 +16,10 @@ describe 'Accessing excerpts for methods on a search result', :live => true do
     Book.create! :title => 'Война и миръ', :year => 1869
     index
 
-    search = Book.search
+    search = Book.search 'миръ'
     search.context[:panes] << ThinkingSphinx::Panes::ExcerptsPane
 
-    search.first.excerpts.title.should == 'Война и миръ'
+    search.first.excerpts.title.
+      should == 'Война и <span class="match">миръ</span>'
   end
 end

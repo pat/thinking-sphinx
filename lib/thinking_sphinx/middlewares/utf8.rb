@@ -4,6 +4,7 @@ class ThinkingSphinx::Middlewares::UTF8 <
   def call(contexts)
     contexts.each do |context|
       context[:results].each { |row| update_row row }
+      update_row context[:meta]
     end
 
     app.call contexts
