@@ -16,14 +16,14 @@ class ThinkingSphinx::RealTime::Index::Template
   private
 
   def add_attribute(column, name, type, options = {})
-    index.attributes << ThinkingSphinx::RealTime::Attribute.new(
+    index.add_attribute ThinkingSphinx::RealTime::Attribute.new(
       ThinkingSphinx::ActiveRecord::Column.new(*column),
       options.merge(:as => name, :type => type)
     )
   end
 
   def add_field(column, name)
-    index.fields << ThinkingSphinx::RealTime::Field.new(
+    index.add_field ThinkingSphinx::RealTime::Field.new(
       ThinkingSphinx::ActiveRecord::Column.new(*column), :as => name
     )
   end

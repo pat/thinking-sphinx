@@ -13,6 +13,14 @@ class ThinkingSphinx::RealTime::Index < Riddle::Configuration::RealtimeIndex
     super reference, options
   end
 
+  def add_attribute(attribute)
+    @attributes << attribute
+  end
+
+  def add_field(field)
+    @fields << field
+  end
+
   def attributes
     interpret_definition!
 
