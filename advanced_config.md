@@ -19,7 +19,7 @@ production:
 <div class="note">
   <p class="old">Thinking Sphinx v1/v2</p>
 
-  <p><strong>Note</strong>: The `mysql41` setting was previously `port` before Thinking Sphinx v3.</p>
+  <p><strong>Note</strong>: The <code>mysql41</code> setting was previously <code>port</code> before Thinking Sphinx v3.</p>
 </div>
 
 Now, [Sphinx has a _lot_ of different settings](http://www.sphinxsearch.com/docs/current.html#confgroup-index) you can play with, and they're pretty much all supported by Thinking Sphinx as well. Documentation will be added here for them over time, but in a pinch, it should be pretty easy to guess the syntax for the YAML file for each setting.
@@ -67,7 +67,7 @@ production:
 <div class="note">
   <p class="old">Thinking Sphinx v1/v2</p>
 
-  <p><strong>Note</strong>: The `mysql41` setting was previously `port` before Thinking Sphinx v3.</p>
+  <p><strong>Note</strong>: The <code>mysql41</code> setting was previously <code>port</code> before Thinking Sphinx v3.</p>
 </div>
 
 ### Indexer Memory Usage
