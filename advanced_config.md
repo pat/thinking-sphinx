@@ -9,11 +9,11 @@ Thinking Sphinx provides a good set of defaults out of the box, and for some peo
 
 {% highlight yaml %}
 development:
-  port: 9312
+  mysql41: 9312
 test:
-  port: 9313
+  mysql41: 9313
 production:
-  port: 9312
+  mysql41: 9312
 {% endhighlight %}
 
 Now, [Sphinx has a _lot_ of different settings](http://www.sphinxsearch.com/docs/current.html#confgroup-index) you can play with, and they're pretty much all supported by Thinking Sphinx as well. Documentation will be added here for them over time, but in a pinch, it should be pretty easy to guess the syntax for the YAML file for each setting.
@@ -58,7 +58,13 @@ production:
 # ... repeat for other environments if necessary
 {% endhighlight %}
 
-The `mysql41` setting was previously `port` before Thinking Sphinx v3.
+<div class="note">
+  <p class="old">Thinking Sphinx v1/v2</p>
+
+  <p><strong>Note</strong>: The `mysql41` setting was previously `port` before Thinking Sphinx v3.</p>
+end
+{% endhighlight %}
+</div>
 
 ### Indexer Memory Usage
 
