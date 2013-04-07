@@ -24,3 +24,6 @@ end
 
 class ThinkingSphinx::ParseError < ThinkingSphinx::QueryError
 end
+
+class ThinkingSphinx::MixedScopesError < StandardError
+end

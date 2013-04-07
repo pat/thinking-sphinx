@@ -24,6 +24,12 @@ module ThinkingSphinx::ActiveRecord::Base
 
       merger.merge! *default_sphinx_scope_response if default_sphinx_scope?
       merger.merge! query, options
+
+      if current_scope && !merger.search.options[:ignore_scopes]
+        raise ThinkingSphinx::MixedScopesError,
+          'You cannot search with Sphinx through ActiveRecord scopes'
+      end
+
       merger.merge! nil, :classes => [self]
     end
 

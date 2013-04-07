@@ -1,4 +1,6 @@
 class ThinkingSphinx::Search::Merger
+  attr_reader :search
+
   def initialize(search)
     @search = search
   end

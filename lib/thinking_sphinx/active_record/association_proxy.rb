@@ -2,11 +2,17 @@ module ThinkingSphinx::ActiveRecord::AssociationProxy
   extend ActiveSupport::Concern
 
   def search(query = nil, options = {})
+    query, options = nil, query if query.is_a?(Hash)
+    options[:ignore_scopes] = true
+
     ThinkingSphinx::Search::Merger.new(super).merge! nil,
       :with => association_filter
   end
 
   def search_for_ids(query = nil, options = {})
+    query, options = nil, query if query.is_a?(Hash)
+    options[:ignore_scopes] = true
+
     ThinkingSphinx::Search::Merger.new(super).merge! nil,
       :with => association_filter
   end

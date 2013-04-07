@@ -47,6 +47,24 @@ describe 'Searching within a model', :live => true do
 
     Admin::Person.search('Bond').to_a.should == [person]
   end
+
+  it "raises an error if searching through an ActiveRecord scope" do
+    lambda {
+      City.ordered.search
+    }.should raise_error(ThinkingSphinx::MixedScopesError)
+  end
+
+  it "does not raise an error when searching with a default ActiveRecord scope" do
+    lambda {
+      User.search
+    }.should_not raise_error(ThinkingSphinx::MixedScopesError)
+  end
+
+  it "raises an error when searching with default and applied AR scopes" do
+    lambda {
+      User.recent.search
+    }.should raise_error(ThinkingSphinx::MixedScopesError)
+  end
 end
 
 describe 'Searching within a model with a realtime index', :live => true do
