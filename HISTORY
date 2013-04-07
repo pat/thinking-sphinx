@@ -1,4 +1,7 @@
 Edge:
+* [CHANGE] Raise ThinkingSphinx::MixedScopesError if a search is called through an ActiveRecord scope.
+* [FIX] Default search panes are cloned for each search.
+* [FIX] Index-level settings (via set_property) are now applied consistently after global settings (in thinking_sphinx.yml).
 * [FIX] All string values returned from Sphinx are now properly converted to UTF8.
 * [CHANGE] GroupEnumeratorsMask is now a default mask, as masks need to be in place before search results are populated/the middleware is called (and previously it was being added within a middleware call).
 * [FIX] The default search masks are now cloned for each search, instead of referring to the constant (and potentially modifying it often).
