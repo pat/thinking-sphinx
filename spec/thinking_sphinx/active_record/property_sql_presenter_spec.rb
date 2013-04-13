@@ -174,12 +174,27 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
         adapter.stub :concatenate do |clause, separator|
           "CONCAT_WS('#{separator}', #{clause})"
         end
+        adapter.stub :cast_to_string do |clause|
+          "CAST(#{clause} AS varchar)"
+        end
 
         attribute.stub!(:columns => [column, double('column',
           :string? => false, :__stack => [], :__name => 'updated_at')])
 
-        presenter.to_select.
-          should == "CONCAT_WS(' ', articles.created_at) AS created_at"
+        presenter.to_select.should == "CONCAT_WS(',', CAST(articles.created_at AS varchar)) AS created_at"
+      end
+
+      it "casts and concatenates multiple columns for attributes" do
+        adapter.stub :concatenate do |clause, separator|
+          "CONCAT_WS('#{separator}', #{clause})"
+        end
+        adapter.stub :cast_to_string do |clause|
+          "CAST(#{clause} AS varchar)"
+        end
+
+        attribute.stub!(:columns => [column, column])
+
+        presenter.to_select.should == "CONCAT_WS(',', CAST(articles.created_at AS varchar), CAST(articles.created_at AS varchar)) AS created_at"
       end
     end
   end

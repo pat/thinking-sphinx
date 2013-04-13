@@ -5,6 +5,10 @@ class ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter <
     value ? 'TRUE' : 'FALSE'
   end
 
+  def cast_to_string(clause)
+    "#{clause}::varchar"
+  end
+
   def cast_to_timestamp(clause)
     "extract(epoch from #{clause})::int"
   end

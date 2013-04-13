@@ -5,6 +5,10 @@ class ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter <
     value ? 1 : 0
   end
 
+  def cast_to_string(clause)
+    "CAST(#{clause} AS char)"
+  end
+
   def cast_to_timestamp(clause)
     "UNIX_TIMESTAMP(#{clause})"
   end

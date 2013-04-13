@@ -30,7 +30,7 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
   def casted_column_with_table
     clause = columns_with_table
     clause = adapter.cast_to_timestamp(clause) if property.type == :timestamp
-    clause = adapter.concatenate(clause, ' ')  if concatenating?
+    clause = concatenate clause
     if aggregate?
       clause = adapter.group_concatenate(clause, aggregate_separator)
     end
@@ -58,6 +58,19 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
 
   def concatenating?
     property.columns.length > 1
+  end
+
+  def concatenate(clause)
+    return clause unless concatenating?
+
+    if property.type.nil?
+      adapter.concatenate clause, ' '
+    else
+      clause = clause.split(', ').collect { |part|
+        adapter.cast_to_string part
+      }.join(', ')
+      adapter.concatenate clause, ','
+    end
   end
 
   def group?

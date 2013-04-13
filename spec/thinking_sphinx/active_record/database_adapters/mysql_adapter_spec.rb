@@ -14,6 +14,12 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter do
     adapter.boolean_value(false).should == 0
   end
 
+  describe '#cast_to_string' do
+    it "casts the clause to characters" do
+      adapter.cast_to_string('foo').should == "CAST(foo AS char)"
+    end
+  end
+
   describe '#cast_to_timestamp' do
     it "converts to unix timestamps" do
       adapter.cast_to_timestamp('created_at').

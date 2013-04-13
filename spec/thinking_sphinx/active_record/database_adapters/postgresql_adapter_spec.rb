@@ -16,6 +16,12 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter do
     end
   end
 
+  describe '#cast_to_string' do
+    it "casts the clause to characters" do
+      adapter.cast_to_string('foo').should == 'foo::varchar'
+    end
+  end
+
   describe '#cast_to_timestamp' do
     it "converts to unix timestamps" do
       adapter.cast_to_timestamp('created_at').
