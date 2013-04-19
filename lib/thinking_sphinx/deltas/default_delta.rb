@@ -10,16 +10,13 @@ class ThinkingSphinx::Deltas::DefaultDelta
   end
 
   def delete(index, instance)
-    ThinkingSphinx::Connection.new.execute Riddle::Query.update(
-      index.name, index.document_id_for_key(instance.id),
-      :sphinx_deleted => true
-    )
-  rescue Mysql2::Error => error
-    # This isn't vital, so don't raise the error.
+    ThinkingSphinx::Deltas::DeleteJob.new(
+      index.name, index.document_id_for_key(instance.id)
+    ).perform
   end
 
   def index(index)
-    controller.index index.name, :verbose => !config.settings['quiet_deltas']
+    ThinkingSphinx::Deltas::IndexJob.new(index.name).perform
   end
 
   def reset_query

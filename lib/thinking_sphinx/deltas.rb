@@ -2,7 +2,7 @@ module ThinkingSphinx::Deltas
   def self.config
     ThinkingSphinx::Configuration.instance
   end
-  
+
   def self.processor_for(delta)
     case delta
     when TrueClass
@@ -40,3 +40,5 @@ module ThinkingSphinx::Deltas
 end
 
 require 'thinking_sphinx/deltas/default_delta'
+require 'thinking_sphinx/deltas/delete_job'
+require 'thinking_sphinx/deltas/index_job'
