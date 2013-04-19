@@ -28,6 +28,12 @@ module ThinkingSphinx
     search = ThinkingSphinx::Search.new query, options
     ThinkingSphinx::Search::Merger.new(search).merge! nil, :ids_only => true
   end
+
+  def self.before_index_hooks
+    @before_index_hooks
+  end
+
+  @before_index_hooks = []
 end
 
 # Core

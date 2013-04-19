@@ -37,6 +37,7 @@ describe ThinkingSphinx::RakeInterface do
     let(:controller) { double('controller', :index => true) }
 
     before :each do
+      ThinkingSphinx.stub :before_index_hooks => []
       configuration.stub(
         :configuration_file => '/path/to/foo.conf',
         :render_to_file     => true,
@@ -62,6 +63,15 @@ describe ThinkingSphinx::RakeInterface do
       FileUtils.should_receive(:mkdir_p).with('/path/to/indices')
 
       interface.index
+    end
+
+    it "calls all registered hooks" do
+      called = false
+      ThinkingSphinx.before_index_hooks << Proc.new { called = true }
+
+      interface.index
+
+      called.should be_true
     end
 
     it "indexes all indices verbosely" do
