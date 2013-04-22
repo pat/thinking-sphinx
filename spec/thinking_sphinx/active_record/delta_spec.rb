@@ -65,12 +65,15 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
   end
 
   describe "index_delta method" do
+    let(:index_job) { double :perform => true }
+
     before :each do
       ThinkingSphinx::Configuration.stub!(:environment => "spec")
       ThinkingSphinx.deltas_enabled   = true
       ThinkingSphinx.updates_enabled  = true
       ThinkingSphinx.stub!(:sphinx_running? => true)
       Person.delta_objects.first.stub!(:` => "", :toggled => true)
+      ThinkingSphinx::Deltas::IndexJob.stub :new => index_job
 
       @person = Person.new
       Person.stub!(:search_for_id => false)
@@ -104,10 +107,8 @@ describe "ThinkingSphinx::ActiveRecord::Delta" do
       @person.send(:index_delta)
     end
 
-    it "should call indexer for the delta index" do
-      Person.sphinx_indexes.first.delta_object.should_receive(:`).with(
-        "#{ThinkingSphinx::Configuration.instance.bin_path}indexer --config \"#{ThinkingSphinx::Configuration.instance.config_file}\" --rotate person_delta"
-      )
+    it "should run the index job" do
+      index_job.should_receive(:perform)
 
       @person.send(:index_delta)
     end
