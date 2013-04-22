@@ -28,15 +28,15 @@ Feature: Keeping Sphinx in line with deleted model instances
   Scenario: Deleting created instances from the delta index
     Given Sphinx is running
     And I am searching on betas
-    When I create a new beta named eleven
+    When I create a new beta named eighteen
     And I wait for Sphinx to catch up
     And I clear the connection pool
-    And I search for eleven
+    And I search for eighteen
     Then I should get 1 result
 
-    When I destroy beta eleven
+    When I destroy beta eighteen
     And I wait for Sphinx to catch up
-    And I search for eleven
+    And I search for eighteen
     Then I should get 0 results
 
   Scenario: Deleting edited instances from the delta index
