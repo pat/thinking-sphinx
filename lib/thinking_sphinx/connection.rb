@@ -1,7 +1,7 @@
 class ThinkingSphinx::Connection
   def self.pool
     @pool ||= Innertube::Pool.new(
-      Proc.new { Rails.logger.debug '>>> CONNECTING <<<'; ThinkingSphinx::Connection.new },
+      Proc.new { ThinkingSphinx::Connection.new },
       Proc.new { |connection| connection.close }
     )
   end

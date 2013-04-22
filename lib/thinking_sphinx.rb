@@ -295,5 +295,11 @@ module ThinkingSphinx
     !!defined?(::ActiveRecord::Associations::CollectionProxy)
   end
 
+  def self.before_index_hooks
+    @before_index_hooks
+  end
+
+  @before_index_hooks = []
+
   extend ThinkingSphinx::SearchMethods::ClassMethods
 end

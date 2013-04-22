@@ -89,6 +89,7 @@ namespace :thinking_sphinx do
     end
 
     FileUtils.mkdir_p config.searchd_file_path
+    ThinkingSphinx.before_index_hooks.each { |hook| hook.call }
     config.controller.index :verbose => true
   end
 
