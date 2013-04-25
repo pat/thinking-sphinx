@@ -11,7 +11,7 @@ class ThinkingSphinx::Facet
 
   def results_from(raw)
     raw.inject({}) { |hash, row|
-      hash[row[group_column]] = row['count(*)']
+      hash[row[group_column]] = row['sphinx_count']
       hash
     }
   end
