@@ -26,7 +26,7 @@ describe ThinkingSphinx::FacetSearch do
         'sphinx_internal_class' => 'Foo',
         'price_bracket'         => 3,
         'tag_ids'               => '1,2',
-        '@count'                => 5,
+        'count(*)'              => 5,
         '@groupby'              => 2
       }]
     end

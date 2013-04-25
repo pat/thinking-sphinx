@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'acceptance/spec_helper'
 
 describe 'Accessing excerpts for methods on a search result', :live => true do
