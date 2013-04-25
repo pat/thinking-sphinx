@@ -69,8 +69,8 @@ module ThinkingSphinx
       :hard_retry_count
 
     attr_accessor :source_options, :index_options
-
-    attr_reader :configuration, :controller
+    attr_reader :configuration
+    attr_writer :controller
 
     @@environment = nil
 
@@ -96,13 +96,11 @@ module ThinkingSphinx
         self.app_root ||= app_root
       end
 
+      @controller    = nil
       @configuration = Riddle::Configuration.new
       @configuration.searchd.pid_file   = "#{self.app_root}/log/searchd.#{environment}.pid"
       @configuration.searchd.log        = "#{self.app_root}/log/searchd.log"
       @configuration.searchd.query_log  = "#{self.app_root}/log/searchd.query.log"
-
-      @controller = Riddle::Controller.new @configuration,
-        "#{self.app_root}/config/#{environment}.sphinx.conf"
 
       self.address              = "127.0.0.1"
       self.port                 = 9312
@@ -123,7 +121,9 @@ module ThinkingSphinx
 
       self.version = nil
       parse_config
-      self.version ||= @controller.sphinx_version
+      if controller.respond_to?(:sphinx_version)
+        self.version ||= controller.sphinx_version
+      end
 
       ThinkingSphinx::Attribute::SphinxTypeMappings.merge!(
         :string => :sql_attr_string
@@ -152,6 +152,11 @@ module ThinkingSphinx
 
     def environment
       self.class.environment
+    end
+
+    def controller
+      @controller ||= Riddle::Controller.new @configuration,
+        "#{self.app_root}/config/#{environment}.sphinx.conf"
     end
 
     def generate
@@ -231,35 +236,35 @@ module ThinkingSphinx
     end
 
     def config_file
-      @controller.path
+      controller.path
     end
 
     def config_file=(file)
-      @controller.path = file
+      controller.path = file
     end
 
     def bin_path
-      @controller.bin_path
+      controller.bin_path
     end
 
     def bin_path=(path)
-      @controller.bin_path = path
+      controller.bin_path = path
     end
 
     def searchd_binary_name
-      @controller.searchd_binary_name
+      controller.searchd_binary_name
     end
 
     def searchd_binary_name=(name)
-      @controller.searchd_binary_name = name
+      controller.searchd_binary_name = name
     end
 
     def indexer_binary_name
-      @controller.indexer_binary_name
+      controller.indexer_binary_name
     end
 
     def indexer_binary_name=(name)
-      @controller.indexer_binary_name = name
+      controller.indexer_binary_name = name
     end
 
     attr_accessor :timeout
