@@ -76,12 +76,12 @@ end</code></pre>
   :classes => [User, AdminUser, SupportUser]</code></pre>
 
 * The option @:rank_mode@ has now become @:ranker@ - and the options (as strings or symbols) are as follows: proximity_bm25, bm25, none, wordcount, proximity, matchany, fieldmask, sph04 and expr.
-* There are no explicit sorting modes - all sorting must be on attributes followed by ASC or DESC. For example: <code>:order => '@weight DESC, created_at ASC'</code>.
+* There are no explicit sorting modes - all sorting must be on attributes followed by ASC or DESC. For example: <code>:order => 'weight() DESC, created_at ASC'</code>.
 * If you specify just an attribute name as a symbol for the @:order@ option, it will be given the ascending direction by default. So, @:order => :created_at@ is equivalent to @:order => 'created_at ASC'@.
 * If you want to use a calculated expression for sorting, you must specify the expression as a new attribute, then use that attribute in your @:order@ option. This is done using the @:select@ option to specify extra columns available in the underlying SphinxQL (_not_ ActiveRecord/SQL) query.
 
 <pre><code>ThinkingSphinx.search(
-  :select => '@weight * 10 + document_boost as custom_weight',
+  :select => 'weight() * 10 + document_boost as custom_weight',
   :order  => :custom_weight
 )</code></pre>
 
@@ -105,7 +105,7 @@ end</code></pre>
 * The @each_with_group@, @each_with_count@ and @each_with_group_and_count@ enumerators are available when using the @:group_by@ option (but are otherwise not available to search objects). Please note the spelling - older versions of Thinking Sphinx allowed for groupby and group, this is no longer the case.
 * @each_with_weight@ (again, note that it's weight, not weighting) is available, but not by default. Here's an example of how to have it part of the search object:
 
-<pre><code>search = Article.search('pancakes', :select => '*, @weight')
+<pre><code>search = Article.search('pancakes', :select => '*, weight()')
 search.masks << ThinkingSphinx::Masks::WeightEnumeratorMask
 
 search.each_with_weight do |article, weight|

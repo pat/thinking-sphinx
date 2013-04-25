@@ -15,7 +15,7 @@ describe 'Accessing attributes directly via search results', :live => true do
     Book.create! :title => 'American Gods', :year => 2001
     index
 
-    search = Book.search('gods', :select => '*, @weight')
+    search = Book.search('gods', :select => '*, weight()')
     search.context[:panes] << ThinkingSphinx::Panes::WeightPane
 
     search.first.weight.should == 3500
@@ -25,7 +25,7 @@ describe 'Accessing attributes directly via search results', :live => true do
     gods = Book.create! :title => 'American Gods', :year => 2001
     index
 
-    search = Book.search('gods', :select => '*, @weight')
+    search = Book.search('gods', :select => '*, weight()')
     search.masks << ThinkingSphinx::Masks::WeightEnumeratorMask
 
     expectations = [[gods, 3500]]
