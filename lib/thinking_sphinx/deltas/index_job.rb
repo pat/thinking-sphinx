@@ -1,14 +1,11 @@
 class ThinkingSphinx::Deltas::IndexJob
   def initialize(indices)
     @indices = indices
+    @indices << {:verbose => !ThinkingSphinx.suppress_delta_output?}
   end
 
   def perform
-    rotate = ThinkingSphinx.sphinx_running? ? "--rotate" : ""
-
-    output = `#{configuration.bin_path}#{configuration.indexer_binary_name} --config "#{configuration.config_file}" #{rotate} #{@indices.join(' ')}`
-    puts(output) unless ThinkingSphinx.suppress_delta_output?
-
+    ThinkingSphinx::Configuration.instance.controller.index @indices
     ThinkingSphinx::Connection.pool.clear
 
     true
