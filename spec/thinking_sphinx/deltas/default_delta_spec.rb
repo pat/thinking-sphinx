@@ -23,10 +23,12 @@ describe ThinkingSphinx::Deltas::DefaultDelta do
     let(:index)      { double('index', :name => 'foo_core',
       :document_id_for_key => 14) }
     let(:instance)   { double('instance', :id => 7) }
+    let(:pool)       { double }
 
     before :each do
-      ThinkingSphinx::Connection.stub :new => connection
+      ThinkingSphinx::Connection.stub :pool => pool
       Riddle::Query.stub :update => 'UPDATE STATEMENT'
+      pool.stub(:take).and_yield(connection)
     end
 
     it "updates the deleted flag to false" do
