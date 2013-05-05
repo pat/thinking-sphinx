@@ -75,7 +75,10 @@ class ThinkingSphinx::ActiveRecord::Associations
   end
 
   def reflection_for(stack)
-    parent_for(stack).active_record.reflections[stack.last]
+    parent = parent_for(stack)
+    klass  = parent.respond_to?(:base_klass) ? parent.base_klass :
+      parent.active_record
+    klass.reflections[stack.last]
   end
 
   def rewrite_conditions_for(join)
