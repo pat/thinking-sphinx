@@ -82,6 +82,9 @@ describe ThinkingSphinx::Configuration do
 
   describe '#indices_for_references' do
     it "selects from the full index set those with matching references" do
+      config.preload_indices
+      config.indices.clear
+
       config.indices << double('index', :reference => :article)
       config.indices << double('index', :reference => :book)
       config.indices << double('index', :reference => :page)
