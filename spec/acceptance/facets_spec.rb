@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require 'acceptance/spec_helper'
 
 describe 'Faceted searching', :live => true do
