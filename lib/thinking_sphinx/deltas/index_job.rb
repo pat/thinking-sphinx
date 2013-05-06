@@ -5,7 +5,7 @@ class ThinkingSphinx::Deltas::IndexJob
   end
 
   def perform
-    ThinkingSphinx::Configuration.instance.controller.index @indices
+    ThinkingSphinx::Configuration.instance.controller.index *@indices
     ThinkingSphinx::Connection.pool.clear
 
     true
