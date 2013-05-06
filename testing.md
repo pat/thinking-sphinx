@@ -11,8 +11,10 @@ Also: make sure you have your test environment using a different port number in 
 
 {% highlight yaml %}
 test:
-  port: 9313
+  mysql41: 9307
 {% endhighlight %}
+
+(If you're using a version of Thinking Sphinx prior to 3.0, the setting should be `port` instead of `mysql41`, and goes in `config/sphinx.yml` instead.)
 
 * [Unit Tests and Specs](#unit_tests)
 * [Integration/Acceptance Testing](#acceptance)
