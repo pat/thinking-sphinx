@@ -10,7 +10,7 @@ class ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter <
   end
 
   def cast_to_timestamp(clause)
-    if ThinkingSphinx::Configuration.instance.settings['use_64_bit']
+    if ThinkingSphinx::Configuration.instance.settings['64bit_timestamps']
       "extract(epoch from #{clause})::bigint"
     else
       "extract(epoch from #{clause})::int"
