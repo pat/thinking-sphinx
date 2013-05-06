@@ -23,9 +23,16 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter do
   end
 
   describe '#cast_to_timestamp' do
-    it "converts to unix timestamps" do
+    it "converts to int unix timestamps" do
       adapter.cast_to_timestamp('created_at').
         should == 'extract(epoch from created_at)::int'
+    end
+
+    it "converts to bigint unix timestamps" do
+      ThinkingSphinx::Configuration.instance.settings['64bit_timestamps'] = true
+      
+      adapter.cast_to_timestamp('created_at').
+        should == 'extract(epoch from created_at)::bigint'
     end
   end
 
