@@ -1,10 +1,9 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path('../lib', __FILE__)
-require 'thinking_sphinx/version'
 
 Gem::Specification.new do |s|
   s.name        = 'thinking-sphinx'
-  s.version     = ThinkingSphinx::Version
+  s.version     = '1.4.14'
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['Pat Allan']
   s.email       = ['pat@freelancing-gods.com']

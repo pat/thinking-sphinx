@@ -17,11 +17,6 @@ namespace :thinking_sphinx do
     end
   end
 
-  desc "Output the current Thinking Sphinx version"
-  task :version => :app_env do
-    puts "Thinking Sphinx v" + ThinkingSphinx::Version
-  end
-
   desc "Stop if running, then start a Sphinx searchd daemon using Thinking Sphinx's settings"
   task :running_start => :app_env do
     Rake::Task["thinking_sphinx:stop"].invoke if sphinx_running?
