@@ -1,3 +1,16 @@
+Edge:
+* Removed plugin support - Thinking Sphinx is now gem-only across all branches.
+* ThinkingSphinx::Version and the thinking_sphinx:version task have been removed - it's a gem, it has a version number.
+* Updating Riddle to 1.5.6 or newer.
+* Requires ActiveRecord ~> 2.1 (earlier versions were considered unsupported a few releases ago).
+* Allow custom Riddle controllers - useful for Flying Sphinx to take over management of Sphinx daemon/indexing actions.
+* Rejigged delta support to be generic, with local job classes that provide a clean, simple interface for third-party libraries.
+* Add hooks for anything that needs to happen before indexing (such as clearing out existing delta jobs).
+* Connection pool for all Sphinx client communication, with new connections built if there's any connection-related (as opposed to syntax) issues.
+* Multiple-field search conditions can be done with arrays of field names as keys in the :conditions hash (Alex Dowad).
+* Removed named capture in regular expressions to maintain MRI 1.8 support (Michael Wintrant).
+* Support new JDBC configuration style (Kyle Stevens).
+
 1.4.14 - January 2nd 2013
 * Allow sql_query_pre values to come through from config/sphinx.yml (George Ogata).
 * ThinkingSphinx::Search#tap doesn't delegate through to the underlying array.
