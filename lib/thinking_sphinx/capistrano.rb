@@ -56,6 +56,7 @@ if you alter the structure of your indexes.
     def rake(tasks)
       rails_env = fetch(:rails_env, 'production')
       rake = fetch(:rake, 'rake')
+      tasks += ' INDEX_ONLY=true' if ENV['INDEX_ONLY'] == 'true'
 
       run "if [ -d #{release_path} ]; then cd #{release_path}; else cd #{current_path}; fi; if [ -f Rakefile ]; then #{rake} RAILS_ENV=#{rails_env} #{tasks}; fi;"
     end
