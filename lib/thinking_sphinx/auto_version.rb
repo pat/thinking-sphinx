@@ -14,7 +14,7 @@ module ThinkingSphinx
       else
         documentation_link = %Q{
 For more information, read the documentation:
-http://pat.github.com/ts/en/advanced_config.html
+http://pat.github.io/thinking-sphinx/advanced_config.html
 }
 
         if version.nil? || version.empty?
