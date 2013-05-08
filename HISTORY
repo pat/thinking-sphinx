@@ -1,4 +1,11 @@
 Edge:
+* [FEATURE] INDEX_ONLY environment flag is passed through when invoked through Capistrano (Demian Ferreiro).
+* [FEATURE] use_64_bit option returns as cast_to_timestamp instead (Denis Abushaev).
+* [FIX] Update to association handling for Rails/ActiveRecord 4.0.0.rc1.
+* [CHANGE] Delta jobs get common classes to allow third-party delta behaviours to leverage Thinking Sphinx.
+* [FEATURE] Collection of hooks (lambdas) that get called before indexing. Useful for delta libraries.
+* [FIX] Cast and concatenate multi-column attributes correctly.
+* [FIX] Don't load fields or attributes when building a real-time index - otherwise the index is translated before it has a chance to be built.
 * [CHANGE] Raise ThinkingSphinx::MixedScopesError if a search is called through an ActiveRecord scope.
 * [FIX] Default search panes are cloned for each search.
 * [FIX] Index-level settings (via set_property) are now applied consistently after global settings (in thinking_sphinx.yml).
