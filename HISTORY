@@ -1,4 +1,5 @@
 Edge:
+* [CHANGE] Updating Riddle dependency to be >= 1.5.6
 * [FEATURE] INDEX_ONLY environment flag is passed through when invoked through Capistrano (Demian Ferreiro).
 * [FEATURE] use_64_bit option returns as cast_to_timestamp instead (Denis Abushaev).
 * [FIX] Update to association handling for Rails/ActiveRecord 4.0.0.rc1.
