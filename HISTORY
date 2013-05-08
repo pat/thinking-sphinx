@@ -1,3 +1,6 @@
+2.1.0 - May 7th 2013
+* 1.5.0 changes.
+
 2.0.14 - January 2nd 2013
 * Fix model loading for Rails 3.2.9 when subdirectories exist (Kenn Ejima).
 * Use BasicObject instead of BlankSlate when running on 1.9 (Steve Purcell).
