@@ -1,4 +1,4 @@
-Edge:
+1.5.0 - May 7th 2013
 * Removed plugin support - Thinking Sphinx is now gem-only across all branches.
 * ThinkingSphinx::Version and the thinking_sphinx:version task have been removed - it's a gem, it has a version number.
 * Updating Riddle to 1.5.6 or newer.
