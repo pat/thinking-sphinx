@@ -1,4 +1,4 @@
-Edge:
+2013-05-07: 3.0.3
 * [CHANGE] Updating Riddle dependency to be >= 1.5.6
 * [FEATURE] INDEX_ONLY environment flag is passed through when invoked through Capistrano (Demian Ferreiro).
 * [FEATURE] use_64_bit option returns as cast_to_timestamp instead (Denis Abushaev).
