@@ -1,3 +1,7 @@
+Edge:
+* [CHANGE] Default Sphinx scopes are applied to new facet searches.
+* [FEATURE] Facet searches can now be called from Sphinx scopes.
+
 2013-05-07: 3.0.3
 * [CHANGE] Updating Riddle dependency to be >= 1.5.6
 * [FEATURE] INDEX_ONLY environment flag is passed through when invoked through Capistrano (Demian Ferreiro).
