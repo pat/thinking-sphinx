@@ -37,6 +37,17 @@ describe 'Sphinx scopes', :live => true do
     Book.by_query('Gods').search('Small').to_a.should == [pratchett]
   end
 
+  it "allows facet calls on scopes" do
+    Book.create! :title => 'American Gods', :author => 'Neil Gaiman'
+    Book.create! :title => 'Anansi Boys',   :author => 'Neil Gaiman'
+    Book.create! :title => 'Small Gods',    :author => 'Terry Pratchett'
+    index
+
+    Book.by_query('Gods').facets.to_hash[:author].should == {
+      'Neil Gaiman' => 1, 'Terry Pratchett' => 1
+    }
+  end
+
   it "allows accessing counts on scopes" do
     Book.create! :title => 'American Gods'
     Book.create! :title => 'Anansi Boys'

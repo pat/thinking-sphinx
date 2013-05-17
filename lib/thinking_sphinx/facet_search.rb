@@ -1,7 +1,8 @@
 class ThinkingSphinx::FacetSearch
   include Enumerable
 
-  attr_reader :query, :options
+  attr_reader   :options
+  attr_accessor :query
 
   def initialize(query = nil, options = {})
     query, options   = nil, query if query.is_a?(Hash)

@@ -7,6 +7,13 @@ class ThinkingSphinx::Masks::ScopesMask
     public_methods(false).include?(method) || can_apply_scope?(method)
   end
 
+  def facets(query = nil, options = {})
+    search = ThinkingSphinx.facets query, options
+    ThinkingSphinx::Search::Merger.new(search).merge!(
+      @search.query, @search.options
+    )
+  end
+
   def search(query = nil, options = {})
     query, options = nil, query if query.is_a?(Hash)
     ThinkingSphinx::Search::Merger.new(@search).merge! query, options
