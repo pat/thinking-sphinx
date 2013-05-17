@@ -15,22 +15,11 @@ module ThinkingSphinx::ActiveRecord::Base
 
   module ClassMethods
     def facets(query = nil, options = {})
-      search = ThinkingSphinx.facets query, options
-      ThinkingSphinx::Search::Merger.new(search).merge! nil, :classes => [self]
+      merge_search ThinkingSphinx.facets, query, options
     end
 
     def search(query = nil, options = {})
-      merger = ThinkingSphinx::Search::Merger.new ThinkingSphinx.search
-
-      merger.merge! *default_sphinx_scope_response if default_sphinx_scope?
-      merger.merge! query, options
-
-      if current_scope && !merger.search.options[:ignore_scopes]
-        raise ThinkingSphinx::MixedScopesError,
-          'You cannot search with Sphinx through ActiveRecord scopes'
-      end
-
-      merger.merge! nil, :classes => [self]
+      merge_search ThinkingSphinx.search, query, options
     end
 
     def search_count(query = nil, options = {})
@@ -50,6 +39,20 @@ module ThinkingSphinx::ActiveRecord::Base
 
     def default_sphinx_scope_response
       [sphinx_scopes[default_sphinx_scope].call].flatten
+    end
+
+    def merge_search(search, query, options)
+      merger = ThinkingSphinx::Search::Merger.new search
+
+      merger.merge! *default_sphinx_scope_response if default_sphinx_scope?
+      merger.merge! query, options
+
+      if current_scope && !merger.search.options[:ignore_scopes]
+        raise ThinkingSphinx::MixedScopesError,
+          'You cannot search with Sphinx through ActiveRecord scopes'
+      end
+
+      merger.merge! nil, :classes => [self]
     end
   end
 end
