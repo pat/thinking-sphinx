@@ -28,7 +28,7 @@ describe ThinkingSphinx::ActiveRecord::Base do
     end
 
     it "merges the :classes option with the model" do
-      model.search('pancakes', :classes => [sub_model]).
+      model.facets('pancakes', :classes => [sub_model]).
         options[:classes].should == [sub_model, model]
     end
 
