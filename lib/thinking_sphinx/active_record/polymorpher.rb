@@ -14,9 +14,14 @@ class ThinkingSphinx::ActiveRecord::Polymorpher
 
   def append_reflections
     mappings.each do |class_name, name|
-      klass.reflections[name] ||= ThinkingSphinx::ActiveRecord::
-        FilteredReflection.clone_with_filter(reflection, name, class_name)
+      klass.reflections[name] ||= clone_with name, class_name
     end
+  end
+
+  def clone_with(name, class_name)
+    ThinkingSphinx::ActiveRecord::FilteredReflection.clone_with_filter(
+      reflection, name, class_name
+    )
   end
 
   def mappings
