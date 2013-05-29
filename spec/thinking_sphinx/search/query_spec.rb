@@ -39,9 +39,9 @@ describe ThinkingSphinx::Search::Query do
 
     it "does not star the sphinx_internal_class field keyword" do
       query = ThinkingSphinx::Search::Query.new '',
-        {:sphinx_internal_class => 'article'}, true
+        {:sphinx_internal_class_name => 'article'}, true
 
-      query.to_s.should == '@sphinx_internal_class article'
+      query.to_s.should == '@sphinx_internal_class_name article'
     end
 
     it "handles null values by removing them from the conditions hash" do

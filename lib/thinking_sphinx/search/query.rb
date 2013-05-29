@@ -24,7 +24,7 @@ class ThinkingSphinx::Search::Query
   private
 
   def star_keyword(keyword, key = nil)
-    unless star && (key.nil? || key.to_s != 'sphinx_internal_class')
+    unless star && (key.nil? || key.to_s != 'sphinx_internal_class_name')
       return keyword.to_s
     end
 
