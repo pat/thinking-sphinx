@@ -1,11 +1,7 @@
 # encoding: utf-8
 
 class ThinkingSphinx::Search::Query
-  if Regexp.instance_methods.include?(:encoding)
-    DefaultToken = Regexp.new('\p{Word}+')
-  else
-    DefaultToken = Regexp.new('\w+', nil, 'u')
-  end
+  DEFAULT_TOKEN = /[\p{Word}\\][\p{Word}\\@]+/
 
   attr_reader :keywords, :conditions, :star
 
@@ -28,7 +24,7 @@ class ThinkingSphinx::Search::Query
       return keyword.to_s
     end
 
-    token = star.is_a?(Regexp) ? star : DefaultToken
+    token = star.is_a?(Regexp) ? star : DEFAULT_TOKEN
     keyword.gsub(/("#{token}(.*?#{token})?"|(?![!-])#{token})/u) do
       pre, proper, post = $`, $&, $'
       # E.g. "@foo", "/2", "~3", but not as part of a token

@@ -44,6 +44,31 @@ describe ThinkingSphinx::Search::Query do
       query.to_s.should == '@sphinx_internal_class_name article'
     end
 
+    it "treats escapes as word characters" do
+      query = ThinkingSphinx::Search::Query.new '', {:title => 'sauce\\@pan'},
+        true
+
+      query.to_s.should == '@title *sauce\\@pan*'
+    end
+
+    it "does not star manually provided field tags" do
+      query = ThinkingSphinx::Search::Query.new "@title pan", {}, true
+
+      query.to_s.should == "@title *pan*"
+    end
+
+    it "does not star manually provided arrays of field tags" do
+      query = ThinkingSphinx::Search::Query.new "@(title, body) pan", {}, true
+
+      query.to_s.should == "@(title, body) *pan*"
+    end
+
+    it "stars keywords that begin with an escaped @" do
+      query = ThinkingSphinx::Search::Query.new "\\@pan", {}, true
+
+      query.to_s.should == "*\\@pan*"
+    end
+
     it "handles null values by removing them from the conditions hash" do
       query = ThinkingSphinx::Search::Query.new '', :title => nil
 
