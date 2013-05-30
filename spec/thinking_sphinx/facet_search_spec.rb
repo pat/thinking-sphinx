@@ -7,15 +7,18 @@ describe ThinkingSphinx::FacetSearch do
   let(:facet_search)  { ThinkingSphinx::FacetSearch.new '', {} }
   let(:batch)         { double('batch', :searches => [], :populate => true) }
   let(:index_set)     { [] }
-  let(:index)         { double('index', :facets => [property],
+  let(:index)         { double('index', :facets => [property_a, property_b],
     :name => 'foo_core') }
-  let(:property)      { double('property', :name => 'price_bracket',
-    :multi? => false)}
+  let(:property_a)    { double('property', :name => 'price_bracket',
+    :multi? => false) }
+  let(:property_b)    { double('property', :name => 'category_id',
+    :multi? => false) }
 
   before :each do
     stub_const 'ThinkingSphinx::IndexSet',      double(:new => index_set)
     stub_const 'ThinkingSphinx::BatchedSearch', double(:new => batch)
     stub_const 'ThinkingSphinx::Search',        DumbSearch
+    stub_const 'ThinkingSphinx::Middlewares::RAW_ONLY', double
 
     index_set << index << double('index', :facets => [], :name => 'bar_core')
   end
@@ -26,6 +29,7 @@ describe ThinkingSphinx::FacetSearch do
         'sphinx_internal_class' => 'Foo',
         'price_bracket'         => 3,
         'tag_ids'               => '1,2',
+        'category_id'           => 11,
         '@count'                => 5,
         '@groupby'              => 2
       }]
@@ -55,8 +59,18 @@ describe ThinkingSphinx::FacetSearch do
       }.should_not be_nil
     end
 
+    it "limits facets to the specified set" do
+      facet_search.options[:facets] = [:category_id]
+
+      facet_search.populate
+
+      batch.searches.collect { |search|
+        search.options[:group_by]
+      }.should == ['category_id']
+    end
+
     it "aliases the class facet from sphinx_internal_class" do
-      property.stub :name => 'sphinx_internal_class'
+      property_a.stub :name => 'sphinx_internal_class'
 
       facet_search.populate
 
@@ -64,7 +78,7 @@ describe ThinkingSphinx::FacetSearch do
     end
 
     it "uses the @groupby value for MVAs" do
-      property.stub :name => 'tag_ids', :multi? => true
+      property_a.stub :name => 'tag_ids', :multi? => true
 
       facet_search.populate
 

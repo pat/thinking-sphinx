@@ -67,6 +67,10 @@ class ThinkingSphinx::FacetSearch
   def facets
     @facets ||= begin
       properties = indices.collect(&:facets).flatten
+      properties = properties.select { |property|
+        options[:facets].include? property.name.to_sym
+      } unless options[:facets].nil? || options[:facets].empty?
+
       properties.group_by(&:name).collect { |name, matches|
         ThinkingSphinx::Facet.new name, matches
       }
