@@ -31,13 +31,13 @@ class ThinkingSphinx::Connection
   end
 
   def client
-    @client ||= begin
-      client = Riddle::Client.new shuffled_addresses, configuration.port,
-        client_key
-      client.max_matches = _max_matches
-      client.timeout     = configuration.timeout || 0
-      client
-    end
+    @client ||= Riddle::Client.new shuffled_addresses, configuration.port, client_key
+  end
+
+  def reset
+    client.reset
+    client.max_matches = _max_matches
+    client.timeout     = configuration.timeout || 0
   end
 
   private
