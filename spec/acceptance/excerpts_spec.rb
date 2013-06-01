@@ -24,4 +24,15 @@ describe 'Accessing excerpts for methods on a search result', :live => true do
     search.first.excerpts.title.
       should == 'Война и <span class="match">миръ</span>'
   end
+
+  it "does not include class names in excerpts" do
+    Book.create! :title => 'The Graveyard Book'
+    index
+
+    search = Book.search('graveyard')
+    search.context[:panes] << ThinkingSphinx::Panes::ExcerptsPane
+
+    search.first.excerpts.title.
+      should == 'The <span class="match">Graveyard</span> Book'
+  end
 end

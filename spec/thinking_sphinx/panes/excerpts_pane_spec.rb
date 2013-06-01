@@ -7,11 +7,10 @@ require 'thinking_sphinx/panes/excerpts_pane'
 describe ThinkingSphinx::Panes::ExcerptsPane do
   let(:pane)    {
     ThinkingSphinx::Panes::ExcerptsPane.new context, object, raw }
-  let(:context) { {:indices => [double(:name => 'foo_core')],
-    :meta => {}} }
+  let(:context) { {:indices => [double(:name => 'foo_core')]} }
   let(:object)  { double('object') }
   let(:raw)     { {} }
-  let(:search)  { double('search', :options => {}) }
+  let(:search)  { double('search', :query => 'foo', :options => {}) }
 
   before :each do
     context.stub :search => search
@@ -30,10 +29,9 @@ describe ThinkingSphinx::Panes::ExcerptsPane do
       pane.excerpts.should == excerpts
     end
 
-    it "creates an excerpter with the first index and all keywords" do
+    it "creates an excerpter with the first index and the query and conditions values" do
       context[:indices] = [double(:name => 'alpha'), double(:name => 'beta')]
-      context[:meta]['keyword[0]'] = 'foo'
-      context[:meta]['keyword[1]'] = 'bar'
+      context.search.options[:conditions] = {:baz => 'bar'}
 
       ThinkingSphinx::Excerpter.should_receive(:new).
         with('alpha', 'foo bar', anything).and_return(excerpter)
