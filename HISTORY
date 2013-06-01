@@ -1,4 +1,13 @@
 Edge:
+* [CHANGE] Exceptions raised when communicating with Sphinx are now mentioned in the logs when queries are retried (instead of STDOUT).
+* [CHANGE] Excerpts now use just the query and standard conditions, instead of parsing Sphinx's keyword metadata (which had model names in it).
+* [FIX] The settings cache is now cleared when the configuration singleton is reset (Pedro Cunha).
+* [FEATURE] The :facets option can be used in facet searches to limit which facets are queried.
+* [FIX] Escaped @'s in queries are considered part of each word, instead of word separators.
+* [FIX] Internal class name conditions are ignored with auto-starred queries.
+* [FEATURE] A separate role can be set for Sphinx actions with Capistrano (Andrey Chernih).
+* [FIX] RDoc doesn't like constant hierarchies split over multiple lines.
+* [CHANGE] Get database connection details from ActiveRecord::Base, not each model, as this is where changes are reflected.
 * [CHANGE] Default Sphinx scopes are applied to new facet searches.
 * [FEATURE] Facet searches can now be called from Sphinx scopes.
 
