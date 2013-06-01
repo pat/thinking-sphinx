@@ -4,13 +4,16 @@ describe ThinkingSphinx::Connection do
   describe '.take' do
     let(:pool)             { double 'pool' }
     let(:connection)       { double 'connection' }
-    let(:error)            { Mysql2::Error.new '' }
+    let(:error)            { ThinkingSphinx::QueryExecutionError.new 'failed' }
     let(:translated_error) { ThinkingSphinx::SphinxError.new }
 
     before :each do
       ThinkingSphinx::Connection.stub :pool => pool
       ThinkingSphinx::SphinxError.stub :new_from_mysql => translated_error
       pool.stub(:take).and_yield(connection)
+
+      error.statement            = 'SELECT * FROM article_core'
+      translated_error.statement = 'SELECT * FROM article_core'
     end
 
     it "yields a connection from the pool" do

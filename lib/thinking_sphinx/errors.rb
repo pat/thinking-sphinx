@@ -1,4 +1,6 @@
 class ThinkingSphinx::SphinxError < StandardError
+  attr_accessor :statement
+
   def self.new_from_mysql(error)
     case error.message
     when /parse error/
@@ -12,6 +14,7 @@ class ThinkingSphinx::SphinxError < StandardError
     end
 
     replacement.set_backtrace error.backtrace
+    replacement.statement = error.statement if error.respond_to?(:statement)
     replacement
   end
 end
@@ -23,6 +26,10 @@ class ThinkingSphinx::SyntaxError < ThinkingSphinx::QueryError
 end
 
 class ThinkingSphinx::ParseError < ThinkingSphinx::QueryError
+end
+
+class ThinkingSphinx::QueryExecutionError < StandardError
+  attr_accessor :statement
 end
 
 class ThinkingSphinx::MixedScopesError < StandardError

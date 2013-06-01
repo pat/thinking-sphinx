@@ -35,7 +35,7 @@ module ThinkingSphinx::Connection
       pool.take do |connection|
         begin
           yield connection
-        rescue Mysql2::Error => error
+        rescue ThinkingSphinx::QueryExecutionError, Mysql2::Error => error
           original = ThinkingSphinx::SphinxError.new_from_mysql error
           raise original if original.is_a?(ThinkingSphinx::QueryError)
           raise Innertube::Pool::BadResource
@@ -43,8 +43,12 @@ module ThinkingSphinx::Connection
       end
     rescue Innertube::Pool::BadResource
       retries += 1
-      retry if retries < 3
-      raise original
+      raise original unless retries < 3
+
+      ActiveSupport::Notifications.instrument(
+        "message.thinking_sphinx", :message => "Retrying query \"#{original.statement}\" after error: #{original.message}"
+      )
+      retry
     end
   end
 
@@ -65,9 +69,10 @@ module ThinkingSphinx::Connection
 
     def execute(statement)
       client.query statement
-    rescue
-      puts "Error with statement: #{statement}"
-      raise
+    rescue => error
+      wrapper           = ThinkingSphinx::QueryExecutionError.new error.message
+      wrapper.statement = statement
+      raise wrapper
     end
 
     def query(statement)
@@ -78,6 +83,10 @@ module ThinkingSphinx::Connection
       results  = [client.query(statements.join('; '))]
       results << client.store_result while client.next_result
       results
+    rescue => error
+      wrapper           = ThinkingSphinx::QueryExecutionError.new error.message
+      wrapper.statement = statements.join('; ')
+      raise wrapper
     end
   end
 
