@@ -23,6 +23,28 @@ describe ThinkingSphinx::Configuration do
     end
   end
 
+  describe '.reset' do
+    after :each do
+      config.framework = ThinkingSphinx::Frameworks.current
+    end
+
+    it 'does not cache settings after reset' do
+      File.stub :exists? => true
+      File.stub :read => {
+        'test'       => {'foo' => 'bugs'},
+        'production' => {'foo' => 'bar'}
+      }.to_yaml
+
+      ThinkingSphinx::Configuration.reset
+      # Grab a new copy of the instance.
+      config = ThinkingSphinx::Configuration.instance
+      config.settings['foo'].should == 'bugs'
+
+      config.framework = double :environment => 'production', :root => '/tmp/'
+      config.settings['foo'].should == 'bar'
+    end
+  end
+
   describe '#configuration_file' do
     it "uses the Rails environment in the configuration file name" do
       config.configuration_file.

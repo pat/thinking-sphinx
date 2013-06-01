@@ -100,6 +100,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def setup
+    @settings           = nil
     @configuration_file = settings['configuration_file'] ||
       File.join(framework.root, 'config', "#{environment}.sphinx.conf")
     @index_paths        = engine_index_paths +
