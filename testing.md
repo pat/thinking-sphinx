@@ -46,7 +46,7 @@ module SphinxHelpers
   end
 
   def index_finished?
-    Dir[Rails.root.join('db', 'sphinx', 'test', '*.{new,tmp}.*')].empty?
+    Dir[Rails.root.join(ThinkingSphinx::Test.config.searchd_file_path, '*.{new,tmp}.*')].empty?
   end
 end
 
