@@ -13,12 +13,15 @@ describe ThinkingSphinx::FacetSearch do
     :multi? => false) }
   let(:property_b)    { double('property', :name => 'category_id',
     :multi? => false) }
+  let(:configuration) { double 'configuration', :settings => {} }
 
   before :each do
     stub_const 'ThinkingSphinx::IndexSet',      double(:new => index_set)
     stub_const 'ThinkingSphinx::BatchedSearch', double(:new => batch)
     stub_const 'ThinkingSphinx::Search',        DumbSearch
     stub_const 'ThinkingSphinx::Middlewares::RAW_ONLY', double
+    stub_const 'ThinkingSphinx::Configuration',
+      double(:instance => configuration)
 
     index_set << index << double('index', :facets => [], :name => 'bar_core')
   end
@@ -83,6 +86,26 @@ describe ThinkingSphinx::FacetSearch do
       facet_search.populate
 
       facet_search[:tag_ids].should == {2 => 5}
+    end
+
+    [:max_matches, :limit].each do |setting|
+      it "sets #{setting} in each search" do
+        facet_search.populate
+
+        batch.searches.each { |search|
+          search.options[setting].should == 1000
+        }
+      end
+
+      it "respects configured max_matches values for #{setting}" do
+        configuration.settings['max_matches'] = 1234
+
+        facet_search.populate
+
+        batch.searches.each { |search|
+          search.options[setting].should == 1234
+        }
+      end
     end
   end
 end

@@ -37,11 +37,7 @@ class ThinkingSphinx::FacetSearch
 
     batch = ThinkingSphinx::BatchedSearch.new
     facets.each do |facet|
-      search = ThinkingSphinx::Search.new query, options.merge(
-        :select   => '*, @groupby, @count',
-        :group_by => facet.name,
-        :indices  => index_names_for(facet)
-      )
+      search = ThinkingSphinx::Search.new query, options_for(facet)
       batch.searches << search
     end
 
@@ -89,6 +85,20 @@ class ThinkingSphinx::FacetSearch
   def indices
     @indices ||= ThinkingSphinx::IndexSet.new options[:classes],
       options[:indices]
+  end
+
+  def max_matches
+    ThinkingSphinx::Configuration.instance.settings['max_matches'] || 1000
+  end
+
+  def options_for(facet)
+    options.merge(
+      :select      => '*, @groupby, @count',
+      :group_by    => facet.name,
+      :indices     => index_names_for(facet),
+      :max_matches => max_matches,
+      :limit       => max_matches
+    )
   end
 
   class Filter

@@ -1,4 +1,5 @@
 Edge:
+* [FIX] Facet searches now use max_matches value (with a default of 1000) to ensure as many results as possible are returned.
 * [CHANGE] Exceptions raised when communicating with Sphinx are now mentioned in the logs when queries are retried (instead of STDOUT).
 * [CHANGE] Excerpts now use just the query and standard conditions, instead of parsing Sphinx's keyword metadata (which had model names in it).
 * [FIX] The settings cache is now cleared when the configuration singleton is reset (Pedro Cunha).
