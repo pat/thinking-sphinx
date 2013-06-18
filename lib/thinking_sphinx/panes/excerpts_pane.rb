@@ -20,7 +20,10 @@ class ThinkingSphinx::Panes::ExcerptsPane
   def excerpt_words
     @excerpt_words ||= begin
       conditions = @context.search.options[:conditions] || {}
-      ([@context.search.query] + conditions.values).compact.join(' ')
+      ThinkingSphinx::Search::Query.new(
+        ([@context.search.query] + conditions.values).compact.join(' '),
+        {}, @context.search.options[:star]
+      ).to_s
     end
   end
 

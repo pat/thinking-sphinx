@@ -35,4 +35,15 @@ describe 'Accessing excerpts for methods on a search result', :live => true do
     search.first.excerpts.title.
       should == 'The <span class="match">Graveyard</span> Book'
   end
+
+  it "respects the star option with queries" do
+    Article.create! :title => 'Something'
+    index
+
+    search = Article.search('thin', :star => true)
+    search.context[:panes] << ThinkingSphinx::Panes::ExcerptsPane
+
+    search.first.excerpts.title.
+      should == '<span class="match">Something</span>'
+  end
 end
