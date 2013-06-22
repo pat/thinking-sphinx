@@ -106,4 +106,19 @@ describe 'Searching with filters', :live => true do
     articles = Article.search :without_all => {:tag_ids => [food.id, flat.id]}
     articles.to_a.should == [waffles]
   end
+
+  it "limits results on real-time indices with multi-value integer attributes" do
+    pancakes = Product.create :name => 'Pancakes'
+    waffles  = Product.create :name => 'Waffles'
+
+    food = Category.create :name => 'food'
+    flat = Category.create :name => 'flat'
+
+    pancakes.categories << food
+    pancakes.categories << flat
+    waffles.categories  << food
+
+    products = Product.search :with => {:category_ids => [flat.id]}
+    products.to_a.should == [pancakes]
+  end
 end

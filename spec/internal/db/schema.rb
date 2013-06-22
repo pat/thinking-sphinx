@@ -32,6 +32,16 @@ ActiveRecord::Schema.define do
     t.integer :genre_id
   end
 
+  create_table(:categories, :force => true) do |t|
+    t.integer :id
+    t.string  :name
+  end
+
+  create_table(:categorisations, :force => true) do |t|
+    t.integer :category_id
+    t.integer :product_id
+  end
+
   create_table(:cities, :force => true) do |t|
     t.string :name
     t.float  :lat
