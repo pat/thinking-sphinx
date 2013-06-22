@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
   let(:callbacks)  {
-    ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks.new instance
+    ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks.new :article
   }
   let(:instance)   { double('instance', :id => 12) }
   let(:config)     { double('config', :indices_for_references => [index]) }
@@ -14,30 +14,6 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
   before :each do
     ThinkingSphinx::Configuration.stub :instance => config
     ThinkingSphinx::Connection.stub_chain(:pool, :take).and_yield connection
-  end
-
-  describe '.after_save' do
-    let(:callbacks) { double('callbacks', :after_save => nil) }
-
-    before :each do
-      ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks.
-        stub :new => callbacks
-    end
-
-    it "builds an object from the instance" do
-      ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks.
-        should_receive(:new).with(instance).and_return(callbacks)
-
-      ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks.
-        after_save(instance)
-    end
-
-    it "invokes after_save on the object" do
-      callbacks.should_receive(:after_save)
-
-      ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks.
-        after_save(instance)
-    end
   end
 
   describe '#after_save' do
@@ -59,19 +35,49 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
         with('my_index', ['id', 'name', 'created_at'], [123, 'Foo', time]).
         and_return(insert)
 
-      callbacks.after_save
+      callbacks.after_save instance
     end
 
     it "switches the insert to a replace statement" do
       insert.should_receive(:replace!).and_return(insert)
 
-      callbacks.after_save
+      callbacks.after_save instance
     end
 
     it "sends the insert through to the server" do
       connection.should_receive(:execute).with('REPLACE INTO my_index')
 
-      callbacks.after_save
+      callbacks.after_save instance
+    end
+
+    context 'with a given path' do
+      let(:callbacks)  {
+        ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks.new(
+          :article, [:user]
+        )
+      }
+      let(:instance)   { double('instance', :id => 12, :user => user) }
+      let(:user)       { double('user', :id => 13) }
+
+      it "creates an insert statement with all fields and attributes" do
+        Riddle::Query::Insert.should_receive(:new).
+          with('my_index', ['id', 'name', 'created_at'], [123, 'Foo', time]).
+          and_return(insert)
+
+        callbacks.after_save instance
+      end
+
+      it "gets the document id for the user object" do
+        index.should_receive(:document_id_for_key).with(13).and_return(123)
+
+        callbacks.after_save instance
+      end
+
+      it "translates values for the user object" do
+        field.should_receive(:translate).with(user).and_return('Foo')
+
+        callbacks.after_save instance
+      end
     end
   end
 end
