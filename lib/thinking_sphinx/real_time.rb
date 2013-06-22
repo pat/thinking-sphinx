@@ -1,5 +1,11 @@
 module ThinkingSphinx::RealTime
-  module Callbacks; end
+  module Callbacks
+    #
+  end
+
+  def self.callback_for(reference, path = [])
+    Callbacks::RealTimeCallbacks.new reference, path
+  end
 end
 
 require 'thinking_sphinx/real_time/property'
