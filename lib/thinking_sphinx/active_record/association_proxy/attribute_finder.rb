@@ -6,7 +6,7 @@ class ThinkingSphinx::ActiveRecord::AssociationProxy::AttributeFinder
   def attribute
     attributes.detect { |attribute|
       # Don't bother with attributes built from multiple columns
-      next unless attribute.columns.length == 1
+      next if attribute.columns.many?
 
       attribute.columns.first.__name == foreign_key.to_sym ||
       attribute.name == foreign_key.to_s
