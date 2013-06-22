@@ -49,6 +49,25 @@ class ThinkingSphinx::RealTime::Index < Riddle::Configuration::RealtimeIndex
 
   private
 
+  def append_unique_attribute(collection, attribute)
+    collection << attribute.name unless collection.include?(attribute.name)
+  end
+
+  def collection_for(attribute)
+    case attribute.type
+    when :integer, :boolean
+      attribute.multi? ? @rt_attr_multi : @rt_attr_uint
+    when :string
+      @rt_attr_string
+    when :timestamp
+      @rt_attr_timestamp
+    when :float
+      @rt_attr_float
+    else
+      raise "Unknown attribute type '#{attribute.type}'"
+    end
+  end
+
   def interpreter
     ThinkingSphinx::RealTime::Interpreter
   end
@@ -59,18 +78,7 @@ class ThinkingSphinx::RealTime::Index < Riddle::Configuration::RealtimeIndex
     @rt_field = fields.collect &:name
 
     attributes.each do |attribute|
-      case attribute.type
-      when :integer, :boolean
-        @rt_attr_uint << attribute.name unless @rt_attr_uint.include?(attribute.name)
-      when :string
-        @rt_attr_string << attribute.name unless @rt_attr_string.include?(attribute.name)
-      when :timestamp
-        @rt_attr_timestamp << attribute.name unless @rt_attr_timestamp.include?(attribute.name)
-      when :float
-        @rt_attr_float << attribute.name unless @rt_attr_float.include?(attribute.name)
-      else
-        raise "Unknown attribute type '#{attribute.type}'"
-      end
+      append_unique_attribute collection_for(attribute), attribute
     end
   end
 
