@@ -6,44 +6,37 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
   end
 
   def sql_query
-    relation = model.unscoped
-    relation = relation.select pre_select + select_clause
-    relation = relation.where where_clause
-    relation = relation.group group_clause
-    relation = relation.order('NULL') if source.type == 'mysql'
-    relation = relation.joins associations.join_values
-    relation = relation.joins custom_joins.collect(&:to_s) if custom_joins.any?
+    query = relation.select pre_select + select_clause
+    query = query.where where_clause
+    query = query.group group_clause
+    query = query.order('NULL') if source.type == 'mysql'
+    query = query.joins associations.join_values
+    query = query.joins custom_joins if custom_joins.any?
 
-    relation.to_sql.gsub(/\n/, "\\\n")
+    query.to_sql.gsub(/\n/, "\\\n")
   end
 
   def sql_query_range
     return nil if source.disable_range?
 
-    minimum = source.adapter.convert_nulls "MIN(#{quoted_primary_key})", 1
-    maximum = source.adapter.convert_nulls "MAX(#{quoted_primary_key})", 1
+    minimum = convert_nulls "MIN(#{quoted_primary_key})", 1
+    maximum = convert_nulls "MAX(#{quoted_primary_key})", 1
 
-    relation = source.model.unscoped
-    relation = relation.select "#{minimum}, #{maximum}"
-    relation = relation.where where_clause(true)
-
-    relation.to_sql
+    relation.select("#{minimum}, #{maximum}").where(where_clause(true)).to_sql
   end
 
   def sql_query_info
-    relation = source.model.unscoped
     relation.where("#{quoted_primary_key} = #{reversed_document_id}").to_sql
   end
 
   def sql_query_pre
     queries = []
 
-    reset_delta = delta_processor && !source.delta?
-    max_len     = source.options[:group_concat_max_len]
-
-    queries << delta_processor.reset_query if reset_delta
-    queries << "SET SESSION group_concat_max_len = #{max_len}" if max_len
-    queries += source.adapter.utf8_query_pre if source.options[:utf8?]
+    queries << delta_processor.reset_query if delta_processor && !source.delta?
+    if max_len = source.options[:group_concat_max_len]
+      queries << "SET SESSION group_concat_max_len = #{max_len}"
+    end
+    queries += utf8_query_pre if source.options[:utf8?]
 
     queries.compact
   end
@@ -54,16 +47,14 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
     ThinkingSphinx::Configuration.instance
   end
 
-  def model
-    source.model
+  delegate :adapter, :model, :delta_processor, :to => :source
+  delegate :convert_nulls, :utf8_query_pre, :to => :adapter
+  def relation
+    model.unscoped
   end
 
   def base_join
     @base_join ||= join_dependency_class.new model, [], initial_joins
-  end
-
-  def delta_processor
-    source.delta_processor
   end
 
   def associations
@@ -75,7 +66,7 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
   end
 
   def custom_joins
-    @custom_joins ||= source.associations.select &:string?
+    @custom_joins ||= source.associations.select(&:string?).collect(&:to_s)
   end
 
   def quote_column(column)
@@ -87,11 +78,11 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
   end
 
   def quoted_inheritance_column
-    "#{model.quoted_table_name}.#{quote_column model.inheritance_column}"
+    "#{model.quoted_table_name}.#{quote_column(model.inheritance_column)}"
   end
 
   def pre_select
-    source.type == 'mysql' ? 'SQL_NO_CACHE ' : ''
+    ('SQL_NO_CACHE ' if source.type == 'mysql').to_s
   end
 
   def document_id
@@ -105,60 +96,71 @@ class ThinkingSphinx::ActiveRecord::SQLBuilder
 
   def attribute_presenters
     @attribute_presenters ||= begin
-      source.attributes.collect { |attribute|
+      source.attributes.collect do |attribute|
         ThinkingSphinx::ActiveRecord::PropertySQLPresenter.new(
           attribute, source.adapter, associations
         )
-      }
+      end
     end
   end
 
   def field_presenters
-    @field_presenters ||= source.fields.collect { |field|
+    @field_presenters ||= source.fields.collect do |field|
       ThinkingSphinx::ActiveRecord::PropertySQLPresenter.new(
         field, source.adapter, associations
       )
-    }
+    end
+  end
+
+  def comma_separated(clauses)
+    clauses.flatten.compact.join(', ')
   end
 
   def select_clause
-    (
-      [document_id] +
-      field_presenters.collect(&:to_select) +
-      attribute_presenters.collect(&:to_select)
-    ).compact.join(', ')
+    comma_separated [
+      document_id,
+      field_presenters.collect(&:to_select),
+      attribute_presenters.collect(&:to_select),
+    ]
   end
 
   def where_clause(for_range = false)
     logic = []
 
-    unless for_range || source.disable_range?
-      logic << "#{quoted_primary_key} >= $start"
-      logic << "#{quoted_primary_key} <= $end"
-    end
-
     unless model.descends_from_active_record?
-      klass = model.store_full_sti_class ? model.name : model.name.demodulize
-      logic << "#{quoted_inheritance_column} = '#{klass}'"
+      logic << "#{quoted_inheritance_column} = '#{model_name}'"
     end
 
     logic << delta_processor.clause(source.delta?) if delta_processor
-    logic += source.conditions unless for_range
+
+    unless for_range
+      logic << "#{quoted_primary_key} BETWEEN $start AND $end" unless source.disable_range?
+      logic += source.conditions
+    end
 
     logic.compact.join(' AND ')
   end
 
   def group_clause
-    internal_groupings = []
-    if model.column_names.include?(model.inheritance_column)
-      internal_groupings << quoted_inheritance_column
-    end
+    comma_separated [
+      quoted_primary_key,
+      field_presenters.collect(&:to_group),
+      attribute_presenters.collect(&:to_group),
+      groupings
+    ]
+  end
 
-    (
-      [quoted_primary_key] +
-      field_presenters.collect(&:to_group).compact +
-      attribute_presenters.collect(&:to_group).compact +
-      source.groupings + internal_groupings
-    ).join(', ')
+  def groupings
+    clauses = source.groupings
+    if model.column_names.include?(model.inheritance_column)
+      clauses << quoted_inheritance_column
+    end
+    clauses
+  end
+
+  def model_name
+    klass = model.name
+    klass = klass.demodulize unless model.store_full_sti_class
+    klass
   end
 end

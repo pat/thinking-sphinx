@@ -37,11 +37,22 @@ class ThinkingSphinx::Middlewares::SphinxQL <
       classes + descendants
     end
 
-    def class_condition
-      class_names = classes_and_descendants.collect(&:name).collect { |name|
-        name[/:/] ? "\"#{name}\"" : name
+    def classes_and_descendants_names
+      classes_and_descendants.collect do |klass|
+        name = klass.name
+        name = %Q{"#{name}"} if name[/:/]
+        name
+      end
+    end
+
+    def classes_with_inheritance_column
+      classes.select { |klass|
+        klass.column_names.include?(klass.inheritance_column)
       }
-      '(' + class_names.join('|') + ')'
+    end
+
+    def class_condition
+      "(#{classes_and_descendants_names.join('|')})"
     end
 
     def descendants
@@ -49,9 +60,7 @@ class ThinkingSphinx::Middlewares::SphinxQL <
     end
 
     def descendants_from_tables
-      classes.select { |klass|
-        klass.column_names.include?(klass.inheritance_column)
-      }.collect { |klass|
+      classes_with_inheritance_column.collect { |klass|
         klass.connection.select_values(<<-SQL).compact.each(&:constantize)
   SELECT DISTINCT #{klass.inheritance_column}
   FROM #{klass.table_name}
@@ -62,38 +71,30 @@ class ThinkingSphinx::Middlewares::SphinxQL <
 
     def exclusive_filters
       @exclusive_filters ||= (options[:without] || {}).tap do |without|
-        if options[:without_ids].present? && options[:without_ids].any?
-          without[:sphinx_internal_id] = options[:without_ids]
-        end
+        without[:sphinx_internal_id] = options[:without_ids] if options[:without_ids].present?
       end
     end
 
     def extended_query
       conditions = options[:conditions] || {}
       conditions[:sphinx_internal_class_name] = class_condition if classes.any?
-      @extended_query ||= begin
-        ThinkingSphinx::Search::Query.new(context.search.query, conditions,
-          options[:star]).to_s
-      end
+      @extended_query ||= ThinkingSphinx::Search::Query.new(
+        context.search.query, conditions, options[:star]
+      ).to_s
     end
 
     def group_attribute
-      options[:group_by] ? options[:group_by].to_s : nil
+      options[:group_by].to_s if options[:group_by]
     end
 
     def group_order_clause
-      case options[:order_group_by]
-      when Symbol
-        "#{options[:order_group_by]} ASC"
-      else
-        options[:order_group_by]
-      end
+      group_by = options[:order_group_by]
+      group_by = "#{group_by} ASC" if group_by.is_a? Symbol
+      group_by
     end
 
     def inclusive_filters
-      @inclusive_filters ||= (options[:with] || {}).tap do |with|
-        with[:sphinx_deleted] = false
-      end
+      (options[:with] || {}).merge({:sphinx_deleted => false})
     end
 
     def index_names
@@ -108,17 +109,13 @@ class ThinkingSphinx::Middlewares::SphinxQL <
       @indices ||= ThinkingSphinx::IndexSet.new classes, options[:indices]
     end
 
-    def options
-      context.search.options
-    end
+    delegate :search, :to => :context
+    delegate :options, :to => :search
 
     def order_clause
-      case options[:order]
-      when Symbol
-        "#{options[:order]} ASC"
-      else
-        options[:order]
-      end
+      order_by = options[:order]
+      order_by = "#{order_by} ASC" if order_by.is_a? Symbol
+      order_by
     end
 
     def select_options
@@ -130,9 +127,8 @@ class ThinkingSphinx::Middlewares::SphinxQL <
       end
     end
 
-    def settings
-      context.configuration.settings
-    end
+    delegate :configuration, :to => :context
+    delegate :settings, :to => :configuration
 
     def statement
       Riddle::Query::Select.new.tap do |select|
