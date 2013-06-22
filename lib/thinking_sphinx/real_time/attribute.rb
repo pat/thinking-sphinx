@@ -1,4 +1,8 @@
 class ThinkingSphinx::RealTime::Attribute < ThinkingSphinx::RealTime::Property
+  def multi?
+    @options[:multi]
+  end
+
   def type
     @options[:type]
   end
