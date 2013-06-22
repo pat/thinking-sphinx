@@ -7,7 +7,9 @@ class ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks
     return unless real_time_indices?
 
     real_time_indices.each do |index|
-      ThinkingSphinx::RealTime::Transcriber.new(index).copy object_for(instance)
+      objects_for(instance).each do |object|
+        ThinkingSphinx::RealTime::Transcriber.new(index).copy object
+      end
     end
   end
 
@@ -23,8 +25,8 @@ class ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks
     @indices ||= configuration.indices_for_references reference
   end
 
-  def object_for(instance)
-    path.inject(instance) { |object, method| object.send method }
+  def objects_for(instance)
+    Array(path.inject(instance) { |object, method| object.send method })
   end
 
   def real_time_indices?

@@ -79,5 +79,39 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
         callbacks.after_save instance
       end
     end
+
+    context 'with a path returning multiple objects' do
+      let(:callbacks)  {
+        ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks.new(
+          :article, [:readers]
+        )
+      }
+      let(:instance)   { double('instance', :id => 12,
+        :readers => [user_a, user_b]) }
+      let(:user_a)     { double('user', :id => 13) }
+      let(:user_b)     { double('user', :id => 14) }
+
+      it "creates insert statements with all fields and attributes" do
+        Riddle::Query::Insert.should_receive(:new).twice.
+          with('my_index', ['id', 'name', 'created_at'], [123, 'Foo', time]).
+          and_return(insert)
+
+        callbacks.after_save instance
+      end
+
+      it "gets the document id for each reader" do
+        index.should_receive(:document_id_for_key).with(13).and_return(123)
+        index.should_receive(:document_id_for_key).with(14).and_return(123)
+
+        callbacks.after_save instance
+      end
+
+      it "translates values for each reader" do
+        field.should_receive(:translate).with(user_a).and_return('Foo')
+        field.should_receive(:translate).with(user_b).and_return('Foo')
+
+        callbacks.after_save instance
+      end
+    end
   end
 end
