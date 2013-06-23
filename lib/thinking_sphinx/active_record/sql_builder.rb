@@ -8,14 +8,7 @@ module ThinkingSphinx
       end
 
       def sql_query
-        query = relation.select pre_select + select_clause
-        query = query.where where_clause
-        query = query.group group_clause
-        query = query.order('NULL') if source.type == 'mysql'
-        query = query.joins associations.join_values
-        query = query.joins custom_joins if custom_joins.any?
-
-        query.to_sql.gsub(/\n/, "\\\n")
+        build_query.to_sql.gsub(/\n/, "\\\n")
       end
 
       def sql_query_range
@@ -44,6 +37,20 @@ module ThinkingSphinx
       end
 
       private
+
+      def build_query
+        query = base_query
+        query = query.joins(custom_joins) if custom_joins.any?
+        query = query.order('NULL') if source.type == 'mysql'
+        query
+      end
+
+      def base_query
+        relation.select(pre_select + select_clause).
+                 where(where_clause).
+                 group(group_clause).
+                 joins(associations.join_values)
+      end
 
       def config
         ThinkingSphinx::Configuration.instance
@@ -116,34 +123,44 @@ module ThinkingSphinx
 
       def select_clause
         ClauseBuilder.new(document_id).compose(
-          field_presenters.collect(&:to_select),
-          attribute_presenters.collect(&:to_select)
-        )
+          presenters_to_select(field_presenters),
+          presenters_to_select(attribute_presenters)
+        ).separated
       end
 
       def where_clause(for_range = false)
-        logic = []
+        builder = ClauseBuilder.new(nil)
+        builder.add_clause inheritance_column_condition unless model.descends_from_active_record?
+        builder.add_clause delta_processor.clause(source.delta?) if delta_processor
+        builder.add_clause range_condition unless for_range
+        builder.separated(' AND ')
+      end
 
-        unless model.descends_from_active_record?
-          logic << "#{quoted_inheritance_column} = '#{model_name}'"
-        end
+      def inheritance_column_condition
+        "#{quoted_inheritance_column} = '#{model_name}'"
+      end
 
-        logic << delta_processor.clause(source.delta?) if delta_processor
-
-        unless for_range
-          logic << "#{quoted_primary_key} BETWEEN $start AND $end" unless source.disable_range?
-          logic += source.conditions
-        end
-
-        logic.compact.join(' AND ')
+      def range_condition
+        condition = []
+        condition << "#{quoted_primary_key} BETWEEN $start AND $end" unless source.disable_range?
+        condition += source.conditions
+        condition
       end
 
       def group_clause
         ClauseBuilder.new(quoted_primary_key).compose(
-          field_presenters.collect(&:to_group),
-          attribute_presenters.collect(&:to_group),
+          presenters_to_group(field_presenters),
+          presenters_to_group(attribute_presenters),
           groupings
-        )
+        ).separated
+      end
+
+      def presenters_to_group(presenters)
+        presenters.collect(&:to_group)
+      end
+
+      def presenters_to_select(presenters)
+        presenters.collect(&:to_select)
       end
 
       def groupings
