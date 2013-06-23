@@ -1,4 +1,5 @@
 class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
+  include ThinkingSphinx::Core::Settings
   attr_reader :model, :database_settings, :options
   attr_accessor :fields, :attributes, :associations, :conditions, :groupings,
     :polymorphs
@@ -27,7 +28,7 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
 
     super name, type
 
-    apply_defaults
+    apply_defaults!
   end
 
   def adapter
@@ -77,13 +78,6 @@ class ThinkingSphinx::ActiveRecord::SQLSource < Riddle::Configuration::SQLSource
   end
 
   private
-
-  def apply_defaults
-    self.class.settings.each do |setting|
-      value = config.settings[setting.to_s]
-      send("#{setting}=", value) unless value.nil?
-    end
-  end
 
   def attribute_array_for(type)
     instance_variable_get "@sql_attr_#{type}".to_sym

@@ -1,5 +1,6 @@
 module ThinkingSphinx::Core::Index
   extend ActiveSupport::Concern
+  include ThinkingSphinx::Core::Settings
 
   included do
     attr_reader :reference, :offset, :options
@@ -27,10 +28,7 @@ module ThinkingSphinx::Core::Index
   def interpret_definition!
     return if @interpreted_definition
 
-    self.class.settings.each do |setting|
-      value = config.settings[setting.to_s]
-      send("#{setting}=", value) unless value.nil?
-    end
+    apply_defaults!
 
     @interpreted_definition = true
     interpreter.translate! self, @definition_block if @definition_block
