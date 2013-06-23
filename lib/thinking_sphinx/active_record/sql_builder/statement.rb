@@ -44,30 +44,6 @@ module ThinkingSphinx
         self.scope = scope.where("#{quoted_primary_key} = #{reversed_document_id}")
       end
 
-      def filter_by_query_pre
-        self.scope = []
-
-        scope_by_delta_processor
-        scope_by_session
-        scope_by_utf8
-
-        scope.compact
-      end
-
-      def scope_by_delta_processor
-        self.scope << delta_processor.reset_query if delta_processor && !source.delta?
-      end
-
-      def scope_by_session
-        if max_len = source.options[:group_concat_max_len]
-          self.scope << "SET SESSION group_concat_max_len = #{max_len}"
-        end
-      end
-
-      def scope_by_utf8
-        self.scope += utf8_query_pre if source.options[:utf8?]
-      end
-
       def filter_by_scopes
         scope_by_select
         scope_by_where_clause

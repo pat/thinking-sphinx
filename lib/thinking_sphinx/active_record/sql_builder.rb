@@ -21,10 +21,14 @@ module ThinkingSphinx
       end
 
       def sql_query_pre
-        statement.to_query_pre
+        query.to_query
       end
 
       private
+
+      def query
+        Query.new(self)
+      end
 
       def statement
         Statement.new(self)
@@ -160,3 +164,4 @@ end
 
 require 'thinking_sphinx/active_record/sql_builder/clause_builder'
 require 'thinking_sphinx/active_record/sql_builder/statement'
+require 'thinking_sphinx/active_record/sql_builder/query'
