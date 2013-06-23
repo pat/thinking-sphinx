@@ -264,7 +264,7 @@ describe 'separate queries for MVAs' do
     declaration, query, range = attribute.split(/;\s+/)
 
     declaration.should == 'uint tag_ids from ranged-query'
-    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .taggings.\..tag_id. AS .tag_ids. FROM .taggings. \s?WHERE \(.taggings.\..article_id. >= \$start\) AND \(.taggings.\..article_id. <= \$end\)$/)
+    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .taggings.\..tag_id. AS .tag_ids. FROM .taggings. \s?WHERE \(.taggings.\..article_id. BETWEEN \$start AND \$end\)$/)
     range.should match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
   end
 
@@ -281,7 +281,7 @@ describe 'separate queries for MVAs' do
     declaration, query, range = attribute.split(/;\s+/)
 
     declaration.should == 'uint tag_ids from ranged-query'
-    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. \s?WHERE \(.taggings.\..article_id. >= \$start\) AND \(.taggings.\..article_id. <= \$end\)$/)
+    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. \s?WHERE \(.taggings.\..article_id. BETWEEN \$start AND \$end\)$/)
     range.should match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
   end
 
@@ -396,7 +396,7 @@ describe 'separate queries for field' do
     declaration, query, range = field.split(/;\s+/)
 
     declaration.should == 'tags from ranged-query'
-    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..name. AS .tags. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. \s?WHERE \(.taggings.\..article_id. >= \$start\) AND \(.taggings.\..article_id. <= \$end\)\s? ORDER BY .taggings.\..article_id. ASC$/)
+    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..name. AS .tags. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. \s?WHERE \(.taggings.\..article_id. BETWEEN \$start AND \$end\)\s? ORDER BY .taggings.\..article_id. ASC$/)
     range.should match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
   end
 

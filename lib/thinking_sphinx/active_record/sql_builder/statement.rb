@@ -1,0 +1,110 @@
+require 'thinking_sphinx/active_record/sql_builder/clause_builder'
+
+module ThinkingSphinx
+  module ActiveRecord
+    class SQLBuilder::Statement
+      def initialize(report)
+        self.report = report
+        self.scope = relation
+      end
+
+      def to_relation
+        filter_by_scopes
+
+        scope
+      end
+
+      def to_query_range_relation
+        filter_by_query_range
+
+        scope
+      end
+
+      def to_query_info_relation
+        filter_by_query_info
+
+        scope
+      end
+
+      def to_query_pre
+        filter_by_query_pre
+
+        scope
+      end
+
+      protected
+      attr_accessor :report, :scope
+
+      def filter_by_query_range
+        minimum = convert_nulls "MIN(#{quoted_primary_key})", 1
+        maximum = convert_nulls "MAX(#{quoted_primary_key})", 1
+
+        self.scope = scope.select("#{minimum}, #{maximum}").where(where_clause(true))
+      end
+
+      def filter_by_query_info
+        self.scope = scope.where("#{quoted_primary_key} = #{reversed_document_id}")
+      end
+
+      def filter_by_scopes
+        scope_by_select
+        scope_by_where_clause
+        scope_by_group_clause
+        scope_by_joins
+        scope_by_custom_joins
+        scope_by_order
+      end
+
+      def scope_by_select
+        self.scope = scope.select(pre_select + select_clause)
+      end
+
+      def scope_by_where_clause
+        self.scope = scope.where where_clause
+      end
+
+      def scope_by_group_clause
+        self.scope = scope.group(group_clause)
+      end
+
+      def scope_by_joins
+        self.scope = scope.joins(associations.join_values)
+      end
+
+      def scope_by_custom_joins
+        self.scope = scope.joins(custom_joins) if custom_joins.any?
+      end
+
+      def scope_by_order
+        self.scope = scope.order('NULL') if source.type == 'mysql'
+      end
+
+      def method_missing(*args, &block)
+        report.send *args, &block
+      end
+
+      def select_clause
+        SQLBuilder::ClauseBuilder.new(document_id).compose(
+          presenters_to_select(field_presenters),
+          presenters_to_select(attribute_presenters)
+        ).separated
+      end
+
+      def where_clause(for_range = false)
+        builder = SQLBuilder::ClauseBuilder.new(nil)
+        builder.add_clause inheritance_column_condition unless model.descends_from_active_record?
+        builder.add_clause delta_processor.clause(source.delta?) if delta_processor
+        builder.add_clause range_condition unless for_range
+        builder.separated(' AND ')
+      end
+
+      def group_clause
+        SQLBuilder::ClauseBuilder.new(quoted_primary_key).compose(
+          presenters_to_group(field_presenters),
+          presenters_to_group(attribute_presenters),
+          groupings
+        ).separated
+      end
+    end
+  end
+end

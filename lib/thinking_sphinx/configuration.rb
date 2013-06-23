@@ -1,3 +1,5 @@
+require 'pathname'
+
 class ThinkingSphinx::Configuration < Riddle::Configuration
   attr_accessor :configuration_file, :indices_location, :version
   attr_reader :index_paths
@@ -19,12 +21,14 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     @instance = nil
   end
 
+  def bin_path
+    settings['bin_path']
+  end
+
   def controller
     @controller ||= begin
       rc = Riddle::Controller.new self, configuration_file
-      if settings['bin_path'].present?
-        rc.bin_path = settings['bin_path'].gsub(/([^\/])$/, '\1/')
-      end
+      rc.bin_path = bin_path.gsub(/([^\/])$/, '\1/') if bin_path.present?
       rc
     end
   end
@@ -42,11 +46,13 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   def engine_index_paths
     return [] unless defined?(Rails)
 
-    Rails::Engine::Railties.engines.select { |engine|
-      engine.paths['app/indices']
-    }.collect { |engine|
-      engine.paths['app/indices'].existent
-    }.flatten
+    engine_indice_paths.flatten.compact
+  end
+
+  def engine_indice_paths
+    Rails::Engine::Railties.engines.collect do |engine|
+      engine.paths['app/indices'].existent if engine.paths['app/indices']
+    end
   end
 
   def indices_for_references(*references)
@@ -90,49 +96,64 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 
   private
 
+  def configure_searchd
+    configure_searchd_log_files
+
+    searchd.binlog_path = framework_root.join('tmp', 'binlog',environment).to_s
+    searchd.address = settings['address'].presence || Defaults::ADDRESS
+    searchd.mysql41 = settings['mysql41'] || settings['port'] || Defaults::PORT
+    searchd.workers = 'threads'
+  end
+
+  def configure_searchd_log_files
+    searchd.pid_file = log_root.join("#{environment}.sphinx.pid").to_s
+    searchd.log = log_root.join("#{environment}.searchd.log").to_s
+    searchd.query_log = log_root.join("#{environment}.searchd.query.log").to_s
+  end
+
+  def log_root
+    framework_root.join('log')
+  end
+
+  def framework_root
+    Pathname.new(framework.root)
+  end
+
   def settings_to_hash
     contents = YAML.load(ERB.new(File.read(settings_file)).result)
     contents && contents[environment] || {}
   end
 
   def settings_file
-    File.join framework.root, 'config', 'thinking_sphinx.yml'
+    framework_root.join 'config', 'thinking_sphinx.yml'
   end
 
   def setup
-    @settings           = nil
-    @configuration_file = settings['configuration_file'] ||
-      File.join(framework.root, 'config', "#{environment}.sphinx.conf")
-    @index_paths        = engine_index_paths +
-      [File.join(framework.root, 'app', 'indices')]
-    @indices_location   = settings['indices_location'] ||
-      File.join(framework.root, 'db', 'sphinx', environment)
-    @version            = settings['version'] || '2.0.6'
+    @settings = nil
+    @configuration_file = settings['configuration_file'] || framework_root.join(
+      'config', "#{environment}.sphinx.conf"
+    ).to_s
+    @index_paths = engine_index_paths + [framework_root.join('app', 'indices').to_s]
+    @indices_location = settings['indices_location'] || framework_root.join(
+      'db', 'sphinx', environment
+    ).to_s
+    @version = settings['version'] || '2.0.6'
 
-    searchd.pid_file    = File.join framework.root, 'log',
-      "#{environment}.sphinx.pid"
-    searchd.log         = File.join framework.root, 'log',
-      "#{environment}.searchd.log"
-    searchd.query_log   = File.join framework.root, 'log',
-      "#{environment}.searchd.query.log"
-    searchd.binlog_path = File.join framework.root, 'tmp', 'binlog',
-      environment
+    configure_searchd
 
-    searchd.address   = settings['address']
-    searchd.address   = Defaults::ADDRESS unless searchd.address.present?
-    searchd.mysql41   = settings['mysql41'] || settings['port'] ||
-      Defaults::PORT
-    searchd.workers   = 'threads'
+    apply_sphinx_settings!
 
-   [indexer, searchd].each do |object|
+    @offsets = {}
+  end
+
+  def apply_sphinx_settings!
+    [indexer, searchd].each do |object|
       settings.each do |key, value|
         next unless object.class.settings.include?(key.to_sym)
 
         object.send("#{key}=", value)
       end
     end
-
-    @offsets = {}
   end
 end
 
