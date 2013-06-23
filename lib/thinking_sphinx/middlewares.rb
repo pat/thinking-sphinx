@@ -13,8 +13,8 @@ module ThinkingSphinx::Middlewares
   BASE_MIDDLEWARES = [SphinxQL, Geographer, Inquirer]
 
   DEFAULT = ::Middleware::Builder.new do
-    ThinkingSphinx::Middlewares.use self, BASE_MIDDLEWARES
     use StaleIdFilter
+    ThinkingSphinx::Middlewares.use self, BASE_MIDDLEWARES
     use UTF8
     use ActiveRecordTranslator
     use StaleIdChecker
