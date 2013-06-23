@@ -8,48 +8,26 @@ module ThinkingSphinx
       end
 
       def sql_query
-        build_query.to_sql.gsub(/\n/, "\\\n")
+        statement.to_relation.to_sql.gsub(/\n/, "\\\n")
       end
 
       def sql_query_range
         return nil if source.disable_range?
-
-        minimum = convert_nulls "MIN(#{quoted_primary_key})", 1
-        maximum = convert_nulls "MAX(#{quoted_primary_key})", 1
-
-        relation.select("#{minimum}, #{maximum}").where(where_clause(true)).to_sql
+        statement.to_query_range_relation.to_sql
       end
 
       def sql_query_info
-        relation.where("#{quoted_primary_key} = #{reversed_document_id}").to_sql
+        statement.to_query_info_relation.to_sql
       end
 
       def sql_query_pre
-        queries = []
-
-        queries << delta_processor.reset_query if delta_processor && !source.delta?
-        if max_len = source.options[:group_concat_max_len]
-          queries << "SET SESSION group_concat_max_len = #{max_len}"
-        end
-        queries += utf8_query_pre if source.options[:utf8?]
-
-        queries.compact
+        statement.to_query_pre
       end
 
       private
 
-      def build_query
-        query = base_query
-        query = query.joins(custom_joins) if custom_joins.any?
-        query = query.order('NULL') if source.type == 'mysql'
-        query
-      end
-
-      def base_query
-        relation.select(pre_select + select_clause).
-                 where(where_clause).
-                 group(group_clause).
-                 joins(associations.join_values)
+      def statement
+        Statement.new(self)
       end
 
       def config
@@ -181,3 +159,4 @@ module ThinkingSphinx
 end
 
 require 'thinking_sphinx/active_record/sql_builder/clause_builder'
+require 'thinking_sphinx/active_record/sql_builder/statement'
