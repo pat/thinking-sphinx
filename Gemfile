@@ -12,5 +12,3 @@ gem 'riddle',
   :git    => 'git://github.com/pat/riddle.git',
   :branch => 'master',
   :ref    => '78cf61ca93'
-gem 'pry'
-gem 'pry-nav'
