@@ -103,21 +103,6 @@ module ThinkingSphinx
         )
       end
 
-      def select_clause
-        ClauseBuilder.new(document_id).compose(
-          presenters_to_select(field_presenters),
-          presenters_to_select(attribute_presenters)
-        ).separated
-      end
-
-      def where_clause(for_range = false)
-        builder = ClauseBuilder.new(nil)
-        builder.add_clause inheritance_column_condition unless model.descends_from_active_record?
-        builder.add_clause delta_processor.clause(source.delta?) if delta_processor
-        builder.add_clause range_condition unless for_range
-        builder.separated(' AND ')
-      end
-
       def inheritance_column_condition
         "#{quoted_inheritance_column} = '#{model_name}'"
       end
@@ -127,14 +112,6 @@ module ThinkingSphinx
         condition << "#{quoted_primary_key} BETWEEN $start AND $end" unless source.disable_range?
         condition += source.conditions
         condition
-      end
-
-      def group_clause
-        ClauseBuilder.new(quoted_primary_key).compose(
-          presenters_to_group(field_presenters),
-          presenters_to_group(attribute_presenters),
-          groupings
-        ).separated
       end
 
       def presenters_to_group(presenters)
@@ -162,6 +139,5 @@ module ThinkingSphinx
   end
 end
 
-require 'thinking_sphinx/active_record/sql_builder/clause_builder'
 require 'thinking_sphinx/active_record/sql_builder/statement'
 require 'thinking_sphinx/active_record/sql_builder/query'

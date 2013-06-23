@@ -1,3 +1,5 @@
+require 'thinking_sphinx/active_record/sql_builder/clause_builder'
+
 module ThinkingSphinx
   module ActiveRecord
     class SQLBuilder::Statement
@@ -79,6 +81,29 @@ module ThinkingSphinx
 
       def method_missing(*args, &block)
         report.send *args, &block
+      end
+
+      def select_clause
+        SQLBuilder::ClauseBuilder.new(document_id).compose(
+          presenters_to_select(field_presenters),
+          presenters_to_select(attribute_presenters)
+        ).separated
+      end
+
+      def where_clause(for_range = false)
+        builder = SQLBuilder::ClauseBuilder.new(nil)
+        builder.add_clause inheritance_column_condition unless model.descends_from_active_record?
+        builder.add_clause delta_processor.clause(source.delta?) if delta_processor
+        builder.add_clause range_condition unless for_range
+        builder.separated(' AND ')
+      end
+
+      def group_clause
+        SQLBuilder::ClauseBuilder.new(quoted_primary_key).compose(
+          presenters_to_group(field_presenters),
+          presenters_to_group(attribute_presenters),
+          groupings
+        ).separated
       end
     end
   end
