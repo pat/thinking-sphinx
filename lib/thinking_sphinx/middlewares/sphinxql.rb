@@ -55,18 +55,26 @@ class ThinkingSphinx::Middlewares::SphinxQL <
       "(#{classes_and_descendants_names.join('|')})"
     end
 
+    def constantize_inheritance_column(klass)
+      klass.connection.select_values(inheritance_column_select(klass)).compact.each(&:constantize)
+    end
+
     def descendants
       @descendants ||= options[:skip_sti] ? [] : descendants_from_tables
     end
 
     def descendants_from_tables
-      classes_with_inheritance_column.collect { |klass|
-        klass.connection.select_values(<<-SQL).compact.each(&:constantize)
-  SELECT DISTINCT #{klass.inheritance_column}
-  FROM #{klass.table_name}
-        SQL
+      classes_with_inheritance_column.collect do |klass|
+        constantize_inheritance_column(klass)
         klass.descendants
-      }.flatten
+      end.flatten
+    end
+
+    def inheritance_column_select(klass)
+      <<-SQL
+SELECT DISTINCT #{klass.inheritance_column}
+FROM #{klass.table_name}
+SQL
     end
 
     def exclusive_filters
