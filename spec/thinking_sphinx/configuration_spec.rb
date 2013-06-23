@@ -90,13 +90,11 @@ describe ThinkingSphinx::Configuration do
     end
 
     it "uses app/indices in the Rails engines" do
-      engine =
-        stub(:engine, { :paths => { 'app/indices' =>
-          stub(:path, { :existent => '/engine/app/indices' } )
-        } } )
+      engine = stub(:engine, { :paths => { 'app/indices' =>
+        stub(:path, { :existent => '/engine/app/indices' } )
+      } } )
 
-      Rails::Engine::Railties.should_receive(:engines).
-        and_return([ engine ])
+      Rails::Engine::Railties.should_receive(:engines).and_return([ engine ])
 
       config.index_paths.should include('/engine/app/indices')
     end

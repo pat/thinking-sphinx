@@ -1,39 +1,33 @@
+module ThinkingSphinx::Middlewares; end
+
+%w[middleware active_record_translator geographer glazier ids_only inquirer
+   sphinxql stale_id_checker stale_id_filter utf8].each do |middleware|
+  require "thinking_sphinx/middlewares/#{middleware}"
+end
+
 module ThinkingSphinx::Middlewares
-  #
-end
+  def self.use(builder, middlewares)
+    middlewares.each { |m| builder.use m }
+  end
 
-require 'thinking_sphinx/middlewares/middleware'
-require 'thinking_sphinx/middlewares/active_record_translator'
-require 'thinking_sphinx/middlewares/geographer'
-require 'thinking_sphinx/middlewares/glazier'
-require 'thinking_sphinx/middlewares/ids_only'
-require 'thinking_sphinx/middlewares/inquirer'
-require 'thinking_sphinx/middlewares/sphinxql'
-require 'thinking_sphinx/middlewares/stale_id_checker'
-require 'thinking_sphinx/middlewares/stale_id_filter'
-require 'thinking_sphinx/middlewares/utf8'
+  BASE_MIDDLEWARES = [SphinxQL, Geographer, Inquirer]
 
-ThinkingSphinx::Middlewares::DEFAULT = ::Middleware::Builder.new do
-  use ThinkingSphinx::Middlewares::StaleIdFilter
-  use ThinkingSphinx::Middlewares::SphinxQL
-  use ThinkingSphinx::Middlewares::Geographer
-  use ThinkingSphinx::Middlewares::Inquirer
-  use ThinkingSphinx::Middlewares::UTF8
-  use ThinkingSphinx::Middlewares::ActiveRecordTranslator
-  use ThinkingSphinx::Middlewares::StaleIdChecker
-  use ThinkingSphinx::Middlewares::Glazier
-end
+  DEFAULT = ::Middleware::Builder.new do
+    use StaleIdFilter
+    ThinkingSphinx::Middlewares.use self, BASE_MIDDLEWARES
+    use UTF8
+    use ActiveRecordTranslator
+    use StaleIdChecker
+    use Glazier
+  end
 
-ThinkingSphinx::Middlewares::RAW_ONLY = ::Middleware::Builder.new do
-  use ThinkingSphinx::Middlewares::SphinxQL
-  use ThinkingSphinx::Middlewares::Geographer
-  use ThinkingSphinx::Middlewares::Inquirer
-  use ThinkingSphinx::Middlewares::UTF8
-end
+  RAW_ONLY = ::Middleware::Builder.new do
+    ThinkingSphinx::Middlewares.use self, BASE_MIDDLEWARES
+    use UTF8
+  end
 
-ThinkingSphinx::Middlewares::IDS_ONLY = ::Middleware::Builder.new do
-  use ThinkingSphinx::Middlewares::SphinxQL
-  use ThinkingSphinx::Middlewares::Geographer
-  use ThinkingSphinx::Middlewares::Inquirer
-  use ThinkingSphinx::Middlewares::IdsOnly
+  IDS_ONLY = ::Middleware::Builder.new do
+    ThinkingSphinx::Middlewares.use self, BASE_MIDDLEWARES
+    use IdsOnly
+  end
 end

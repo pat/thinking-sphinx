@@ -5,6 +5,13 @@ class ThinkingSphinx::ActiveRecord::PropertyQuery
 
   def to_s
     identifier = [type, property.name].compact.join(' ')
+
+    "#{identifier} from #{source_type}; #{queries.join('; ')}"
+  end
+
+  private
+
+  def queries
     queries    = []
     if column.string?
       queries << column.__name.strip.gsub(/\n/, "\\\n")
@@ -12,17 +19,19 @@ class ThinkingSphinx::ActiveRecord::PropertyQuery
       queries << to_sql
       queries << range_sql if ranged?
     end
-
-    "#{identifier} from #{source_type}; #{queries.join('; ')}"
+    queries
   end
-
-  private
 
   attr_reader :property, :source, :type
 
   def base_association
     reflections.first
   end
+
+  def base_association_class
+    base_association.klass
+  end
+  delegate :relation, :to => :base_association_class, :prefix => true
 
   def column
     @column ||= property.columns.first
@@ -40,7 +49,7 @@ class ThinkingSphinx::ActiveRecord::PropertyQuery
 
       column.__stack.collect { |key|
         reflection = base.reflections[key]
-        base       = reflection.klass
+        base = reflection.klass
 
         extend_reflection reflection
       }.flatten
@@ -64,12 +73,11 @@ class ThinkingSphinx::ActiveRecord::PropertyQuery
   end
 
   def quoted_foreign_key
-    quote_with_table base_association.klass.table_name,
-      base_association.foreign_key
+    quote_with_table(base_association_class.table_name, base_association.foreign_key)
   end
 
   def quoted_primary_key
-    quote_with_table reflections.last.klass.table_name, column.__name
+    quote_with_table(reflections.last.klass.table_name, column.__name)
   end
 
   def quote_with_table(table, column)
@@ -85,8 +93,9 @@ class ThinkingSphinx::ActiveRecord::PropertyQuery
   end
 
   def range_sql
-    base_association.klass.unscoped.
-      select("MIN(#{quoted_foreign_key}), MAX(#{quoted_foreign_key})").to_sql
+    base_association_class_relation.select(
+      "MIN(#{quoted_foreign_key}), MAX(#{quoted_foreign_key})"
+    ).to_sql
   end
 
   def source_type
@@ -96,15 +105,10 @@ class ThinkingSphinx::ActiveRecord::PropertyQuery
   def to_sql
     raise "Could not determine SQL for MVA" if reflections.empty?
 
-    relation = base_association.klass.unscoped
-    relation = relation.joins joins unless joins.blank?
-    relation = relation.select "#{quoted_foreign_key} #{offset} AS #{quote_column('id')}, #{quoted_primary_key} AS #{quote_column(property.name)}"
-
-    if ranged?
-      relation = relation.where("#{quoted_foreign_key} >= $start")
-      relation = relation.where("#{quoted_foreign_key} <= $end")
-    end
-
+    relation = base_association_class_relation.select("#{quoted_foreign_key} #{offset} AS #{quote_column('id')}, #{quoted_primary_key} AS #{quote_column(property.name)}"
+    )
+    relation = relation.joins(joins) if joins.present?
+    relation = relation.where("#{quoted_foreign_key} BETWEEN $start AND $end") if ranged?
     relation = relation.order("#{quoted_foreign_key} ASC") if type.nil?
 
     relation.to_sql

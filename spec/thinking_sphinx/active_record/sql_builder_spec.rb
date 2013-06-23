@@ -105,8 +105,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
 
       it "limits results to a set range" do
         relation.should_receive(:where) do |string|
-          string.should match(/`users`.`id` >= \$start/)
-          string.should match(/`users`.`id` <= \$end/)
+          string.should match(/`users`.`id` BETWEEN \$start AND \$end/)
           relation
         end
 
@@ -117,8 +116,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
         source.stub! :disable_range? => true
 
         relation.should_receive(:where) do |string|
-          string.should_not match(/`users`.`id` >= \$start/)
-          string.should_not match(/`users`.`id` <= \$end/)
+          string.should_not match(/`users`.`id` BETWEEN \$start AND \$end/)
           relation
         end
 
@@ -318,8 +316,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
 
       it "limits results to a set range" do
         relation.should_receive(:where) do |string|
-          string.should match(/"users"."id" >= \$start/)
-          string.should match(/"users"."id" <= \$end/)
+          string.should match(/"users"."id" BETWEEN \$start AND \$end/)
           relation
         end
 
@@ -330,8 +327,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
         source.stub! :disable_range? => true
 
         relation.should_receive(:where) do |string|
-          string.should_not match(/"users"."id" >= \$start/)
-          string.should_not match(/"users"."id" <= \$end/)
+          string.should_not match(/"users"."id" BETWEEN \$start AND \$end/)
           relation
         end
 
@@ -590,8 +586,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
 
     it "shouldn't limit results to a range" do
       relation.should_receive(:where) do |string|
-        string.should_not match(/`users`.`id` >= \$start/)
-        string.should_not match(/`users`.`id` <= \$end/)
+        string.should_not match(/`users`.`id` BETWEEN \$start AND \$end/)
         relation
       end
 
