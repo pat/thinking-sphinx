@@ -114,16 +114,11 @@ module ThinkingSphinx
         )
       end
 
-      def comma_separated(clauses)
-        clauses.flatten.compact.join(', ')
-      end
-
       def select_clause
-        comma_separated [
-          document_id,
+        ClauseBuilder.new(document_id).compose(
           field_presenters.collect(&:to_select),
-          attribute_presenters.collect(&:to_select),
-        ]
+          attribute_presenters.collect(&:to_select)
+        )
       end
 
       def where_clause(for_range = false)
@@ -144,20 +139,19 @@ module ThinkingSphinx
       end
 
       def group_clause
-        comma_separated [
-          quoted_primary_key,
+        ClauseBuilder.new(quoted_primary_key).compose(
           field_presenters.collect(&:to_group),
           attribute_presenters.collect(&:to_group),
           groupings
-        ]
+        )
       end
 
       def groupings
-        clauses = source.groupings
+        groupings = source.groupings
         if model.column_names.include?(model.inheritance_column)
-          clauses << quoted_inheritance_column
+          groupings << quoted_inheritance_column
         end
-        clauses
+        groupings
       end
 
       def model_name
@@ -168,3 +162,5 @@ module ThinkingSphinx
     end
   end
 end
+
+require 'thinking_sphinx/active_record/sql_builder/clause_builder'
