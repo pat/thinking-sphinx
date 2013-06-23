@@ -20,4 +20,14 @@ describe 'Hiding deleted records from search results', :live => true do
 
     Article.search('pancakes').should be_empty
   end
+
+  it "removes records from real-time index results" do
+    product = Product.create! :name => 'Shiny'
+
+    Product.search('Shiny').to_a.should == [product]
+
+    product.destroy
+
+    Product.search_for_ids('Shiny').should be_empty
+  end
 end
