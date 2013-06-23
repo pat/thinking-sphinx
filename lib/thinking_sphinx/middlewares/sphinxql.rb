@@ -138,27 +138,93 @@ SQL
     delegate :configuration, :to => :context
     delegate :settings, :to => :configuration
 
-    def statement
-      Riddle::Query::Select.new.tap do |select|
-        select.from *index_names.collect { |index| "`#{index}`" }
-        select.values values                if values.present?
-        select.matching extended_query      if extended_query.present?
-        select.where inclusive_filters      if inclusive_filters.any?
-        select.where_all options[:with_all] if options[:with_all]
-        select.where_not exclusive_filters  if exclusive_filters.any?
-        select.where_not_all options[:without_all] if options[:without_all]
-        select.order_by order_clause        if order_clause.present?
-        select.group_by group_attribute     if group_attribute.present?
-        select.order_within_group_by group_order_clause if group_order_clause.present?
-        select.offset context.search.offset
-        select.limit  context.search.per_page
-        select.with_options select_options  if select_options.keys.any?
-      end
-    end
-
     def values
       options[:select] ||= '*, @groupby, @count' if group_attribute.present?
       options[:select]
+    end
+
+    def statement
+      Statement.new(self).to_riddle_query_select
+    end
+
+    class Statement
+      def initialize(report)
+        self.report = report
+        self.query = Riddle::Query::Select.new
+      end
+
+      def to_riddle_query_select
+        filter_by_scopes
+
+        query
+      end
+
+      protected
+      attr_accessor :report, :query
+      def filter_by_scopes
+        scope_by_from
+        scope_by_values
+        scope_by_extended_query
+        scope_by_inclusive_filters
+        scope_by_with_all
+        scope_by_exclusive_filters
+        scope_by_without_all
+
+        scope_by_order
+        scope_by_group
+        scope_by_pagination
+        scope_by_options
+      end
+
+      def scope_by_from
+        query.from *(index_names.collect { |index| "`#{index}`" })
+      end
+
+      def scope_by_values
+        query.values values if values.present?
+      end
+
+      def scope_by_extended_query
+        query.matching extended_query if extended_query.present?
+      end
+
+      def scope_by_inclusive_filters
+        query.where inclusive_filters if inclusive_filters.any?
+      end
+
+      def scope_by_with_all
+        query.where_all options[:with_all] if options[:with_all]
+      end
+
+      def scope_by_exclusive_filters
+        query.where_not exclusive_filters  if exclusive_filters.any?
+      end
+
+      def scope_by_without_all
+        query.where_not_all options[:without_all] if options[:without_all]
+      end
+
+      def scope_by_order
+        query.order_by order_clause if order_clause.present?
+      end
+
+      def scope_by_group
+        query.group_by group_attribute if group_attribute.present?
+        query.order_within_group_by group_order_clause if group_order_clause.present?
+      end
+
+      def scope_by_pagination
+        query.offset context.search.offset
+        query.limit  context.search.per_page
+      end
+
+      def scope_by_options
+        query.with_options select_options if select_options.keys.any?
+      end
+
+      def method_missing(*args, &block)
+        report.send *args, &block
+      end
     end
   end
 end
