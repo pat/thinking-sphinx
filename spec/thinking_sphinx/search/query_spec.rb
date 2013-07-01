@@ -81,6 +81,18 @@ describe ThinkingSphinx::Search::Query do
       query.to_s.should == ''
     end
 
+    it "handles nil queries" do
+      query = ThinkingSphinx::Search::Query.new nil, {}
+
+      query.to_s.should == ''
+    end
+
+    it "handles nil queries when starring" do
+      query = ThinkingSphinx::Search::Query.new nil, {}, true
+
+      query.to_s.should == ''
+    end
+
     it "allows mixing of blank and non-blank conditions" do
       query = ThinkingSphinx::Search::Query.new 'tasty', :title => 'pancakes',
         :ingredients => nil

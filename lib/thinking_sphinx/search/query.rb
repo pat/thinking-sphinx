@@ -10,7 +10,7 @@ class ThinkingSphinx::Search::Query
   end
 
   def to_s
-    (star_keyword(keywords) + ' ' + conditions.keys.collect { |key|
+    (star_keyword(keywords || '') + ' ' + conditions.keys.collect { |key|
        next if conditions[key].blank?
 
       "@#{key} #{star_keyword conditions[key], key}"
