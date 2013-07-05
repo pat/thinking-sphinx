@@ -1,7 +1,6 @@
 class ThinkingSphinx::Panes::ExcerptsPane
   def initialize(context, object, raw)
     @context, @object = context, object
-    @excerpt_words = @context.search.options[:excerpts].delete(:words) if @context.search.options[:excerpts]
   end
 
   def excerpts
