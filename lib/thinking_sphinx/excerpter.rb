@@ -10,6 +10,7 @@ class ThinkingSphinx::Excerpter
   def initialize(index, words, options = {})
     @index, @words = index, words
     @options = DefaultOptions.merge(options)
+    @words = @options.delete(:words) if @options[:words]
   end
 
   def excerpt!(text)
