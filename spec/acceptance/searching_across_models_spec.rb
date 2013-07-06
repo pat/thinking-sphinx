@@ -25,4 +25,14 @@ describe 'Searching across models', :live => true do
 
     ThinkingSphinx.search.to_a.should =~ [article, book]
   end
+
+  it "filters by multiple classes" do
+    article = Article.create! :title => 'Pancakes'
+    book    = Book.create! :title => 'American Gods'
+    user    = User.create! :name => 'Pat'
+    index
+
+    ThinkingSphinx.search(:classes => [User, Article]).to_a.
+      should =~ [article, user]
+  end
 end
