@@ -107,5 +107,17 @@ describe ThinkingSphinx::FacetSearch do
         }
       end
     end
+
+    [:limit, :per_page].each do |setting|
+      it "respects #{setting} option if set" do
+        facet_search = ThinkingSphinx::FacetSearch.new '', {setting => 42}
+
+        facet_search.populate
+
+        batch.searches.each { |search|
+          search.options[setting].should == 42
+        }
+      end
+    end
   end
 end
