@@ -112,6 +112,15 @@ describe ThinkingSphinx::RakeInterface do
 
     before :each do
       controller.stub(:running?).and_return(false, true)
+      configuration.stub :indices_location => 'my/index/files'
+
+      FileUtils.stub :mkdir_p => true
+    end
+
+    it "creates the index files directory" do
+      FileUtils.should_receive(:mkdir_p).with('my/index/files')
+
+      interface.start
     end
 
     it "starts the daemon" do
