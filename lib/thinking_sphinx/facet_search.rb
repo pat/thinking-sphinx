@@ -95,13 +95,17 @@ class ThinkingSphinx::FacetSearch
     ThinkingSphinx::Configuration.instance.settings['max_matches'] || 1000
   end
 
+  def limit
+    limit = options[:limit] || options[:per_page] || max_matches
+  end
+
   def options_for(facet)
     options.merge(
       :select      => '*, @groupby, @count',
       :group_by    => facet.name,
       :indices     => index_names_for(facet),
-      :max_matches => max_matches,
-      :limit       => max_matches
+      :max_matches => limit,
+      :limit       => limit
     )
   end
 
