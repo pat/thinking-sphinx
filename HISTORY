@@ -1,4 +1,5 @@
 Edge:
+* [CHANGE] Updating Riddle dependency to be >= 1.5.7.
 * [FEATURE] ts:regenerate rake task for rebuilding Sphinx when realtime indices are involved.
 * [FEATURE] ts:clear task removes all Sphinx index and binlog files.
 * [CHANGE] Glaze now responds to respond_to? (@groe).
