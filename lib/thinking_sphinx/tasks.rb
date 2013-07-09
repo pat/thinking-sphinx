@@ -22,6 +22,9 @@ namespace :ts do
   desc 'Stop Sphinx, index and then restart Sphinx'
   task :rebuild => [:stop, :index, :start]
 
+  desc 'Stop Sphinx, clear files, reconfigure, start Sphinx, generate files'
+  task :regenerate => [:stop, :clear, :configure, :start, :generate]
+
   desc 'Restart the Sphinx daemon'
   task :restart => [:stop, :start]
 
