@@ -1,4 +1,14 @@
 Edge:
+* [FEATURE] ts:regenerate rake task for rebuilding Sphinx when realtime indices are involved.
+* [FEATURE] ts:clear task removes all Sphinx index and binlog files.
+* [CHANGE] Glaze now responds to respond_to? (@groe).
+* [FEATURE] Facet search calls now respect the limit option (which otherwise defaults to max_matches) (Demian Ferreiro).
+* [FEATURE] Excerpts words can be overwritten with the words option (@groe).
+* [FIX] Empty queries with the star option set to true are handled gracefully.
+* [CHANGE] Deleted ActiveRecord objects are deleted in realtime indices as well.
+* [CHANGE] Realtime callbacks are no longer automatically added, but they're now more flexible (for association situations).
+* [CHANGE] Cleaning and refactoring so Code Climate ranks this as A-level code (Philip Arndt, Shevaun Coker, Garrett Heinlen).
+* [FIX] Excerpts are now wildcard-friendly.
 * [FIX] Facet searches now use max_matches value (with a default of 1000) to ensure as many results as possible are returned.
 * [CHANGE] Exceptions raised when communicating with Sphinx are now mentioned in the logs when queries are retried (instead of STDOUT).
 * [CHANGE] Excerpts now use just the query and standard conditions, instead of parsing Sphinx's keyword metadata (which had model names in it).
