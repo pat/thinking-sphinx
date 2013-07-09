@@ -50,6 +50,25 @@ describe ThinkingSphinx::Search::Glaze do
     end
   end
 
+  describe '#respond_to?' do
+    it "responds to underlying object methods" do
+      object.stub :foo => true
+
+      glaze.respond_to?(:foo).should be_true
+    end
+
+    it "responds to underlying pane methods" do
+      pane  = double('Pane Class', :new => double('pane', :bar => true))
+      glaze = ThinkingSphinx::Search::Glaze.new context, object, raw, [pane]
+
+      glaze.respond_to?(:bar).should be_true
+    end
+
+    it "does not to respond to methods that don't exist" do
+      glaze.respond_to?(:something).should be_false
+    end
+  end
+
   describe '#unglazed' do
     it "returns the original object" do
       glaze.unglazed.should == object

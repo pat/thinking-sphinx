@@ -15,9 +15,16 @@ class ThinkingSphinx::Search::Glaze < BasicObject
     @object.equal? object
   end
 
+  def respond_to?(method, include_private = false)
+    @object.respond_to?(method, include_private) ||
+    @panes.any? { |pane| pane.respond_to?(method, include_private) }
+  end
+
   def unglazed
     @object
   end
+
+  private
 
   def method_missing(method, *args, &block)
     pane = @panes.detect { |pane| pane.respond_to?(method) }
@@ -25,14 +32,6 @@ class ThinkingSphinx::Search::Glaze < BasicObject
       @object.send(method, *args, &block)
     else
       pane.send(method, *args, &block)
-    end
-  end
-  
-  def respond_to?(method, include_private = false)
-    if @object.respond_to?(method) || @panes.any? { |pane| pane.respond_to?(method) }
-      true
-    else
-      super
     end
   end
 end
