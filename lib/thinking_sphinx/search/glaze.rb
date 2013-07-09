@@ -19,14 +19,20 @@ class ThinkingSphinx::Search::Glaze < BasicObject
     @object
   end
 
-  private
-
   def method_missing(method, *args, &block)
     pane = @panes.detect { |pane| pane.respond_to?(method) }
     if @object.respond_to?(method) || pane.nil?
       @object.send(method, *args, &block)
     else
       pane.send(method, *args, &block)
+    end
+  end
+  
+  def respond_to?(method, include_private = false)
+    if @object.respond_to?(method) || @panes.any? { |pane| pane.respond_to?(method) }
+      true
+    else
+      super
     end
   end
 end

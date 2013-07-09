@@ -11,4 +11,4 @@ gem 'activerecord-jdbcpostgresql-adapter', '~> 1.1.3', :platform => :jruby
 gem 'riddle',
   :git    => 'git://github.com/pat/riddle.git',
   :branch => 'master',
-  :ref    => '78cf61ca93'
+  :ref    => '3f8909034a'
