@@ -1,4 +1,13 @@
 class ThinkingSphinx::RakeInterface
+  def clear
+    [
+      configuration.indices_location,
+      configuration.searchd.binlog_path
+    ].each do |path|
+      FileUtils.rm_r(path) if File.exists?(path)
+    end
+  end
+
   def configure
     puts "Generating configuration to #{configuration.configuration_file}"
     configuration.render_to_file
