@@ -23,6 +23,8 @@ test:
 
 It's recommended you stub out any search calls, as Thinking Sphinx should ideally only be used in integration testing (whether that be via straight RSpec or Test/Unit, or Capybara/Cucumber).
 
+If your unit tests use factories or fixtures, you may wish to disable delta indexing: this can be done with `ThinkingSphinx::Deltas.suspend!` and can be subsequently re-enabled with `ThinkingSphinx::Deltas.resume!`
+
 <h3 id="acceptance">Integration/Acceptance Testing</h3>
 
 Whenever you're using Sphinx with your test suite, you also _need_ to turn transactional fixtures off. The reason for this is that while ActiveRecord can run all its operations within a single transaction, Sphinx doesn't have access to that, and so indexing will not include your transaction's changes.
