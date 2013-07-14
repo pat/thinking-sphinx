@@ -13,11 +13,12 @@ There's quite a bit that's changed in Thinking Sphinx 3.0, as it's a complete re
 
 * [Index definitions](indexing.html) now live in `app/indices`.
 * `config/sphinx.yml` is now `config/thinking_sphinx.yml`.
-* `mysql2` gem (at least 0.3.12b4) is required for connecting to Sphinx (using its mysql41 protocol).
+* `mysql2` gem (at least 0.3.12b4) is required for connecting to Sphinx (using its mysql41 protocol). At time of writing this version only available as a pre-release, so running `bundle update mysql2` on your `Gemfile` without also forcing the version will only install 0.3.11.
 * Specifying a different port for Sphinx to use (in `config/thinking_sphinx.yml`) should be done with the mysql41 setting, not the port setting.
 * The match mode is always extended - SphinxQL doesn't know any other way.
 * If you're explicitly setting a time attribute's type, instead of `:datetime` it should now be `:timestamp`.
 * [Sorting options](searching.html#sorting) and [grouping options](searching.html#grouping) are much simpler.
+* ThinkingSphinx 3 is much less tolerant of badly-formed query strings passed in to `.search` and `.facets` methods. Use of `Riddle::Query.escape` on user-submitted query strings is recommended.
 * Delta arguments are passed in as an option of the `define` call, not within the block:
 
 {% highlight ruby %}
@@ -119,6 +120,13 @@ indexes events.eventable.name
 
 polymorphs events.eventable, :to => %w(Page Post User)
 {% endhighlight %}
+
+* `ThinkingSphinx.facets` and other calls to `.facets` now return a lazily-evaluated `ThinkingSphinx::FacetSearch` object, not a hash. `FacetSearch` implements `[]`, but not other methods of hash. If you're caching the result of this call, or you need real hash methods, call `.to_hash` on the result to return a populated hash.
+
+* Ordering by `@relevance` will no longer work: use `@weight` instead.
+
+* `@geodist` is now just `geodist`
+
 
 ### Upgrading from 2.0.0.rc2 to 2.0.0 or 1.3.20 to 1.4.0
 
