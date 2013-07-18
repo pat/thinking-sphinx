@@ -130,7 +130,7 @@ batch.searches #=> [[foo results], [bar results], [baz results]]</code></pre>
 * To search on specific indices, use the @:indices@ option, which expects an array of index names (including the @_core@ or @_delta@ suffixes).
 * @:without_any@ has become @:without_all@ - and is implemented, but Sphinx doesn't yet support the required logic.
 * If you're creating a multi-value attribute manually (using a SQL snippet), then in the definition pass in @:multi => true@, but @:type@ should be set as well, to one of the MVA types that Sphinx supports (@:integer@, @:timestamp@, or @:boolean@).
-* Automatic updates of non-string attributes are still limited to those from columns on the model in question, and is disabled by default. To enable it, just set attribute_updates to true in your @config/sphinx.yml@.
+* Automatic updates of non-string attributes are still limited to those from columns on the model in question, and is disabled by default. To enable it, just set attribute_updates to true in your @config/thinking_sphinx.yml@.
 * Search result helper methods are no longer injected into the actual result objects. Read the section below on search results, glazes and panes.
 * If you're using string facets, make sure they're defined as fields, not strings. There is currently no support for multi-value string facets.
 * To have fine-grained control over when deltas are invoked, create a sub-class of your chosen delta class (the standard is @ThinkingSphinx::Deltas::DefaultDelta@) and customise the @toggle@ and @toggled?@ methods, both of which accept a single parameter being the ActiveRecord instance.
