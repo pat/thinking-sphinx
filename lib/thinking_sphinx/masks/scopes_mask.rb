@@ -22,7 +22,8 @@ class ThinkingSphinx::Masks::ScopesMask
   private
 
   def apply_scope(scope, *args)
-    search *sphinx_scopes[scope].call(*args)
+    query, options = sphinx_scopes[scope].call(*args)
+    search query, options
   end
 
   def can_apply_scope?(scope)
