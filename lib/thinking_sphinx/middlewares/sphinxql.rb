@@ -55,6 +55,10 @@ class ThinkingSphinx::Middlewares::SphinxQL <
       "(#{classes_and_descendants_names.join('|')})"
     end
 
+    def class_condition_required?
+      classes.any? && !indices_match_classes?
+    end
+
     def constantize_inheritance_column(klass)
       klass.connection.select_values(inheritance_column_select(klass)).compact.each(&:constantize)
     end
@@ -68,6 +72,12 @@ class ThinkingSphinx::Middlewares::SphinxQL <
         constantize_inheritance_column(klass)
         klass.descendants
       end.flatten
+    end
+
+    def indices_match_classes?
+      indices.collect(&:reference).uniq == classes.collect { |klass|
+        klass.name.underscore.to_sym
+      }
     end
 
     def inheritance_column_select(klass)
@@ -85,7 +95,10 @@ SQL
 
     def extended_query
       conditions = options[:conditions] || {}
-      conditions[:sphinx_internal_class_name] = class_condition if classes.any?
+      if class_condition_required?
+        conditions[:sphinx_internal_class_name] = class_condition
+      end
+
       @extended_query ||= ThinkingSphinx::Search::Query.new(
         context.search.query, conditions, options[:star]
       ).to_s

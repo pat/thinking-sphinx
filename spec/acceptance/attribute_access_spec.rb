@@ -18,7 +18,7 @@ describe 'Accessing attributes directly via search results', :live => true do
     search = Book.search('gods', :select => '*, @weight')
     search.context[:panes] << ThinkingSphinx::Panes::WeightPane
 
-    search.first.weight.should == 3500
+    search.first.weight.should == 2500
   end
 
   it "can enumerate with the weight" do
@@ -28,7 +28,7 @@ describe 'Accessing attributes directly via search results', :live => true do
     search = Book.search('gods', :select => '*, @weight')
     search.masks << ThinkingSphinx::Masks::WeightEnumeratorMask
 
-    expectations = [[gods, 3500]]
+    expectations = [[gods, 2500]]
     search.each_with_weight do |result, weight|
       expectation = expectations.shift
 
