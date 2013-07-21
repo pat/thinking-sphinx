@@ -26,6 +26,10 @@ module ThinkingSphinx
 
       private
 
+      delegate :adapter, :model, :delta_processor, :to => :source
+      delegate :convert_nulls, :time_zone_query_pre, :utf8_query_pre,
+        :to => :adapter
+
       def query
         Query.new(self)
       end
@@ -38,8 +42,6 @@ module ThinkingSphinx
         ThinkingSphinx::Configuration.instance
       end
 
-      delegate :adapter, :model, :delta_processor, :to => :source
-      delegate :convert_nulls, :utf8_query_pre, :to => :adapter
       def relation
         model.unscoped
       end

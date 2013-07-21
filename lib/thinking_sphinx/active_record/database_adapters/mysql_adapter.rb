@@ -25,6 +25,10 @@ class ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter <
     "GROUP_CONCAT(#{clause} SEPARATOR '#{separator}')"
   end
 
+  def time_zone_query_pre
+    ["SET TIME_ZONE = '+0:00'"]
+  end
+
   def utf8_query_pre
     ['SET NAMES utf8']
   end

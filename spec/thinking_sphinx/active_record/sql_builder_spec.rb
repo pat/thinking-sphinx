@@ -15,7 +15,8 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
   let(:indices)      { double('indices', :count => 5) }
   let(:presenter)    { double('presenter', :to_select => '`name` AS `name`',
     :to_group => '`name`') }
-  let(:adapter)      { double('adapter') }
+  let(:adapter)      { double('adapter',
+    :time_zone_query_pre => ['SET TIME ZONE']) }
   let(:associations) { double('associations', :join_values => []) }
   let(:builder)      { ThinkingSphinx::ActiveRecord::SQLBuilder.new source }
 

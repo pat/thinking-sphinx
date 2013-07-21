@@ -30,4 +30,8 @@ class ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter <
   def group_concatenate(clause, separator = ' ')
     "array_to_string(array_agg(#{clause}), '#{separator}')"
   end
+
+  def time_zone_query_pre
+    ['SET TIME ZONE UTC']
+  end
 end

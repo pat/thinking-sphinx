@@ -13,9 +13,11 @@ module ThinkingSphinx
       end
 
       protected
+
       attr_accessor :report, :scope
 
       def filter_by_query_pre
+        scope_by_time_zone
         scope_by_delta_processor
         scope_by_session
         scope_by_utf8
@@ -29,6 +31,10 @@ module ThinkingSphinx
         if max_len = source.options[:group_concat_max_len]
           self.scope << "SET SESSION group_concat_max_len = #{max_len}"
         end
+      end
+
+      def scope_by_time_zone
+        self.scope += time_zone_query_pre
       end
 
       def scope_by_utf8
