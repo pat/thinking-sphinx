@@ -55,6 +55,14 @@ module ThinkingSphinx
         scope_by_order
       end
 
+      def presenters_to_group(presenters)
+        presenters.collect(&:to_group)
+      end
+
+      def presenters_to_select(presenters)
+        presenters.collect(&:to_select)
+      end
+
       def scope_by_select
         self.scope = scope.select(pre_select + select_clause)
       end

@@ -116,14 +116,6 @@ module ThinkingSphinx
         condition
       end
 
-      def presenters_to_group(presenters)
-        presenters.collect(&:to_group)
-      end
-
-      def presenters_to_select(presenters)
-        presenters.collect(&:to_select)
-      end
-
       def groupings
         groupings = source.groupings
         if model.column_names.include?(model.inheritance_column)
