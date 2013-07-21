@@ -27,7 +27,7 @@ class ThinkingSphinx::Deletion
   end
 
   def execute(statement)
-    ThinkingSphinx::Connection.pool.take do |connection|
+    ThinkingSphinx::Connection.take do |connection|
       connection.execute statement
     end
   end
