@@ -43,6 +43,10 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
     end
 
     describe '#to_select' do
+      before :each do
+        field.stub :source_type => nil
+      end
+
       it "returns the column name as a string" do
         presenter.to_select.should == 'articles.title AS title'
       end
@@ -95,6 +99,18 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
         presenter.to_select.
           should == "CONCAT_WS(' ', articles.title) AS title"
       end
+
+      it "returns nil for query sourced fields" do
+        field.stub :source_type => :query
+
+        presenter.to_select.should be_nil
+      end
+
+      it "returns nil for ranged query sourced fields" do
+        field.stub :source_type => :ranged_query
+
+        presenter.to_select.should be_nil
+      end
     end
   end
 
@@ -143,6 +159,10 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
     end
 
     describe '#to_select' do
+      before :each do
+        attribute.stub :source_type => nil
+      end
+
       it "returns the column name as a string" do
         presenter.to_select.should == 'articles.created_at AS created_at'
       end
@@ -195,6 +215,18 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
         attribute.stub!(:columns => [column, column])
 
         presenter.to_select.should == "CONCAT_WS(',', CAST(articles.created_at AS varchar), CAST(articles.created_at AS varchar)) AS created_at"
+      end
+
+      it "returns nil for query sourced attributes" do
+        attribute.stub :source_type => :query
+
+        presenter.to_select.should be_nil
+      end
+
+      it "returns nil for ranged query sourced attributes" do
+        attribute.stub :source_type => :ranged_query
+
+        presenter.to_select.should be_nil
       end
     end
   end

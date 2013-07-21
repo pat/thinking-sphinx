@@ -12,6 +12,8 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
   end
 
   def to_select
+    return nil if property.source_type.to_s[/query/]
+
     "#{casted_column_with_table} AS #{adapter.quote property.name}"
   end
 
