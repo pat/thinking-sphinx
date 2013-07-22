@@ -3,8 +3,8 @@ module ThinkingSphinx
     class SQLSource < Riddle::Configuration::SQLSource
       include ThinkingSphinx::Core::Settings
       attr_reader :model, :database_settings, :options
-      attr_accessor :fields, :attributes, :associations, :conditions, :groupings,
-        :polymorphs
+      attr_accessor :fields, :attributes, :associations, :conditions,
+        :groupings, :polymorphs
 
       OPTIONS = [:name, :offset, :delta_processor, :delta?, :disable_range?,
         :group_concat_max_len, :utf8?, :position]

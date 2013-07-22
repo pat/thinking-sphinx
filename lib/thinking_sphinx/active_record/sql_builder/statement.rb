@@ -55,12 +55,30 @@ module ThinkingSphinx
         scope_by_order
       end
 
+      def attribute_presenters
+        @attribute_presenters ||= property_sql_presenters_for source.attributes
+      end
+
+      def field_presenters
+        @field_presenters ||= property_sql_presenters_for source.fields
+      end
+
       def presenters_to_group(presenters)
         presenters.collect(&:to_group)
       end
 
       def presenters_to_select(presenters)
         presenters.collect(&:to_select)
+      end
+
+      def property_sql_presenters_for(properties)
+        properties.collect { |property| property_sql_presenter_for(property) }
+      end
+
+      def property_sql_presenter_for(property)
+        ThinkingSphinx::ActiveRecord::PropertySQLPresenter.new(
+          property, source.adapter, associations
+        )
       end
 
       def scope_by_select

@@ -87,24 +87,6 @@ module ThinkingSphinx
         "($id - #{source.offset}) / #{config.indices.count}"
       end
 
-      def attribute_presenters
-        @attribute_presenters ||= property_sql_presenters_for(source.attributes)
-      end
-
-      def field_presenters
-        @field_presenters ||= property_sql_presenters_for(source.fields)
-      end
-
-      def property_sql_presenters_for(fields)
-        fields.collect { |field| property_sql_presenter_for(field) }
-      end
-
-      def property_sql_presenter_for(field)
-        ThinkingSphinx::ActiveRecord::PropertySQLPresenter.new(
-          field, source.adapter, associations
-        )
-      end
-
       def inheritance_column_condition
         "#{quoted_inheritance_column} = '#{model_name}'"
       end
