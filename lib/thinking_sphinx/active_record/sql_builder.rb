@@ -46,10 +46,6 @@ module ThinkingSphinx
         model.unscoped
       end
 
-      def base_join
-        @base_join ||= join_dependency_class.new model, [], initial_joins
-      end
-
       def associations
         @associations ||= ThinkingSphinx::ActiveRecord::Associations.new(model).tap do |assocs|
           source.associations.reject(&:string?).each do |association|
