@@ -6,13 +6,13 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
   end
 
   def to_group
-    return nil unless group?
+    return nil if sourced_by_query? || !group?
 
     columns_with_table
   end
 
   def to_select
-    return nil if property.source_type.to_s[/query/]
+    return nil if sourced_by_query?
 
     "#{casted_column_with_table} AS #{adapter.quote property.name}"
   end
@@ -77,5 +77,9 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
 
   def group?
     !(aggregate? || property.columns.any?(&:string?))
+  end
+
+  def sourced_by_query?
+    property.source_type.to_s[/query/]
   end
 end

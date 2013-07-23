@@ -17,7 +17,7 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
       )
     }
     let(:field)     { double('field', :name => 'title', :columns => [column],
-      :type => nil, :multi? => false) }
+      :type => nil, :multi? => false, :source_type => nil) }
     let(:column)    { double('column', :string? => false, :__stack => [],
       :__name => 'title') }
 
@@ -40,13 +40,15 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
 
         presenter.to_group.should be_nil
       end
+
+      it "returns nil if the field is sourced via a separate query" do
+        field.stub :source_type => 'query'
+
+        presenter.to_group.should be_nil
+      end
     end
 
     describe '#to_select' do
-      before :each do
-        field.stub :source_type => nil
-      end
-
       it "returns the column name as a string" do
         presenter.to_select.should == 'articles.title AS title'
       end
@@ -121,7 +123,8 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
       )
     }
     let(:attribute) { double('attribute', :name => 'created_at',
-      :columns => [column], :type => :integer, :multi? => false) }
+      :columns => [column], :type => :integer, :multi? => false,
+      :source_type => nil) }
     let(:column)    { double('column', :string? => false, :__stack => [],
       :__name => 'created_at') }
 
@@ -156,13 +159,15 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
 
         presenter.to_group.should be_nil
       end
+
+      it "returns nil if the attribute is sourced via a separate query" do
+        attribute.stub :source_type => 'query'
+
+        presenter.to_group.should be_nil
+      end
     end
 
     describe '#to_select' do
-      before :each do
-        attribute.stub :source_type => nil
-      end
-
       it "returns the column name as a string" do
         presenter.to_select.should == 'articles.created_at AS created_at'
       end
