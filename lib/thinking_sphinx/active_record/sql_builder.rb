@@ -54,10 +54,6 @@ module ThinkingSphinx
         end
       end
 
-      def custom_joins
-        @custom_joins ||= source.associations.select(&:string?).collect(&:to_s)
-      end
-
       def quote_column(column)
         model.connection.quote_column_name(column)
       end

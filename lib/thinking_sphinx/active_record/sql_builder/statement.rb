@@ -35,6 +35,10 @@ module ThinkingSphinx
       protected
       attr_accessor :report, :scope
 
+      def custom_joins
+        @custom_joins ||= source.associations.select(&:string?).collect(&:to_s)
+      end
+
       def filter_by_query_range
         minimum = convert_nulls "MIN(#{quoted_primary_key})", 1
         maximum = convert_nulls "MAX(#{quoted_primary_key})", 1
