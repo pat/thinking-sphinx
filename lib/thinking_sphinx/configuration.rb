@@ -80,6 +80,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     preload_indices
 
     ThinkingSphinx::Configuration::ConsistentIds.new(indices).reconcile
+    ThinkingSphinx::Configuration::MinimumFields.new(indices).reconcile
 
     super
   end
@@ -159,3 +160,4 @@ end
 
 require 'thinking_sphinx/configuration/consistent_ids'
 require 'thinking_sphinx/configuration/defaults'
+require 'thinking_sphinx/configuration/minimum_fields'
