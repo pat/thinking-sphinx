@@ -7,7 +7,7 @@ describe ThinkingSphinx::Excerpter do
   }
 
   before :each do
-    ThinkingSphinx::Connection.stub :new => connection
+    ThinkingSphinx::Connection.stub(:take).and_yield(connection)
     Riddle::Query.stub :snippets => 'CALL SNIPPETS'
   end
 

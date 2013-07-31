@@ -14,17 +14,15 @@ class ThinkingSphinx::Excerpter
   end
 
   def excerpt!(text)
-    result = connection.query(statement_for(text)).first['snippet']
+    result = ThinkingSphinx::Connection.take do |connection|
+      connection.query(statement_for(text)).first['snippet']
+    end
 
     result.encode!("ISO-8859-1")
     result.force_encoding("UTF-8")
   end
 
   private
-
-  def connection
-    @connection ||= ThinkingSphinx::Connection.new
-  end
 
   def statement_for(text)
     Riddle::Query.snippets(text, index, words, options)
