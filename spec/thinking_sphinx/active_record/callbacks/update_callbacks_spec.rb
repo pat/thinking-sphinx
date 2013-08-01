@@ -26,8 +26,10 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks do
     before :each do
       stub_const 'ThinkingSphinx::Configuration',
         double(:instance => configuration)
-      stub_const 'ThinkingSphinx::Connection', double(:new => connection)
+      stub_const 'ThinkingSphinx::Connection', double
       stub_const 'Riddle::Query', double(:update => 'SphinxQL')
+
+      ThinkingSphinx::Connection.stub(:take).and_yield(connection)
 
       source.attributes.replace([
         double(:name => 'foo', :updateable? => true,
