@@ -18,10 +18,6 @@ class ThinkingSphinx::Deletion
 
   attr_reader :index, :instance
 
-  def connection
-    @connection ||= ThinkingSphinx::Connection.new
-  end
-
   def document_id_for_key
     index.document_id_for_key instance.id
   end
