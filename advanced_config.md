@@ -53,7 +53,7 @@ development:
 
 In older versions (before 3.0), these settings were `config_file`, `searchd_log_file`, `query_log_file` and `pid_file`.
 
-### Daemon Address and Port
+<h3 id="daemon-address">Daemon Address and Port</h3>
 
 If your Sphinx Daemon (also known as *searchd*) is running on a different machine or port, you're going to need to tell Thinking Sphinx the critical details:
 
