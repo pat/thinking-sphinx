@@ -119,6 +119,14 @@ describe ThinkingSphinx::RealTime::Interpreter do
     end
   end
 
+  describe '#scope' do
+    it "passes the scope block through to the index" do
+      index.should_receive(:scope=).with(instance_of(Proc))
+
+      instance.scope { :foo }
+    end
+  end
+
   describe '#set_property' do
     before :each do
       index.class.stub :settings => [:morphology]

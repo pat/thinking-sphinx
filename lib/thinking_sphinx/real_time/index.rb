@@ -1,7 +1,7 @@
 class ThinkingSphinx::RealTime::Index < Riddle::Configuration::RealtimeIndex
   include ThinkingSphinx::Core::Index
 
-  attr_writer :fields, :attributes, :conditions
+  attr_writer :fields, :attributes, :conditions, :scope
 
   def initialize(reference, options = {})
     @fields     = []
@@ -41,6 +41,10 @@ class ThinkingSphinx::RealTime::Index < Riddle::Configuration::RealtimeIndex
     interpret_definition!
 
     @fields
+  end
+
+  def scope
+    @scope.nil? ? model : @scope.call
   end
 
   def unique_attribute_names

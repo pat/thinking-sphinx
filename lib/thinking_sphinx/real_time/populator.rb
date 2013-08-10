@@ -12,7 +12,7 @@ class ThinkingSphinx::RealTime::Populator
 
     remove_files
 
-    model.find_each do |instance|
+    scope.find_each do |instance|
       transcriber.copy instance
       instrument 'populated', :instance => instance
     end
@@ -26,7 +26,7 @@ class ThinkingSphinx::RealTime::Populator
   attr_reader :index
 
   delegate :controller, :to => :configuration
-  delegate :model,      :to => :index
+  delegate :scope,      :to => :index
 
   def configuration
     ThinkingSphinx::Configuration.instance
