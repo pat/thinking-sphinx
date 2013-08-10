@@ -19,20 +19,9 @@ class ThinkingSphinx::RakeInterface
 
     FileUtils.mkdir_p configuration.indices_location
 
-    configuration.indices.each do |index|
-      next unless index.is_a?(ThinkingSphinx::RealTime::Index)
-
-      puts "Generating index files for #{index.name}"
-      transcriber = ThinkingSphinx::RealTime::Transcriber.new index
-      Dir["#{index.path}*"].each { |file| FileUtils.rm file }
-
-      index.model.find_each do |instance|
-        transcriber.copy instance
-        print "."
-      end
-      print "\n"
-
-      controller.rotate
+    indices = configuration.indices.select { |index| index.type == 'rt' }
+    indices.each do |index|
+      ThinkingSphinx::RealTime::Populator.populate index
     end
   end
 
@@ -71,11 +60,9 @@ class ThinkingSphinx::RakeInterface
 
   private
 
+  delegate :controller, :to => :configuration
+
   def configuration
     ThinkingSphinx::Configuration.instance
-  end
-
-  def controller
-    configuration.controller
   end
 end

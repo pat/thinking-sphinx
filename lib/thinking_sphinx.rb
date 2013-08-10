@@ -34,6 +34,8 @@ module ThinkingSphinx
   end
 
   @before_index_hooks = []
+
+  module Subscribers; end
 end
 
 # Core
@@ -56,6 +58,7 @@ require 'thinking_sphinx/panes'
 require 'thinking_sphinx/rake_interface'
 require 'thinking_sphinx/scopes'
 require 'thinking_sphinx/search'
+require 'thinking_sphinx/subscribers/populator_subscriber'
 require 'thinking_sphinx/test'
 # Extended
 require 'thinking_sphinx/active_record'
