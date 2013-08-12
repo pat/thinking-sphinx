@@ -75,6 +75,7 @@ module ThinkingSphinx
   @@updates_enabled       = nil
   @@suppress_delta_output = false
   @@remote_sphinx         = false
+  @@persistence_enabled   = true
   @@use_group_by_shortcut = nil
 
   def self.mutex
@@ -246,6 +247,16 @@ module ThinkingSphinx
   def self.remote_sphinx=(value)
     mutex.synchronize do
       @@remote_sphinx = value
+    end
+  end
+
+  def self.persistence_enabled?
+    @@persistence_enabled
+  end
+
+  def self.persistence_enabled=(value)
+    mutex.synchronize do
+      @@persistence_enabled = value
     end
   end
 

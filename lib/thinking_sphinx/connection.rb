@@ -27,11 +27,19 @@ class ThinkingSphinx::Connection
   end
 
   def initialize
-    client.open
+    open
   end
 
   def client
     @client ||= Riddle::Client.new shuffled_addresses, configuration.port, client_key
+  end
+
+  def close
+    client.close if ThinkingSphinx.persistence_enabled?
+  end
+
+  def open
+    client.open if ThinkingSphinx.persistence_enabled?
   end
 
   def reset

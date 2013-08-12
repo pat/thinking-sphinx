@@ -74,4 +74,50 @@ describe ThinkingSphinx::Connection do
       end
     end
   end
+
+  describe '#open' do
+    # open is called on initialise
+    let(:client) { double :open => true }
+
+    before :each do
+      Riddle::Client.stub :new => client
+    end
+
+    it "opens the client" do
+      client.should_receive(:open)
+
+      ThinkingSphinx::Connection.new
+    end
+
+    it "does nothing if persistence is disabled" do
+      ThinkingSphinx.stub :persistence_enabled? => false
+
+      client.should_not_receive(:open)
+
+      ThinkingSphinx::Connection.new
+    end
+  end
+
+  describe '#close' do
+    let(:connection) { ThinkingSphinx::Connection.new }
+    let(:client)     { double :open => true }
+
+    before :each do
+      Riddle::Client.stub :new => client
+    end
+
+    it "closes the client" do
+      client.should_receive(:close)
+
+      connection.close
+    end
+
+    it "does nothing if persistence is disabled" do
+      ThinkingSphinx.stub :persistence_enabled? => false
+
+      client.should_not_receive(:close)
+
+      connection.close
+    end
+  end
 end
