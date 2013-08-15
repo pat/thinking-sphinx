@@ -39,6 +39,8 @@ Other changes:
 * SphinxQL is now used instead of the old socket connections (hence the dependency on the @mysql2@ gem).
 * Specifying a different port for Sphinx to use (in @config/thinking_sphinx.yml@) should be done with the mysql41 setting, not the port setting.
 * The searchd_log and searchd_query_log settings are now log and query_log (matching their Sphinx names).
+* searchd_file_path is now indices_location.
+* config_file is now configuration_file.
 * You'll need to include @ThinkingSphinx::Scopes@ into your models if you want to use Sphinx scopes. Default scopes can be set as follows:
 
 <pre><code>class Person < ActiveRecord::Base
