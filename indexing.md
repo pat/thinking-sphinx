@@ -27,7 +27,7 @@ ThinkingSphinx::Index.define :article, :with => :active_record do
 end
 {% endhighlight %}
 
-You'll notice the first argument is the model name downcased and as a symbol, and we are specifying the processor - @:active_record@. Everything inside the block is just like previous versions of Thinking Sphinx, if you're familiar with that.
+You'll notice the first argument is the model name downcased and as a symbol, and we are specifying the processor - `:active_record`. Everything inside the block is just like previous versions of Thinking Sphinx, if you're familiar with that.
 
 When you're defining indices for namespaced models, use a lowercase string with /'s for namespacing as the model reference:
 
@@ -101,7 +101,7 @@ indexes author.location, :as => :author_location
 
 There may be times when a normal column value isn't exactly what you're after, so you can also define your indexes as raw SQL:
 
-notextile.. {% highlight ruby %}
+{% highlight ruby %}
 indexes "LOWER(first_name)", :as => :first_name, :sortable => true
 {% endhighlight %}
 
