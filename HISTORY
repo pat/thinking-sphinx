@@ -1,4 +1,4 @@
-Edge:
+2013-08-26: 3.0.5
 * [CHANGE] Updating Riddle dependency to be >= 1.5.8.
 * [FEATURE] Allow scoping of real-time index models.
 * [CHANGE] Real-time index population presentation and logic are now separated.
