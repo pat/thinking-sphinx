@@ -1,4 +1,5 @@
 Edge:
+* [FIX] Convert very small floats to fixed format for geo-searches.
 * [CHANGE] Rake's silent mode is respected for indexing (@endoscient).
 
 2013-08-26: 3.0.5
