@@ -6,7 +6,10 @@ namespace :ts do
 
   desc 'Generate the Sphinx configuration file and process all indices'
   task :index => :environment do
-    interface.index(ENV['INDEX_ONLY'] != 'true', !Rake.application.options.silent)
+    interface.index(
+      ENV['INDEX_ONLY'] != 'true',
+      !Rake.application.options.silent
+    )
   end
 
   desc 'Clear out Sphinx files'

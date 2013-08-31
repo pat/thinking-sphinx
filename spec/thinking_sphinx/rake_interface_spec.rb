@@ -105,6 +105,12 @@ describe ThinkingSphinx::RakeInterface do
 
       interface.index
     end
+
+    it "does not index verbosely if requested" do
+      controller.should_receive(:index).with(:verbose => false)
+
+      interface.index true, false
+    end
   end
 
   describe '#start' do
