@@ -19,6 +19,8 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
 
   private
 
+  delegate :multi?, :to => :property
+
   def aggregate?
     property.columns.any? { |column|
       associations.aggregate_for?(column.__stack)
@@ -26,7 +28,7 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
   end
 
   def aggregate_separator
-    (property.multi?) ? ',' : ' '
+    multi? ? ',' : ' '
   end
 
   def casted_column_with_table
@@ -34,7 +36,7 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
     clause = adapter.cast_to_timestamp(clause) if property.type == :timestamp
     clause = concatenate clause
     if aggregate?
-      clause = adapter.group_concatenate(clause, aggregate_separator)
+      clause = adapter.group_concatenate(clause, aggregate_separator, multi?)
     end
 
     clause

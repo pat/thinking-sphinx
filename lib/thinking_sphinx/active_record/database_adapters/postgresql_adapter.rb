@@ -27,7 +27,8 @@ class ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter <
     "COALESCE(#{clause}, #{default})"
   end
 
-  def group_concatenate(clause, separator = ' ')
+  def group_concatenate(clause, separator = ' ', distinct = false)
+    clause = "DISTINCT #{clause}" if distinct
     "array_to_string(array_agg(#{clause}), '#{separator}')"
   end
 
