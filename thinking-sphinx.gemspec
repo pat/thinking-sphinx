@@ -10,6 +10,7 @@ Gem::Specification.new do |s|
   s.homepage    = 'http://pat.github.io/thinking-sphinx/'
   s.summary     = %q{ActiveRecord/Rails Sphinx library}
   s.description = %q{A concise and easy-to-use Ruby library that connects ActiveRecord to the Sphinx search daemon, managing configuration, indexing and searching.}
+  s.license     = 'MIT'
 
   s.rubyforge_project = 'thinking-sphinx'
 
