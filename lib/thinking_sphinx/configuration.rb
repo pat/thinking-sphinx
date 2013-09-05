@@ -68,7 +68,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     return if @preloaded_indices
 
     index_paths.each do |path|
-      Dir["#{path}/**/*.rb"].each do |file|
+      Dir["#{path}/**/*.rb"].sort.each do |file|
         ActiveSupport::Dependencies.require_or_load file
       end
     end
