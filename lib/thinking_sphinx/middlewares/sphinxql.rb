@@ -75,9 +75,9 @@ class ThinkingSphinx::Middlewares::SphinxQL <
     end
 
     def indices_match_classes?
-      indices.collect(&:reference).uniq == classes.collect { |klass|
+      indices.collect(&:reference).uniq.sort == classes.collect { |klass|
         klass.name.underscore.to_sym
-      }
+      }.sort
     end
 
     def inheritance_column_select(klass)
