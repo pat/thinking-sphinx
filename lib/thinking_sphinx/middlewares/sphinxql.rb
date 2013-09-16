@@ -29,6 +29,10 @@ class ThinkingSphinx::Middlewares::SphinxQL <
 
     attr_reader :context
 
+    delegate :search, :configuration, :to => :context
+    delegate :options,                :to => :search
+    delegate :settings,               :to => :configuration
+
     def classes
       options[:classes] || []
     end
@@ -130,9 +134,6 @@ SQL
       @indices ||= ThinkingSphinx::IndexSet.new classes, options[:indices]
     end
 
-    delegate :search, :to => :context
-    delegate :options, :to => :search
-
     def order_clause
       order_by = options[:order]
       order_by = "#{order_by} ASC" if order_by.is_a? Symbol
@@ -147,9 +148,6 @@ SQL
         hash
       end
     end
-
-    delegate :configuration, :to => :context
-    delegate :settings, :to => :configuration
 
     def values
       options[:select] ||= '*, @groupby, @count' if group_attribute.present?
