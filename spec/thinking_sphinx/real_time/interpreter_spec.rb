@@ -124,6 +124,14 @@ describe ThinkingSphinx::RealTime::Interpreter do
         instance.indexes column, :sortable => true, :as => :other
       end
 
+      it "respects symbols instead of columns" do
+        ThinkingSphinx::RealTime::Attribute.should_receive(:new).
+          with(:title, :as => :title_sort, :type => :string).
+          and_return(attribute)
+
+        instance.indexes :title, :sortable => true
+      end
+
       it "adds an attribute to the index" do
         instance.indexes column, :sortable => true
 

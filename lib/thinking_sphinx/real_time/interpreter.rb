@@ -37,7 +37,10 @@ class ThinkingSphinx::RealTime::Interpreter <
     options = options.except(:sortable).merge(:type => :string)
 
     @index.attributes += columns.collect { |column|
-      aliased_name = options[:as] || column.__name.to_sym
+      aliased_name   = options[:as]
+      aliased_name ||= column.__name.to_sym if column.respond_to?(:__name)
+      aliased_name ||= column
+
       options[:as] = "#{aliased_name}_sort".to_sym
 
       ::ThinkingSphinx::RealTime::Attribute.new column, options
