@@ -28,6 +28,13 @@ describe 'Sorting search results', :live => true do
     Book.search(:order => :title).to_a.should == [gods, boys, grave]
   end
 
+  it "sorts by a given sortable field with real-time indices" do
+    widgets = Product.create! :name => 'Widgets'
+    gadgets = Product.create! :name => 'Gadgets'
+
+    Product.search(:order => "name_sort ASC").to_a.should == [gadgets, widgets]
+  end
+
   it "can sort with a provided expression" do
     gods  = Book.create! :title => 'American Gods',      :year => 2001
     grave = Book.create! :title => 'The Graveyard Book', :year => 2009
