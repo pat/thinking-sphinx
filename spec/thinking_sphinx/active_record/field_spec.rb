@@ -10,6 +10,19 @@ describe ThinkingSphinx::ActiveRecord::Field do
     column.stub! :to_a => [column]
   end
 
+  describe '#columns' do
+    it 'returns the provided Column object' do
+      field.columns.should == [column]
+    end
+
+    it 'translates symbols to Column objects' do
+      ThinkingSphinx::ActiveRecord::Column.should_receive(:new).with(:title).
+        and_return(column)
+
+      ThinkingSphinx::ActiveRecord::Field.new model, :title
+    end
+  end
+
   describe '#file?' do
     it "defaults to false" do
       field.should_not be_file
