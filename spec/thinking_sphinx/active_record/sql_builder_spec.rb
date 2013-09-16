@@ -4,7 +4,8 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
   let(:source)       { double('source', :model => model, :offset => 3,
     :fields => [], :attributes => [], :disable_range? => false,
     :delta_processor => nil, :conditions => [], :groupings => [],
-    :adapter => adapter, :associations => [], :primary_key => :id) }
+    :adapter => adapter, :associations => [], :primary_key => :id,
+    :options => {}) }
   let(:model)        { double('model', :connection => connection,
     :descends_from_active_record? => true, :column_names => [],
     :inheritance_column => 'type', :unscoped => relation,
@@ -393,6 +394,55 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
         relation.should_not_receive(:order)
 
         builder.sql_query
+      end
+
+      context 'group by shortcut' do
+        before :each do
+          source.options[:minimal_group_by?] = true
+        end
+
+        it "groups by the primary key" do
+          relation.should_receive(:group) do |string|
+            string.should match(/"users"."id"/)
+            relation
+          end
+
+          builder.sql_query
+        end
+
+        it "does not group by fields" do
+          source.fields << double('field')
+
+          relation.should_receive(:group) do |string|
+            string.should_not match(/"name"/)
+            relation
+          end
+
+          builder.sql_query
+        end
+
+        it "does not group by attributes" do
+          source.attributes << double('attribute')
+          presenter.stub!(:to_group => '"created_at"')
+
+          relation.should_receive(:group) do |string|
+            string.should_not match(/"created_at"/)
+            relation
+          end
+
+          builder.sql_query
+        end
+
+        it "groups by source groupings" do
+          source.groupings << '"latitude"'
+
+          relation.should_receive(:group) do |string|
+            string.should match(/"latitude"/)
+            relation
+          end
+
+          builder.sql_query
+        end
       end
 
       context 'STI model' do

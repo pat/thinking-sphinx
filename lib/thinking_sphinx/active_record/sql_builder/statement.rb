@@ -129,11 +129,14 @@ module ThinkingSphinx
       end
 
       def group_clause
-        SQLBuilder::ClauseBuilder.new(quoted_primary_key).compose(
+        builder = SQLBuilder::ClauseBuilder.new(quoted_primary_key)
+
+        builder.compose(
           presenters_to_group(field_presenters),
-          presenters_to_group(attribute_presenters),
-          groupings
-        ).separated
+          presenters_to_group(attribute_presenters)
+        ) unless source.options[:minimal_group_by?]
+
+        builder.compose(groupings).separated
       end
     end
   end

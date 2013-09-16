@@ -7,7 +7,7 @@ module ThinkingSphinx
         :groupings, :polymorphs
 
       OPTIONS = [:name, :offset, :delta_processor, :delta?, :disable_range?,
-        :group_concat_max_len, :utf8?, :position]
+        :group_concat_max_len, :utf8?, :position, :minimal_group_by?]
 
       def initialize(model, options = {})
         @model             = model
