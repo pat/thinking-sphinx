@@ -230,6 +230,8 @@ You don't need to specify all fields - any not given values are kept at the defa
 
 If you'd like the same custom weightings to apply to all searches, you can set the values in your index definition:
 
+UPDATE: The functionality to add custom weightings to your index is no longer working in TS3.  However, the field weights parameter still works on the search function listed above.  See: https://groups.google.com/forum/#!msg/thinking-sphinx/0cJPILuS5zs/cGvhe2-sZi0J
+
 {% highlight ruby %}
 set_property :field_weights => {
   :subject => 10,
