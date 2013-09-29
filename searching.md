@@ -228,9 +228,7 @@ Article.search "pancakes", :field_weights => {
 
 You don't need to specify all fields - any not given values are kept at the default weighting of 1.
 
-If you'd like the same custom weightings to apply to all searches, you can set the values in your index definition:
-
-UPDATE: The functionality to add custom weightings to your index is no longer working in TS3.  However, the field weights parameter still works on the search function listed above.  See: https://groups.google.com/forum/#!msg/thinking-sphinx/0cJPILuS5zs/cGvhe2-sZi0J
+If you'd like the same custom weightings to apply to all searches, it's best to set these through [a default Sphinx scope](scopes.html). If you're using a version prior to 3.0, you can specify these defaults in your index definition (see below), but given this is something related to searching rather than indexing, a default scope is a more appropriate option.
 
 {% highlight ruby %}
 set_property :field_weights => {
