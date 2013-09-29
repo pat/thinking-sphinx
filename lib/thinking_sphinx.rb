@@ -6,6 +6,7 @@ else
 end
 
 require 'riddle'
+require 'riddle/2.1.0'
 require 'middleware'
 require 'active_record'
 require 'innertube'
