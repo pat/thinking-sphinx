@@ -65,6 +65,16 @@ describe ThinkingSphinx::ActiveRecord::Base do
         options[:classes].should == [sub_model, model]
     end
 
+    it "respects provided middleware" do
+      model.search(:middleware => ThinkingSphinx::Middlewares::RAW_ONLY).
+        options[:middleware].should == ThinkingSphinx::Middlewares::RAW_ONLY
+    end
+
+    it "respects provided masks" do
+      model.search(:masks => [ThinkingSphinx::Masks::PaginationMask]).
+        masks.should == [ThinkingSphinx::Masks::PaginationMask]
+    end
+
     it "applies the default scope if there is one" do
       model.stub :default_sphinx_scope => :default,
         :sphinx_scopes => {:default => Proc.new { {:order => :created_at} }}
