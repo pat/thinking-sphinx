@@ -52,11 +52,6 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter do
   describe '#group_concatenate' do
     it "group concatenates the clause with the given separator" do
       adapter.group_concatenate('foo', ',').
-        should == "array_to_string(array_agg(foo), ',')"
-    end
-
-    it "adds a DISTINCT when requested" do
-      adapter.group_concatenate('foo', ',', true).
         should == "array_to_string(array_agg(DISTINCT foo), ',')"
     end
   end
