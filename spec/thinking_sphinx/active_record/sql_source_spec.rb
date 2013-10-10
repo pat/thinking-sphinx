@@ -55,6 +55,11 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       ThinkingSphinx::ActiveRecord::SQLSource.new model,
         :delta_processor => processor_class
     }
+    let(:source_with_options)    {
+      ThinkingSphinx::ActiveRecord::SQLSource.new model,
+        :delta_processor => processor_class,
+        :delta_options   => { :opt_key => :opt_value }
+    }
 
     it "loads the processor with the adapter" do
       processor_class.should_receive(:try).with(:new, adapter, {}).
@@ -65,6 +70,11 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
     it "returns the given processor" do
       source.delta_processor.should == processor
+    end
+
+    it "passes given options to the processor" do
+      processor_class.should_receive(:try).with(:new, adapter, {:opt_key => :opt_value})
+      source_with_options.delta_processor
     end
   end
 
