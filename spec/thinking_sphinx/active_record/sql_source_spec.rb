@@ -57,7 +57,7 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
     }
 
     it "loads the processor with the adapter" do
-      processor_class.should_receive(:try).with(:new, adapter).
+      processor_class.should_receive(:try).with(:new, adapter, {}).
         and_return processor
 
       source.delta_processor
