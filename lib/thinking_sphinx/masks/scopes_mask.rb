@@ -19,6 +19,11 @@ class ThinkingSphinx::Masks::ScopesMask
     ThinkingSphinx::Search::Merger.new(@search).merge! query, options
   end
 
+  def search_for_ids(query = nil, options = {})
+    query, options = nil, query if query.is_a?(Hash)
+    search query, options.merge(:ids_only => true)
+  end
+
   private
 
   def apply_scope(scope, *args)

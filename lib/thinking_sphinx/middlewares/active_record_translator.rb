@@ -18,7 +18,12 @@ class ThinkingSphinx::Middlewares::ActiveRecordTranslator <
 
     def call
       results_for_models # load now to avoid segfaults
-      context[:results] = context[:results].collect { |row| result_for(row) }
+
+      context[:results] = if sql_options[:order]
+        results_for_models.values.first
+      else
+        context[:results].collect { |row| result_for(row) }
+      end
     end
 
     private

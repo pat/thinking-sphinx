@@ -26,6 +26,13 @@ describe ThinkingSphinx::SphinxError do
         should be_a(ThinkingSphinx::QueryError)
     end
 
+    it "translates connection errors" do
+      error.stub :message => "Can't connect to MySQL server on '127.0.0.1' (61)"
+
+      ThinkingSphinx::SphinxError.new_from_mysql(error).
+        should be_a(ThinkingSphinx::ConnectionError)
+    end
+
     it "defaults to sphinx errors" do
       error.stub :message => 'index foo: unknown error: something is wrong'
 

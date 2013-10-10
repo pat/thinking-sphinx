@@ -21,9 +21,8 @@ class ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter <
     "IFNULL(#{clause}, #{default})"
   end
 
-  def group_concatenate(clause, separator = ' ', distinct = false)
-    clause = "DISTINCT #{clause}" if distinct
-    "GROUP_CONCAT(#{clause} SEPARATOR '#{separator}')"
+  def group_concatenate(clause, separator = ' ')
+    "GROUP_CONCAT(DISTINCT #{clause} SEPARATOR '#{separator}')"
   end
 
   def time_zone_query_pre

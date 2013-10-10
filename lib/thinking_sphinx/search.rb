@@ -18,14 +18,12 @@ class ThinkingSphinx::Search < Array
     undef_method method
   }
 
-  attr_reader   :options, :masks
+  attr_reader   :options
   attr_accessor :query
 
   def initialize(query = nil, options = {})
     query, options   = nil, query if query.is_a?(Hash)
     @query, @options = query, options
-    @masks           = @options.delete(:masks) || DEFAULT_MASKS.clone
-    @middleware      = @options.delete(:middleware)
 
     populate if options[:populate]
   end
@@ -38,6 +36,10 @@ class ThinkingSphinx::Search < Array
   def current_page
     options[:page] = 1 if options[:page].blank?
     options[:page].to_i
+  end
+
+  def masks
+    @masks ||= @options[:masks] || DEFAULT_MASKS.clone
   end
 
   def meta
@@ -94,6 +96,11 @@ class ThinkingSphinx::Search < Array
 
   private
 
+  def default_middleware
+    options[:ids_only] ? ThinkingSphinx::Middlewares::IDS_ONLY :
+      ThinkingSphinx::Middlewares::DEFAULT
+  end
+
   def mask_stack
     @mask_stack ||= masks.collect { |klass| klass.new self }
   end
@@ -109,13 +116,7 @@ class ThinkingSphinx::Search < Array
   end
 
   def middleware
-    @middleware ||= begin
-      if options[:ids_only]
-        ThinkingSphinx::Middlewares::IDS_ONLY
-      else
-        ThinkingSphinx::Middlewares::DEFAULT
-      end
-    end
+    @options[:middleware] || default_middleware
   end
 end
 

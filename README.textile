@@ -216,7 +216,7 @@ May or may not be added:
 
 h3. Sphinx Versions
 
-TS 3 is built for Sphinx 2.x only. You cannot use 1.10-beta, 0.9.9 or anything earlier than that. 2.0.5 or newer is recommended.
+TS 3 is built for Sphinx 2.0.5 or newer. You cannot use 1.10-beta, 0.9.9 or anything earlier than that.
 
 h3. Rails Versions
 

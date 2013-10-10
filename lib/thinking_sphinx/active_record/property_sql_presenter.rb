@@ -36,7 +36,7 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
     clause = adapter.cast_to_timestamp(clause) if property.type == :timestamp
     clause = concatenate clause
     if aggregate?
-      clause = adapter.group_concatenate(clause, aggregate_separator, multi?)
+      clause = adapter.group_concatenate(clause, aggregate_separator)
     end
 
     clause

@@ -62,6 +62,8 @@ module ThinkingSphinx::Connection
         :port  => port,
         :flags => Mysql2::Client::MULTI_STATEMENTS
       }.merge(options))
+    rescue Mysql2::Error => error
+      raise ThinkingSphinx::SphinxError.new_from_mysql error
     end
 
     def close
