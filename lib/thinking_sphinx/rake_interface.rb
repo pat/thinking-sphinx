@@ -14,11 +14,6 @@ class ThinkingSphinx::RakeInterface
   end
 
   def generate
-    configuration.preload_indices
-    configuration.render
-
-    FileUtils.mkdir_p configuration.indices_location
-
     indices = configuration.indices.select { |index| index.type == 'rt' }
     indices.each do |index|
       ThinkingSphinx::RealTime::Populator.populate index
@@ -30,6 +25,13 @@ class ThinkingSphinx::RakeInterface
     FileUtils.mkdir_p configuration.indices_location
     ThinkingSphinx.before_index_hooks.each { |hook| hook.call }
     controller.index :verbose => verbose
+  end
+
+  def prepare
+    configuration.preload_indices
+    configuration.render
+
+    FileUtils.mkdir_p configuration.indices_location
   end
 
   def start

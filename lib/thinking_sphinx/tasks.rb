@@ -19,6 +19,7 @@ namespace :ts do
 
   desc 'Generate fresh index files for real-time indices'
   task :generate => :environment do
+    interface.prepare
     interface.generate
   end
 
