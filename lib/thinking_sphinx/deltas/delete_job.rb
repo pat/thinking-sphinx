@@ -9,7 +9,7 @@ class ThinkingSphinx::Deltas::DeleteJob
         @index_name, @document_id, :sphinx_deleted => true
       )
     end
-  rescue Mysql2::Error => error
+  rescue ThinkingSphinx::ConnectionError => error
     # This isn't vital, so don't raise the error.
   end
 end

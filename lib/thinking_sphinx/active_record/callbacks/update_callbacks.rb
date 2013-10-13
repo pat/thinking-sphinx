@@ -45,7 +45,7 @@ class ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks <
     ThinkingSphinx::Connection.take do |connection|
       connection.execute(sphinxql)
     end
-  rescue Mysql2::Error => error
+  rescue ThinkingSphinx::ConnectionError => error
     # This isn't vital, so don't raise the error.
   end
 

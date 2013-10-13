@@ -6,7 +6,7 @@ class ThinkingSphinx::Deletion
       'plain' => PlainDeletion,
       'rt'    => RealtimeDeletion
     }[index.type].new(index, instance).perform
-  rescue Mysql2::Error => error
+  rescue ThinkingSphinx::ConnectionError => error
     # This isn't vital, so don't raise the error.
   end
 
