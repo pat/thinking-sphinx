@@ -1,9 +1,9 @@
 class ThinkingSphinx::IndexSet
   include Enumerable
 
-  def initialize(classes, index_names, configuration = nil)
+  def initialize(classes, index_names = nil, configuration = nil)
     @classes       = classes || []
-    @index_names   = index_names
+    @index_names   = index_names || []
     @configuration = configuration || ThinkingSphinx::Configuration.instance
   end
 
@@ -36,7 +36,7 @@ class ThinkingSphinx::IndexSet
 
     return @configuration.indices.select { |index|
       @index_names.include?(index.name)
-    } if @index_names && @index_names.any?
+    } if @index_names.any?
 
     return @configuration.indices if @classes.empty?
 
