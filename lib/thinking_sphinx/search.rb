@@ -64,6 +64,7 @@ class ThinkingSphinx::Search < Array
   def populate
     return self if @populated
 
+    enforce_all_classes_have_indices
     middleware.call [context]
     @populated = true
 
@@ -99,6 +100,16 @@ class ThinkingSphinx::Search < Array
   def default_middleware
     options[:ids_only] ? ThinkingSphinx::Middlewares::IDS_ONLY :
       ThinkingSphinx::Middlewares::DEFAULT
+  end
+
+  def enforce_all_classes_have_indices
+    noindex = Array(@options[:classes]).select { |c| !c.has_sphinx_indices? }
+
+    if !noindex.empty?
+      raise ThinkingSphinx::MissingIndexError,
+        "Can't search on a class which doesn't have an index definition. "\
+        "(" + noindex.map(&:name).join(",") + ")"
+    end
   end
 
   def mask_stack

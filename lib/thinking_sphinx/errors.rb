@@ -39,3 +39,6 @@ end
 
 class ThinkingSphinx::MixedScopesError < StandardError
 end
+
+class ThinkingSphinx::MissingIndexError < StandardError
+end

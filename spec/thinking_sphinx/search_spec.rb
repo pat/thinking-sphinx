@@ -131,6 +131,26 @@ describe ThinkingSphinx::Search do
       search.populate
       search.populate
     end
+
+    it "raises an error if any of the models don't have an index" do
+      model_without_index = Class.new(ActiveRecord::Base) do
+        def self.name; "ModelWithoutIndex"; end
+      end
+
+      model_with_index = Class.new(ActiveRecord::Base) do
+        include ThinkingSphinx::ActiveRecord::Base
+
+        def self.name; "ModelWithIndex"; end
+      end
+
+      ThinkingSphinx::Index.define :model_with_index, :with => :active_record
+
+      lambda {
+        ThinkingSphinx::Search.new(
+          :classes => [model_with_index, model_without_index]).populate
+      }.should raise_error ThinkingSphinx::MissingIndexError,
+        /\(ModelWithoutIndex\)/
+    end
   end
 
   describe '#respond_to?' do

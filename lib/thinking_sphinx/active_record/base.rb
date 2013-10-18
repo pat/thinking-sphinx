@@ -16,6 +16,10 @@ module ThinkingSphinx::ActiveRecord::Base
       merge_search ThinkingSphinx.facets, query, options
     end
 
+    def has_sphinx_indices?
+      !sphinx_indices.empty?
+    end
+
     def search(query = nil, options = {})
       merge_search ThinkingSphinx.search, query, options
     end
@@ -28,6 +32,11 @@ module ThinkingSphinx::ActiveRecord::Base
       search = search query, options
       ThinkingSphinx::Search::Merger.new(search).merge! nil, :ids_only => true
     end
+
+    def sphinx_index_names
+      sphinx_indices.map(&:name)
+    end
+
 
     private
 
@@ -51,6 +60,10 @@ module ThinkingSphinx::ActiveRecord::Base
       end
 
       merger.merge! nil, :classes => [self]
+    end
+
+    def sphinx_indices
+      ThinkingSphinx::IndexSet.new([self]).to_a
     end
   end
 end
