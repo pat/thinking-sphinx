@@ -1,4 +1,23 @@
 Edge:
+* [CHANGE] Updating Riddle dependency to be >= 1.5.9.
+* [FEATURE] Added new search options in Sphinx 2.1.x.
+* [FEATURE] Added ability to disable UTF-8 forced encoding, now that Sphinx 2.1.2 returns UTF-8 strings by default. This will be disabled by default in Thinking Sphinx 3.1.0.
+* [FEATURE] Added ability to switch between Sphinx special variables and the equivalent functions. Sphinx 2.1.x requires the latter, and that behaviour will become the default in Sphinx 3.1.0.
+* [FIX] Cast every column to a timestamp for timestamp attributes with multiple columns.
+* [CHANGE] Separated directory preparation from data generation for real-time index (re)generation tasks.
+* [CHANGE] Have tests index UTF-8 characters where appropriate (Pedro Cunha).
+* [FIX] Don't use Sphinx ordering if SQL order option is supplied to a search.
+* [CHANGE] Always use DISTINCT in group concatenation.
+* [CHANGE] Sphinx connection failures now have their own class, ThinkingSphinx::ConnectionError, instead of the standard Mysql2::Error.
+* [FIX] Custom middleware and mask options now function correctly with model-scoped searches.
+* [FEATURE] Adding search_for_ids on scoped search calls.
+* [CHANGE] Don't clobber custom :select options for facet searches (Timo Virkkala).
+* [CHANGE] Automatically load Riddle's Sphinx 2.0.5 compatability changes.
+* [FIX] Suspended deltas now no longer update core indices as well.
+* [CHANGE] Realtime fields and attributes now accept symbols as well as column objects, and fields can be sortable (with a _sort prefix for the matching attribute).
+* [FEATURE] MySQL users can enable a minimal GROUP BY statement, to speed up queries: set_property :minimal_group_by? => true.
+* [CHANGE] Insist on the log directory existing, to ensure correct behaviour for symlinked paths. (Michael Pearson).
+* [FIX] Use alphabetical ordering for index paths consistently (@grin).
 * [FIX] Convert very small floats to fixed format for geo-searches.
 * [CHANGE] Rake's silent mode is respected for indexing (@endoscient).
 
