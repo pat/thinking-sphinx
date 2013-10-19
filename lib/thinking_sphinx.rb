@@ -64,6 +64,7 @@ require 'thinking_sphinx/search'
 require 'thinking_sphinx/sphinxql'
 require 'thinking_sphinx/subscribers/populator_subscriber'
 require 'thinking_sphinx/test'
+require 'thinking_sphinx/utf8'
 # Extended
 require 'thinking_sphinx/active_record'
 require 'thinking_sphinx/deltas'
