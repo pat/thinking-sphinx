@@ -7,6 +7,10 @@ require 'thinking_sphinx/railtie'
 
 Combustion.initialize! :active_record
 
+if ENV['SPHINX_VERSION'].try :[], /2.1.\d/
+  ThinkingSphinx::SphinxQL.functions!
+end
+
 root = File.expand_path File.dirname(__FILE__)
 Dir["#{root}/support/**/*.rb"].each { |file| require file }
 

@@ -11,6 +11,7 @@ require 'middleware'
 require 'active_record'
 require 'innertube'
 require 'active_support/core_ext/module/delegation'
+require 'active_support/core_ext/module/attribute_accessors'
 
 module ThinkingSphinx
   def self.count(query = '', options = {})
@@ -60,6 +61,7 @@ require 'thinking_sphinx/panes'
 require 'thinking_sphinx/rake_interface'
 require 'thinking_sphinx/scopes'
 require 'thinking_sphinx/search'
+require 'thinking_sphinx/sphinxql'
 require 'thinking_sphinx/subscribers/populator_subscriber'
 require 'thinking_sphinx/test'
 # Extended
