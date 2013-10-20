@@ -34,6 +34,8 @@ module ThinkingSphinx
       end
 
       def scope_by_time_zone
+        return if config.settings['skip_time_zone']
+
         self.scope += time_zone_query_pre
       end
 
