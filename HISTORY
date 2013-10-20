@@ -1,4 +1,4 @@
-Edge:
+2013-10-20: 3.0.6
 * [FEATURE] Raise an error if no indices match the search criteria (Bryan Ricker).
 * [FEATURE] skip_time_zone setting is now available per environment via config/thinking_sphinx.yml to avoid the sql_query_pre time zone command.
 * [CHANGE] Updating Riddle dependency to be >= 1.5.9.
