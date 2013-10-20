@@ -24,13 +24,15 @@ module ThinkingSphinx
       end
 
       def scope_by_delta_processor
-        self.scope << delta_processor.reset_query if delta_processor && !source.delta?
+        return unless delta_processor && !source.delta?
+
+        self.scope << delta_processor.reset_query
       end
 
       def scope_by_session
-        if max_len = source.options[:group_concat_max_len]
-          self.scope << "SET SESSION group_concat_max_len = #{max_len}"
-        end
+        return unless max_len = source.options[:group_concat_max_len]
+
+        self.scope << "SET SESSION group_concat_max_len = #{max_len}"
       end
 
       def scope_by_time_zone
