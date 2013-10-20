@@ -12,7 +12,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
     :quoted_table_name => '`users`', :name => 'User') }
   let(:connection)   { double('connection') }
   let(:relation)     { double('relation') }
-  let(:config)       { double('config', :indices => indices) }
+  let(:config)       { double('config', :indices => indices, :settings => {}) }
   let(:indices)      { double('indices', :count => 5) }
   let(:presenter)    { double('presenter', :to_select => '`name` AS `name`',
     :to_group => '`name`') }
@@ -595,6 +595,16 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
       source.options[:utf8?] = false
 
       builder.sql_query_pre.should_not include('SET UTF8')
+    end
+
+    it "adds a time-zone query by default" do
+      expect(builder.sql_query_pre).to include('SET TIME ZONE')
+    end
+
+    it "does not add a time-zone query if requested" do
+      config.settings['skip_time_zone'] = true
+
+      expect(builder.sql_query_pre).to_not include('SET TIME ZONE')
     end
   end
 

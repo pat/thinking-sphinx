@@ -18,8 +18,8 @@ class ThinkingSphinx::Excerpter
       connection.query(statement_for(text)).first['snippet']
     end
 
-    result.encode!("ISO-8859-1")
-    result.force_encoding("UTF-8")
+    ThinkingSphinx::Configuration.instance.settings['utf8'] ? result :
+      ThinkingSphinx::UTF8.encode(result)
   end
 
   private

@@ -9,19 +9,20 @@ class ThinkingSphinx::Masks::GroupEnumeratorsMask
 
   def each_with_count(&block)
     @search.raw.each_with_index do |row, index|
-      yield @search[index], row['@count']
+      yield @search[index], row[ThinkingSphinx::SphinxQL.count]
     end
   end
 
   def each_with_group(&block)
     @search.raw.each_with_index do |row, index|
-      yield @search[index], row['@groupby']
+      yield @search[index], row[ThinkingSphinx::SphinxQL.group_by]
     end
   end
 
   def each_with_group_and_count(&block)
     @search.raw.each_with_index do |row, index|
-      yield @search[index], row['@groupby'], row['@count']
+      yield @search[index], row[ThinkingSphinx::SphinxQL.group_by],
+        row[ThinkingSphinx::SphinxQL.count]
     end
   end
 end
