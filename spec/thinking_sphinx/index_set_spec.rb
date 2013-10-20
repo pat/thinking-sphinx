@@ -29,10 +29,14 @@ describe ThinkingSphinx::IndexSet do
       set.to_a
     end
 
-    it "returns all indices when no models or indices are specified" do
-      article_core = double('index', :name => 'article_core')
-      user_core    = double('index', :name => 'user_core')
-      configuration.indices.replace [article_core, user_core]
+    it "returns all non-distributed indices when no models or indices are specified" do
+      article_core = double 'index', :name => 'article_core',
+        :distributed? => false
+      user_core    = double 'index', :name => 'user_core',
+        :distributed? => false
+      distributed  = double 'index', :name => 'user', :distributed? => true
+
+      configuration.indices.replace [article_core, user_core, distributed]
 
       set.to_a.should == [article_core, user_core]
     end

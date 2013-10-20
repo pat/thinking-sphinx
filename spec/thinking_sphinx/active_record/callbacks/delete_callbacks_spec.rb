@@ -34,7 +34,7 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks do
     let(:config)     { double('config', :indices_for_references => [index],
       :preload_indices => true) }
     let(:index)      { double('index', :name => 'foo_core',
-      :document_id_for_key => 14, :type => 'plain') }
+      :document_id_for_key => 14, :type => 'plain', :distributed? => false) }
     let(:instance)   { double('instance', :id => 7) }
 
     before :each do

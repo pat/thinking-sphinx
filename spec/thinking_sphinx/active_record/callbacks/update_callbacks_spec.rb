@@ -19,8 +19,8 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks do
       :settings => {'attribute_updates' => true},
       :indices_for_references => [index]) }
     let(:connection)    { double('connection', :execute => '') }
-    let(:index)         { double('index', :name => 'article_core',
-      :sources => [source], :document_id_for_key => 3) }
+    let(:index)         { double 'index', :name => 'article_core',
+      :sources => [source], :document_id_for_key => 3, :distributed? => false }
     let(:source)        { double('source', :attributes => []) }
 
     before :each do
