@@ -11,8 +11,7 @@ module ThinkingSphinx
 
       def initialize(model, options = {})
         @model             = model
-        @database_settings = ::ActiveRecord::Base.connection.
-          instance_variable_get(:@config).clone
+        @database_settings = model.connection.instance_variable_get(:@config).clone
         @options           = {
           :utf8? => (@database_settings[:encoding] == 'utf8')
         }.merge options

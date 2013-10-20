@@ -1,8 +1,9 @@
 require 'spec_helper'
 
 describe ThinkingSphinx::ActiveRecord::SQLSource do
-  let(:model)      { double('model', :name => 'User', :column_names => [],
-    :inheritance_column => 'type', :primary_key => :id) }
+  let(:model)      { double('model', :connection => connection,
+    :name => 'User', :column_names => [], :inheritance_column => 'type',
+    :primary_key => :id) }
   let(:connection) {
     double('connection', :instance_variable_get => db_config) }
   let(:db_config)  { {:host => 'localhost', :user => 'root',
@@ -12,8 +13,6 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
   let(:adapter)    { double('adapter') }
 
   before :each do
-    stub_const 'ActiveRecord::Base', double(:connection => connection)
-
     ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter.
       stub!(:=== => true)
     ThinkingSphinx::ActiveRecord::DatabaseAdapters.
