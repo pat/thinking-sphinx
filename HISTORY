@@ -1,4 +1,5 @@
 Edge:
+* [FEATURE] skip_time_zone setting is now available per environment via config/thinking_sphinx.yml to avoid the sql_query_pre time zone command.
 * [CHANGE] Updating Riddle dependency to be >= 1.5.9.
 * [FEATURE] Added new search options in Sphinx 2.1.x.
 * [FEATURE] Added ability to disable UTF-8 forced encoding, now that Sphinx 2.1.2 returns UTF-8 strings by default. This will be disabled by default in Thinking Sphinx 3.1.0.
