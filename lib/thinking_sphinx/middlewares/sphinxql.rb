@@ -132,7 +132,11 @@ SQL
     end
 
     def indices
-      @indices ||= ThinkingSphinx::IndexSet.new classes, options[:indices]
+      @indices ||= begin
+        set = ThinkingSphinx::IndexSet.new classes, options[:indices]
+        raise ThinkingSphinx::NoIndicesError if set.empty?
+        set
+      end
     end
 
     def order_clause
