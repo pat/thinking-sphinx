@@ -66,6 +66,15 @@ module ThinkingSphinx
         super
       end
 
+      def set_database_settings(settings)
+        @sql_host ||= settings[:host]     || 'localhost'
+        @sql_user ||= settings[:username] || settings[:user] || ENV['USER']
+        @sql_pass ||= settings[:password].to_s.gsub('#', '\#')
+        @sql_db   ||= settings[:database]
+        @sql_port ||= settings[:port]
+        @sql_sock ||= settings[:socket]
+      end
+
       def type
         @type ||= case adapter
         when DatabaseAdapters::MySQLAdapter
@@ -120,7 +129,7 @@ module ThinkingSphinx
         polymorphs.each &:morph!
         append_presenter_to_attribute_array
 
-        set_database_settings
+        set_database_settings database_settings
         build_sql_fields
         build_sql_query
 
@@ -129,16 +138,6 @@ module ThinkingSphinx
 
       def properties
         fields + attributes
-      end
-
-      def set_database_settings
-        @sql_host ||= database_settings[:host]     || 'localhost'
-        @sql_user ||= database_settings[:username] || database_settings[:user] ||
-          ENV['USER']
-        @sql_pass ||= database_settings[:password].to_s.gsub('#', '\#')
-        @sql_db   ||= database_settings[:database]
-        @sql_port ||= database_settings[:port]
-        @sql_sock ||= database_settings[:socket]
       end
     end
   end

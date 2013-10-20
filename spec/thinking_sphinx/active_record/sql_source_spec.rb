@@ -158,79 +158,6 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       ThinkingSphinx::Configuration.stub :instance => config
     end
 
-    it "sets the sql_host setting from the model's database settings" do
-      db_config[:host] = '12.34.56.78'
-
-      source.render
-
-      source.sql_host.should == '12.34.56.78'
-    end
-
-    it "defaults sql_host to localhost if the model has no host" do
-      db_config[:host] = nil
-
-      source.render
-
-      source.sql_host.should == 'localhost'
-    end
-
-    it "sets the sql_user setting from the model's database settings" do
-      db_config[:username] = 'pat'
-
-      source.render
-
-      source.sql_user.should == 'pat'
-    end
-
-    it "uses the user setting if username is not set in the model" do
-      db_config[:username] = nil
-      db_config[:user]     = 'pat'
-
-      source.render
-
-      source.sql_user.should == 'pat'
-    end
-
-    it "sets the sql_pass setting from the model's database settings" do
-      db_config[:password] = 'swordfish'
-
-      source.render
-
-      source.sql_pass.should == 'swordfish'
-    end
-
-    it "escapes hashes in the password for sql_pass" do
-      db_config[:password] = 'sword#fish'
-
-      source.render
-
-      source.sql_pass.should == 'sword\#fish'
-    end
-
-    it "sets the sql_db setting from the model's database settings" do
-      db_config[:database] = 'rails_app'
-
-      source.render
-
-      source.sql_db.should == 'rails_app'
-    end
-
-    it "sets the sql_port setting from the model's database settings" do
-      db_config[:port] = 5432
-
-      source.render
-
-      source.sql_port.should == 5432
-    end
-
-    it "sets the sql_sock setting from the model's database settings" do
-      db_config[:socket] = '/unix/socket'
-
-      source.render
-
-      source.sql_sock.should == '/unix/socket'
-    end
-
     it "uses the builder's sql_query value" do
       builder.stub! :sql_query => 'select * from table'
 
@@ -393,6 +320,62 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       source.render
 
       source.mysql_ssl_cert.should == 'foo.cert'
+    end
+  end
+
+  describe '#set_database_settings' do
+    it "sets the sql_host setting from the model's database settings" do
+      source.set_database_settings :host => '12.34.56.78'
+
+      source.sql_host.should == '12.34.56.78'
+    end
+
+    it "defaults sql_host to localhost if the model has no host" do
+      source.set_database_settings :host => nil
+
+      source.sql_host.should == 'localhost'
+    end
+
+    it "sets the sql_user setting from the model's database settings" do
+      source.set_database_settings :username => 'pat'
+
+      source.sql_user.should == 'pat'
+    end
+
+    it "uses the user setting if username is not set in the model" do
+      source.set_database_settings :username => nil, :user => 'pat'
+
+      source.sql_user.should == 'pat'
+    end
+
+    it "sets the sql_pass setting from the model's database settings" do
+      source.set_database_settings :password => 'swordfish'
+
+      source.sql_pass.should == 'swordfish'
+    end
+
+    it "escapes hashes in the password for sql_pass" do
+      source.set_database_settings :password => 'sword#fish'
+
+      source.sql_pass.should == 'sword\#fish'
+    end
+
+    it "sets the sql_db setting from the model's database settings" do
+      source.set_database_settings :database => 'rails_app'
+
+      source.sql_db.should == 'rails_app'
+    end
+
+    it "sets the sql_port setting from the model's database settings" do
+      source.set_database_settings :port => 5432
+
+      source.sql_port.should == 5432
+    end
+
+    it "sets the sql_sock setting from the model's database settings" do
+      source.set_database_settings :socket => '/unix/socket'
+
+      source.sql_sock.should == '/unix/socket'
     end
   end
 
