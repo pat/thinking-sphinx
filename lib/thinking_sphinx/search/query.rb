@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 class ThinkingSphinx::Search::Query
-  DEFAULT_TOKEN = /[\p{Word}\\][\p{Word}\\@]+/
+  DEFAULT_TOKEN = /[\p{Word}\\][\p{Word}\\@]+[\p{Word}]/
 
   attr_reader :keywords, :conditions, :star
 
