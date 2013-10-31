@@ -6,11 +6,14 @@ module ActiveRecord
   class Base; end
 end
 
+require 'active_support/core_ext/module/attribute_accessors'
 require 'active_support/core_ext/module/delegation'
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/string/inflections'
 require 'thinking_sphinx/middlewares/middleware'
 require 'thinking_sphinx/middlewares/sphinxql'
+require 'thinking_sphinx/errors'
+require 'thinking_sphinx/sphinxql'
 
 describe ThinkingSphinx::Middlewares::SphinxQL do
   let(:app)           { double('app', :call => true) }
@@ -56,6 +59,14 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
         with([klass], ['user_core']).and_return(index_set)
 
       middleware.call [context]
+    end
+
+    it "raises an exception if there's no matching indices" do
+      index_set.clear
+
+      expect {
+        middleware.call [context]
+      }.to raise_error(ThinkingSphinx::NoIndicesError)
     end
 
     it "generates a Sphinx query from the provided keyword and conditions" do

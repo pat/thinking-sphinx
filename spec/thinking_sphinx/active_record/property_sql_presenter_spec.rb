@@ -222,6 +222,19 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
         presenter.to_select.should == "CONCAT_WS(',', CAST(articles.created_at AS varchar), CAST(articles.created_at AS varchar)) AS created_at"
       end
 
+      it "double-casts and concatenates multiple columns for timestamp attributes" do
+        adapter.stub :concatenate do |clause, separator|
+          "CONCAT_WS('#{separator}', #{clause})"
+        end
+        adapter.stub :cast_to_string do |clause|
+          "CAST(#{clause} AS varchar)"
+        end
+
+        attribute.stub :columns => [column, column], :type => :timestamp
+
+        presenter.to_select.should == "CONCAT_WS(',', CAST(UNIX_TIMESTAMP(articles.created_at) AS varchar), CAST(UNIX_TIMESTAMP(articles.created_at) AS varchar)) AS created_at"
+      end
+
       it "returns nil for query sourced attributes" do
         attribute.stub :source_type => :query
 

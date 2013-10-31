@@ -3,7 +3,7 @@ $:.push File.expand_path('../lib', __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = 'thinking-sphinx'
-  s.version     = '3.0.5'
+  s.version     = '3.0.6'
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Pat Allan"]
   s.email       = ["pat@freelancing-gods.com"]
@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'builder',      '>= 2.1.2'
   s.add_runtime_dependency 'middleware',   '>= 0.1.0'
   s.add_runtime_dependency 'innertube',    '>= 1.0.2'
-  s.add_runtime_dependency 'riddle',       '>= 1.5.8'
+  s.add_runtime_dependency 'riddle',       '>= 1.5.9'
 
   s.add_development_dependency 'appraisal',        '~> 0.4.0'
   s.add_development_dependency 'combustion',       '~> 0.4.0'

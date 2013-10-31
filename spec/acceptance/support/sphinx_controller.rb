@@ -9,6 +9,11 @@ class SphinxController
 
     ThinkingSphinx::Configuration.reset
 
+    if ENV['SPHINX_VERSION'].try :[], /2.1.\d/
+      ThinkingSphinx::SphinxQL.functions!
+      ThinkingSphinx::Configuration.instance.settings['utf8'] = true
+    end
+
     ActiveSupport::Dependencies.loaded.each do |path|
       $LOADED_FEATURES.delete "#{path}.rb"
     end

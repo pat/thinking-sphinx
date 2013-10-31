@@ -41,7 +41,8 @@ describe ThinkingSphinx::Deletion do
       end
 
       it "doesn't care about Sphinx errors" do
-        connection.stub(:execute).and_raise(Mysql2::Error.new(''))
+        connection.stub(:execute).
+          and_raise(ThinkingSphinx::ConnectionError.new(''))
 
         lambda {
           ThinkingSphinx::Deletion.perform index, instance
@@ -62,7 +63,8 @@ describe ThinkingSphinx::Deletion do
       end
 
       it "doesn't care about Sphinx errors" do
-        connection.stub(:execute).and_raise(Mysql2::Error.new(''))
+        connection.stub(:execute).
+          and_raise(ThinkingSphinx::ConnectionError.new(''))
 
         lambda {
           ThinkingSphinx::Deletion.perform index, instance

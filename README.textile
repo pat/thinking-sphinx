@@ -7,7 +7,7 @@ h2. Installation
 It's a gem, so install it like you would any other gem. You will also need to specify the Mysql2 gem as well (this is not an inbuilt dependency because JRuby, when supported, will need something different):
 
 <pre><code>gem 'mysql2',          '0.3.13'
-gem 'thinking-sphinx', '3.0.5'</code></pre>
+gem 'thinking-sphinx', '3.0.6'</code></pre>
 
 The mysql2 gem is required for connecting to Sphinx, so please include it even when you're using PostgreSQL for your database.
 

@@ -57,7 +57,8 @@ describe ThinkingSphinx::Deltas::DefaultDelta do
     end
 
     it "doesn't care about Sphinx errors" do
-      connection.stub(:execute).and_raise(Mysql2::Error.new(''))
+      connection.stub(:execute).
+        and_raise(ThinkingSphinx::ConnectionError.new(''))
 
       lambda { delta.delete index, instance }.should_not raise_error
     end
