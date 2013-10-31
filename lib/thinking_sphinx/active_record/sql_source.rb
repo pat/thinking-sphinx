@@ -6,8 +6,9 @@ module ThinkingSphinx
       attr_accessor :fields, :attributes, :associations, :conditions,
         :groupings, :polymorphs
 
-      OPTIONS = [:name, :offset, :delta_processor, :delta?, :disable_range?,
-        :group_concat_max_len, :utf8?, :position, :minimal_group_by?]
+      OPTIONS = [:name, :offset, :delta_processor, :delta?, :delta_options,
+        :disable_range?, :group_concat_max_len, :utf8?, :position, 
+        :minimal_group_by?]
 
       def initialize(model, options = {})
         @model             = model
@@ -38,7 +39,7 @@ module ThinkingSphinx
       end
 
       def delta_processor
-        options[:delta_processor].try(:new, adapter)
+        options[:delta_processor].try(:new, adapter, @options[:delta_options] || {})
       end
 
       def delta?
