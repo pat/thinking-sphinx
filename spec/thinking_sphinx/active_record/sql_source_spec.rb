@@ -13,6 +13,7 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
   before :each do
     stub_const 'ActiveRecord::Base', double(:connection => connection)
+
     ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter.
       stub!(:=== => true)
     ThinkingSphinx::ActiveRecord::DatabaseAdapters.
