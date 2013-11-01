@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe ThinkingSphinx::ActiveRecord::SQLSource do
   let(:model)      { double('model', :name => 'User', :column_names => [],
-    :inheritance_column => 'type', :primary_key => :id) }
+    :inheritance_column => 'type', :primary_key => :id, :connection => connection) }
   let(:connection) {
     double('connection', :instance_variable_get => db_config) }
   let(:db_config)  { {:host => 'localhost', :user => 'root',
@@ -18,6 +18,28 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       stub!(:=== => true)
     ThinkingSphinx::ActiveRecord::DatabaseAdapters.
       stub!(:adapter_for => adapter)
+  end
+
+  describe '#initialize' do
+    let(:alt_connection) {
+      double('alt_connection', :instance_variable_get => alt_db_config) }
+    let(:alt_db_config)  { {:host => '127.0.0.1', :user => 'toor',
+      :database => 'non_default'} }
+
+    it 'gets model connection details when it specified' do
+      model.stub!(:connection => alt_connection)
+      alt_source = ThinkingSphinx::ActiveRecord::SQLSource.new(model, {})
+      %w(database host username).each do |opt|
+        alt_source.database_settings[opt.to_sym].should == alt_db_config[opt.to_sym]
+      end
+    end
+
+    it 'gets ActiveRecord connection details when no such in model' do
+      %w(database host username).each do |opt|
+        source.database_settings[opt.to_sym].should == db_config[opt.to_sym]
+      end
+    end
+
   end
 
   describe '#adapter' do
