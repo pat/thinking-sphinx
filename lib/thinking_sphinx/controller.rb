@@ -4,7 +4,7 @@ class ThinkingSphinx::Controller < Riddle::Controller
     indices << '--all' if indices.empty?
 
     indices = indices.reject { |index| File.exists? guard_file(index) }
-    return if indices.empty? || File.exists?(guard_file('--all'))
+    return if indices.empty?
 
     indices.each { |index| FileUtils.touch guard_file(index) }
     super(*(indices + [options]))
