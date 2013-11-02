@@ -42,7 +42,7 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks do
     end
 
     it "performs the deletion for the index and instance" do
-      ThinkingSphinx::Deletion.should_receive(:perform).with(index, instance)
+      ThinkingSphinx::Deletion.should_receive(:perform).with(index, 7)
 
       callbacks.after_destroy
     end

@@ -35,7 +35,7 @@ module ThinkingSphinx::Deltas
 
     ids = reference.to_s.camelize.constantize.where(delta: true).pluck(:id)
     config.indices_for_references(reference).each do |index|
-      ThinkingSphinx::BulkDeletion.perform index, ids unless index.delta?
+      ThinkingSphinx::Deletion.perform index, ids unless index.delta?
     end
   end
 

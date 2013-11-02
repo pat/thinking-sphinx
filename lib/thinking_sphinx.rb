@@ -42,7 +42,6 @@ end
 
 # Core
 require 'thinking_sphinx/batched_search'
-require 'thinking_sphinx/bulk_deletion'
 require 'thinking_sphinx/callbacks'
 require 'thinking_sphinx/core'
 require 'thinking_sphinx/configuration'
