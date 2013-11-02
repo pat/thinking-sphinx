@@ -32,9 +32,13 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
   end
 
   def cast_to_timestamp(clause)
-    clause.split(', ').collect { |part|
-      adapter.cast_to_timestamp part
-    }.join(', ')
+    if clause =~ /^\w+\(.*\)$/
+      adapter.cast_to_timestamp clause
+    else
+      clause.split(', ').collect { |part|
+        adapter.cast_to_timestamp part
+      }.join(', ')
+    end
   end
 
   def casted_column_with_table
