@@ -147,7 +147,9 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
   end
 
   describe '#render' do
-    let(:builder)   { double('builder', :sql_query_pre => []).as_null_object }
+    let(:builder)   { double('builder', :sql_query_pre => [],
+      :sql_query_post_index => [], :sql_query => 'query',
+      :sql_query_range => 'range', :sql_query_info => 'info') }
     let(:config)    { double('config', :settings => {}) }
     let(:presenter) { double('presenter', :collection_type => :uint) }
     let(:template)  { double('template', :apply => true) }
@@ -262,6 +264,14 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       source.render
 
       source.sql_query_pre.should == ['Change Setting']
+    end
+
+    it "appends the builder's sql_query_post_index value" do
+      builder.stub! :sql_query_post_index => ['RESET DELTAS']
+
+      source.render
+
+      source.sql_query_post_index.should include('RESET DELTAS')
     end
 
     it "adds fields with attributes to sql_field_string" do
