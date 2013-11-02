@@ -22,6 +22,10 @@ module ThinkingSphinx::Core::Index
     false
   end
 
+  def distributed?
+    false
+  end
+
   def document_id_for_key(key)
      key * config.indices.count + offset
   end

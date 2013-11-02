@@ -68,6 +68,7 @@ require 'thinking_sphinx/utf8'
 # Extended
 require 'thinking_sphinx/active_record'
 require 'thinking_sphinx/deltas'
+require 'thinking_sphinx/distributed'
 require 'thinking_sphinx/real_time'
 
 require 'thinking_sphinx/railtie' if defined?(Rails)

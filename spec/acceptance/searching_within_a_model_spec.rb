@@ -41,6 +41,14 @@ describe 'Searching within a model', :live => true do
     articles.to_a.should == [article]
   end
 
+  it "allows for searching on distributed indices" do
+    article = Article.create :title => 'Pancakes'
+    index
+
+    articles = Article.search('pancake', :indices => ['article'])
+    articles.to_a.should == [article]
+  end
+
   it "can search on namespaced models" do
     person = Admin::Person.create :name => 'James Bond'
     index

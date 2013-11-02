@@ -73,6 +73,8 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
       end
     end
 
+    ThinkingSphinx::Configuration::DistributedIndices.new(indices).reconcile
+
     @preloaded_indices = true
   end
 
@@ -165,4 +167,5 @@ end
 
 require 'thinking_sphinx/configuration/consistent_ids'
 require 'thinking_sphinx/configuration/defaults'
+require 'thinking_sphinx/configuration/distributed_indices'
 require 'thinking_sphinx/configuration/minimum_fields'
