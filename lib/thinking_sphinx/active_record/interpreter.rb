@@ -38,6 +38,13 @@ class ThinkingSphinx::ActiveRecord::Interpreter <
     __source.model.send :sanitize_sql, *arguments
   end
 
+  def set_database(hash_or_key)
+    configuration = hash_or_key.is_a?(::Hash) ? hash_or_key :
+      ::ActiveRecord::Base.configurations[hash_or_key.to_s]
+
+    __source.set_database_settings configuration
+  end
+
   def set_property(properties)
     properties.each do |key, value|
       @index.send("#{key}=", value)   if @index.class.settings.include?(key)
