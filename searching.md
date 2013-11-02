@@ -202,12 +202,23 @@ If you want to use a custom expression to define your sorting order, you need to
 
 {% highlight ruby %}
 ThinkingSphinx.search(
-  :select => '@weight * 10 + document_boost as custom_weight',
+  :select => 'weight() * 10 + document_boost as custom_weight',
   :order  => 'custom_weight DESC'
 )
 {% endhighlight %}
 
-And as shown in the above example, Sphinx's calculated ranking is available via the `@weight` keyword (but no longer via its aliases `@relevance` or `@rank`).
+And as shown in the above example, Sphinx's calculated ranking is available via the `weight()` function. If all you want to refer to that directly when sorting, you need to give it an alias:
+
+{% highlight ruby %}
+ThinkingSphinx.search(
+  :select => 'weight() as w', :order  => 'w DESC'
+)
+{% endhighlight %}
+
+<div class="note">
+  <p class="old">Sphinx 2.0.x</p>
+  <p><strong>Note</strong>: If you are using a version of Sphinx prior to 2.1.1, then the ranking is available instead by the internal attribute `@weight`.</p>
+</div>
 
 <div class="note">
   <p class="old">Thinking Sphinx v1/v2</p>
@@ -271,8 +282,13 @@ By default, this will return your Post objects, but one per category_id. If you 
 {% highlight ruby %}
 Post.search 'syrup',
   :group_by       => :category_id,
-  :order_group_by => '@count desc'
+  :order_group_by => 'count(*) desc'
 {% endhighlight %}
+
+<div class="note">
+  <p class="old">Sphinx 2.0.x</p>
+  <p><strong>Note</strong>: If you are using a version of Sphinx prior to 2.1.1, then the group count is available instead by the internal attribute `@count`.</p>
+</div>
 
 Once you have the grouped results, you can enumerate by each result along with the group value, the number of objects that matched that group value, or both, using the following methods respectively:
 

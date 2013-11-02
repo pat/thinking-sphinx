@@ -51,7 +51,7 @@ Other options are documented on the [Advanced Sphinx Configuration page](advance
 To retrieve the weights/rankings of each search result, you can enumerate through your matches using `each_with_weight`, once you've added the appropriate mask:
 
 {% highlight ruby %}
-search = Article.search('pancakes', :select => '*, @weight')
+search = Article.search('pancakes', :select => '*, weight()')
 search.masks << ThinkingSphinx::Masks::WeightEnumeratorMask
 
 search.each_with_weight do |article, weight|
@@ -62,13 +62,18 @@ end
 If you want to access weights directly for each search result, you should add a weight pane to the search context:
 
 {% highlight ruby %}
-search = Article.search('pancakes', :select => '*, @weight')
+search = Article.search('pancakes', :select => '*, weight()')
 search.context.panes << ThinkingSphinx::Panes::WeightPane
 
 search.each do |article|
   article.weight
 end
 {% endhighlight %}
+
+<div class="note">
+  <p class="old">Sphinx 2.0.x</p>
+  <p><strong>Note</strong>: If you are using a version of Sphinx prior to 2.1.1, then the ranking is available instead by the internal attribute `@weight`.</p>
+</div>
 
 <h3 id="wildcards">Wildcard Searching</h3>
 

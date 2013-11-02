@@ -57,7 +57,7 @@ ThinkingSphinx.search 'pancakes',
 * `each_with_weight` (note that it's weight, not weighting) is available, but not by default. Here's an example of how to have it part of the search object:
 
 {% highlight ruby %}
-search = Article.search('pancakes', :select => '*, @weight')
+search = Article.search('pancakes', :select => '*, weight()')
 search.masks << ThinkingSphinx::Masks::WeightEnumeratorMask
 
 search.each_with_weight do |article, weight|
@@ -65,7 +65,7 @@ search.each_with_weight do |article, weight|
 end
 {% endhighlight %}
 
-* You'll also note here that the internal weight attribute is explicitly included. This is necessary for edge Sphinx post 2.0.5.
+* You'll also note here that the internal weight attribute is explicitly included. This is necessary for edge Sphinx post 2.0.5. Also, since Sphinx 2.1.1, `@weight` is now `weight()`.
 * Batched/Bulk searches are done pretty similarly as in the past - here's a code sample that'll only hit Sphinx once:
 
 {% highlight ruby %}
@@ -123,7 +123,7 @@ polymorphs events.eventable, :to => %w(Page Post User)
 
 * `ThinkingSphinx.facets` and other calls to `.facets` now return a lazily-evaluated `ThinkingSphinx::FacetSearch` object, not a hash. `FacetSearch` implements `[]`, but not other methods of hash. If you're caching the result of this call, or you need real hash methods, call `.to_hash` on the result to return a populated hash.
 
-* Ordering by `@relevance` will no longer work: use `@weight` instead.
+* Ordering by `@relevance` will no longer work: use `weight()` instead (if Sphinx 2.1.1 or later) or otherwise `@weight`.
 
 * `@geodist` is now just `geodist`
 
