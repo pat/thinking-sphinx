@@ -7,6 +7,10 @@ title: Upgrading
 
 Thinking Sphinx has changed quite a bit over time, and if you're upgrading from an old version, you may find some of your code needs to be changed as well. Here's a few tips...
 
+### Upgrading to Sphinx 2.1.x
+
+You will need to use Thinking Sphinx 3.0.6 or newer, and please note [the release notes](https://github.com/pat/thinking-sphinx/releases).
+
 ### Upgrading to 3.x from 1.x or 2.x
 
 There's quite a bit that's changed in Thinking Sphinx 3.0, as it's a complete rewrite. First, the important changes:
