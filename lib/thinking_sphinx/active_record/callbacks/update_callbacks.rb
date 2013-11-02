@@ -7,7 +7,7 @@ class ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks <
     return unless updates_enabled?
 
     indices.each do |index|
-      update index
+      update index unless index.distributed?
     end
   end
 

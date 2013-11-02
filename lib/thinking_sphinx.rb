@@ -46,6 +46,7 @@ require 'thinking_sphinx/callbacks'
 require 'thinking_sphinx/core'
 require 'thinking_sphinx/configuration'
 require 'thinking_sphinx/connection'
+require 'thinking_sphinx/controller'
 require 'thinking_sphinx/deletion'
 require 'thinking_sphinx/errors'
 require 'thinking_sphinx/excerpter'
@@ -68,6 +69,7 @@ require 'thinking_sphinx/utf8'
 # Extended
 require 'thinking_sphinx/active_record'
 require 'thinking_sphinx/deltas'
+require 'thinking_sphinx/distributed'
 require 'thinking_sphinx/real_time'
 
 require 'thinking_sphinx/railtie' if defined?(Rails)

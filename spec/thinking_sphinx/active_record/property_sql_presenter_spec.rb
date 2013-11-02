@@ -235,6 +235,17 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
         presenter.to_select.should == "CONCAT_WS(',', CAST(UNIX_TIMESTAMP(articles.created_at) AS varchar), CAST(UNIX_TIMESTAMP(articles.created_at) AS varchar)) AS created_at"
       end
 
+      it "does not split attribute clause for timestamp casting if it looks like a function call" do
+        column.stub :__name => "COALESCE(articles.updated_at, articles.created_at)"
+        column.stub :string? => true
+
+        attribute.stub :name    => 'mod_date'
+        attribute.stub :columns => [column]
+        attribute.stub :type    => :timestamp
+
+        presenter.to_select.should == "UNIX_TIMESTAMP(COALESCE(articles.updated_at, articles.created_at)) AS mod_date"
+      end
+
       it "returns nil for query sourced attributes" do
         attribute.stub :source_type => :query
 

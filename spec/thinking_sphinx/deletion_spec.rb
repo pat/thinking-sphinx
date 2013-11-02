@@ -4,8 +4,7 @@ describe ThinkingSphinx::Deletion do
   describe '.perform' do
     let(:connection) { double('connection', :execute => nil) }
     let(:index)      { double('index', :name => 'foo_core',
-      :document_id_for_key => 14, :type => 'plain') }
-    let(:instance)   { double('instance', :id => 7) }
+      :document_id_for_key => 14, :type => 'plain', :distributed? => false) }
 
     before :each do
       ThinkingSphinx::Connection.stub(:take).and_yield(connection)
@@ -14,30 +13,13 @@ describe ThinkingSphinx::Deletion do
 
     context 'index is SQL-backed' do
       it "updates the deleted flag to false" do
-        connection.should_receive(:execute).with('UPDATE STATEMENT')
+        connection.should_receive(:execute).with <<-SQL
+UPDATE foo_core
+SET sphinx_deleted = 1
+WHERE id IN (14)
+        SQL
 
-        ThinkingSphinx::Deletion.perform index, instance
-      end
-
-      it "builds the update query for the given index" do
-        Riddle::Query.should_receive(:update).
-          with('foo_core', anything, anything).and_return('')
-
-        ThinkingSphinx::Deletion.perform index, instance
-      end
-
-      it "builds the update query for the sphinx document id" do
-        Riddle::Query.should_receive(:update).
-          with(anything, 14, anything).and_return('')
-
-        ThinkingSphinx::Deletion.perform index, instance
-      end
-
-      it "builds the update query for setting sphinx_deleted to true" do
-        Riddle::Query.should_receive(:update).
-          with(anything, anything, :sphinx_deleted => true).and_return('')
-
-        ThinkingSphinx::Deletion.perform index, instance
+        ThinkingSphinx::Deletion.perform index, 7
       end
 
       it "doesn't care about Sphinx errors" do
@@ -45,7 +27,7 @@ describe ThinkingSphinx::Deletion do
           and_raise(ThinkingSphinx::ConnectionError.new(''))
 
         lambda {
-          ThinkingSphinx::Deletion.perform index, instance
+          ThinkingSphinx::Deletion.perform index, 7
         }.should_not raise_error
       end
     end
@@ -59,7 +41,7 @@ describe ThinkingSphinx::Deletion do
         connection.should_receive(:execute).
           with('DELETE FROM foo_core WHERE id = 14')
 
-        ThinkingSphinx::Deletion.perform index, instance
+        ThinkingSphinx::Deletion.perform index, 7
       end
 
       it "doesn't care about Sphinx errors" do
@@ -67,7 +49,7 @@ describe ThinkingSphinx::Deletion do
           and_raise(ThinkingSphinx::ConnectionError.new(''))
 
         lambda {
-          ThinkingSphinx::Deletion.perform index, instance
+          ThinkingSphinx::Deletion.perform index, 7
         }.should_not raise_error
       end
     end

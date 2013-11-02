@@ -4,7 +4,9 @@ class ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks <
   callbacks :after_destroy
 
   def after_destroy
-    indices.each { |index| ThinkingSphinx::Deletion.perform index, instance }
+    indices.each { |index|
+      ThinkingSphinx::Deletion.perform index, instance.id
+    }
   end
 
   private
@@ -15,6 +17,8 @@ class ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks <
 
   def indices
     config.preload_indices
-    config.indices_for_references instance.class.name.underscore.to_sym
+    config.indices_for_references(
+      instance.class.name.underscore.to_sym
+    ).reject &:distributed?
   end
 end
