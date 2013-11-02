@@ -545,18 +545,28 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
     end
   end
 
+  describe 'sql_query_post_index' do
+    let(:processor) { double('processor', :reset_query => 'RESET DELTAS') }
+
+    it "adds a reset delta query if there is a delta processor and this is the core source" do
+      source.stub :delta_processor => processor, :delta? => false
+
+      builder.sql_query_post_index.should include('RESET DELTAS')
+    end
+
+    it "adds no reset delta query if there is a delta processor and this is the delta source" do
+      source.stub :delta_processor => processor, :delta? => true
+
+      builder.sql_query_post_index.should_not include('RESET DELTAS')
+    end
+  end
+
   describe 'sql_query_pre' do
     let(:processor) { double('processor', :reset_query => 'RESET DELTAS') }
 
     before :each do
       source.stub :options => {}, :delta_processor => nil, :delta? => false
       adapter.stub :utf8_query_pre => ['SET UTF8']
-    end
-
-    it "adds a reset delta query if there is a delta processor and this is the core source" do
-      source.stub :delta_processor => processor
-
-      builder.sql_query_pre.should include('RESET DELTAS')
     end
 
     it "does not add a reset query if there is no delta processor" do

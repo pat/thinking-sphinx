@@ -75,6 +75,12 @@ describe ThinkingSphinx::Search::Query do
       query.to_s.should == "\\/\\/*pan*"
     end
 
+    it "separates escaping from the end of words" do
+      query = ThinkingSphinx::Search::Query.new "\\(913\\)", {}, true
+
+      query.to_s.should == "\\(*913*\\)"
+    end
+
     it "does not star quorum operators" do
       query = ThinkingSphinx::Search::Query.new "foo/3", {}, true
 

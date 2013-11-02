@@ -6,6 +6,8 @@ class ThinkingSphinx::Deltas::DefaultDelta
   end
 
   def clause(delta_source = false)
+    return nil unless delta_source
+
     "#{adapter.quoted_table_name}.#{quoted_column} = #{adapter.boolean_value delta_source}"
   end
 

@@ -36,9 +36,9 @@ class ThinkingSphinx::IndexSet
       @index_names.include?(index.name)
     } if @index_names && @index_names.any?
 
-    return @configuration.indices if @classes.empty?
-
-    @configuration.indices_for_references(*references)
+    everything = @classes.empty? ? @configuration.indices :
+      @configuration.indices_for_references(*references)
+    everything.reject &:distributed?
   end
 
   def references

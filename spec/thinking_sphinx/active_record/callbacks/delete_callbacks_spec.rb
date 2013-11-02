@@ -34,7 +34,7 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks do
     let(:config)     { double('config', :indices_for_references => [index],
       :preload_indices => true) }
     let(:index)      { double('index', :name => 'foo_core',
-      :document_id_for_key => 14, :type => 'plain') }
+      :document_id_for_key => 14, :type => 'plain', :distributed? => false) }
     let(:instance)   { double('instance', :id => 7) }
 
     before :each do
@@ -42,7 +42,7 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks do
     end
 
     it "performs the deletion for the index and instance" do
-      ThinkingSphinx::Deletion.should_receive(:perform).with(index, instance)
+      ThinkingSphinx::Deletion.should_receive(:perform).with(index, 7)
 
       callbacks.after_destroy
     end

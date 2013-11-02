@@ -1,8 +1,9 @@
 require 'spec_helper'
 
 describe ThinkingSphinx::ActiveRecord::SQLSource do
-  let(:model)      { double('model', :name => 'User', :column_names => [],
-    :inheritance_column => 'type', :primary_key => :id) }
+  let(:model)      { double('model', :connection => connection,
+    :name => 'User', :column_names => [], :inheritance_column => 'type',
+    :primary_key => :id) }
   let(:connection) {
     double('connection', :instance_variable_get => db_config) }
   let(:db_config)  { {:host => 'localhost', :user => 'root',
@@ -12,8 +13,6 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
   let(:adapter)    { double('adapter') }
 
   before :each do
-    stub_const 'ActiveRecord::Base', double(:connection => connection)
-
     ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter.
       stub!(:=== => true)
     ThinkingSphinx::ActiveRecord::DatabaseAdapters.
@@ -157,7 +156,9 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
   end
 
   describe '#render' do
-    let(:builder)   { double('builder', :sql_query_pre => []).as_null_object }
+    let(:builder)   { double('builder', :sql_query_pre => [],
+      :sql_query_post_index => [], :sql_query => 'query',
+      :sql_query_range => 'range', :sql_query_info => 'info') }
     let(:config)    { double('config', :settings => {}) }
     let(:presenter) { double('presenter', :collection_type => :uint) }
     let(:template)  { double('template', :apply => true) }
@@ -167,79 +168,6 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       ThinkingSphinx::ActiveRecord::Attribute::SphinxPresenter.stub :new => presenter
       ThinkingSphinx::ActiveRecord::SQLSource::Template.stub :new => template
       ThinkingSphinx::Configuration.stub :instance => config
-    end
-
-    it "sets the sql_host setting from the model's database settings" do
-      db_config[:host] = '12.34.56.78'
-
-      source.render
-
-      source.sql_host.should == '12.34.56.78'
-    end
-
-    it "defaults sql_host to localhost if the model has no host" do
-      db_config[:host] = nil
-
-      source.render
-
-      source.sql_host.should == 'localhost'
-    end
-
-    it "sets the sql_user setting from the model's database settings" do
-      db_config[:username] = 'pat'
-
-      source.render
-
-      source.sql_user.should == 'pat'
-    end
-
-    it "uses the user setting if username is not set in the model" do
-      db_config[:username] = nil
-      db_config[:user]     = 'pat'
-
-      source.render
-
-      source.sql_user.should == 'pat'
-    end
-
-    it "sets the sql_pass setting from the model's database settings" do
-      db_config[:password] = 'swordfish'
-
-      source.render
-
-      source.sql_pass.should == 'swordfish'
-    end
-
-    it "escapes hashes in the password for sql_pass" do
-      db_config[:password] = 'sword#fish'
-
-      source.render
-
-      source.sql_pass.should == 'sword\#fish'
-    end
-
-    it "sets the sql_db setting from the model's database settings" do
-      db_config[:database] = 'rails_app'
-
-      source.render
-
-      source.sql_db.should == 'rails_app'
-    end
-
-    it "sets the sql_port setting from the model's database settings" do
-      db_config[:port] = 5432
-
-      source.render
-
-      source.sql_port.should == 5432
-    end
-
-    it "sets the sql_sock setting from the model's database settings" do
-      db_config[:socket] = '/unix/socket'
-
-      source.render
-
-      source.sql_sock.should == '/unix/socket'
     end
 
     it "uses the builder's sql_query value" do
@@ -272,6 +200,14 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       source.render
 
       source.sql_query_pre.should == ['Change Setting']
+    end
+
+    it "appends the builder's sql_query_post_index value" do
+      builder.stub! :sql_query_post_index => ['RESET DELTAS']
+
+      source.render
+
+      source.sql_query_post_index.should include('RESET DELTAS')
     end
 
     it "adds fields with attributes to sql_field_string" do
@@ -404,6 +340,62 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       source.render
 
       source.mysql_ssl_cert.should == 'foo.cert'
+    end
+  end
+
+  describe '#set_database_settings' do
+    it "sets the sql_host setting from the model's database settings" do
+      source.set_database_settings :host => '12.34.56.78'
+
+      source.sql_host.should == '12.34.56.78'
+    end
+
+    it "defaults sql_host to localhost if the model has no host" do
+      source.set_database_settings :host => nil
+
+      source.sql_host.should == 'localhost'
+    end
+
+    it "sets the sql_user setting from the model's database settings" do
+      source.set_database_settings :username => 'pat'
+
+      source.sql_user.should == 'pat'
+    end
+
+    it "uses the user setting if username is not set in the model" do
+      source.set_database_settings :username => nil, :user => 'pat'
+
+      source.sql_user.should == 'pat'
+    end
+
+    it "sets the sql_pass setting from the model's database settings" do
+      source.set_database_settings :password => 'swordfish'
+
+      source.sql_pass.should == 'swordfish'
+    end
+
+    it "escapes hashes in the password for sql_pass" do
+      source.set_database_settings :password => 'sword#fish'
+
+      source.sql_pass.should == 'sword\#fish'
+    end
+
+    it "sets the sql_db setting from the model's database settings" do
+      source.set_database_settings :database => 'rails_app'
+
+      source.sql_db.should == 'rails_app'
+    end
+
+    it "sets the sql_port setting from the model's database settings" do
+      source.set_database_settings :port => 5432
+
+      source.sql_port.should == 5432
+    end
+
+    it "sets the sql_sock setting from the model's database settings" do
+      source.set_database_settings :socket => '/unix/socket'
+
+      source.sql_sock.should == '/unix/socket'
     end
   end
 
