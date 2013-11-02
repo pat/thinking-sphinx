@@ -30,6 +30,15 @@ module ThinkingSphinx::Deltas
     end
   end
 
+  def self.suspend_and_update(reference, &block)
+    suspend reference, &block
+
+    ids = reference.to_s.camelize.constantize.where(delta: true).pluck(:id)
+    config.indices_for_references(reference).each do |index|
+      ThinkingSphinx::BulkDeletion.perform index, ids unless index.delta?
+    end
+  end
+
   def self.suspend!
     @suspended = true
   end
