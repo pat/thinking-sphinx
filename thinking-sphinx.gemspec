@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Pat Allan"]
   s.email       = ["pat@freelancing-gods.com"]
-  s.homepage    = 'http://pat.github.com/ts/en'
+  s.homepage    = 'http://pat.github.io/thinking-sphinx/'
   s.summary     = 'A smart wrapper over Sphinx for ActiveRecord'
   s.description = %Q{An intelligent layer for ActiveRecord (via Rails and Sinatra) for the Sphinx full-text search tool.}
   s.license     = 'MIT'
