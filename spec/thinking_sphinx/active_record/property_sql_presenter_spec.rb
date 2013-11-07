@@ -236,12 +236,10 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
       end
 
       it "does not split attribute clause for timestamp casting if it looks like a function call" do
-        column.stub :__name => "COALESCE(articles.updated_at, articles.created_at)"
-        column.stub :string? => true
+        column.stub :__name => "COALESCE(articles.updated_at, articles.created_at)", :string? => true
 
-        attribute.stub :name    => 'mod_date'
-        attribute.stub :columns => [column]
-        attribute.stub :type    => :timestamp
+        attribute.stub :name => 'mod_date', :columns => [column],
+          :type => :timestamp
 
         presenter.to_select.should == "UNIX_TIMESTAMP(COALESCE(articles.updated_at, articles.created_at)) AS mod_date"
       end
