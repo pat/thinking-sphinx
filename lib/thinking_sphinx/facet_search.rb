@@ -105,7 +105,7 @@ class ThinkingSphinx::FacetSearch
         ", #{ThinkingSphinx::SphinxQL.group_by}, #{ThinkingSphinx::SphinxQL.count}",
       :group_by    => facet.name,
       :indices     => index_names_for(facet),
-      :max_matches => limit,
+      :max_matches => max_matches,
       :limit       => limit
     )
   end
