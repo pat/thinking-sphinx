@@ -1,8 +1,3 @@
-module ThinkingSphinx; end
-
-require 'thinking_sphinx/facet_search'
-require 'thinking_sphinx/facet'
-
 require 'spec_helper'
 
 describe ThinkingSphinx::FacetSearch do
