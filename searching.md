@@ -97,6 +97,14 @@ Article.search 'pancakes',
   :with_all => {:tag_ids => @tags.collect(&:id)}
 {% endhighlight %}
 
+You can also perform combination AND and OR matches with `:with_all` using nested arrays:
+
+{% highlight ruby %}
+# All pancackes belonging to tag 3 and belonging to one of tag 1 or tag 2
+Article.search 'pancakes',
+  :with_all => {:tag_ids => [[1,2], 3]}
+{% endhighlight %}
+
 <h3 id="global">Application-Wide Search</h3>
 
 You can use all the same syntax to search across all indexed models in your application:
