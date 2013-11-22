@@ -15,7 +15,7 @@ class ThinkingSphinx::Excerpter
 
   def excerpt!(text)
     result = ThinkingSphinx::Connection.take do |connection|
-      connection.query(statement_for(text)).first['snippet']
+      connection.execute(statement_for(text)).first['snippet']
     end
 
     ThinkingSphinx::Configuration.instance.settings['utf8'] ? result :

@@ -78,10 +78,6 @@ module ThinkingSphinx::Connection
       raise wrapper
     end
 
-    def query(statement)
-      client.query statement
-    end
-
     def query_all(*statements)
       results  = [client.query(statements.join('; '))]
       results << client.store_result while client.next_result
