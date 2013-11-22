@@ -53,11 +53,39 @@ module ThinkingSphinx::Connection
     end
   end
 
-  class MRI
-    attr_reader :client
+  def self.persistent?
+    @persistent
+  end
 
+  def self.persistent=(persist)
+    @persistent = persist
+  end
+
+  @persistent = true
+
+  class MRI
     def initialize(address, port, options)
-      @client = Mysql2::Client.new({
+      @address, @port, @options = address, port, options
+    end
+
+    def close
+      client.close unless ThinkingSphinx::Connection.persistent?
+    end
+
+    def execute(statement)
+      query(statement).first
+    end
+
+    def query_all(*statements)
+      query *statements
+    end
+
+    private
+
+    attr_reader :address, :port, :options
+
+    def client
+      @client ||= Mysql2::Client.new({
         :host  => address,
         :port  => port,
         :flags => Mysql2::Client::MULTI_STATEMENTS
@@ -66,19 +94,12 @@ module ThinkingSphinx::Connection
       raise ThinkingSphinx::SphinxError.new_from_mysql error
     end
 
-    def close
+    def close_and_clear
       client.close
+      @client = nil
     end
 
-    def execute(statement)
-      client.query statement
-    rescue => error
-      wrapper           = ThinkingSphinx::QueryExecutionError.new error.message
-      wrapper.statement = statement
-      raise wrapper
-    end
-
-    def query_all(*statements)
+    def query(*statements)
       results  = [client.query(statements.join('; '))]
       results << client.store_result while client.next_result
       results
@@ -86,6 +107,8 @@ module ThinkingSphinx::Connection
       wrapper           = ThinkingSphinx::QueryExecutionError.new error.message
       wrapper.statement = statements.join('; ')
       raise wrapper
+    ensure
+      close_and_clear unless ThinkingSphinx::Connection.persistent?
     end
   end
 
