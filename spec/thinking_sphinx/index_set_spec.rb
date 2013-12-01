@@ -1,6 +1,7 @@
 module ThinkingSphinx; end
 
 require 'active_support/core_ext/string/inflections'
+require 'active_support/core_ext/module/delegation'
 require 'thinking_sphinx/index_set'
 
 describe ThinkingSphinx::IndexSet do

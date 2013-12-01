@@ -19,8 +19,10 @@ class ThinkingSphinx::IndexSet
 
   private
 
+  attr_reader :classes, :configuration, :index_names
+
   def classes_and_ancestors
-    @classes_and_ancestors ||= @classes.collect { |model|
+    @classes_and_ancestors ||= classes.collect { |model|
       model.ancestors.take_while { |klass|
         klass != ActiveRecord::Base
       }.select { |klass|
@@ -30,14 +32,14 @@ class ThinkingSphinx::IndexSet
   end
 
   def indices
-    @configuration.preload_indices
+    configuration.preload_indices
 
-    return @configuration.indices.select { |index|
-      @index_names.include?(index.name)
-    } if @index_names && @index_names.any?
+    return configuration.indices.select { |index|
+      index_names.include?(index.name)
+    } if index_names && index_names.any?
 
-    everything = @classes.empty? ? @configuration.indices :
-      @configuration.indices_for_references(*references)
+    everything = classes.empty? ? configuration.indices :
+      configuration.indices_for_references(*references)
     everything.reject &:distributed?
   end
 
