@@ -31,14 +31,13 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks do
   end
 
   describe '#after_destroy' do
-    let(:config)     { double('config', :indices_for_references => [index],
-      :preload_indices => true) }
+    let(:index_set)  { double 'index set', :to_a => [index] }
     let(:index)      { double('index', :name => 'foo_core',
       :document_id_for_key => 14, :type => 'plain', :distributed? => false) }
     let(:instance)   { double('instance', :id => 7) }
 
     before :each do
-      ThinkingSphinx::Configuration.stub :instance => config
+      ThinkingSphinx::IndexSet.stub :new => index_set
     end
 
     it "performs the deletion for the index and instance" do

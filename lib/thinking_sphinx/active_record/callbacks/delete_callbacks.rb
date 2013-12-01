@@ -11,14 +11,7 @@ class ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks <
 
   private
 
-  def config
-    ThinkingSphinx::Configuration.instance
-  end
-
   def indices
-    config.preload_indices
-    config.indices_for_references(
-      instance.class.name.underscore.to_sym
-    ).reject &:distributed?
+    ThinkingSphinx::IndexSet.new([instance.class], []).to_a
   end
 end

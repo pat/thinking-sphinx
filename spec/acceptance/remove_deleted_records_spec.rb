@@ -30,4 +30,12 @@ describe 'Hiding deleted records from search results', :live => true do
 
     Product.search_for_ids('Shiny').should be_empty
   end
+
+  it "deletes STI child classes from parent indices" do
+    duck = Bird.create :name => 'Duck'
+    index
+    duck.destroy
+
+    expect(Bird.search_for_ids('duck')).to be_empty
+  end
 end
