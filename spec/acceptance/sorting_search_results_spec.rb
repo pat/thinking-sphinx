@@ -42,7 +42,7 @@ describe 'Sorting search results', :live => true do
     index
 
     Book.search(
-      :select => 'year MOD 2004 as mod_year', :order => 'mod_year ASC'
+      :select => '*, year MOD 2004 as mod_year', :order => 'mod_year ASC'
     ).to_a.should == [boys, grave, gods]
   end
 end

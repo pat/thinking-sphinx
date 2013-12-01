@@ -197,7 +197,7 @@ SQL
       end
 
       def scope_by_values
-        query.values values if values.present?
+        query.values(values.present? ? values : '*')
       end
 
       def scope_by_extended_query

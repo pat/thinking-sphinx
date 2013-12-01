@@ -23,7 +23,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
     :offset => 0, :per_page => 5) }
   let(:index_set)     { [double(:name => 'article_core', :options => {})] }
   let(:sphinx_sql)    { double('sphinx_sql', :from => true, :offset => true,
-    :limit => true, :where => true, :matching => true) }
+    :limit => true, :where => true, :matching => true, :values => true) }
   let(:query)         { double('query') }
   let(:configuration) { double('configuration', :settings => {}) }
 
