@@ -15,6 +15,13 @@ brew install sphinx
 
 At the time of writing, Homebrew will install Sphinx 2.0.6 (which is the oldest version allowed if you're running Thinking Sphinx v3.x). Make sure you do have MySQL installed so the SphinxQL/mysql41 protocol behaves correctly.
 
+If you've installed MySQL _after_ installing Sphinx, you'll need to re-install Sphinx. This can be done like so:
+
+{% highlight sh %}
+brew remove sphinx
+brew install sphinx --mysql
+{% endhighlight %}
+
 ### Using MacPorts
 
 Much like Homebrew, MacPorts will automatically detect whether it should compile Sphinx with MySQL and/or PostgreSQL support, and currently defaults to Sphinx 2.0.6 as well.
