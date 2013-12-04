@@ -246,6 +246,8 @@ CREATE DATABASE thinking_sphinx;</code></pre>
 
 You can then run the unit tests with @rake spec:unit@, the acceptance tests with @rake spec:acceptance@, or all of the tests with just @rake@.
 
+All development is done on the @develop@ branch; please base any pull requests off of that branch.
+
 If you're still interested in helping evolve this, then write the tests and then the code to get them passing, and send through a pull request. No promises on merging anything, but we shall see!
 
 For some ideas behind my current approach, have a look through @sketchpad.rb@ in the root of this project. If you can make sense of that, you're doing very well indeed.
