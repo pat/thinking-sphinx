@@ -238,6 +238,14 @@ h2. Contributing
 
 You're brave! To contribute, clone this repository and have a good look through the specs - you'll notice the distinction between acceptance tests that actually use Sphinx and go through the full stack, and unit tests (everything else) which use liberal test doubles to ensure they're only testing the behaviour of the class in question. I've found this leads to far better code design.
 
+In order to run the specs, you'll need to create a MySQL database named @thinking_sphinx@:
+<pre><code># Fire up a MySQL console connection:
+mysql -u root
+# In that console, create the database:
+CREATE DATABASE thinking_sphinx;</code></pre>
+
+You can then run the unit tests with @rake spec:unit@, the acceptance tests with @rake spec:acceptance@, or all of the tests with just @rake@.
+
 If you're still interested in helping evolve this, then write the tests and then the code to get them passing, and send through a pull request. No promises on merging anything, but we shall see!
 
 For some ideas behind my current approach, have a look through @sketchpad.rb@ in the root of this project. If you can make sense of that, you're doing very well indeed.
