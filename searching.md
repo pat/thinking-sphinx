@@ -180,7 +180,7 @@ Ranks results purely on the number of times the keywords are found in a document
 
 Ranks documents by raw proximity value.
 
-#### `:match_any` (since 0.9.9rc1)
+#### `:matchany` (since 0.9.9rc1)
 
 Returns rankings calculated in the same way as a match mode of `:any`.
 
