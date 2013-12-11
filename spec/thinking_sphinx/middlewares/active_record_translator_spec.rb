@@ -143,6 +143,14 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
 
         middleware.call [context]
       end
+
+      it "passes through SQL group options to the relation" do
+        search.options[:sql] = {:group => :column}
+
+        relation.should_receive(:group).with(:column).and_return(relation)
+
+        middleware.call [context]
+      end
     end
   end
 end
