@@ -69,6 +69,7 @@ class ThinkingSphinx::Middlewares::ActiveRecordTranslator <
       relation = relation.joins  sql_options[:joins]  if sql_options[:joins]
       relation = relation.order  sql_options[:order]  if sql_options[:order]
       relation = relation.select sql_options[:select] if sql_options[:select]
+      relation = relation.group  sql_options[:group]  if sql_options[:group]
       relation
     end
 
