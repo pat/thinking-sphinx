@@ -40,6 +40,13 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter do
     end
   end
 
+  describe '#convert_nulls_or_blank' do
+    it "translates arguments to a COALESCE NULLIF SQL call" do
+      adapter.convert_nulls_or_blank('id', 5).should == "COALESCE(NULLIF(id, ''), 5)"
+    end
+  end
+
+
   describe '#group_concatenate' do
     it "group concatenates the clause with the given separator" do
       adapter.group_concatenate('foo', ',').
