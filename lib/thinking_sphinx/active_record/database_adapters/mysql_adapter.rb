@@ -21,6 +21,10 @@ class ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter <
     "IFNULL(#{clause}, #{default})"
   end
 
+  def convert_nulls_or_blank(clause, default = '')
+    "COALESCE(NULLIF(#{clause}, ''), #{default})"
+  end
+
   def group_concatenate(clause, separator = ' ')
     "GROUP_CONCAT(DISTINCT #{clause} SEPARATOR '#{separator}')"
   end
