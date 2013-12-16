@@ -110,7 +110,7 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
     it "uses the inheritance column if it exists for the sphinx class field" do
       adapter.stub :quoted_table_name => '"users"', :quote => '"type"'
-      adapter.stub(:convert_nulls_or_blank) { |clause, default|
+      adapter.stub(:convert_blank) { |clause, default|
         "coalesce(nullif(#{clause}, ''), #{default})"
       }
       model.stub :column_names => ['type'], :sti_name => 'User'

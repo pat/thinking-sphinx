@@ -27,7 +27,7 @@ class ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter <
     "COALESCE(#{clause}, #{default})"
   end
 
-  def convert_nulls_or_blank(clause, default = '')
+  def convert_blank(clause, default = '')
     "COALESCE(NULLIF(#{clause}, ''), #{default})"
   end
 

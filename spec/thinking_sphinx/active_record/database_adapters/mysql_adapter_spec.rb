@@ -40,9 +40,9 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter do
     end
   end
 
-  describe '#convert_nulls_or_blank' do
+  describe '#convert_blank' do
     it "translates arguments to a COALESCE NULLIF SQL call" do
-      adapter.convert_nulls_or_blank('id', 5).should == "COALESCE(NULLIF(id, ''), 5)"
+      adapter.convert_blank('id', 5).should == "COALESCE(NULLIF(id, ''), 5)"
     end
   end
 
