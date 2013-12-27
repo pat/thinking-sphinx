@@ -3,11 +3,13 @@ module ThinkingSphinx
 end
 
 require 'active_support/core_ext/object/blank'
-require './lib/thinking_sphinx/query'
-require './lib/thinking_sphinx/wildcard'
 require './lib/thinking_sphinx/search/query'
 
 describe ThinkingSphinx::Search::Query do
+  before :each do
+    stub_const 'ThinkingSphinx::Query', double(wildcard: '')
+  end
+
   describe '#to_s' do
     it "passes through the keyword as provided" do
       query = ThinkingSphinx::Search::Query.new 'pancakes'
@@ -28,15 +30,17 @@ describe ThinkingSphinx::Search::Query do
     end
 
     it "automatically stars keywords if requested" do
-      query = ThinkingSphinx::Search::Query.new 'cake', {}, true
+      ThinkingSphinx::Query.should_receive(:wildcard).with('cake', true).
+        and_return('*cake*')
 
-      query.to_s.should == '*cake*'
+      ThinkingSphinx::Search::Query.new('cake', {}, true).to_s
     end
 
     it "automatically stars condition keywords if requested" do
-      query = ThinkingSphinx::Search::Query.new '', {:title => 'pan'}, true
+      ThinkingSphinx::Query.should_receive(:wildcard).with('pan', true).
+        and_return('*pan*')
 
-      query.to_s.should == '@title *pan*'
+      ThinkingSphinx::Search::Query.new('', {:title => 'pan'}, true).to_s
     end
 
     it "does not star the sphinx_internal_class field keyword" do
