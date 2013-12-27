@@ -1,5 +1,5 @@
 class ThinkingSphinx::Wildcard
-  DEFAULT_TOKEN = /[\p{Word}\\][\p{Word}\\@]+[\p{Word}]/
+  DEFAULT_TOKEN = /\p{Word}+/
 
   def self.call(query, pattern = DEFAULT_TOKEN)
     new(query, pattern).call
@@ -14,7 +14,8 @@ class ThinkingSphinx::Wildcard
     query.gsub(/("#{pattern}(.*?#{pattern})?"|(?![!-])#{pattern})/u) do
       pre, proper, post = $`, $&, $'
       # E.g. "@foo", "/2", "~3", but not as part of a token pattern
-      is_operator = pre.match(%r{\A(\W|^)[@~/]\Z}) ||
+      is_operator = pre == '@' ||
+                    pre.match(%r{([^\\]+|\A)[~/]\Z}) ||
                     pre.match(%r{(\W|^)@\([^\)]*$})
       # E.g. "foo bar", with quotes
       is_quote    = proper[/^".*"$/]
