@@ -5,9 +5,16 @@ class SphinxController
 
   def setup
     FileUtils.mkdir_p config.indices_location
+    config.controller.bin_path = ENV['SPHINX_BIN'] || ''
     config.render_to_file && index
 
     ThinkingSphinx::Configuration.reset
+
+    ActiveSupport::Dependencies.loaded.each do |path|
+      $LOADED_FEATURES.delete "#{path}.rb"
+    end
+
+    ActiveSupport::Dependencies.clear
 
     if ENV['SPHINX_VERSION'].try :[], /2.1.\d/
       ThinkingSphinx::SphinxQL.functions!
@@ -25,12 +32,6 @@ class SphinxController
         ThinkingSphinx::Middlewares::UTF8
       )
     end
-
-    ActiveSupport::Dependencies.loaded.each do |path|
-      $LOADED_FEATURES.delete "#{path}.rb"
-    end
-
-    ActiveSupport::Dependencies.clear
 
     config.searchd.mysql41 = 9307
     config.settings['quiet_deltas']      = true
