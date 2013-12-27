@@ -1,3 +1,27 @@
+Edge:
+* [FEATURE] Wildcard/starring can be applied directly to strings using ThinkingSphinx::Query.wildcard('pancakes'), and escaping via ThinkingSphinx::Query.escape('pancakes').
+* [CHANGE] Auto-wildcard/starring (via :star => true) now treats escaped characters as word separators.
+* [FEATURE] Capistrano recipe now includes tasks for realtime indices.
+* [CHANGE] Capistrano recipe no longer automatically adds thinking_sphinx:index and thinking_sphinx:start to be run after deploy:cold.
+* [CHANGE] UTF-8 forced encoding is now disabled by default (in line with Sphinx 2.1.x).
+* [CHANGE] Sphinx functions are now the default, instead of the legacy special variables (in line with Sphinx 2.1.x).
+* [CHANGE] Rails 3.1 is no longer supported.
+* [CHANGE] MRI 1.9.2 is no longer supported.
+* [FIX] Destroy callbacks are ignored for non-persisted objects.
+* [FEATURE] :group option within :sql options in a search call is passed through to the underlying ActiveRecord relation (Siarhei Hanchuk).
+* [FIX] Blank STI values are converted to the parent class in Sphinx index data (Jonathan Greenberg).
+* [CHANGE] Insist on at least * for SphinxQL SELECT statements.
+* [FIX] Track indices on parent STI models when marking documents as deleted.
+* [FEATURE] Persistent connections can be disabled if you wish.
+* [FIX] Separate per_page/max_matches values are respected in facet searches (Timo Virkkala).
+* [FIX] Don't split function calls when casting timestamps (Timo Virkalla).
+* [FEATURE] Track what's being indexed, and don't double-up while indexing is running. Single indices (e.g. deltas) can be processed while a full index is happening, though.
+* [FEATURE] Pass through :delta_options to delta processors (Timo Virkalla).
+* [FEATURE] All delta records can have their core pairs marked as deleted after a suspended delta (use ThinkingSphinx::Deltas.suspend_and_update instead of ThinkingSphinx::Deltas.suspend).
+* [CHANGE] Reset the delta column to true after core indexing is completed, instead of before, and don't filter out delta records from the core source.
+* [FEATURE] Set custom database settings within the index definition, using the set_database method. A more sane approach with multiple databases.
+* [CHANGE] Provide a distributed index per model that covers both core and delta indices.
+
 2013-10-20: 3.0.6
 * [FEATURE] Raise an error if no indices match the search criteria (Bryan Ricker).
 * [FEATURE] skip_time_zone setting is now available per environment via config/thinking_sphinx.yml to avoid the sql_query_pre time zone command.
