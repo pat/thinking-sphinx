@@ -1,6 +1,6 @@
 h1. Thinking Sphinx
 
-Welcome to Thinking Sphinx version 3 - a complete rewrite from past versions, built for Rails 3.1 or newer only.
+Welcome to Thinking Sphinx version 3 - a complete rewrite from past versions. TS v3.0.x will work with Rails 3.1-4.0, and TS v3.1.x will work with Rails 3.2 and newer.
 
 h2. Installation
 

@@ -14,6 +14,5 @@ env:
   - DATABASE=mysql2 SPHINX_BIN=/usr/local/sphinx-2.0.6/bin/ SPHINX_VERSION=2.0.6
   - DATABASE=postgresql SPHINX_BIN=/usr/local/sphinx-2.0.6/bin/ SPHINX_VERSION=2.0.6
 gemfile:
-  - gemfiles/rails_3_1.gemfile
   - gemfiles/rails_3_2.gemfile
   - gemfiles/rails_4_0.gemfile
