@@ -14,6 +14,12 @@ Capistrano::Configuration.instance(:must_exist).load do
     end
     after 'thinking_sphinx:index', 'thinking_sphinx:symlink_indexes'
 
+    desc 'Generate Sphinx indexes into the shared path and symlink them into your release.'
+    task :generate, fetch(:thinking_sphinx_options) do
+      rake 'ts:generate'
+    end
+    after 'thinking_sphinx:generate', 'thinking_sphinx:symlink_indexes'
+
     desc 'Start the Sphinx search daemon.'
     task :start, fetch(:thinking_sphinx_options) do
       rake 'ts:start'
@@ -39,6 +45,12 @@ if you alter the structure of your indexes.
     end
     after 'thinking_sphinx:rebuild', 'thinking_sphinx:symlink_indexes'
 
+    desc 'Stop Sphinx, clear Sphinx index files, generate configuration file, start Sphinx, repopulate all data.'
+    task :regenerate, fetch(:thinking_sphinx_options) do
+      rake 'ts:regenerate'
+    end
+    after 'thinking_sphinx:regenerate', 'thinking_sphinx:symlink_indexes'
+
     desc 'Create the shared folder for sphinx indexes.'
     task :shared_sphinx_folder, fetch(:thinking_sphinx_options) do
       rails_env = fetch(:rails_env, 'production')
@@ -51,10 +63,8 @@ if you alter the structure of your indexes.
     end
 
     # Logical flow for deploying an app
-    after  'deploy:cold',            'thinking_sphinx:index'
-    after  'deploy:cold',            'thinking_sphinx:start'
-    after  'deploy:setup',           'thinking_sphinx:shared_sphinx_folder'
-    after  'deploy:finalize_update', 'thinking_sphinx:symlink_indexes'
+    after 'deploy:setup',           'thinking_sphinx:shared_sphinx_folder'
+    after 'deploy:finalize_update', 'thinking_sphinx:symlink_indexes'
 
     def rake(tasks)
       rails_env = fetch(:rails_env, 'production')
