@@ -6,7 +6,7 @@ class ThinkingSphinx::Wildcard
   end
 
   def initialize(query, pattern = DEFAULT_TOKEN)
-    @query   = query
+    @query   = query || ''
     @pattern = pattern.is_a?(Regexp) ? pattern : DEFAULT_TOKEN
   end
 
