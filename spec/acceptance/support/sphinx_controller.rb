@@ -16,21 +16,8 @@ class SphinxController
 
     ActiveSupport::Dependencies.clear
 
-    if ENV['SPHINX_VERSION'].try :[], /2.1.\d/
-      ThinkingSphinx::SphinxQL.functions!
-      ThinkingSphinx::Configuration.instance.settings['utf8'] = true
-    elsif ENV['SPHINX_VERSION'].try :[], /2.0.\d/
-      ThinkingSphinx::SphinxQL.variables!
+    if ENV['SPHINX_VERSION'].try :[], /2.0.\d/
       ThinkingSphinx::Configuration.instance.settings['utf8'] = false
-
-      ThinkingSphinx::Middlewares::DEFAULT.insert_after(
-        ThinkingSphinx::Middlewares::Inquirer,
-        ThinkingSphinx::Middlewares::UTF8
-      )
-      ThinkingSphinx::Middlewares::RAW_ONLY.insert_after(
-        ThinkingSphinx::Middlewares::Inquirer,
-        ThinkingSphinx::Middlewares::UTF8
-      )
     end
 
     config.searchd.mysql41 = 9307
