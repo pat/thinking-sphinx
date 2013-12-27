@@ -3,6 +3,8 @@ module ThinkingSphinx
 end
 
 require 'active_support/core_ext/object/blank'
+require './lib/thinking_sphinx/query'
+require './lib/thinking_sphinx/wildcard'
 require './lib/thinking_sphinx/search/query'
 
 describe ThinkingSphinx::Search::Query do
