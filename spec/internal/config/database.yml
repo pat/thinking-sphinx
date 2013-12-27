@@ -3,3 +3,4 @@ test:
   database:     thinking_sphinx
   username:     <%= ENV['DATABASE'] == 'postgresql' ? ENV['USER'] : 'root' %>
   min_messages: warning
+  encoding:     utf8
