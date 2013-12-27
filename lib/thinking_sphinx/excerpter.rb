@@ -18,13 +18,17 @@ class ThinkingSphinx::Excerpter
       connection.execute(statement_for(text)).first['snippet']
     end
 
-    ThinkingSphinx::Configuration.instance.settings['utf8'] ? result :
-      ThinkingSphinx::UTF8.encode(result)
+    encoded? ? result : ThinkingSphinx::UTF8.encode(result)
   end
 
   private
 
   def statement_for(text)
     Riddle::Query.snippets(text, index, words, options)
+  end
+
+  def encoded?
+    ThinkingSphinx::Configuration.instance.settings['utf8'].nil? ||
+    ThinkingSphinx::Configuration.instance.settings['utf8']
   end
 end
