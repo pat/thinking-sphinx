@@ -8,6 +8,7 @@ module SphinxHelpers
 
     sphinx.index *indices
     sleep 0.25
+    sleep 0.25 if ENV['TRAVIS']
   end
 end
 
