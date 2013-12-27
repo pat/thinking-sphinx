@@ -46,55 +46,6 @@ describe ThinkingSphinx::Search::Query do
       query.to_s.should == '@sphinx_internal_class_name article'
     end
 
-    it "treats escapes as word characters" do
-      query = ThinkingSphinx::Search::Query.new '', {:title => 'sauce\\@pan'},
-        true
-
-      query.to_s.should == '@title *sauce\\@pan*'
-    end
-
-    it "does not star manually provided field tags" do
-      query = ThinkingSphinx::Search::Query.new "@title pan", {}, true
-
-      query.to_s.should == "@title *pan*"
-    end
-
-    it "does not star manually provided arrays of field tags" do
-      query = ThinkingSphinx::Search::Query.new "@(title, body) pan", {}, true
-
-      query.to_s.should == "@(title, body) *pan*"
-    end
-
-    it "stars keywords that begin with an escaped @" do
-      query = ThinkingSphinx::Search::Query.new "\\@pan", {}, true
-
-      query.to_s.should == "*\\@pan*"
-    end
-
-    it "ignores escaped slashes" do
-      query = ThinkingSphinx::Search::Query.new "\\/\\/pan", {}, true
-
-      query.to_s.should == "\\/\\/*pan*"
-    end
-
-    it "separates escaping from the end of words" do
-      query = ThinkingSphinx::Search::Query.new "\\(913\\)", {}, true
-
-      query.to_s.should == "\\(*913*\\)"
-    end
-
-    it "does not star quorum operators" do
-      query = ThinkingSphinx::Search::Query.new "foo/3", {}, true
-
-      query.to_s.should == "*foo*/3"
-    end
-
-    it "does not star proximity operators or quoted strings" do
-      query = ThinkingSphinx::Search::Query.new %q{"hello world"~3}, {}, true
-
-      query.to_s.should == %q{"hello world"~3}
-    end
-
     it "handles null values by removing them from the conditions hash" do
       query = ThinkingSphinx::Search::Query.new '', :title => nil
 
@@ -109,12 +60,6 @@ describe ThinkingSphinx::Search::Query do
 
     it "handles nil queries" do
       query = ThinkingSphinx::Search::Query.new nil, {}
-
-      query.to_s.should == ''
-    end
-
-    it "handles nil queries when starring" do
-      query = ThinkingSphinx::Search::Query.new nil, {}, true
 
       query.to_s.should == ''
     end
