@@ -20,6 +20,6 @@ class ThinkingSphinx::Search::Query
     return keyword.to_s unless star
     return keyword.to_s if key.to_s == 'sphinx_internal_class_name'
 
-    ThinkingSphinx::Query.wildcard keyword
+    ThinkingSphinx::Query.wildcard keyword, star
   end
 end
