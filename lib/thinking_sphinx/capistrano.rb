@@ -1,5 +1,8 @@
 if defined?(Capistrano::VERSION)
-  capistrano_version = Gem::Version.new(Capistrano::VERSION).segments.first
-  recipe_version = capistrano_version < 2 ? 2 : capistrano_version
-  require_relative "capistrano/v#{recipe_version}"
+  if Gem::Version.new(Capistrano::VERSION).release >= Gem::Version.new('3.0.0')
+    recipe_version = 3
+  end
 end
+
+recipe_version ||= 2
+require_relative "capistrano/v#{recipe_version}"

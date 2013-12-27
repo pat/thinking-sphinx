@@ -5,6 +5,26 @@ namespace :load do
 end
 
 namespace :thinking_sphinx do
+  desc 'Create the shared folder for sphinx indexes.'
+  task :shared_sphinx_folder do
+    on roles fetch(:thinking_sphinx_roles) do
+      within shared_path do
+        execute :mkdir, "-p db/sphinx/#{fetch(:stage)}"
+      end
+    end
+  end
+  after 'deploy:check', 'thinking_sphinx:shared_sphinx_folder'
+
+  desc 'Symlink Sphinx indexes from the shared folder to the latest release.'
+  task :symlink_indexes do
+    on roles fetch(:thinking_sphinx_roles) do
+      within current_path do
+        execute :ln, "-nfs #{shared_path}/db/sphinx db/"
+      end
+    end
+  end
+  after 'deploy:finishing', 'thinking_sphinx:symlink_indexes'
+
   desc <<-DESC
 Stop, reindex, and then start the Sphinx search daemon. This task must be executed \
 if you alter the structure of your indexes.
@@ -31,16 +51,6 @@ if you alter the structure of your indexes.
     end
   end
   after :index, 'thinking_sphinx:symlink_indexes'
-
-  desc 'Symlink Sphinx indexes from the shared folder to the latest release.'
-  task :symlink_indexes do
-    on roles fetch(:thinking_sphinx_roles) do
-      within current_path do
-        execute :ln, "-nfs #{shared_path}/db/sphinx db/"
-      end
-    end
-  end
-  after 'deploy:finishing', 'thinking_sphinx:symlink_indexes'
 
   desc 'Restart the Sphinx search daemon.'
   task :restart do
@@ -88,14 +98,4 @@ if you alter the structure of your indexes.
       end
     end
   end
-
-  desc 'Create the shared folder for sphinx indexes.'
-  task :shared_sphinx_folder do
-    on roles fetch(:thinking_sphinx_roles) do
-      within shared_path do
-        execute :mkdir, "-p db/sphinx/#{fetch(:stage)}"
-      end
-    end
-  end
-  after 'deploy:check', 'thinking_sphinx:shared_sphinx_folder'
 end
