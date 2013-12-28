@@ -1,10 +1,10 @@
 class ThinkingSphinx::Middlewares::SphinxQL <
   ThinkingSphinx::Middlewares::Middleware
 
-  SELECT_OPTIONS = [:ranker, :max_matches, :cutoff, :max_query_time,
-    :retry_count, :retry_delay, :field_weights, :index_weights, :reverse_scan,
-    :comment, :agent_query_timeout, :boolean_simplify, :global_idf, :idf,
-    :sort_method]
+  SELECT_OPTIONS = [:agent_query_timeout, :boolean_simplify, :comment, :cutoff,
+    :field_weights, :global_idf, :idf, :index_weights, :max_matches,
+    :max_query_time, :max_predicted_time, :ranker, :retry_count, :retry_delay,
+    :reverse_scan, :sort_method]
 
   def call(contexts)
     contexts.each do |context|
