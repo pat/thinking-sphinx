@@ -301,6 +301,22 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       middleware.call [context]
     end
 
+    it "adds the provided group-best count" do
+      search.options[:group_best] = 5
+
+      sphinx_sql.should_receive(:group_best).with(5).and_return(sphinx_sql)
+
+      middleware.call [context]
+    end
+
+    it "adds the provided having clause" do
+      search.options[:having] = 'foo > 1'
+
+      sphinx_sql.should_receive(:having).with('foo > 1').and_return(sphinx_sql)
+
+      middleware.call [context]
+    end
+
     it "uses any provided field weights" do
       search.options[:field_weights] = {:title => 3}
 

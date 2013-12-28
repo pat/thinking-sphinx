@@ -225,8 +225,10 @@ SQL
       end
 
       def scope_by_group
-        query.group_by group_attribute if group_attribute.present?
+        query.group_by group_attribute        if group_attribute.present?
+        query.group_best options[:group_best] if options[:group_best]
         query.order_within_group_by group_order_clause if group_order_clause.present?
+        query.having options[:having]         if options[:having]
       end
 
       def scope_by_pagination
