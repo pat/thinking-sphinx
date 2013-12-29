@@ -50,7 +50,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def engine_indice_paths
-    Rails::Engine::Railties.engines.collect do |engine|
+    Rails::Engine.subclasses.collect(&:instance).collect do |engine|
       engine.paths['app/indices'].existent if engine.paths['app/indices']
     end
   end
