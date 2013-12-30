@@ -13,7 +13,7 @@ title:  Installing Thinking Sphinx
   <p><strong>Note</strong>: Thinking Sphinx v3 is a complete rewrite from previous versions, and there are many small and big changes. These are noted accordingly in this documentation.</p>
 </div>
 
-If you're using Rails 3.1, 3.2 or 4.0, then you should use the version 3 releases of Thinking Sphinx. If you're using MRI, you'll also need the mysql2 gem 0.3.12b4 or newer for connecting to Sphinx (JRuby is not currently supported due to limitations in JDBC and Sphinx 2.0.x releases).
+If you're using Rails 3.1, 3.2 or 4.0, then you should use the version 3 releases of Thinking Sphinx. If you're using MRI, you'll also need the mysql2 gem 0.3.12b4 or newer for connecting to Sphinx (JRuby is not currently supported due to limitations in JDBC and Sphinx 2.0.x releases). Even if you're using **PostgreSQL**, you will _still_ need to have the mysql2 gem installed (along with the pg gem too, of course).
 
 Install them like you would any other gem - either manually:
 
