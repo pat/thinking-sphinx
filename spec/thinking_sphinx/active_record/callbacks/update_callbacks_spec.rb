@@ -5,8 +5,8 @@ module ThinkingSphinx
 end
 
 require 'active_support/core_ext/string/inflections'
-require 'mysql2/error'
 require 'thinking_sphinx/callbacks'
+require 'thinking_sphinx/errors'
 require 'thinking_sphinx/active_record/callbacks/update_callbacks'
 
 describe ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks do
@@ -26,8 +26,10 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks do
     before :each do
       stub_const 'ThinkingSphinx::Configuration',
         double(:instance => configuration)
-      stub_const 'ThinkingSphinx::Connection', double(:new => connection)
+      stub_const 'ThinkingSphinx::Connection', double
       stub_const 'Riddle::Query', double(:update => 'SphinxQL')
+
+      ThinkingSphinx::Connection.stub(:take).and_yield(connection)
 
       source.attributes.replace([
         double(:name => 'foo', :updateable? => true,
@@ -62,7 +64,8 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks do
     end
 
     it "doesn't care if the update fails at Sphinx's end" do
-      connection.stub(:execute).and_raise(Mysql2::Error.new(''))
+      connection.stub(:execute).
+        and_raise(ThinkingSphinx::ConnectionError.new(''))
 
       lambda { callbacks.after_update }.should_not raise_error
     end

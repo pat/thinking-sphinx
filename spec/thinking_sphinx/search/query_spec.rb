@@ -69,6 +69,24 @@ describe ThinkingSphinx::Search::Query do
       query.to_s.should == "*\\@pan*"
     end
 
+    it "ignores escaped slashes" do
+      query = ThinkingSphinx::Search::Query.new "\\/\\/pan", {}, true
+
+      query.to_s.should == "\\/\\/*pan*"
+    end
+
+    it "does not star quorum operators" do
+      query = ThinkingSphinx::Search::Query.new "foo/3", {}, true
+
+      query.to_s.should == "*foo*/3"
+    end
+
+    it "does not star proximity operators or quoted strings" do
+      query = ThinkingSphinx::Search::Query.new %q{"hello world"~3}, {}, true
+
+      query.to_s.should == %q{"hello world"~3}
+    end
+
     it "handles null values by removing them from the conditions hash" do
       query = ThinkingSphinx::Search::Query.new '', :title => nil
 

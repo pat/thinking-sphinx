@@ -11,7 +11,7 @@ describe ThinkingSphinx::Deltas do
       klass = Class.new
       ThinkingSphinx::Deltas.processor_for(klass).should == klass
     end
-    
+
     it "instantiates a class from the name as a string" do
       ThinkingSphinx::Deltas.
         processor_for('ThinkingSphinx::Deltas::DefaultDelta').
@@ -20,10 +20,13 @@ describe ThinkingSphinx::Deltas do
   end
 
   describe '.suspend' do
-    let(:config)     { double('config', :indices_for_references => [index]) }
-    let(:index)      { double('index', :name => 'user_core',
-      :delta_processor => processor) }
-    let(:processor)  { double('processor', :index => true) }
+    let(:config)      { double('config',
+      :indices_for_references => [core_index, delta_index]) }
+    let(:core_index)  { double('index', :name => 'user_core',
+      :delta_processor => processor, :delta? => false) }
+    let(:delta_index) { double('index', :name => 'user_core',
+      :delta_processor => processor, :delta? => true) }
+    let(:processor)   { double('processor', :index => true) }
 
     before :each do
       ThinkingSphinx::Configuration.stub :instance => config
@@ -54,7 +57,15 @@ describe ThinkingSphinx::Deltas do
     end
 
     it "processes the delta indices for the given reference" do
-      processor.should_receive(:index).with(index)
+      processor.should_receive(:index).with(delta_index)
+
+      ThinkingSphinx::Deltas.suspend :user do
+        #
+      end
+    end
+
+    it "does not process the core indices for the given reference" do
+      processor.should_not_receive(:index).with(core_index)
 
       ThinkingSphinx::Deltas.suspend :user do
         #

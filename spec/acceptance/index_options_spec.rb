@@ -106,7 +106,7 @@ describe 'Index options' do
     end
 
     it "respects sql_query_pre values" do
-      index.sources.first.sql_query_pre.should == ["DO STUFF"]
+      index.sources.first.sql_query_pre.should include("DO STUFF")
     end
   end
 

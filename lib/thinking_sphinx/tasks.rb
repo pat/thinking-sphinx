@@ -6,16 +6,28 @@ namespace :ts do
 
   desc 'Generate the Sphinx configuration file and process all indices'
   task :index => :environment do
-    interface.index(ENV['INDEX_ONLY'] != 'true')
+    interface.index(
+      ENV['INDEX_ONLY'] != 'true',
+      !Rake.application.options.silent
+    )
+  end
+
+  desc 'Clear out Sphinx files'
+  task :clear => :environment do
+    interface.clear
   end
 
   desc 'Generate fresh index files for real-time indices'
   task :generate => :environment do
+    interface.prepare
     interface.generate
   end
 
   desc 'Stop Sphinx, index and then restart Sphinx'
   task :rebuild => [:stop, :index, :start]
+
+  desc 'Stop Sphinx, clear files, reconfigure, start Sphinx, generate files'
+  task :regenerate => [:stop, :clear, :configure, :start, :generate]
 
   desc 'Restart the Sphinx daemon'
   task :restart => [:stop, :start]

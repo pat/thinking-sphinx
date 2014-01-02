@@ -17,7 +17,7 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
       )
     }
     let(:field)     { double('field', :name => 'title', :columns => [column],
-      :type => nil, :multi? => false) }
+      :type => nil, :multi? => false, :source_type => nil) }
     let(:column)    { double('column', :string? => false, :__stack => [],
       :__name => 'title') }
 
@@ -37,6 +37,12 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
 
       it "returns nil if the property is an aggregate" do
         associations.stub! :aggregate_for? => true
+
+        presenter.to_group.should be_nil
+      end
+
+      it "returns nil if the field is sourced via a separate query" do
+        field.stub :source_type => 'query'
 
         presenter.to_group.should be_nil
       end
@@ -95,6 +101,18 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
         presenter.to_select.
           should == "CONCAT_WS(' ', articles.title) AS title"
       end
+
+      it "returns nil for query sourced fields" do
+        field.stub :source_type => :query
+
+        presenter.to_select.should be_nil
+      end
+
+      it "returns nil for ranged query sourced fields" do
+        field.stub :source_type => :ranged_query
+
+        presenter.to_select.should be_nil
+      end
     end
   end
 
@@ -105,7 +123,8 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
       )
     }
     let(:attribute) { double('attribute', :name => 'created_at',
-      :columns => [column], :type => :integer, :multi? => false) }
+      :columns => [column], :type => :integer, :multi? => false,
+      :source_type => nil) }
     let(:column)    { double('column', :string? => false, :__stack => [],
       :__name => 'created_at') }
 
@@ -137,6 +156,12 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
 
       it "returns nil if the property is an aggregate" do
         associations.stub! :aggregate_for? => true
+
+        presenter.to_group.should be_nil
+      end
+
+      it "returns nil if the attribute is sourced via a separate query" do
+        attribute.stub :source_type => 'query'
 
         presenter.to_group.should be_nil
       end
@@ -195,6 +220,31 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
         attribute.stub!(:columns => [column, column])
 
         presenter.to_select.should == "CONCAT_WS(',', CAST(articles.created_at AS varchar), CAST(articles.created_at AS varchar)) AS created_at"
+      end
+
+      it "double-casts and concatenates multiple columns for timestamp attributes" do
+        adapter.stub :concatenate do |clause, separator|
+          "CONCAT_WS('#{separator}', #{clause})"
+        end
+        adapter.stub :cast_to_string do |clause|
+          "CAST(#{clause} AS varchar)"
+        end
+
+        attribute.stub :columns => [column, column], :type => :timestamp
+
+        presenter.to_select.should == "CONCAT_WS(',', CAST(UNIX_TIMESTAMP(articles.created_at) AS varchar), CAST(UNIX_TIMESTAMP(articles.created_at) AS varchar)) AS created_at"
+      end
+
+      it "returns nil for query sourced attributes" do
+        attribute.stub :source_type => :query
+
+        presenter.to_select.should be_nil
+      end
+
+      it "returns nil for ranged query sourced attributes" do
+        attribute.stub :source_type => :ranged_query
+
+        presenter.to_select.should be_nil
       end
     end
   end

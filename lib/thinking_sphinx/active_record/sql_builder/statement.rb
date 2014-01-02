@@ -35,6 +35,10 @@ module ThinkingSphinx
       protected
       attr_accessor :report, :scope
 
+      def custom_joins
+        @custom_joins ||= source.associations.select(&:string?).collect(&:to_s)
+      end
+
       def filter_by_query_range
         minimum = convert_nulls "MIN(#{quoted_primary_key})", 1
         maximum = convert_nulls "MAX(#{quoted_primary_key})", 1
@@ -53,6 +57,32 @@ module ThinkingSphinx
         scope_by_joins
         scope_by_custom_joins
         scope_by_order
+      end
+
+      def attribute_presenters
+        @attribute_presenters ||= property_sql_presenters_for source.attributes
+      end
+
+      def field_presenters
+        @field_presenters ||= property_sql_presenters_for source.fields
+      end
+
+      def presenters_to_group(presenters)
+        presenters.collect(&:to_group)
+      end
+
+      def presenters_to_select(presenters)
+        presenters.collect(&:to_select)
+      end
+
+      def property_sql_presenters_for(properties)
+        properties.collect { |property| property_sql_presenter_for(property) }
+      end
+
+      def property_sql_presenter_for(property)
+        ThinkingSphinx::ActiveRecord::PropertySQLPresenter.new(
+          property, source.adapter, associations
+        )
       end
 
       def scope_by_select
@@ -99,11 +129,14 @@ module ThinkingSphinx
       end
 
       def group_clause
-        SQLBuilder::ClauseBuilder.new(quoted_primary_key).compose(
+        builder = SQLBuilder::ClauseBuilder.new(quoted_primary_key)
+
+        builder.compose(
           presenters_to_group(field_presenters),
-          presenters_to_group(attribute_presenters),
-          groupings
-        ).separated
+          presenters_to_group(attribute_presenters)
+        ) unless source.options[:minimal_group_by?]
+
+        builder.compose(groupings).separated
       end
     end
   end

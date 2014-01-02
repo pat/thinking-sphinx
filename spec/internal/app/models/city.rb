@@ -1,3 +1,3 @@
 class City < ActiveRecord::Base
-  scope :ordered, order(:name)
+  scope :ordered, lambda { order(:name) }
 end

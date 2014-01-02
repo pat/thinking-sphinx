@@ -43,7 +43,7 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter do
   describe '#group_concatenate' do
     it "group concatenates the clause with the given separator" do
       adapter.group_concatenate('foo', ',').
-        should == "GROUP_CONCAT(foo SEPARATOR ',')"
+        should == "GROUP_CONCAT(DISTINCT foo SEPARATOR ',')"
     end
   end
 end

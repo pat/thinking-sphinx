@@ -6,8 +6,8 @@ h2. Installation
 
 It's a gem, so install it like you would any other gem. You will also need to specify the Mysql2 gem as well (this is not an inbuilt dependency because JRuby, when supported, will need something different):
 
-<pre><code>gem 'mysql2',          '0.3.12b4'
-gem 'thinking-sphinx', '3.0.0'</code></pre>
+<pre><code>gem 'mysql2',          '0.3.13'
+gem 'thinking-sphinx', '3.0.6'</code></pre>
 
 The mysql2 gem is required for connecting to Sphinx, so please include it even when you're using PostgreSQL for your database.
 
@@ -39,6 +39,8 @@ Other changes:
 * SphinxQL is now used instead of the old socket connections (hence the dependency on the @mysql2@ gem).
 * Specifying a different port for Sphinx to use (in @config/thinking_sphinx.yml@) should be done with the mysql41 setting, not the port setting.
 * The searchd_log and searchd_query_log settings are now log and query_log (matching their Sphinx names).
+* searchd_file_path is now indices_location.
+* config_file is now configuration_file.
 * You'll need to include @ThinkingSphinx::Scopes@ into your models if you want to use Sphinx scopes. Default scopes can be set as follows:
 
 <pre><code>class Person < ActiveRecord::Base
@@ -130,7 +132,7 @@ batch.searches #=> [[foo results], [bar results], [baz results]]</code></pre>
 * To search on specific indices, use the @:indices@ option, which expects an array of index names (including the @_core@ or @_delta@ suffixes).
 * @:without_any@ has become @:without_all@ - and is implemented, but Sphinx doesn't yet support the required logic.
 * If you're creating a multi-value attribute manually (using a SQL snippet), then in the definition pass in @:multi => true@, but @:type@ should be set as well, to one of the MVA types that Sphinx supports (@:integer@, @:timestamp@, or @:boolean@).
-* Automatic updates of non-string attributes are still limited to those from columns on the model in question, and is disabled by default. To enable it, just set attribute_updates to true in your @config/sphinx.yml@.
+* Automatic updates of non-string attributes are still limited to those from columns on the model in question, and is disabled by default. To enable it, just set attribute_updates to true in your @config/thinking_sphinx.yml@.
 * Search result helper methods are no longer injected into the actual result objects. Read the section below on search results, glazes and panes.
 * If you're using string facets, make sure they're defined as fields, not strings. There is currently no support for multi-value string facets.
 * To have fine-grained control over when deltas are invoked, create a sub-class of your chosen delta class (the standard is @ThinkingSphinx::Deltas::DefaultDelta@) and customise the @toggle@ and @toggled?@ methods, both of which accept a single parameter being the ActiveRecord instance.
@@ -214,7 +216,7 @@ May or may not be added:
 
 h3. Sphinx Versions
 
-TS 3 is built for Sphinx 2.x only. You cannot use 1.10-beta, 0.9.9 or anything earlier than that. 2.0.5 or newer is recommended.
+TS 3 is built for Sphinx 2.0.5 or newer. You cannot use 1.10-beta, 0.9.9 or anything earlier than that.
 
 h3. Rails Versions
 

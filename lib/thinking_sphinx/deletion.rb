@@ -6,7 +6,7 @@ class ThinkingSphinx::Deletion
       'plain' => PlainDeletion,
       'rt'    => RealtimeDeletion
     }[index.type].new(index, instance).perform
-  rescue Mysql2::Error => error
+  rescue ThinkingSphinx::ConnectionError => error
     # This isn't vital, so don't raise the error.
   end
 
@@ -18,16 +18,12 @@ class ThinkingSphinx::Deletion
 
   attr_reader :index, :instance
 
-  def connection
-    @connection ||= ThinkingSphinx::Connection.new
-  end
-
   def document_id_for_key
     index.document_id_for_key instance.id
   end
 
   def execute(statement)
-    ThinkingSphinx::Connection.pool.take do |connection|
+    ThinkingSphinx::Connection.take do |connection|
       connection.execute statement
     end
   end

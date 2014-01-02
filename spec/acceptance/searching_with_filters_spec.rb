@@ -69,6 +69,26 @@ describe 'Searching with filters', :live => true do
     ).to_a.should == [pancakes]
   end
 
+  it "takes into account local timezones for timestamps" do
+    pancakes = Article.create :title => 'Pancakes'
+    waffles  = Article.create :title => 'Waffles'
+
+    food = Tag.create :name => 'food'
+    flat = Tag.create :name => 'flat'
+
+    Tagging.create(:tag => food, :article => pancakes).
+      update_column :created_at, 5.minutes.ago
+    Tagging.create :tag => flat, :article => pancakes
+    Tagging.create(:tag => food, :article => waffles).
+      update_column :created_at, 3.minute.ago
+
+    index
+
+    Article.search(
+      :with => {:taggings_at => 2.minutes.ago..Time.zone.now}
+    ).to_a.should == [pancakes]
+  end
+
   it "limits results with MVAs having all of the given values" do
     pancakes = Article.create :title => 'Pancakes'
     waffles  = Article.create :title => 'Waffles'

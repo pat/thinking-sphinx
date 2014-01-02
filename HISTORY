@@ -1,4 +1,53 @@
-Edge:
+2013-10-20: 3.0.6
+* [FEATURE] Raise an error if no indices match the search criteria (Bryan Ricker).
+* [FEATURE] skip_time_zone setting is now available per environment via config/thinking_sphinx.yml to avoid the sql_query_pre time zone command.
+* [CHANGE] Updating Riddle dependency to be >= 1.5.9.
+* [FEATURE] Added new search options in Sphinx 2.1.x.
+* [FEATURE] Added ability to disable UTF-8 forced encoding, now that Sphinx 2.1.2 returns UTF-8 strings by default. This will be disabled by default in Thinking Sphinx 3.1.0.
+* [FEATURE] Added ability to switch between Sphinx special variables and the equivalent functions. Sphinx 2.1.x requires the latter, and that behaviour will become the default in Sphinx 3.1.0.
+* [FIX] Cast every column to a timestamp for timestamp attributes with multiple columns.
+* [CHANGE] Separated directory preparation from data generation for real-time index (re)generation tasks.
+* [CHANGE] Have tests index UTF-8 characters where appropriate (Pedro Cunha).
+* [FIX] Don't use Sphinx ordering if SQL order option is supplied to a search.
+* [CHANGE] Always use DISTINCT in group concatenation.
+* [CHANGE] Sphinx connection failures now have their own class, ThinkingSphinx::ConnectionError, instead of the standard Mysql2::Error.
+* [FIX] Custom middleware and mask options now function correctly with model-scoped searches.
+* [FEATURE] Adding search_for_ids on scoped search calls.
+* [CHANGE] Don't clobber custom :select options for facet searches (Timo Virkkala).
+* [CHANGE] Automatically load Riddle's Sphinx 2.0.5 compatability changes.
+* [FIX] Suspended deltas now no longer update core indices as well.
+* [CHANGE] Realtime fields and attributes now accept symbols as well as column objects, and fields can be sortable (with a _sort prefix for the matching attribute).
+* [FEATURE] MySQL users can enable a minimal GROUP BY statement, to speed up queries: set_property :minimal_group_by? => true.
+* [CHANGE] Insist on the log directory existing, to ensure correct behaviour for symlinked paths. (Michael Pearson).
+* [FIX] Use alphabetical ordering for index paths consistently (@grin).
+* [FIX] Convert very small floats to fixed format for geo-searches.
+* [CHANGE] Rake's silent mode is respected for indexing (@endoscient).
+
+2013-08-26: 3.0.5
+* [CHANGE] Updating Riddle dependency to be >= 1.5.8.
+* [FEATURE] Allow scoping of real-time index models.
+* [CHANGE] Real-time index population presentation and logic are now separated.
+* [CHANGE] Using the connection pool for update callbacks, excerpts, deletions.
+* [FIX] Respect existing sql_query_range/sql_query_info settings.
+* [CHANGE] Don't add the sphinx_internal_class_name unless STI models are indexed.
+* [FIX] Don't add select clauses or joins to sql_query if they're for query/ranged-query properties.
+* [CHANGE] Use Mysql2's reconnect option and have it turned on by default.
+* [FIX] Set database timezones as part of the indexing process.
+* [CHANGE] Improved auto-starring with escaped characters.
+* [FIX] Chaining scopes with just options works again.
+
+2013-07-09: 3.0.4
+* [CHANGE] Updating Riddle dependency to be >= 1.5.7.
+* [FEATURE] ts:regenerate rake task for rebuilding Sphinx when realtime indices are involved.
+* [FEATURE] ts:clear task removes all Sphinx index and binlog files.
+* [CHANGE] Glaze now responds to respond_to? (@groe).
+* [FEATURE] Facet search calls now respect the limit option (which otherwise defaults to max_matches) (Demian Ferreiro).
+* [FEATURE] Excerpts words can be overwritten with the words option (@groe).
+* [FIX] Empty queries with the star option set to true are handled gracefully.
+* [CHANGE] Deleted ActiveRecord objects are deleted in realtime indices as well.
+* [CHANGE] Realtime callbacks are no longer automatically added, but they're now more flexible (for association situations).
+* [CHANGE] Cleaning and refactoring so Code Climate ranks this as A-level code (Philip Arndt, Shevaun Coker, Garrett Heinlen).
+* [FIX] Excerpts are now wildcard-friendly.
 * [FIX] Facet searches now use max_matches value (with a default of 1000) to ensure as many results as possible are returned.
 * [CHANGE] Exceptions raised when communicating with Sphinx are now mentioned in the logs when queries are retried (instead of STDOUT).
 * [CHANGE] Excerpts now use just the query and standard conditions, instead of parsing Sphinx's keyword metadata (which had model names in it).

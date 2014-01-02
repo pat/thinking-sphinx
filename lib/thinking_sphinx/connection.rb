@@ -7,8 +7,9 @@ module ThinkingSphinx::Connection
     address = '127.0.0.1' if address == 'localhost'
 
     options = {
-      :host  => address,
-      :port  => configuration.searchd.mysql41
+      :host      => address,
+      :port      => configuration.searchd.mysql41,
+      :reconnect => true
     }.merge(configuration.settings['connection_options'] || {})
 
     connection_class.new address, options[:port], options
@@ -61,6 +62,8 @@ module ThinkingSphinx::Connection
         :port  => port,
         :flags => Mysql2::Client::MULTI_STATEMENTS
       }.merge(options))
+    rescue Mysql2::Error => error
+      raise ThinkingSphinx::SphinxError.new_from_mysql error
     end
 
     def close

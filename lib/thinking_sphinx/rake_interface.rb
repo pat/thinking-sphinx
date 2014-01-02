@@ -1,42 +1,43 @@
 class ThinkingSphinx::RakeInterface
+  def clear
+    [
+      configuration.indices_location,
+      configuration.searchd.binlog_path
+    ].each do |path|
+      FileUtils.rm_r(path) if File.exists?(path)
+    end
+  end
+
   def configure
     puts "Generating configuration to #{configuration.configuration_file}"
     configuration.render_to_file
   end
 
   def generate
+    indices = configuration.indices.select { |index| index.type == 'rt' }
+    indices.each do |index|
+      ThinkingSphinx::RealTime::Populator.populate index
+    end
+  end
+
+  def index(reconfigure = true, verbose = true)
+    configure if reconfigure
+    FileUtils.mkdir_p configuration.indices_location
+    ThinkingSphinx.before_index_hooks.each { |hook| hook.call }
+    controller.index :verbose => verbose
+  end
+
+  def prepare
     configuration.preload_indices
     configuration.render
 
     FileUtils.mkdir_p configuration.indices_location
-
-    configuration.indices.each do |index|
-      next unless index.is_a?(ThinkingSphinx::RealTime::Index)
-
-      puts "Generating index files for #{index.name}"
-      transcriber = ThinkingSphinx::RealTime::Transcriber.new index
-      Dir["#{index.path}*"].each { |file| FileUtils.rm file }
-
-      index.model.find_each do |instance|
-        transcriber.copy instance
-        print "."
-      end
-      print "\n"
-
-      controller.rotate
-    end
-  end
-
-  def index(reconfigure = true)
-    configure if reconfigure
-    FileUtils.mkdir_p configuration.indices_location
-    ThinkingSphinx.before_index_hooks.each { |hook| hook.call }
-    controller.index :verbose => true
   end
 
   def start
     raise RuntimeError, 'searchd is already running' if controller.running?
 
+    FileUtils.mkdir_p configuration.indices_location
     controller.start
 
     if controller.running?
@@ -61,11 +62,9 @@ class ThinkingSphinx::RakeInterface
 
   private
 
+  delegate :controller, :to => :configuration
+
   def configuration
     ThinkingSphinx::Configuration.instance
-  end
-
-  def controller
-    configuration.controller
   end
 end

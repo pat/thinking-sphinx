@@ -31,7 +31,7 @@ class ThinkingSphinx::ActiveRecord::PropertyQuery
   def base_association_class
     base_association.klass
   end
-  delegate :relation, :to => :base_association_class, :prefix => true
+  delegate :unscoped, :to => :base_association_class, :prefix => true
 
   def column
     @column ||= property.columns.first
@@ -93,7 +93,7 @@ class ThinkingSphinx::ActiveRecord::PropertyQuery
   end
 
   def range_sql
-    base_association_class_relation.select(
+    base_association_class_unscoped.select(
       "MIN(#{quoted_foreign_key}), MAX(#{quoted_foreign_key})"
     ).to_sql
   end
@@ -105,7 +105,7 @@ class ThinkingSphinx::ActiveRecord::PropertyQuery
   def to_sql
     raise "Could not determine SQL for MVA" if reflections.empty?
 
-    relation = base_association_class_relation.select("#{quoted_foreign_key} #{offset} AS #{quote_column('id')}, #{quoted_primary_key} AS #{quote_column(property.name)}"
+    relation = base_association_class_unscoped.select("#{quoted_foreign_key} #{offset} AS #{quote_column('id')}, #{quoted_primary_key} AS #{quote_column(property.name)}"
     )
     relation = relation.joins(joins) if joins.present?
     relation = relation.where("#{quoted_foreign_key} BETWEEN $start AND $end") if ranged?

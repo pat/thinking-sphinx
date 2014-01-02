@@ -33,8 +33,7 @@ ActiveRecord::Schema.define do
   end
 
   create_table(:categories, :force => true) do |t|
-    t.integer :id
-    t.string  :name
+    t.string :name
   end
 
   create_table(:categorisations, :force => true) do |t|

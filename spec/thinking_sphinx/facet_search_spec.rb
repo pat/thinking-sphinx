@@ -29,12 +29,12 @@ describe ThinkingSphinx::FacetSearch do
   DumbSearch = ::Struct.new(:query, :options) do
     def raw
       [{
-        'sphinx_internal_class' => 'Foo',
-        'price_bracket'         => 3,
-        'tag_ids'               => '1,2',
-        'category_id'           => 11,
-        '@count'                => 5,
-        '@groupby'              => 2
+        'sphinx_internal_class'           => 'Foo',
+        'price_bracket'                   => 3,
+        'tag_ids'                         => '1,2',
+        'category_id'                     => 11,
+        ThinkingSphinx::SphinxQL.count    => 5,
+        ThinkingSphinx::SphinxQL.group_by => 2
       }]
     end
   end
@@ -104,6 +104,18 @@ describe ThinkingSphinx::FacetSearch do
 
         batch.searches.each { |search|
           search.options[setting].should == 1234
+        }
+      end
+    end
+
+    [:limit, :per_page].each do |setting|
+      it "respects #{setting} option if set" do
+        facet_search = ThinkingSphinx::FacetSearch.new '', {setting => 42}
+
+        facet_search.populate
+
+        batch.searches.each { |search|
+          search.options[setting].should == 42
         }
       end
     end

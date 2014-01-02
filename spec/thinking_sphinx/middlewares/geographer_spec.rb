@@ -4,6 +4,7 @@ end
 
 require 'thinking_sphinx/middlewares/middleware'
 require 'thinking_sphinx/middlewares/geographer'
+require 'thinking_sphinx/float_formatter'
 
 describe ThinkingSphinx::Middlewares::Geographer do
   let(:app)        { double('app', :call => true) }
@@ -80,6 +81,16 @@ describe ThinkingSphinx::Middlewares::Geographer do
 
         sphinx_sql.should_receive(:values).
           with('GEODIST(0.1, 0.2, lat, longitude) AS geodist').
+          and_return(sphinx_sql)
+
+        middleware.call [context]
+      end
+
+      it "handles very small values" do
+        search.options[:geo] = [0.0000001, 0.00000000002]
+
+        sphinx_sql.should_receive(:values).
+          with('GEODIST(0.0000001, 0.00000000002, lat, lng) AS geodist').
           and_return(sphinx_sql)
 
         middleware.call [context]

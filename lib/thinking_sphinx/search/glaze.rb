@@ -15,6 +15,11 @@ class ThinkingSphinx::Search::Glaze < BasicObject
     @object.equal? object
   end
 
+  def respond_to?(method, include_private = false)
+    @object.respond_to?(method, include_private) ||
+    @panes.any? { |pane| pane.respond_to?(method, include_private) }
+  end
+
   def unglazed
     @object
   end

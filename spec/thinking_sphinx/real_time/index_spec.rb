@@ -149,6 +149,22 @@ describe ThinkingSphinx::RealTime::Index do
     end
   end
 
+  describe '#scope' do
+    let(:model)  { double('model') }
+
+    it "returns the model by default" do
+      ActiveSupport::Inflector.stub(:constantize => model)
+
+      index.scope.should == model
+    end
+
+    it "returns the evaluated scope if provided" do
+      index.scope = lambda { :foo }
+
+      index.scope.should == :foo
+    end
+  end
+
   describe '#unique_attribute_names' do
     it "returns all attribute names" do
       index.unique_attribute_names.should == [

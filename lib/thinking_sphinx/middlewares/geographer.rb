@@ -31,25 +31,30 @@ class ThinkingSphinx::Middlewares::Geographer <
 
     delegate :geo, :latitude, :longitude, :to => :geolocation_attributes
 
+    def fixed_format(float)
+      ThinkingSphinx::FloatFormatter.new(float).fixed
+    end
+
     def geolocation_attributes
       @geolocation_attributes ||= GeolocationAttributes.new(context)
     end
 
     def geodist_clause
-      "GEODIST(#{geo.first}, #{geo.last}, #{latitude}, #{longitude}) AS geodist"
+      "GEODIST(#{fixed_format geo.first}, #{fixed_format geo.last}, #{latitude}, #{longitude}) AS geodist"
     end
 
     class GeolocationAttributes
+      attr_accessor :latitude, :longitude
+
       def initialize(context)
-        self.context = context
-        self.latitude = latitude_attr if latitude_attr
+        self.context   = context
+        self.latitude  = latitude_attr if latitude_attr
         self.longitude = longitude_attr if longitude_attr
       end
 
       def geo
         search_context_options[:geo]
       end
-      attr_accessor :latitude, :longitude
 
       def latitude
         @latitude ||= names.detect { |name| %w[lat latitude].include?(name) } || 'lat'
@@ -60,6 +65,7 @@ class ThinkingSphinx::Middlewares::Geographer <
       end
 
       private
+
       attr_accessor :context
 
       def latitude_attr

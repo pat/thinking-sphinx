@@ -98,6 +98,46 @@ describe ThinkingSphinx::RealTime::Interpreter do
         saved_field == field
       }.length.should == 2
     end
+
+    context 'sortable' do
+      let(:attribute) { double('attribute') }
+
+      before :each do
+        ThinkingSphinx::RealTime::Attribute.stub! :new => attribute
+
+        column.stub :__name => :col
+      end
+
+      it "adds the _sort suffix to the field's name" do
+        ThinkingSphinx::RealTime::Attribute.should_receive(:new).
+          with(column, :as => :col_sort, :type => :string).
+          and_return(attribute)
+
+        instance.indexes column, :sortable => true
+      end
+
+      it "respects given aliases" do
+        ThinkingSphinx::RealTime::Attribute.should_receive(:new).
+          with(column, :as => :other_sort, :type => :string).
+          and_return(attribute)
+
+        instance.indexes column, :sortable => true, :as => :other
+      end
+
+      it "respects symbols instead of columns" do
+        ThinkingSphinx::RealTime::Attribute.should_receive(:new).
+          with(:title, :as => :title_sort, :type => :string).
+          and_return(attribute)
+
+        instance.indexes :title, :sortable => true
+      end
+
+      it "adds an attribute to the index" do
+        instance.indexes column, :sortable => true
+
+        index.attributes.should include(attribute)
+      end
+    end
   end
 
   describe '#method_missing' do
@@ -116,6 +156,14 @@ describe ThinkingSphinx::RealTime::Interpreter do
         with(:users, :posts, :subject).and_return(column)
 
       instance.users(:posts, :subject)
+    end
+  end
+
+  describe '#scope' do
+    it "passes the scope block through to the index" do
+      index.should_receive(:scope=).with(instance_of(Proc))
+
+      instance.scope { :foo }
     end
   end
 

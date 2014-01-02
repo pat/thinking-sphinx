@@ -40,7 +40,7 @@ describe ThinkingSphinx::Configuration do
       config = ThinkingSphinx::Configuration.instance
       config.settings['foo'].should == 'bugs'
 
-      config.framework = double :environment => 'production', :root => '/tmp/'
+      config.framework = double :environment => 'production', :root => Pathname.new(__FILE__).join('..', '..', 'internal')
       config.settings['foo'].should == 'bar'
     end
   end

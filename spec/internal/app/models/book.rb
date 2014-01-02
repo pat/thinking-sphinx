@@ -10,4 +10,5 @@ class Book < ActiveRecord::Base
   sphinx_scope(:by_query_and_year) do |query, year|
     [query, {:with => {:year =>year}}]
   end
+  sphinx_scope(:ordered) { {:order => 'year DESC'} }
 end

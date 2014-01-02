@@ -6,13 +6,10 @@ describe ThinkingSphinx::Deletion do
     let(:index)      { double('index', :name => 'foo_core',
       :document_id_for_key => 14, :type => 'plain') }
     let(:instance)   { double('instance', :id => 7) }
-    let(:pool)       { double 'pool' }
 
     before :each do
-      ThinkingSphinx::Connection.stub :pool => pool
+      ThinkingSphinx::Connection.stub(:take).and_yield(connection)
       Riddle::Query.stub :update => 'UPDATE STATEMENT'
-
-      pool.stub(:take).and_yield(connection)
     end
 
     context 'index is SQL-backed' do
@@ -44,7 +41,8 @@ describe ThinkingSphinx::Deletion do
       end
 
       it "doesn't care about Sphinx errors" do
-        connection.stub(:execute).and_raise(Mysql2::Error.new(''))
+        connection.stub(:execute).
+          and_raise(ThinkingSphinx::ConnectionError.new(''))
 
         lambda {
           ThinkingSphinx::Deletion.perform index, instance
@@ -65,7 +63,8 @@ describe ThinkingSphinx::Deletion do
       end
 
       it "doesn't care about Sphinx errors" do
-        connection.stub(:execute).and_raise(Mysql2::Error.new(''))
+        connection.stub(:execute).
+          and_raise(ThinkingSphinx::ConnectionError.new(''))
 
         lambda {
           ThinkingSphinx::Deletion.perform index, instance

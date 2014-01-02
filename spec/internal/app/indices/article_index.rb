@@ -4,7 +4,7 @@ ThinkingSphinx::Index.define :article, :with => :active_record do
   indexes user.articles.title, :as => :related_titles
 
   has published, user_id
-  has taggings.tag_id, :as => :tag_ids
+  has taggings.tag_id, :as => :tag_ids, :source => :query
   has taggings.created_at, :as => :taggings_at
 
   set_property :min_infix_len => 4

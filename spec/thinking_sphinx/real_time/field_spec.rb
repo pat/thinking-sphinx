@@ -4,6 +4,19 @@ describe ThinkingSphinx::RealTime::Field do
   let(:field)  { ThinkingSphinx::RealTime::Field.new column }
   let(:column) { double('column', :__name => :created_at, :__stack => []) }
 
+  describe '#column' do
+    it 'returns the provided Column object' do
+      field.column.should == column
+    end
+
+    it 'translates symbols to Column objects' do
+      ThinkingSphinx::ActiveRecord::Column.should_receive(:new).with(:title).
+        and_return(column)
+
+      ThinkingSphinx::RealTime::Field.new :title
+    end
+  end
+
   describe '#name' do
     it "uses the provided option by default" do
       field = ThinkingSphinx::RealTime::Field.new column, :as => :foo

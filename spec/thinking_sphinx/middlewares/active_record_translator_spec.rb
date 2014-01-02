@@ -73,7 +73,7 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
     it "sorts the results according to Sphinx order, not database order" do
       model_name = double('article', :constantize => model)
       instance_1 = double('instance 1', :id => 1)
-      instance_2 = double('instance 1', :id => 2)
+      instance_2 = double('instance 2', :id => 2)
 
       context[:results] << raw_result(2, model_name)
       context[:results] << raw_result(1, model_name)
@@ -83,6 +83,22 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
       middleware.call [context]
 
       context[:results].should == [instance_2, instance_1]
+    end
+
+    it "returns objects in database order if a SQL order clause is supplied" do
+      model_name = double('article', :constantize => model)
+      instance_1 = double('instance 1', :id => 1)
+      instance_2 = double('instance 2', :id => 2)
+
+      context[:results] << raw_result(2, model_name)
+      context[:results] << raw_result(1, model_name)
+
+      model.stub(:order => model, :where => [instance_1, instance_2])
+      search.options[:sql] = {:order => 'name DESC'}
+
+      middleware.call [context]
+
+      context[:results].should == [instance_1, instance_2]
     end
 
     context 'SQL options' do

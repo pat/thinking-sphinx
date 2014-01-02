@@ -68,7 +68,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     return if @preloaded_indices
 
     index_paths.each do |path|
-      Dir["#{path}/**/*.rb"].each do |file|
+      Dir["#{path}/**/*.rb"].sort.each do |file|
         ActiveSupport::Dependencies.require_or_load file
       end
     end
@@ -80,6 +80,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     preload_indices
 
     ThinkingSphinx::Configuration::ConsistentIds.new(indices).reconcile
+    ThinkingSphinx::Configuration::MinimumFields.new(indices).reconcile
 
     super
   end
@@ -99,7 +100,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   def configure_searchd
     configure_searchd_log_files
 
-    searchd.binlog_path = framework_root.join('tmp', 'binlog',environment).to_s
+    searchd.binlog_path = tmp_path.join('binlog', environment).to_s
     searchd.address = settings['address'].presence || Defaults::ADDRESS
     searchd.mysql41 = settings['mysql41'] || settings['port'] || Defaults::PORT
     searchd.workers = 'threads'
@@ -112,7 +113,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def log_root
-    framework_root.join('log')
+    framework_root.join('log').realpath
   end
 
   def framework_root
@@ -146,6 +147,11 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     @offsets = {}
   end
 
+  def tmp_path
+    path = framework_root.join('tmp')
+    File.exists?(path) ? path.realpath : path
+  end
+
   def apply_sphinx_settings!
     [indexer, searchd].each do |object|
       settings.each do |key, value|
@@ -159,3 +165,4 @@ end
 
 require 'thinking_sphinx/configuration/consistent_ids'
 require 'thinking_sphinx/configuration/defaults'
+require 'thinking_sphinx/configuration/minimum_fields'

@@ -1,6 +1,8 @@
 class ThinkingSphinx::IndexSet
   include Enumerable
 
+  delegate :each, :empty?, :to => :indices
+
   def initialize(classes, index_names, configuration = nil)
     @classes       = classes || []
     @index_names   = index_names
@@ -9,10 +11,6 @@ class ThinkingSphinx::IndexSet
 
   def ancestors
     classes_and_ancestors - classes
-  end
-
-  def each(&block)
-    indices.each { |index| yield index }
   end
 
   def to_a

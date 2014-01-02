@@ -26,6 +26,10 @@ module ThinkingSphinx
 
       private
 
+      delegate :adapter, :model, :delta_processor, :to => :source
+      delegate :convert_nulls, :time_zone_query_pre, :utf8_query_pre,
+        :to => :adapter
+
       def query
         Query.new(self)
       end
@@ -38,14 +42,8 @@ module ThinkingSphinx
         ThinkingSphinx::Configuration.instance
       end
 
-      delegate :adapter, :model, :delta_processor, :to => :source
-      delegate :convert_nulls, :utf8_query_pre, :to => :adapter
       def relation
         model.unscoped
-      end
-
-      def base_join
-        @base_join ||= join_dependency_class.new model, [], initial_joins
       end
 
       def associations
@@ -54,10 +52,6 @@ module ThinkingSphinx
             assocs.add_join_to association.stack
           end
         end
-      end
-
-      def custom_joins
-        @custom_joins ||= source.associations.select(&:string?).collect(&:to_s)
       end
 
       def quote_column(column)
@@ -85,24 +79,6 @@ module ThinkingSphinx
         "($id - #{source.offset}) / #{config.indices.count}"
       end
 
-      def attribute_presenters
-        @attribute_presenters ||= property_sql_presenters_for(source.attributes)
-      end
-
-      def field_presenters
-        @field_presenters ||= property_sql_presenters_for(source.fields)
-      end
-
-      def property_sql_presenters_for(fields)
-        fields.collect { |field| property_sql_presenter_for(field) }
-      end
-
-      def property_sql_presenter_for(field)
-        ThinkingSphinx::ActiveRecord::PropertySQLPresenter.new(
-          field, source.adapter, associations
-        )
-      end
-
       def inheritance_column_condition
         "#{quoted_inheritance_column} = '#{model_name}'"
       end
@@ -112,14 +88,6 @@ module ThinkingSphinx
         condition << "#{quoted_primary_key} BETWEEN $start AND $end" unless source.disable_range?
         condition += source.conditions
         condition
-      end
-
-      def presenters_to_group(presenters)
-        presenters.collect(&:to_group)
-      end
-
-      def presenters_to_select(presenters)
-        presenters.collect(&:to_select)
       end
 
       def groupings

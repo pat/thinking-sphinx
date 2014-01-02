@@ -3,7 +3,8 @@ class ThinkingSphinx::Middlewares::SphinxQL <
 
   SELECT_OPTIONS = [:ranker, :max_matches, :cutoff, :max_query_time,
     :retry_count, :retry_delay, :field_weights, :index_weights, :reverse_scan,
-    :comment]
+    :comment, :agent_query_timeout, :boolean_simplify, :global_idf, :idf,
+    :sort_method]
 
   def call(contexts)
     contexts.each do |context|
@@ -28,6 +29,10 @@ class ThinkingSphinx::Middlewares::SphinxQL <
     private
 
     attr_reader :context
+
+    delegate :search, :configuration, :to => :context
+    delegate :options,                :to => :search
+    delegate :settings,               :to => :configuration
 
     def classes
       options[:classes] || []
@@ -55,6 +60,10 @@ class ThinkingSphinx::Middlewares::SphinxQL <
       "(#{classes_and_descendants_names.join('|')})"
     end
 
+    def class_condition_required?
+      classes.any? && !indices_match_classes?
+    end
+
     def constantize_inheritance_column(klass)
       klass.connection.select_values(inheritance_column_select(klass)).compact.each(&:constantize)
     end
@@ -68,6 +77,12 @@ class ThinkingSphinx::Middlewares::SphinxQL <
         constantize_inheritance_column(klass)
         klass.descendants
       end.flatten
+    end
+
+    def indices_match_classes?
+      indices.collect(&:reference).uniq.sort == classes.collect { |klass|
+        klass.name.underscore.to_sym
+      }.sort
     end
 
     def inheritance_column_select(klass)
@@ -85,7 +100,10 @@ SQL
 
     def extended_query
       conditions = options[:conditions] || {}
-      conditions[:sphinx_internal_class_name] = class_condition if classes.any?
+      if class_condition_required?
+        conditions[:sphinx_internal_class_name] = class_condition
+      end
+
       @extended_query ||= ThinkingSphinx::Search::Query.new(
         context.search.query, conditions, options[:star]
       ).to_s
@@ -114,11 +132,12 @@ SQL
     end
 
     def indices
-      @indices ||= ThinkingSphinx::IndexSet.new classes, options[:indices]
+      @indices ||= begin
+        set = ThinkingSphinx::IndexSet.new classes, options[:indices]
+        raise ThinkingSphinx::NoIndicesError if set.empty?
+        set
+      end
     end
-
-    delegate :search, :to => :context
-    delegate :options, :to => :search
 
     def order_clause
       order_by = options[:order]
@@ -135,11 +154,8 @@ SQL
       end
     end
 
-    delegate :configuration, :to => :context
-    delegate :settings, :to => :configuration
-
     def values
-      options[:select] ||= '*, @groupby, @count' if group_attribute.present?
+      options[:select] ||= "*, #{ThinkingSphinx::SphinxQL.group_by}, #{ThinkingSphinx::SphinxQL.count}" if group_attribute.present?
       options[:select]
     end
 

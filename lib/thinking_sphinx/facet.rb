@@ -11,7 +11,7 @@ class ThinkingSphinx::Facet
 
   def results_from(raw)
     raw.inject({}) { |hash, row|
-      hash[row[group_column]] = row['@count']
+      hash[row[group_column]] = row[ThinkingSphinx::SphinxQL.count]
       hash
     }
   end
@@ -19,7 +19,7 @@ class ThinkingSphinx::Facet
   private
 
   def group_column
-    @properties.any?(&:multi?) ? '@groupby' : name
+    @properties.any?(&:multi?) ? ThinkingSphinx::SphinxQL.group_by : name
   end
 
   def use_field?

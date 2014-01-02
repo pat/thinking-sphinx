@@ -65,6 +65,12 @@ describe 'Searching within a model', :live => true do
       User.recent.search
     }.should raise_error(ThinkingSphinx::MixedScopesError)
   end
+
+  it "raises an error if the model has no indices defined" do
+    lambda {
+      Category.search.to_a
+    }.should raise_error(ThinkingSphinx::NoIndicesError)
+  end
 end
 
 describe 'Searching within a model with a realtime index', :live => true do

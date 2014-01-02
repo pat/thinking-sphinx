@@ -23,12 +23,10 @@ describe ThinkingSphinx::Deltas::DefaultDelta do
     let(:index)      { double('index', :name => 'foo_core',
       :document_id_for_key => 14) }
     let(:instance)   { double('instance', :id => 7) }
-    let(:pool)       { double }
 
     before :each do
-      ThinkingSphinx::Connection.stub :pool => pool
+      ThinkingSphinx::Connection.stub(:take).and_yield(connection)
       Riddle::Query.stub :update => 'UPDATE STATEMENT'
-      pool.stub(:take).and_yield(connection)
     end
 
     it "updates the deleted flag to false" do
@@ -59,7 +57,8 @@ describe ThinkingSphinx::Deltas::DefaultDelta do
     end
 
     it "doesn't care about Sphinx errors" do
-      connection.stub(:execute).and_raise(Mysql2::Error.new(''))
+      connection.stub(:execute).
+        and_raise(ThinkingSphinx::ConnectionError.new(''))
 
       lambda { delta.delete index, instance }.should_not raise_error
     end

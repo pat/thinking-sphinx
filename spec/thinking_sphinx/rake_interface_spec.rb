@@ -9,6 +9,32 @@ describe ThinkingSphinx::RakeInterface do
     interface.stub(:puts => nil)
   end
 
+  describe '#clear' do
+    let(:controller) { double 'controller' }
+
+    before :each do
+      configuration.stub(
+        :indices_location => '/path/to/indices',
+        :searchd          => double(:binlog_path => '/path/to/binlog')
+      )
+
+      FileUtils.stub :rm_r => true
+      File.stub :exists? => true
+    end
+
+    it "removes the directory for the index files" do
+      FileUtils.should_receive(:rm_r).with('/path/to/indices')
+
+      interface.clear
+    end
+
+    it "removes the directory for the binlog files" do
+      FileUtils.should_receive(:rm_r).with('/path/to/binlog')
+
+      interface.clear
+    end
+  end
+
   describe '#configure' do
     let(:controller) { double('controller') }
 
@@ -79,6 +105,12 @@ describe ThinkingSphinx::RakeInterface do
 
       interface.index
     end
+
+    it "does not index verbosely if requested" do
+      controller.should_receive(:index).with(:verbose => false)
+
+      interface.index true, false
+    end
   end
 
   describe '#start' do
@@ -86,6 +118,15 @@ describe ThinkingSphinx::RakeInterface do
 
     before :each do
       controller.stub(:running?).and_return(false, true)
+      configuration.stub :indices_location => 'my/index/files'
+
+      FileUtils.stub :mkdir_p => true
+    end
+
+    it "creates the index files directory" do
+      FileUtils.should_receive(:mkdir_p).with('my/index/files')
+
+      interface.start
     end
 
     it "starts the daemon" do
