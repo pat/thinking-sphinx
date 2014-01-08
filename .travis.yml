@@ -3,6 +3,7 @@ rvm:
   - 1.9.2
   - 1.9.3
   - 2.0.0
+  - 2.1.0
 before_install:
   - gem update --system
   - curl -O http://fs-packages.s3.amazonaws.com/fs-sphinx-2.0.6_x86_64_12.04.deb
