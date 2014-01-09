@@ -81,6 +81,16 @@ module ThinkingSphinx::Connection
       client.close
       @client = nil
     end
+
+    def query(*statements)
+      results_for *statements
+    rescue => error
+      wrapper           = ThinkingSphinx::QueryExecutionError.new error.message
+      wrapper.statement = statements.join('; ')
+      raise wrapper
+    ensure
+      close_and_clear unless ThinkingSphinx::Connection.persistent?
+    end
   end
 
   class MRI < Client
@@ -106,16 +116,10 @@ module ThinkingSphinx::Connection
       raise ThinkingSphinx::SphinxError.new_from_mysql error
     end
 
-    def query(*statements)
+    def results_for(*statements)
       results  = [client.query(statements.join('; '))]
       results << client.store_result while client.next_result
       results
-    rescue => error
-      wrapper           = ThinkingSphinx::QueryExecutionError.new error.message
-      wrapper.statement = statements.join('; ')
-      raise wrapper
-    ensure
-      close_and_clear unless ThinkingSphinx::Connection.persistent?
     end
   end
 
@@ -140,19 +144,13 @@ module ThinkingSphinx::Connection
       raise ThinkingSphinx::SphinxError.new_from_mysql error
     end
 
-    def query(*statements)
+    def results_for(*statements)
       statement = client.createStatement
       statement.execute statements.join('; ')
 
       results   = [set_to_array(statement.getResultSet)]
       results  << set_to_array(statement.getResultSet) while statement.getMoreResults
       results.compact
-    rescue => error
-      wrapper           = ThinkingSphinx::QueryExecutionError.new error.message
-      wrapper.statement = statements.join('; ')
-      raise wrapper
-    ensure
-      close_and_clear unless ThinkingSphinx::Connection.persistent?
     end
 
     def set_to_array(set)
