@@ -26,11 +26,12 @@ Configuring Sphinx for our production environment includes setting where the PID
 production:
   pid_file: /path/to/app/shared/tmp/searchd.pid
   indices_location: /path/to/app/shared/db/sphinx
+  configuration_file: /path/to/app/shared/production.sphinx.conf
 {% endhighlight %}
 
 <div class="note">
   <p class="old">Thinking Sphinx v1/v2</p>
-  <p><strong>Note</strong>: If you are using an older version of Thinking Sphinx, then the file is <code>config/sphinx.yml</code>, and the second setting is <code>searchd_file_path</code>:</p>
+  <p><strong>Note</strong>: If you are using an older version of Thinking Sphinx, then the file is <code>config/sphinx.yml</code>, and the second setting is <code>searchd_file_path</code> (and the third can be skipped):</p>
 
 {% highlight yaml %}
 production:
