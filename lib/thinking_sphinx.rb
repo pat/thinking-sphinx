@@ -1,6 +1,7 @@
 if RUBY_PLATFORM == 'java'
   require 'java'
   require 'jdbc/mysql'
+  Jdbc::MySQL.load_driver
 else
   require 'mysql2'
 end
