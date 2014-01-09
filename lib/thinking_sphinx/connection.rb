@@ -16,7 +16,6 @@ module ThinkingSphinx::Connection
   end
 
   def self.connection_class
-    raise "Sphinx's MySQL protocol does not work with JDBC." if RUBY_PLATFORM == 'java'
     return ThinkingSphinx::Connection::JRuby if RUBY_PLATFORM == 'java'
 
     ThinkingSphinx::Connection::MRI
@@ -36,7 +35,7 @@ module ThinkingSphinx::Connection
       pool.take do |connection|
         begin
           yield connection
-        rescue ThinkingSphinx::QueryExecutionError, Mysql2::Error => error
+        rescue ThinkingSphinx::QueryExecutionError, connection.base_error => error
           original = ThinkingSphinx::SphinxError.new_from_mysql error
           raise original if original.is_a?(ThinkingSphinx::QueryError)
           raise Innertube::Pool::BadResource
@@ -63,11 +62,7 @@ module ThinkingSphinx::Connection
 
   @persistent = true
 
-  class MRI
-    def initialize(address, port, options)
-      @address, @port, @options = address, port, options
-    end
-
+  class Client
     def close
       client.close unless ThinkingSphinx::Connection.persistent?
     end
@@ -82,6 +77,23 @@ module ThinkingSphinx::Connection
 
     private
 
+    def close_and_clear
+      client.close
+      @client = nil
+    end
+  end
+
+  class MRI < Client
+    def initialize(address, port, options)
+      @address, @port, @options = address, port, options
+    end
+
+    def base_error
+      Mysql2::Error
+    end
+
+    private
+
     attr_reader :address, :port, :options
 
     def client
@@ -90,13 +102,8 @@ module ThinkingSphinx::Connection
         :port  => port,
         :flags => Mysql2::Client::MULTI_STATEMENTS
       }.merge(options))
-    rescue Mysql2::Error => error
+    rescue base_error => error
       raise ThinkingSphinx::SphinxError.new_from_mysql error
-    end
-
-    def close_and_clear
-      client.close
-      @client = nil
     end
 
     def query(*statements)
@@ -112,25 +119,88 @@ module ThinkingSphinx::Connection
     end
   end
 
-  class JRuby
-    attr_reader :client
+  class JRuby < Client
+    attr_reader :address, :options
 
     def initialize(address, port, options)
-      address = "jdbc:mysql://#{address}:#{searchd.mysql41}"
-      @client = java.sql.DriverManager.getConnection address,
+      @address = "jdbc:mysql://#{address}:#{port}?allowMultiQueries=true"
+      @options = options
+    end
+
+    def base_error
+      Java::JavaSql::SQLException
+    end
+
+    private
+
+    def client
+      @client ||= java.sql.DriverManager.getConnection address,
         options[:username], options[:password]
+    rescue base_error => error
+      raise ThinkingSphinx::SphinxError.new_from_mysql error
     end
 
-    def execute(statement)
-      client.createStatement.execute statement
+    def query(*statements)
+      statement = client.createStatement
+      statement.execute statements.join('; ')
+
+      results   = [set_to_array(statement.getResultSet)]
+      results  << set_to_array(statement.getResultSet) while statement.getMoreResults
+      results.compact
+    rescue => error
+      wrapper           = ThinkingSphinx::QueryExecutionError.new error.message
+      wrapper.statement = statements.join('; ')
+      raise wrapper
+    ensure
+      close_and_clear unless ThinkingSphinx::Connection.persistent?
     end
 
-    def query(statement)
-      #
-    end
+    def set_to_array(set)
+      return nil if set.nil?
 
-    def query_all(*statements)
-      #
+      meta = set.meta_data
+      rows = []
+
+      while set.next
+        row = {}
+
+        (1..meta.column_count).each do |index|
+          name      = meta.column_name index
+          row[name] = case meta.column_type(index)
+            when -6, 5, 4
+              # TINYINT, INTEGER
+              set.get_int(index).to_i
+            when -5
+              # BIGINT
+              set.get_long(index).to_i
+            when 41
+              # Date
+              set.get_date(index)
+            when 92
+              # Time
+              set.get_time(index).to_i
+            when 93
+              # Timestamp
+              set.get_timestamp(index)
+            when 2, 3, 6
+              # NUMERIC, DECIMAL, FLOAT
+              case meta.scale(index)
+              when 0
+                set.get_long(index).to_i
+              else
+                BigDecimal.new(set.get_string(index).to_s)
+              end
+            when 1, -15, -9, 12
+              # CHAR, NCHAR, NVARCHAR, VARCHAR
+              set.get_string(index).to_s
+            else
+              set.get_string(index).to_s
+            end
+          end
+
+        rows << row
+      end
+      rows
     end
   end
 end
