@@ -29,6 +29,6 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'appraisal',        '~> 0.5.2'
   s.add_development_dependency 'combustion',       '~> 0.4.0'
-  s.add_development_dependency 'database_cleaner', '~> 0.7.1'
+  s.add_development_dependency 'database_cleaner', '~> 1.2.0'
   s.add_development_dependency 'rspec',            '~> 2.13.0'
 end
