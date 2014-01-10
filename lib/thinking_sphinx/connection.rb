@@ -160,44 +160,13 @@ module ThinkingSphinx::Connection
       rows = []
 
       while set.next
-        row = {}
-
-        (1..meta.column_count).each do |index|
+        rows << (1..meta.column_count).inject({}) do |row, index|
           name      = meta.column_name index
-          row[name] = case meta.column_type(index)
-            when -6, 5, 4
-              # TINYINT, INTEGER
-              set.get_int(index).to_i
-            when -5
-              # BIGINT
-              set.get_long(index).to_i
-            when 41
-              # Date
-              set.get_date(index)
-            when 92
-              # Time
-              set.get_time(index).to_i
-            when 93
-              # Timestamp
-              set.get_timestamp(index)
-            when 2, 3, 6
-              # NUMERIC, DECIMAL, FLOAT
-              case meta.scale(index)
-              when 0
-                set.get_long(index).to_i
-              else
-                BigDecimal.new(set.get_string(index).to_s)
-              end
-            when 1, -15, -9, 12
-              # CHAR, NCHAR, NVARCHAR, VARCHAR
-              set.get_string(index).to_s
-            else
-              set.get_string(index).to_s
-            end
-          end
-
-        rows << row
+          row[name] = set.get_object(index)
+          row
+        end
       end
+
       rows
     end
   end
