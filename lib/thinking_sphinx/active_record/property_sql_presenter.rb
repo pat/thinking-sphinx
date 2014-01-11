@@ -25,6 +25,8 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
     property.columns.any? { |column|
       Joiner::Path.new(property.model, column.__stack).aggregate?
     }
+  rescue Joiner::AssociationNotFound
+    false
   end
 
   def aggregate_separator
@@ -51,8 +53,10 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
   end
 
   def column_exists?(column)
-    model = Joiner::Path.new(property.model, column.__stack).model
-    model && model.column_names.include?(column.__name.to_s)
+    Joiner::Path.new(property.model, column.__stack).model.column_names.
+      include?(column.__name.to_s)
+  rescue Joiner::AssociationNotFound
+    false
   end
 
   def column_with_table(column)
