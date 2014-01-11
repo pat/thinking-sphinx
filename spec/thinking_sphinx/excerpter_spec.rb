@@ -3,7 +3,7 @@ require 'spec_helper'
 describe ThinkingSphinx::Excerpter do
   let(:excerpter)  { ThinkingSphinx::Excerpter.new('index', 'all words') }
   let(:connection) {
-    double('connection', :query => [{'snippet' => 'some highlighted words'}])
+    double('connection', :execute => [{'snippet' => 'some highlighted words'}])
   }
 
   before :each do
@@ -35,14 +35,14 @@ describe ThinkingSphinx::Excerpter do
     end
 
     it "sends the snippets call to Sphinx" do
-      connection.should_receive(:query).with('CALL SNIPPETS').
+      connection.should_receive(:execute).with('CALL SNIPPETS').
         and_return([{'snippet' => ''}])
 
       excerpter.excerpt!('all of the words')
     end
 
     it "returns the first value returned by Sphinx" do
-      connection.stub :query => [{'snippet' => 'some highlighted words'}]
+      connection.stub :execute => [{'snippet' => 'some highlighted words'}]
 
       excerpter.excerpt!('all of the words').should == 'some highlighted words'
     end

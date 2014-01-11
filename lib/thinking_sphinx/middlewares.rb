@@ -15,7 +15,6 @@ module ThinkingSphinx::Middlewares
   DEFAULT = ::Middleware::Builder.new do
     use StaleIdFilter
     ThinkingSphinx::Middlewares.use self, BASE_MIDDLEWARES
-    use UTF8
     use ActiveRecordTranslator
     use StaleIdChecker
     use Glazier
@@ -23,7 +22,6 @@ module ThinkingSphinx::Middlewares
 
   RAW_ONLY = ::Middleware::Builder.new do
     ThinkingSphinx::Middlewares.use self, BASE_MIDDLEWARES
-    use UTF8
   end
 
   IDS_ONLY = ::Middleware::Builder.new do

@@ -23,7 +23,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
     :offset => 0, :per_page => 5) }
   let(:index_set)     { [double(:name => 'article_core', :options => {})] }
   let(:sphinx_sql)    { double('sphinx_sql', :from => true, :offset => true,
-    :limit => true, :where => true, :matching => true) }
+    :limit => true, :where => true, :matching => true, :values => true) }
   let(:query)         { double('query') }
   let(:configuration) { double('configuration', :settings => {}) }
 
@@ -297,6 +297,22 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
 
       sphinx_sql.should_receive(:values).with('foo as bar').
         and_return(sphinx_sql)
+
+      middleware.call [context]
+    end
+
+    it "adds the provided group-best count" do
+      search.options[:group_best] = 5
+
+      sphinx_sql.should_receive(:group_best).with(5).and_return(sphinx_sql)
+
+      middleware.call [context]
+    end
+
+    it "adds the provided having clause" do
+      search.options[:having] = 'foo > 1'
+
+      sphinx_sql.should_receive(:having).with('foo > 1').and_return(sphinx_sql)
 
       middleware.call [context]
     end

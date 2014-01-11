@@ -31,18 +31,25 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks do
   end
 
   describe '#after_destroy' do
-    let(:config)     { double('config', :indices_for_references => [index],
-      :preload_indices => true) }
+    let(:index_set)  { double 'index set', :to_a => [index] }
     let(:index)      { double('index', :name => 'foo_core',
-      :document_id_for_key => 14, :type => 'plain') }
-    let(:instance)   { double('instance', :id => 7) }
+      :document_id_for_key => 14, :type => 'plain', :distributed? => false) }
+    let(:instance)   { double('instance', :id => 7, :new_record? => false) }
 
     before :each do
-      ThinkingSphinx::Configuration.stub :instance => config
+      ThinkingSphinx::IndexSet.stub :new => index_set
     end
 
     it "performs the deletion for the index and instance" do
-      ThinkingSphinx::Deletion.should_receive(:perform).with(index, instance)
+      ThinkingSphinx::Deletion.should_receive(:perform).with(index, 7)
+
+      callbacks.after_destroy
+    end
+
+    it "doesn't do anything if the instance is a new record" do
+      instance.stub :new_record? => true
+
+      ThinkingSphinx::Deletion.should_not_receive(:perform)
 
       callbacks.after_destroy
     end

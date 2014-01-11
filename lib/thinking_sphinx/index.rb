@@ -11,16 +11,12 @@ class ThinkingSphinx::Index
     defaults = ThinkingSphinx::Configuration.instance.
       settings['index_options'] || {}
     defaults.symbolize_keys!
-    
+
     @reference, @options, @block = reference, defaults.merge(options), block
   end
 
   def indices
-    if options[:delta]
-      delta_indices
-    else
-      [single_index]
-    end
+    options[:delta] ? delta_indices : [single_index]
   end
 
   private

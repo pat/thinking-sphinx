@@ -1,15 +1,16 @@
 h1. Thinking Sphinx
 
-Welcome to Thinking Sphinx version 3 - a complete rewrite from past versions, built for Rails 3.1 or newer only.
+Welcome to Thinking Sphinx version 3 - a complete rewrite from past versions. TS v3.0.x will work with Rails 3.1-4.0, and TS v3.1.x will work with Rails 3.2 and newer.
 
 h2. Installation
 
-It's a gem, so install it like you would any other gem. You will also need to specify the Mysql2 gem as well (this is not an inbuilt dependency because JRuby, when supported, will need something different):
+It's a gem, so install it like you would any other gem. You will also need to specify the mysql2 gem if you're using MRI, or jdbc-mysql if you're using JRuby:
 
-<pre><code>gem 'mysql2',          '0.3.13'
-gem 'thinking-sphinx', '3.0.6'</code></pre>
+<pre><code>gem 'mysql2',          '0.3.13', :platform => :ruby
+gem 'jdbc-mysql',      '5.1.28', :platform => :jruby
+gem 'thinking-sphinx', '3.1.0'</code></pre>
 
-The mysql2 gem is required for connecting to Sphinx, so please include it even when you're using PostgreSQL for your database.
+The MySQL gems mentioned are required for connecting to Sphinx, so please include it even when you're using PostgreSQL for your database.
 
 As for Sphinx itself, you need to make sure it's compiled with MySQL support, even if you're using PostgreSQL as your database - which is normally the default, but Homebrew can be too smart sometimes. If that's your compiling tool of choice, make sure you install with the @--mysql@ flag:
 
@@ -237,6 +238,16 @@ MySQL 5.x and Postgres 8.4 or better are supported.
 h2. Contributing
 
 You're brave! To contribute, clone this repository and have a good look through the specs - you'll notice the distinction between acceptance tests that actually use Sphinx and go through the full stack, and unit tests (everything else) which use liberal test doubles to ensure they're only testing the behaviour of the class in question. I've found this leads to far better code design.
+
+In order to run the specs, you'll need to create a MySQL database named @thinking_sphinx@:
+<pre><code># Fire up a MySQL console connection:
+mysql -u root
+# In that console, create the database:
+CREATE DATABASE thinking_sphinx;</code></pre>
+
+You can then run the unit tests with @rake spec:unit@, the acceptance tests with @rake spec:acceptance@, or all of the tests with just @rake@.
+
+All development is done on the @develop@ branch; please base any pull requests off of that branch.
 
 If you're still interested in helping evolve this, then write the tests and then the code to get them passing, and send through a pull request. No promises on merging anything, but we shall see!
 

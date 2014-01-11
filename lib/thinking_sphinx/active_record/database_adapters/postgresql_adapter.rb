@@ -27,6 +27,10 @@ class ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter <
     "COALESCE(#{clause}, #{default})"
   end
 
+  def convert_blank(clause, default = '')
+    "COALESCE(NULLIF(#{clause}, ''), #{default})"
+  end
+
   def group_concatenate(clause, separator = ' ')
     "array_to_string(array_agg(DISTINCT #{clause}), '#{separator}')"
   end

@@ -3,7 +3,7 @@ require 'spec_helper'
 describe ThinkingSphinx::Connection do
   describe '.take' do
     let(:pool)             { double 'pool' }
-    let(:connection)       { double 'connection' }
+    let(:connection)       { double 'connection', :base_error => StandardError }
     let(:error)            { ThinkingSphinx::QueryExecutionError.new 'failed' }
     let(:translated_error) { ThinkingSphinx::SphinxError.new }
 

@@ -17,7 +17,7 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
   end
 
   def delta_processor
-    @options[:delta_processor].try(:new, adapter)
+    @options[:delta_processor].try(:new, adapter, @options[:delta_options] || {})
   end
 
   def facets
@@ -62,6 +62,7 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
       :offset          => offset,
       :delta?          => @options[:delta?],
       :delta_processor => @options[:delta_processor],
+      :delta_options   => @options[:delta_options],
       :primary_key     => @options[:primary_key] || model.primary_key || :id
     }
   end
