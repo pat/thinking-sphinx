@@ -4,12 +4,13 @@ Welcome to Thinking Sphinx version 3 - a complete rewrite from past versions. TS
 
 h2. Installation
 
-It's a gem, so install it like you would any other gem. You will also need to specify the Mysql2 gem as well (this is not an inbuilt dependency because JRuby, when supported, will need something different):
+It's a gem, so install it like you would any other gem. You will also need to specify the mysql2 gem if you're using MRI, or jdbc-mysql if you're using JRuby:
 
-<pre><code>gem 'mysql2',          '0.3.13'
-gem 'thinking-sphinx', '3.0.6'</code></pre>
+<pre><code>gem 'mysql2',          '0.3.13', :platform => :ruby
+gem 'jdbc-mysql',      '5.1.28', :platform => :jruby
+gem 'thinking-sphinx', '3.1.0'</code></pre>
 
-The mysql2 gem is required for connecting to Sphinx, so please include it even when you're using PostgreSQL for your database.
+The MySQL gems mentioned are required for connecting to Sphinx, so please include it even when you're using PostgreSQL for your database.
 
 As for Sphinx itself, you need to make sure it's compiled with MySQL support, even if you're using PostgreSQL as your database - which is normally the default, but Homebrew can be too smart sometimes. If that's your compiling tool of choice, make sure you install with the @--mysql@ flag:
 

@@ -1,4 +1,12 @@
-Edge:
+2014-01-11: 3.1.0
+* [CHANGE] Updating Riddle requirement to >= 1.5.10.
+* [CHANGE] Extracting join generation into its own gem: Joiner.
+* [FEATURE] Support for Capistrano v3 (Alexander Tipugin).
+* [FEATURE] JRuby support (with Sphinx 2.1 or newer).
+* [CHANGE] Geodist calculation is now prepended to the SELECT statement, so it can be referred to by other dynamic attributes.
+* [FIX] Indices will be detected in Rails engines upon configuration.
+* [FEATURE] Support for Sphinx 2.2.x's HAVING and GROUP N BY SphinxQL options.
+* [FEATURE] Adding max_predicted_time search option (Sphinx 2.2.x).
 * [FEATURE] Wildcard/starring can be applied directly to strings using ThinkingSphinx::Query.wildcard('pancakes'), and escaping via ThinkingSphinx::Query.escape('pancakes').
 * [CHANGE] Auto-wildcard/starring (via :star => true) now treats escaped characters as word separators.
 * [FEATURE] Capistrano recipe now includes tasks for realtime indices.
