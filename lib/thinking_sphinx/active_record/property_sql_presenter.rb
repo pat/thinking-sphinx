@@ -22,11 +22,7 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
   delegate :multi?, :to => :property
 
   def aggregate?
-    property.columns.any? { |column|
-      Joiner::Path.new(property.model, column.__stack).aggregate?
-    }
-  rescue Joiner::AssociationNotFound
-    false
+    column_presenters.any? &:aggregate?
   end
 
   def aggregate_separator
@@ -52,24 +48,16 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
     clause
   end
 
-  def column_exists?(column)
-    Joiner::Path.new(property.model, column.__stack).model.column_names.
-      include?(column.__name.to_s)
-  rescue Joiner::AssociationNotFound
-    false
-  end
-
-  def column_with_table(column)
-    return column.__name if column.string?
-    return nil unless column_exists?(column)
-
-    "#{associations.alias_for(column.__stack)}.#{adapter.quote column.__name}"
+  def column_presenters
+    @column_presenters ||= property.columns.collect { |column|
+      ThinkingSphinx::ActiveRecord::ColumnSQLPresenter.new(
+        property.model, column, adapter, associations
+      )
+    }
   end
 
   def columns_with_table
-    property.columns.collect { |column|
-      column_with_table(column)
-    }.compact.join(', ')
+    column_presenters.collect(&:with_table).compact.join(', ')
   end
 
   def concatenating?
