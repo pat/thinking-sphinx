@@ -23,7 +23,7 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
 
   def aggregate?
     property.columns.any? { |column|
-      associations.aggregate_for?(column.__stack)
+      Joiner::Path.new(property.model, column.__stack).aggregate?
     }
   end
 
@@ -51,7 +51,7 @@ class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
   end
 
   def column_exists?(column)
-    model = associations.model_for(column.__stack)
+    model = Joiner::Path.new(property.model, column.__stack).model
     model && model.column_names.include?(column.__name.to_s)
   end
 

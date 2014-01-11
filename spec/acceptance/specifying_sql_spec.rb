@@ -128,7 +128,7 @@ describe 'specifying SQL for index definitions' do
     query.should match(/articles\..title., books\..title./)
   end
 
-  it "concatenates references where that have column" do
+  it "concatenates references that have column" do
     index = ThinkingSphinx::ActiveRecord::Index.new(:event)
     index.definition_block = Proc.new {
       indexes eventable.title, :as => :title
@@ -138,8 +138,8 @@ describe 'specifying SQL for index definitions' do
 
     query = index.sources.first.sql_query
     query.should match(/LEFT OUTER JOIN .articles. ON .articles.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Article'/)
-    query.should match(/LEFT OUTER JOIN .users. ON .users.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'User'/)
     query.should_not match(/articles\..title., users\..title./)
+    query.should match(/articles\..title./)
   end
 
   it "respects deeper associations through polymorphic joins" do

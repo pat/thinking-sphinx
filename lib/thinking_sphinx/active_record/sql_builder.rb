@@ -53,7 +53,7 @@ module ThinkingSphinx
       end
 
       def associations
-        @associations ||= ThinkingSphinx::ActiveRecord::Associations.new(model).tap do |assocs|
+        @associations ||= Joiner::Joins.new(model).tap do |assocs|
           source.associations.reject(&:string?).each do |association|
             assocs.add_join_to association.stack
           end
