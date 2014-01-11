@@ -2,12 +2,14 @@ require 'spec_helper'
 
 describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
   let(:adapter)      { double 'adapter' }
-  let(:associations) { double 'associations', :alias_for => 'articles',
-    :aggregate_for? => false, :model_for => model }
+  let(:associations) { double 'associations', :alias_for => 'articles' }
   let(:model)        { double :column_names => ['title', 'created_at'] }
+  let(:path)         { double :aggregate? => false, :model => model }
 
   before :each do
     adapter.stub(:quote) { |column| column }
+
+    stub_const 'Joiner::Path', double(:new => path)
   end
 
   context 'with a field' do
@@ -17,7 +19,7 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
       )
     }
     let(:field)     { double('field', :name => 'title', :columns => [column],
-      :type => nil, :multi? => false, :source_type => nil) }
+      :type => nil, :multi? => false, :source_type => nil, :model => double) }
     let(:column)    { double('column', :string? => false, :__stack => [],
       :__name => 'title') }
 
@@ -36,7 +38,7 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
       end
 
       it "returns nil if the property is an aggregate" do
-        associations.stub! :aggregate_for? => true
+        path.stub! :aggregate? => true
 
         presenter.to_group.should be_nil
       end
@@ -73,7 +75,7 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
           "GROUP_CONCAT(#{clause} SEPARATOR '#{separator}')"
         end
 
-        associations.stub! :aggregate_for? => true
+        path.stub! :aggregate? => true
 
         presenter.to_select.
           should == "GROUP_CONCAT(articles.title SEPARATOR ' ') AS title"
@@ -124,7 +126,7 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
     }
     let(:attribute) { double('attribute', :name => 'created_at',
       :columns => [column], :type => :integer, :multi? => false,
-      :source_type => nil) }
+      :source_type => nil, :model => double) }
     let(:column)    { double('column', :string? => false, :__stack => [],
       :__name => 'created_at') }
 
@@ -155,7 +157,7 @@ describe ThinkingSphinx::ActiveRecord::PropertySQLPresenter do
       end
 
       it "returns nil if the property is an aggregate" do
-        associations.stub! :aggregate_for? => true
+        path.stub! :aggregate? => true
 
         presenter.to_group.should be_nil
       end

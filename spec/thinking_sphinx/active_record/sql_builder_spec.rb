@@ -24,7 +24,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
   before :each do
     ThinkingSphinx::Configuration.stub! :instance => config
     ThinkingSphinx::ActiveRecord::PropertySQLPresenter.stub! :new => presenter
-    ThinkingSphinx::ActiveRecord::Associations.stub! :new => associations
+    Joiner::Joins.stub! :new => associations
     relation.stub! :select => relation, :where => relation, :group => relation,
       :order => relation, :joins => relation, :to_sql => ''
     connection.stub!(:quote_column_name) { |column| "`#{column}`"}

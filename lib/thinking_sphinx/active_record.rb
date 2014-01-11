@@ -1,4 +1,5 @@
 require 'active_record'
+require 'joiner'
 
 module ThinkingSphinx::ActiveRecord
   module Callbacks; end
