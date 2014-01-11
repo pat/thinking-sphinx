@@ -8,17 +8,15 @@ Capistrano::Configuration.instance(:must_exist).load do
       rake 'ts:configure'
     end
 
-    desc 'Build Sphinx indexes into the shared path and symlink them into your release.'
+    desc 'Build Sphinx indexes into the shared path.'
     task :index, fetch(:thinking_sphinx_options) do
       rake 'ts:index'
     end
-    after 'thinking_sphinx:index', 'thinking_sphinx:symlink_indexes'
 
-    desc 'Generate Sphinx indexes into the shared path and symlink them into your release.'
+    desc 'Generate Sphinx indexes into the shared path.'
     task :generate, fetch(:thinking_sphinx_options) do
       rake 'ts:generate'
     end
-    after 'thinking_sphinx:generate', 'thinking_sphinx:symlink_indexes'
 
     desc 'Start the Sphinx search daemon.'
     task :start, fetch(:thinking_sphinx_options) do
@@ -43,28 +41,11 @@ if you alter the structure of your indexes.
     task :rebuild, fetch(:thinking_sphinx_options) do
       rake 'ts:rebuild'
     end
-    after 'thinking_sphinx:rebuild', 'thinking_sphinx:symlink_indexes'
 
     desc 'Stop Sphinx, clear Sphinx index files, generate configuration file, start Sphinx, repopulate all data.'
     task :regenerate, fetch(:thinking_sphinx_options) do
       rake 'ts:regenerate'
     end
-    after 'thinking_sphinx:regenerate', 'thinking_sphinx:symlink_indexes'
-
-    desc 'Create the shared folder for sphinx indexes.'
-    task :shared_sphinx_folder, fetch(:thinking_sphinx_options) do
-      rails_env = fetch(:rails_env, 'production')
-      run "mkdir -p #{shared_path}/db/sphinx/#{rails_env}"
-    end
-
-    desc 'Symlink Sphinx indexes from the shared folder to the latest release.'
-    task :symlink_indexes, fetch(:thinking_sphinx_options) do
-      run "if [ -d #{release_path} ]; then ln -nfs #{shared_path}/db/sphinx #{release_path}/db/sphinx; else ln -nfs #{shared_path}/db/sphinx #{current_path}/db/sphinx; fi;"
-    end
-
-    # Logical flow for deploying an app
-    after 'deploy:setup',           'thinking_sphinx:shared_sphinx_folder'
-    after 'deploy:finalize_update', 'thinking_sphinx:symlink_indexes'
 
     def rake(tasks)
       rails_env = fetch(:rails_env, 'production')
