@@ -19,12 +19,34 @@ if you alter the structure of your indexes.
     end
   end
 
+  desc 'Stop Sphinx, clear Sphinx index files, generate configuration file, start Sphinx, repopulate all data.'
+  task :regenerate do
+    on roles fetch(:thinking_sphinx_options) do
+      within current_path do
+        with rails_env: fetch(:stage) do
+          execute :rake, 'ts:regenerate'
+        end
+      end
+    end
+  end
+
   desc 'Build Sphinx indexes into the shared path.'
   task :index do
     on roles fetch(:thinking_sphinx_roles) do
       within current_path do
         with rails_env: fetch(:stage) do
           execute :rake, 'ts:index'
+        end
+      end
+    end
+  end
+
+  desc 'Generate Sphinx indexes into the shared path.'
+  task :generate do
+    on roles fetch(:thinking_sphinx_options) do
+      within current_path do
+        with rails_env: fetch(:stage) do
+          execute :rake, 'ts:generate'
         end
       end
     end
