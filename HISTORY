@@ -1,4 +1,4 @@
-Edge:
+2014-01-11: 3.1.0
 * [CHANGE] Updating Riddle requirement to >= 1.5.10.
 * [CHANGE] Extracting join generation into its own gem: Joiner.
 * [FEATURE] Support for Capistrano v3 (Alexander Tipugin).
