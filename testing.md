@@ -48,12 +48,12 @@ module SphinxHelpers
   end
 
   def index_finished?
-    Dir[Rails.root.join(ThinkingSphinx::Test.config.searchd_file_path, '*.{new,tmp}.*')].empty?
+    Dir[Rails.root.join(ThinkingSphinx::Test.config.indices_location, '*.{new,tmp}.*')].empty?
   end
 end
 
 RSpec.configure do |config|
-  config.include SphinxHelpers, type: :request
+  config.include SphinxHelpers, type: :feature
 
   config.before(:suite) do
     # Ensure sphinx directories exist for the test environment
@@ -65,7 +65,7 @@ RSpec.configure do |config|
 
   config.before(:each) do
     # Index data when running an acceptance spec.
-    ThinkingSphinx::Test.index if example.metadata[:js]
+    index if example.metadata[:js]
   end
 end
 {% endhighlight %}
