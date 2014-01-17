@@ -44,4 +44,20 @@ describe 'Scoping association search calls by foreign keys', :live => true do
       porsche.cars.search_for_ids('Spyder').to_a.should == [spyder.id]
     end
   end
+
+  describe 'with has_many :through associations' do
+    it 'limits results to those matching the foreign key' do
+      pancakes = Product.create :name => 'Low fat Pancakes'
+      waffles  = Product.create :name => 'Low fat Waffles'
+
+      food = Category.create :name => 'food'
+      flat = Category.create :name => 'flat'
+
+      pancakes.categories << food
+      pancakes.categories << flat
+      waffles.categories  << food
+
+      flat.products.search('Low').to_a.should == [pancakes]
+    end
+  end
 end

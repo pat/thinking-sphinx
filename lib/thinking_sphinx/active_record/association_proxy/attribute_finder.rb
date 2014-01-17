@@ -11,7 +11,8 @@ class ThinkingSphinx::ActiveRecord::AssociationProxy::AttributeFinder
       next if columns.many?
 
       columns.first.__name == foreign_key.to_sym ||
-      attribute.name == foreign_key.to_s
+      attribute.name == foreign_key.to_s ||
+      (attribute.multi? && attribute.name.singularize == foreign_key.to_s)
     } or raise "Missing Attribute for Foreign Key #{foreign_key}"
   end
 
