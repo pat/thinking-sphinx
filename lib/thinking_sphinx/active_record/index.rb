@@ -12,6 +12,10 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
     end
   end
 
+  def attributes
+    sources.collect(&:attributes).flatten
+  end
+
   def delta?
     @options[:delta?]
   end
@@ -38,10 +42,6 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
   def adapter
     @adapter ||= ThinkingSphinx::ActiveRecord::DatabaseAdapters.
       adapter_for(model)
-  end
-
-  def attributes
-    sources.collect(&:attributes).flatten
   end
 
   def fields
