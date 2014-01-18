@@ -17,8 +17,9 @@ class ThinkingSphinx::ActiveRecord::AssociationProxy::AttributeFinder
   end
 
   private
+
   def attributes
-    sources.collect(&:attributes).flatten
+    indices.collect(&:attributes).flatten
   end
 
   def configuration
@@ -42,9 +43,5 @@ class ThinkingSphinx::ActiveRecord::AssociationProxy::AttributeFinder
     target = @association.reflection
     target = target.through_reflection if target.through_reflection
     target
-  end
-
-  def sources
-    indices.collect { |index| index.respond_to?(:sources) ? index.sources : index }.flatten
   end
 end
