@@ -5,14 +5,9 @@ class ThinkingSphinx::ActiveRecord::AssociationProxy::AttributeFinder
 
   def attribute
     attributes.detect { |attribute|
-      columns = attribute.respond_to?(:columns) ? attribute.columns : [ attribute.column ]
-
-      # Don't bother with attributes built from multiple columns
-      next if columns.many?
-
-      columns.first.__name == foreign_key.to_sym ||
-      attribute.name == foreign_key.to_s ||
-      (attribute.multi? && attribute.name.singularize == foreign_key.to_s)
+      ThinkingSphinx::ActiveRecord::AssociationProxy::AttributeMatcher.new(
+        attribute, foreign_key
+      ).matches?
     } or raise "Missing Attribute for Foreign Key #{foreign_key}"
   end
 
