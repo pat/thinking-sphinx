@@ -17,6 +17,15 @@ ActiveRecord::Schema.define do
     t.timestamps
   end
 
+  create_table(:manufacturers, :force => true) do |t|
+    t.string  :name
+  end
+
+  create_table(:cars, :force => true) do |t|
+    t.integer :manufacturer_id
+    t.string  :name
+  end
+
   create_table(:books, :force => true) do |t|
     t.string  :title
     t.string  :author

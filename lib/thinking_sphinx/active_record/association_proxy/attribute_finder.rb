@@ -5,11 +5,14 @@ class ThinkingSphinx::ActiveRecord::AssociationProxy::AttributeFinder
 
   def attribute
     attributes.detect { |attribute|
-      # Don't bother with attributes built from multiple columns
-      next if attribute.columns.many?
+      columns = attribute.respond_to?(:columns) ? attribute.columns : [ attribute.column ]
 
-      attribute.columns.first.__name == foreign_key.to_sym ||
-      attribute.name == foreign_key.to_s
+      # Don't bother with attributes built from multiple columns
+      next if columns.many?
+
+      columns.first.__name == foreign_key.to_sym ||
+      attribute.name == foreign_key.to_s ||
+      (attribute.multi? && attribute.name.singularize == foreign_key.to_s)
     } or raise "Missing Attribute for Foreign Key #{foreign_key}"
   end
 
@@ -42,6 +45,6 @@ class ThinkingSphinx::ActiveRecord::AssociationProxy::AttributeFinder
   end
 
   def sources
-    indices.collect(&:sources).flatten
+    indices.collect { |index| index.respond_to?(:sources) ? index.sources : index }.flatten
   end
 end
