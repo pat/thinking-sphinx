@@ -134,6 +134,11 @@ polymorphs events.eventable, :to => %w(Page Post User)
 
 * `@geodist` is now just `geodist`
 
+Finally, it's worth noting there's a few features that didn't make the jump across to v3. If you think this should change, I'm open to discussion, but it may be a case that they're things you'll need to implement yourself.
+
+* Bitmask weighting helper
+* Abstract Inheritance support.
+* Facet support for arrays of strings.
 
 ### Upgrading from 2.0.0.rc2 to 2.0.0 or 1.3.20 to 1.4.0
 
