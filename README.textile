@@ -16,6 +16,10 @@ As for Sphinx itself, you need to make sure it's compiled with MySQL support, ev
 
 <pre><code>brew install sphinx --mysql</code></pre>
 
+h2. Upgrading
+* "3.1.0 upgrade notes":https://github.com/pat/thinking-sphinx/releases/tag/v3.1.0
+* "3.0.6 upgrade notes":https://github.com/pat/thinking-sphinx/releases/tag/v3.0.6
+
 h2. Usage
 
 Indexes are no longer defined in models - they now live in `app/indices` (which you will need to create yourself). Each index should get its own file, and look something like this:
