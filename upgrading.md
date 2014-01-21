@@ -35,7 +35,10 @@ end
 
 Other changes for those who have delved a bit further:
 
-* The `searchd_log` and `searchd_query_log` settings are now `log` and `query_log` (matching their Sphinx names).
+* The `searchd_log` and `searchd_query_log` settings are now `log` and `query_log` (matching their Sphinx names), and `config_file` and `searchd_file_path` are now `configuration_file` and `indices_location` respectively.
+* If you're explicitly setting a time attribute's type, instead of `:datetime` it should now be `:timestamp`. 
+* Set INDEX_ONLY to true in your shell for the index task to re-index without regenerating the configuration file.
+
 * You'll need to include `ThinkingSphinx::Scopes` into your models if you want to use Sphinx scopes.
 * ActiveRecord::Base.set_sphinx_primary_key is now an option in the index definition (alongside the `:with` option): `:primary_key` - and therefore is no longer inheritable between models.
 * Suspended deltas are no longer called from the model, but like so instead:
