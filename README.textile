@@ -1,6 +1,15 @@
 h1. Thinking Sphinx
 
-Welcome to Thinking Sphinx version 3 - a complete rewrite from past versions. TS v3.0.x will work with Rails 3.1-4.0, and TS v3.1.x will work with Rails 3.2 and newer.
+Thinking Sphinx is a library for connecting ActiveRecord to the Sphinx full-text search tool, and integrates closely with Rails (but also works with other Ruby web frameworks). The current release is v3.1.0.
+
+h2. Upgrading
+
+Please refer to the release notes for any changes you need to make when upgrading:
+
+* "v3.1.0":https://github.com/pat/thinking-sphinx/releases/tag/v3.1.0
+* "v3.0.6":https://github.com/pat/thinking-sphinx/releases/tag/v3.0.6
+
+If you're upgrading from pre-v3, then the documentation has "pretty extensive notes":http://pat.github.io/thinking-sphinx/upgrading.html on what's changed.
 
 h2. Installation
 
@@ -12,224 +21,33 @@ gem 'thinking-sphinx', '3.1.0'</code></pre>
 
 The MySQL gems mentioned are required for connecting to Sphinx, so please include it even when you're using PostgreSQL for your database.
 
-As for Sphinx itself, you need to make sure it's compiled with MySQL support, even if you're using PostgreSQL as your database - which is normally the default, but Homebrew can be too smart sometimes. If that's your compiling tool of choice, make sure you install with the @--mysql@ flag:
-
-<pre><code>brew install sphinx --mysql</code></pre>
+You'll also need to install Sphinx - this is covered in "the extended documentation":http://pat.github.io/thinking-sphinx/installing_sphinx.html.
 
 h2. Usage
 
-Indexes are no longer defined in models - they now live in `app/indices` (which you will need to create yourself). Each index should get its own file, and look something like this:
+Begin by reading the "quick-start guide":http://pat.github.io/thinking-sphinx/quickstart.html, and beyond that, "the documentation":http://pat.github.io/thinking-sphinx/ should serve you pretty well.
 
-<pre><code># app/indices/article_index.rb
-ThinkingSphinx::Index.define :article, :with => :active_record do
-  indexes title, content
-  indexes user.name, :as => :user
-  indexes user.articles.title, :as => :related_titles
+h3. Extending with Middleware, Glazes and Panes
 
-  has published
-end</code></pre>
+These are covered in "a blog post":http://freelancing-gods.com/posts/rewriting_thinking_sphinx_middleware_glazes_and_panes.
 
-You'll notice the first argument is the model name downcased and as a symbol, and we are specifying the processor - @:active_record@. Everything inside the block is just like previous versions of Thinking Sphinx. Same goes for most settings in @config/thinking_sphinx.yml@ (formerly @config/sphinx.yml@) unless noted below.
+h2. Requiements
 
-When you're defining indices for namespaced models, use a lowercase string with /'s for namespacing as the model reference:
+h3. Sphinx
 
-<pre><code># For a model named Blog::Article:
-ThinkingSphinx::Index.define 'blog/article', :with => :active_record</code></pre>
+Thinking Sphinx v3 is currently built for Sphinx 2.0.5 or newer, and releases since v3.1.0 expect Sphinx 2.1.2 or newer by default.
 
-Other changes:
-* SphinxQL is now used instead of the old socket connections (hence the dependency on the @mysql2@ gem).
-* Specifying a different port for Sphinx to use (in @config/thinking_sphinx.yml@) should be done with the mysql41 setting, not the port setting.
-* The searchd_log and searchd_query_log settings are now log and query_log (matching their Sphinx names).
-* searchd_file_path is now indices_location.
-* config_file is now configuration_file.
-* You'll need to include @ThinkingSphinx::Scopes@ into your models if you want to use Sphinx scopes. Default scopes can be set as follows:
+h3. Rails and ActiveRecord
 
-<pre><code>class Person < ActiveRecord::Base
-  include ThinkingSphinx::Scopes
+Currently Thinking Sphinx 3 is built to support Rails/ActiveRecord 3.2 or newer. If you're using Sinatra and ActiveRecord instead of Rails, that's fine - just make sure you add the @:require => 'thinking_sphinx/sinatra'@ option when listing @thinking-sphinx@ in your Gemfile.
 
-  sphinx_scope(:date_order) { {:order => :created_at} }
-  default_sphinx_scope :date_order
-  # ...
-end</code></pre>
+If you want ActiveRecord 3.1 support, then refer to the 3.0.x releases of Thinking Sphinx. Anything older than that, then you're stuck with Thinking Sphinx v2.x (for Rails/ActiveRecord 3.0) or v1.x (Rails 2.3). Please note that these older versions are no longer actively supported.
 
-* The match mode is always extended - SphinxQL doesn't know any other way.
-* ActiveRecord::Base.set_sphinx_primary_key is now an option in the index definition (alongside @:with@ in the above example): @:primary_key@ - and therefore is no longer inheritable between models.
-* If you're explicitly setting a time attribute's type, instead of @:datetime@ it should now be @:timestamp@.
-* Delta arguments are passed in as an option of the @define@ call, not within the block:
+h3. Ruby
 
-<pre><code>ThinkingSphinx::Index.define :article, :with => :active_record, :delta => true do
-  # ...
-end</code></pre>
+You'll need either the standard Ruby (v1.9.3 or newer) or JRuby. I'm open to patches to improve Rubinius support (if required - it may work with it right now).
 
-* Suspended deltas are no longer called from the model, but like so instead:
-
-<pre><code>ThinkingSphinx::Deltas.suspend :article do
-  article.update_attributes(:title => 'pancakes')
-end</code></pre>
-
-* Excerpts through search results behaves the same way, provided you add ExcerptsPane into the mix (read the section below on search results, glazes and panes). Excerpt options (like @:before_match@, @:after_match@ and @:chunk_separator@) can be passed through when searching under the @:excerpts@ option:
-
-<pre><code>ThinkingSphinx.search 'foo',
-  :excerpts => {:chunk_separator => ' -- '}</code></pre>
-
-* When indexing models on classes that are using single-table inheritance (STI), make sure you have a database index on the @type@ column. Thinking Sphinx will need to determine which subclasses are available, and we can't rely on Rails having loaded all models at any given point, so it queries the database. If you don't want this to happen, set :skip_sti to true in your search call, and ensure that the :classes option holds all classes that could be returned.
-
-<pre><code>ThinkingSphinx.search 'pancakes',
-  :skip_sti => true,
-  :classes => [User, AdminUser, SupportUser]</code></pre>
-
-* The option @:rank_mode@ has now become @:ranker@ - and the options (as strings or symbols) are as follows: proximity_bm25, bm25, none, wordcount, proximity, matchany, fieldmask, sph04 and expr.
-* There are no explicit sorting modes - all sorting must be on attributes followed by ASC or DESC. For example: <code>:order => '@weight DESC, created_at ASC'</code>.
-* If you specify just an attribute name as a symbol for the @:order@ option, it will be given the ascending direction by default. So, @:order => :created_at@ is equivalent to @:order => 'created_at ASC'@.
-* If you want to use a calculated expression for sorting, you must specify the expression as a new attribute, then use that attribute in your @:order@ option. This is done using the @:select@ option to specify extra columns available in the underlying SphinxQL (_not_ ActiveRecord/SQL) query.
-
-<pre><code>ThinkingSphinx.search(
-  :select => '@weight * 10 + document_boost as custom_weight',
-  :order  => :custom_weight
-)</code></pre>
-
-* Support for latitude and longitude attributes named something other than 'lat' and 'lng' or 'latitude' and 'longitude' has been removed. May add it back in if requested, but would be surprised if it's a necessary feature.
-* Set INDEX_ONLY to true in your shell for the index task to re-index without regenerating the configuration file.
-* If you want to pass the old-style @:include@, @:joins@, @:select@ or @:order@ parameters through to the underlying ActiveRecord SQL queries for instantiating search results, they should go in a hash within the search option @:sql@:
-
-<pre><code>Article.search :sql => {:include => :user}</code></pre>
-
-* SphinxQL only supports grouping by single attributes - but these attributes may be generated on the fly within the select statement (see the @:select@ option above). A grouped search uses the @:group_by@ option, and you can pass in the attribute name as either a symbol or a string:
-
-<pre><code>Article.search :group_by => :user_id</code></pre>
-
-* If you want to change the order of which result appears for each group, that can be done via the @:order_group_by@ option - which behaves just like @:order@ does:
-
-<pre><code>Article.search(
-  :group_by       => :user_id,
-  :order_group_by => 'created_at DESC'
-)</code></pre>
-
-* The @each_with_group@, @each_with_count@ and @each_with_group_and_count@ enumerators are available when using the @:group_by@ option (but are otherwise not available to search objects). Please note the spelling - older versions of Thinking Sphinx allowed for groupby and group, this is no longer the case.
-* @each_with_weight@ (again, note that it's weight, not weighting) is available, but not by default. Here's an example of how to have it part of the search object:
-
-<pre><code>search = Article.search('pancakes', :select => '*, @weight')
-search.masks << ThinkingSphinx::Masks::WeightEnumeratorMask
-
-search.each_with_weight do |article, weight|
-  # ...
-end</code></pre>
-
-You'll also note here that I'm specifying the internal weight attribute. This is necessary for edge Sphinx post 2.0.5.
-
-* Batched/Bulk searches are done pretty similarly as in the past - here's a code sample that'll only hit Sphinx once:
-
-<pre><code>batch = ThinkingSphinx::BatchedSearch.new
-batch.searches << Article.search('foo')
-batch.searches << Article.search(:conditions => {:name => 'bar'})
-batch.searches << Article.search_for_ids('baz')
-
-# When you call batch#populate, the searches are all populated with a single
-# Sphinx call.
-batch.populate
-
-batch.searches #=> [[foo results], [bar results], [baz results]]</code></pre>
-
-* To search on specific indices, use the @:indices@ option, which expects an array of index names (including the @_core@ or @_delta@ suffixes).
-* @:without_any@ has become @:without_all@ - and is implemented, but Sphinx doesn't yet support the required logic.
-* If you're creating a multi-value attribute manually (using a SQL snippet), then in the definition pass in @:multi => true@, but @:type@ should be set as well, to one of the MVA types that Sphinx supports (@:integer@, @:timestamp@, or @:boolean@).
-* Automatic updates of non-string attributes are still limited to those from columns on the model in question, and is disabled by default. To enable it, just set attribute_updates to true in your @config/thinking_sphinx.yml@.
-* Search result helper methods are no longer injected into the actual result objects. Read the section below on search results, glazes and panes.
-* If you're using string facets, make sure they're defined as fields, not strings. There is currently no support for multi-value string facets.
-* To have fine-grained control over when deltas are invoked, create a sub-class of your chosen delta class (the standard is @ThinkingSphinx::Deltas::DefaultDelta@) and customise the @toggle@ and @toggled?@ methods, both of which accept a single parameter being the ActiveRecord instance.
-
-<pre><code>class OccasionalDeltas < ThinkingSphinx::Deltas::DefaultDelta
-  # Invoked via a before_save callback. The default behaviour is to set the
-  # delta column to true.
-  def toggle(instance)
-    super unless instance.title_changed?
-  end
-
-  # Invoked via an after_commit callback. The default behaviour is to check
-  # whether the delta column is set to true. If this method returns true, the
-  # indexer is fired.
-  def toggled?(instance)
-    return false unless instance.title_changed?
-
-    super
-  end
-end
-
-# And in your index definition:
-ThinkingSphinx::Index.define :article, :with => :active_record, :delta => OccasionalDeltas do
-  # ...
-end</code></pre>
-
-* Polymorphic associations used within index definitions must be declared with the corresponding models. This is much better than the old approach of querying the database on the *_type column to determine what models to join against.
-
-<pre><code>indexes events.eventable.name
-
-polymorphs events.eventable, :to => %w(Page Post User)</code></pre>
-
-h2. Search Middleware
-
-This section needs information - go hunting in the source for the moment if you're keen on adding a layer around querying/result population process.
-
-h2. Search results, Glazes and Panes
-
-In versions of Thinking Sphinx prior to v3, each search result object had many methods inserted into it - for direct access to the weight, distance, sphinx attributes and excerpts. This is no longer the case, but there is a more modular approach available.
-
-Search results may now have a glaze object placed around them, which can then delegate methods to any number of panes the glaze has available. By default, there are no panes added (and thus, no glazing), but this can be modified:
-
-<pre><code># For every search
-ThinkingSphinx::Configuration::Defaults::PANES << ThinkingSphinx::Panes::WeightPane
-
-# Or for specific searches:
-search = ThinkingSphinx.search('pancakes')
-search.context[:panes] << ThinkingSphinx::Panes::WeightPane</code></pre>
-
-The available panes are as follows:
-
-* @WeightPane@ (methods: @weight@)
-* @DistancePane@ (methods: @distance@, @geodist@)
-* @AttributesPane@ (methods: @sphinx_attributes@)
-* @ExcerptsPane@ (methods: @excerpts@)
-
-All panes namespaced to @ThinkingSphinx::Panes@, and the @DistancePane@ is automatically added when you provide latitude/longitude values via the @:geo@ option.
-
-If you wish to add your own panes, go ahead. The only requirement is that the initializer must accept three arguments: the search context, the underlying search result object, and a hash of the raw values from Sphinx.
-
-h2. Deployment with Capistrano
-
-Thinking Sphinx comes with several Capistrano tasks to help ease deployment of your applications. Just require the recipes:
-
-<pre><code># config/deploy.rb
-require 'thinking_sphinx/capistrano'</code></pre>
-
-When running @cap deploy:setup@ to get your server ready for deployments, Thinking Sphinx will also set up a shared folder for your indexes. Before finalizing a deployment, these indexes will be symlinked into the release path for use. When you deploy your application for the first time using @cap deploy:cold@, your indexes will be built for you and the search daemon will be started. Run @cap -T@ to see all of the deployment tasks.
-
-h2. Limitations
-
-Almost all functionality from v2 releases are implemented, though it's worth noting that some settings haven't yet been brought across, and a handful of the smaller features don't yet exist either. Some may actually not return... we'll see.
-
-May or may not be added:
-
-* Datetime Deltas
-* Bitmask weighting helper
-* Timezone support (for databases not using UTC)
-* Abstract Inheritance support (maybe - not sure this is something many of people want).
-* Facet support for arrays of strings.
-
-h3. Sphinx Versions
-
-TS 3 is built for Sphinx 2.0.5 or newer. You cannot use 1.10-beta, 0.9.9 or anything earlier than that.
-
-h3. Rails Versions
-
-Currently TS 3 is built to support Rails/ActiveRecord 3.1 or newer. If you're using Sinatra and ActiveRecord instead of Rails, that's fine - just make sure you add the @:require => 'thinking_sphinx/sinatra'@ option when listing @thinking-sphinx@ in your Gemfile.
-
-TS 3 does not support Rails 3.0, Rails 2.x or earlier, or Merb - please refer to the TS 1.x and 2.x releases in those situations.
-
-h3. Ruby Versions
-
-Built on MRI 1.9.3 and tested against MRI 1.9.2 as well. No plans to support MRI 1.8, but would like to support Rubinius and JRuby (the one catch with the latter is the different MySQL interfaces).
-
-There's also the complication that Sphinx 2.0.x releases don't work with JDBC (as JDBC sends several MySQL-specific commands through when initializing a connection). So, JRuby support won't appear until there's a stable Sphinx release that can interact with JDBC.
+JRuby is only supported as of Thinking Sphinx v3.1.0, and requires Sphinx 2.1.2 or newer.
 
 h3. Database Versions
 
@@ -237,22 +55,23 @@ MySQL 5.x and Postgres 8.4 or better are supported.
 
 h2. Contributing
 
-You're brave! To contribute, clone this repository and have a good look through the specs - you'll notice the distinction between acceptance tests that actually use Sphinx and go through the full stack, and unit tests (everything else) which use liberal test doubles to ensure they're only testing the behaviour of the class in question. I've found this leads to far better code design.
+To contribute, clone this repository and have a good look through the specs - you'll notice the distinction between acceptance tests that actually use Sphinx and go through the full stack, and unit tests (everything else) which use liberal test doubles to ensure they're only testing the behaviour of the class in question. I've found this leads to far better code design.
 
-In order to run the specs, you'll need to create a MySQL database named @thinking_sphinx@:
-<pre><code># Fire up a MySQL console connection:
+All development is done on the @develop@ branch; please base any pull requests off of that branch. Please write the tests and then the code to get them passing, and send through a pull request.
+
+In order to run the tests, you'll need to create a database named @thinking_sphinx@:
+
+<pre><code># Either fire up a MySQL console:
 mysql -u root
+# OR a PostgreSQL console:
+psql
 # In that console, create the database:
 CREATE DATABASE thinking_sphinx;</code></pre>
 
-You can then run the unit tests with @rake spec:unit@, the acceptance tests with @rake spec:acceptance@, or all of the tests with just @rake@.
+You can then run the unit tests with @rake spec:unit@, the acceptance tests with @rake spec:acceptance@, or all of the tests with just @rake@. To run these with PostgreSQL, you'll need to set the `DATABASE` environment variable accordingly:
 
-All development is done on the @develop@ branch; please base any pull requests off of that branch.
-
-If you're still interested in helping evolve this, then write the tests and then the code to get them passing, and send through a pull request. No promises on merging anything, but we shall see!
-
-For some ideas behind my current approach, have a look through @sketchpad.rb@ in the root of this project. If you can make sense of that, you're doing very well indeed.
+<pre><code>DATABASE=postgresql rake</code></pre>
 
 h2. Licence
 
-Copyright (c) 2007-2012, Thinking Sphinx is developed and maintained by Pat Allan, and is released under the open MIT Licence. Many thanks to "all who have contributed patches":https://github.com/pat/thinking-sphinx/contributors.
+Copyright (c) 2007-2014, Thinking Sphinx is developed and maintained by Pat Allan, and is released under the open MIT Licence. Many thanks to "all who have contributed patches":https://github.com/pat/thinking-sphinx/contributors.
