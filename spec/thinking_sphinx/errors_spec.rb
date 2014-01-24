@@ -33,6 +33,13 @@ describe ThinkingSphinx::SphinxError do
         should be_a(ThinkingSphinx::ConnectionError)
     end
 
+    it "translates jdbc connection errors" do
+      error.stub :message => "Communications link failure"
+
+      ThinkingSphinx::SphinxError.new_from_mysql(error).
+        should be_a(ThinkingSphinx::ConnectionError)
+    end
+
     it "defaults to sphinx errors" do
       error.stub :message => 'index foo: unknown error: something is wrong'
 
