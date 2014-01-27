@@ -117,11 +117,16 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def log_root
-    framework_root.join('log').realpath
+    real_path 'log'
   end
 
   def framework_root
     Pathname.new(framework.root)
+  end
+
+  def real_path(*arguments)
+    path = framework_root.join(*arguments)
+    path.exist? ? path.realpath : path
   end
 
   def settings_to_hash
@@ -152,8 +157,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def tmp_path
-    path = framework_root.join('tmp')
-    File.exists?(path) ? path.realpath : path
+    real_path 'tmp'
   end
 
   def apply_sphinx_settings!

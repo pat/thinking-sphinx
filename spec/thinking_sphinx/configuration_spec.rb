@@ -128,6 +128,10 @@ describe ThinkingSphinx::Configuration do
   end
 
   describe '#initialize' do
+    before :each do
+      FileUtils.rm_rf Rails.root.join('log')
+    end
+
     it "sets the daemon pid file within log for the Rails app" do
       config.searchd.pid_file.
         should == File.join(Rails.root, 'log', 'test.sphinx.pid')
