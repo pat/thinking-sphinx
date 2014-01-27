@@ -147,7 +147,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     @indices_location = settings['indices_location'] || framework_root.join(
       'db', 'sphinx', environment
     ).to_s
-    @version = settings['version'] || '2.0.6'
+    @version = settings['version'] || '2.1.4'
 
     configure_searchd
 

@@ -377,8 +377,8 @@ describe ThinkingSphinx::Configuration do
   end
 
   describe '#version' do
-    it "defaults to 2.0.6" do
-      config.version.should == '2.0.6'
+    it "defaults to 2.1.4" do
+      config.version.should == '2.1.4'
     end
 
     it "respects supplied YAML versions" do
