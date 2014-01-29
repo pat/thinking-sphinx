@@ -8,6 +8,7 @@ namespace :ts do
   task :index => :environment do
     interface.index(
       ENV['INDEX_ONLY'] != 'true',
+      ENV['INDICES'],
       !Rake.application.options.silent
     )
   end
