@@ -20,11 +20,15 @@ class ThinkingSphinx::RakeInterface
     end
   end
 
-  def index(reconfigure = true, verbose = true)
+  def index(reconfigure = true, indices = nil, verbose = true)
     configure if reconfigure
     FileUtils.mkdir_p configuration.indices_location
     ThinkingSphinx.before_index_hooks.each { |hook| hook.call }
-    controller.index :verbose => verbose
+    if indices.nil?
+      controller.index :verbose => verbose
+    else
+      controller.index indices, :verbose => verbose
+    end
   end
 
   def prepare
