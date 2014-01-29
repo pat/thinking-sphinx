@@ -15,7 +15,7 @@ describe ThinkingSphinx::Middlewares::StaleIdFilter do
 
   describe '#call' do
     before :each do
-      context.stub :search => search, :log => true
+      context.stub :search => search
     end
 
     context 'one stale ids exception' do
