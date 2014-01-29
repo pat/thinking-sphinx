@@ -12,9 +12,13 @@ class ThinkingSphinx::RealTime::Transcriber
       values  << property.translate(instance)
     end
 
-    sphinxql = Riddle::Query::Insert.new index.name, columns, values
-    ThinkingSphinx::Connection.take do |connection|
-      connection.execute sphinxql.replace!.to_sql
+    insert = Riddle::Query::Insert.new index.name, columns, values
+    sphinxql = insert.replace!.to_sql
+    
+    ThinkingSphinx::Logger.log :query, sphinxql do
+      ThinkingSphinx::Connection.take do |connection|
+        connection.execute sphinxql
+      end 
     end
   end
 

@@ -12,7 +12,7 @@ class ThinkingSphinx::Middlewares::StaleIdFilter <
       raise error if @retries <= 0
 
       append_stale_ids error.ids
-      @context.log :message, log_message
+      ThinkingSphinx::Logger.log :message, log_message
 
       @retries -= 1 and retry
     end

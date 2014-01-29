@@ -73,6 +73,7 @@ require 'thinking_sphinx/wildcard'
 require 'thinking_sphinx/active_record'
 require 'thinking_sphinx/deltas'
 require 'thinking_sphinx/distributed'
+require 'thinking_sphinx/logger'
 require 'thinking_sphinx/real_time'
 
 require 'thinking_sphinx/railtie' if defined?(Rails)
