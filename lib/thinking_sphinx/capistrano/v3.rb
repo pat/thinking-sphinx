@@ -21,7 +21,7 @@ if you alter the structure of your indexes.
 
   desc 'Stop Sphinx, clear Sphinx index files, generate configuration file, start Sphinx, repopulate all data.'
   task :regenerate do
-    on roles fetch(:thinking_sphinx_options) do
+    on roles fetch(:thinking_sphinx_roles) do
       within current_path do
         with rails_env: fetch(:stage) do
           execute :rake, 'ts:regenerate'
@@ -43,7 +43,7 @@ if you alter the structure of your indexes.
 
   desc 'Generate Sphinx indexes into the shared path.'
   task :generate do
-    on roles fetch(:thinking_sphinx_options) do
+    on roles fetch(:thinking_sphinx_roles) do
       within current_path do
         with rails_env: fetch(:stage) do
           execute :rake, 'ts:generate'
