@@ -210,7 +210,7 @@ If you want to use a custom expression to define your sorting order, you need to
 
 {% highlight ruby %}
 ThinkingSphinx.search(
-  :select => 'weight() * 10 + document_boost as custom_weight',
+  :select => '*, weight() * 10 + document_boost as custom_weight',
   :order  => 'custom_weight DESC'
 )
 {% endhighlight %}
@@ -219,7 +219,7 @@ And as shown in the above example, Sphinx's calculated ranking is available via 
 
 {% highlight ruby %}
 ThinkingSphinx.search(
-  :select => 'weight() as w', :order  => 'w DESC'
+  :select => '*, weight() as w', :order  => 'w DESC'
 )
 {% endhighlight %}
 
@@ -310,7 +310,7 @@ Sphinx's SphinxQL syntax only allows for grouping on a single attribute - but th
 
 {% highlight ruby %}
 ThinkingSphinx.search(
-  :select   => 'MAX(foo, bar) AS grouping',
+  :select   => '*, MAX(foo, bar) AS grouping',
   :group_by => 'grouping'
 )
 {% endhighlight %}
