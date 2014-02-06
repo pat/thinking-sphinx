@@ -51,11 +51,11 @@ Deploying via Capistrano is simplified by the included recipe file that comes wi
 The first step is to include the recipe in order to define the necessary tasks for us:
 
 {% highlight ruby %}
-# If you're using Thinking Sphinx 3.0.0 or newer
+# If you're using Thinking Sphinx 3.x or newer:
 require 'thinking_sphinx/capistrano'
-# If you're using Thinking Sphinx as a gem (Rails 3 way):
+# If you're using Thinking Sphinx 2.x as a gem (Rails 3 way):
 require 'thinking_sphinx/deploy/capistrano'
-# If you're using Thinking Sphinx as a plugin:
+# If you're using Thinking Sphinx 1.x or 2.x as a plugin:
 require 'vendor/plugins/thinking-sphinx/recipes/thinking_sphinx'
 {% endhighlight %}
 
