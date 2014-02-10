@@ -45,7 +45,7 @@ If you want ActiveRecord 3.1 support, then refer to the 3.0.x releases of Thinki
 
 h3. Ruby
 
-You'll need either the standard Ruby (v1.9.3 or newer) or JRuby. I'm open to patches to improve Rubinius support (if required - it may work with it right now).
+You'll need either the standard Ruby (v1.9.3 or newer) or JRuby (1.7.9 or newer). I'm open to patches to improve Rubinius support (if required - it may work with it right now).
 
 JRuby is only supported as of Thinking Sphinx v3.1.0, and requires Sphinx 2.1.2 or newer.
 
