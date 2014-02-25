@@ -163,8 +163,8 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   def apply_sphinx_settings!
     [common, indexer, searchd].each do |object|
       settings.each do |key, value|
-        next unless object.class.settings.include?(key.to_sym)
-
+        next unless object.respond_to?("#{key}=")
+        
         object.send("#{key}=", value)
       end
     end
