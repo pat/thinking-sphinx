@@ -127,7 +127,7 @@ module ThinkingSphinx::Connection
     attr_reader :address, :options
 
     def initialize(address, port, options)
-      @address = "jdbc:mysql://#{address}:#{port}?allowMultiQueries=true"
+      @address = "jdbc:mysql://#{address}:#{port}/?allowMultiQueries=true"
       @options = options
     end
 
