@@ -1,3 +1,4 @@
+# encoding: utf-8
 class ThinkingSphinx::Wildcard
   DEFAULT_TOKEN = /\p{Word}+/
 
