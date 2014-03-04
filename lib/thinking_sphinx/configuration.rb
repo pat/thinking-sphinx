@@ -74,7 +74,9 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
       end
     end
 
-    ThinkingSphinx::Configuration::DistributedIndices.new(indices).reconcile
+    if settings['distributed_indices'].nil? || settings['distributed_indices']
+      ThinkingSphinx::Configuration::DistributedIndices.new(indices).reconcile
+    end
 
     @preloaded_indices = true
   end

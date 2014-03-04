@@ -180,6 +180,13 @@ describe ThinkingSphinx::Configuration do
   end
 
   describe '#preload_indices' do
+    let(:distributor) { double :reconcile => true }
+
+    before :each do
+      stub_const 'ThinkingSphinx::Configuration::DistributedIndices',
+        double(:new => distributor)
+    end
+
     it "searches each index path for ruby files" do
       config.index_paths.replace ['/path/to/indices', '/path/to/other/indices']
 
@@ -219,6 +226,20 @@ describe ThinkingSphinx::Configuration do
         with('/path/to/indices/bar_index.rb').once
 
       config.preload_indices
+      config.preload_indices
+    end
+
+    it 'adds distributed indices' do
+      distributor.should_receive(:reconcile)
+
+      config.preload_indices
+    end
+
+    it 'does not add distributed indices if disabled' do
+      write_configuration('distributed_indices' => false)
+
+      distributor.should_not_receive(:reconcile)
+
       config.preload_indices
     end
   end
