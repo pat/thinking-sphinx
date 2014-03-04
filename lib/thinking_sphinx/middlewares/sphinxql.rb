@@ -155,7 +155,10 @@ SQL
     end
 
     def values
-      options[:select] ||= "*, #{ThinkingSphinx::SphinxQL.group_by}, #{ThinkingSphinx::SphinxQL.count}" if group_attribute.present?
+      options[:select] ||= ['*',
+        "#{ThinkingSphinx::SphinxQL.group_by} as sphinx_internal_group",
+        "#{ThinkingSphinx::SphinxQL.count} as sphinx_internal_count"
+      ].join(', ') if group_attribute.present?
       options[:select]
     end
 
