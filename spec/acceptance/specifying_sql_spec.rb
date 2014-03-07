@@ -175,7 +175,7 @@ describe 'separate queries for MVAs' do
     declaration, query = attribute.split(/;\s+/)
 
     declaration.should == 'uint tag_ids from query'
-    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .taggings.\..tag_id. AS .tag_ids. FROM .taggings.\s?$/)
+    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .taggings.\..tag_id. AS .tag_ids. FROM .taggings.\s? WHERE \(.taggings.\..article_id. IS NOT NULL\)$/)
   end
 
   it "generates a SQL query with joins when appropriate for MVAs" do
@@ -191,7 +191,7 @@ describe 'separate queries for MVAs' do
     declaration, query = attribute.split(/;\s+/)
 
     declaration.should == 'uint tag_ids from query'
-    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id.\s?$/)
+    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. WHERE \(.taggings.\..article_id. IS NOT NULL\)\s?$/)
   end
 
   it "respects has_many :through joins for MVA queries" do
@@ -207,7 +207,7 @@ describe 'separate queries for MVAs' do
     declaration, query = attribute.split(/;\s+/)
 
     declaration.should == 'uint tag_ids from query'
-    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id.\s?$/)
+    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. WHERE \(.taggings.\..article_id. IS NOT NULL\)\s?$/)
   end
 
   it "can handle multiple joins for MVA queries" do
@@ -225,7 +225,7 @@ describe 'separate queries for MVAs' do
     declaration, query = attribute.split(/;\s+/)
 
     declaration.should == 'uint tag_ids from query'
-    query.should match(/^SELECT .articles.\..user_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .articles. INNER JOIN .taggings. ON .taggings.\..article_id. = .articles.\..id. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id.\s?$/)
+    query.should match(/^SELECT .articles.\..user_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .articles. INNER JOIN .taggings. ON .taggings.\..article_id. = .articles.\..id. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. WHERE \(.articles.\..user_id. IS NOT NULL\)\s?$/)
   end
 
   it "can handle HABTM joins for MVA queries" do
@@ -248,7 +248,7 @@ describe 'separate queries for MVAs' do
     declaration, query = attribute.split(/;\s+/)
 
     declaration.should == 'uint genre_ids from query'
-    query.should match(/^SELECT .books_genres.\..book_id. \* #{count} \+ #{source.offset} AS .id., .genres.\..id. AS .genre_ids. FROM .books_genres. INNER JOIN .genres. ON .genres.\..id. = .books_genres.\..genre_id.\s?$/)
+    query.should match(/^SELECT .books_genres.\..book_id. \* #{count} \+ #{source.offset} AS .id., .genres.\..id. AS .genre_ids. FROM .books_genres. INNER JOIN .genres. ON .genres.\..id. = .books_genres.\..genre_id.\s? WHERE \(.taggings.\..article_id. IS NOT NULL\)$/)
   end
 
   it "generates an appropriate range SQL queries for an MVA" do
@@ -264,7 +264,7 @@ describe 'separate queries for MVAs' do
     declaration, query, range = attribute.split(/;\s+/)
 
     declaration.should == 'uint tag_ids from ranged-query'
-    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .taggings.\..tag_id. AS .tag_ids. FROM .taggings. \s?WHERE \(.taggings.\..article_id. BETWEEN \$start AND \$end\)$/)
+    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .taggings.\..tag_id. AS .tag_ids. FROM .taggings. \s?WHERE \(.taggings.\..article_id. BETWEEN \$start AND \$end\) AND \(.taggings.\..article_id. IS NOT NULL\)$/)
     range.should match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
   end
 
@@ -281,7 +281,7 @@ describe 'separate queries for MVAs' do
     declaration, query, range = attribute.split(/;\s+/)
 
     declaration.should == 'uint tag_ids from ranged-query'
-    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. \s?WHERE \(.taggings.\..article_id. BETWEEN \$start AND \$end\)$/)
+    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. \s?WHERE \(.taggings.\..article_id. BETWEEN \$start AND \$end\) AND \(.taggings.\..article_id. IS NOT NULL\)$/)
     range.should match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
   end
 
@@ -355,7 +355,7 @@ describe 'separate queries for field' do
     declaration, query = field.split(/;\s+/)
 
     declaration.should == 'tags from query'
-    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..name. AS .tags. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id.\s? ORDER BY .taggings.\..article_id. ASC\s?$/)
+    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..name. AS .tags. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id.\s? WHERE \(.taggings.\..article_id. IS NOT NULL\)\s? ORDER BY .taggings.\..article_id. ASC\s?$/)
   end
 
   it "respects has_many :through joins for MVF queries" do
@@ -368,7 +368,7 @@ describe 'separate queries for field' do
     declaration, query = field.split(/;\s+/)
 
     declaration.should == 'tags from query'
-    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..name. AS .tags. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id.\s? ORDER BY .taggings.\..article_id. ASC\s?$/)
+    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..name. AS .tags. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id.\s? WHERE \(.taggings.\..article_id. IS NOT NULL\)\s? ORDER BY .taggings.\..article_id. ASC\s?$/)
   end
 
   it "can handle multiple joins for MVF queries" do
@@ -383,7 +383,7 @@ describe 'separate queries for field' do
     declaration, query = field.split(/;\s+/)
 
     declaration.should == 'tags from query'
-    query.should match(/^SELECT .articles.\..user_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..name. AS .tags. FROM .articles. INNER JOIN .taggings. ON .taggings.\..article_id. = .articles.\..id. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id.\s? ORDER BY .articles.\..user_id. ASC\s?$/)
+    query.should match(/^SELECT .articles.\..user_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..name. AS .tags. FROM .articles. INNER JOIN .taggings. ON .taggings.\..article_id. = .articles.\..id. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id.\s? WHERE \(.articles.\..user_id. IS NOT NULL\)\s? ORDER BY .articles.\..user_id. ASC\s?$/)
   end
 
   it "generates a SQL query with joins when appropriate for MVFs" do
@@ -396,7 +396,7 @@ describe 'separate queries for field' do
     declaration, query, range = field.split(/;\s+/)
 
     declaration.should == 'tags from ranged-query'
-    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..name. AS .tags. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. \s?WHERE \(.taggings.\..article_id. BETWEEN \$start AND \$end\)\s? ORDER BY .taggings.\..article_id. ASC$/)
+    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..name. AS .tags. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. \s?WHERE \(.taggings.\..article_id. BETWEEN \$start AND \$end\) AND \(.taggings.\..article_id. IS NOT NULL\)\s? ORDER BY .taggings.\..article_id. ASC$/)
     range.should match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
   end
 
