@@ -141,6 +141,10 @@ describe ThinkingSphinx::Search do
     it "should respond to Search methods" do
       search.respond_to?(:per_page).should be_true
     end
+
+    it "should respond to Mask methods" do
+      search.respond_to?(:total_entries).should be_true
+    end
   end
 
   describe '#to_a' do
