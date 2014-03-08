@@ -4,9 +4,9 @@ class ThinkingSphinx::Test
     config.settings['quiet_deltas'] = suppress_delta_output
   end
 
-  def self.start
+  def self.start(options = {})
     config.render_to_file
-    config.controller.index
+    config.controller.index if options[:index].nil? || options[:index]
     config.controller.start
   end
 
@@ -32,6 +32,15 @@ class ThinkingSphinx::Test
       yield
     ensure
       stop
+    end
+  end
+
+  def self.clear
+    [
+      config.indices_location,
+      config.searchd.binlog_path
+    ].each do |path|
+      FileUtils.rm_r(path) if File.exists?(path)
     end
   end
 
