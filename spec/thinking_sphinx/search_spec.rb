@@ -141,6 +141,40 @@ describe ThinkingSphinx::Search do
     it "should respond to Search methods" do
       search.respond_to?(:per_page).should be_true
     end
+
+    it "should return true for methods delegated to pagination mask by method_missing" do
+      [:first_page?,
+       :last_page?,
+       :next_page,
+       :next_page?,
+       :page,
+       :per,
+       :previous_page,
+       :total_entries,
+       :total_count,
+       :count,
+       :total_pages,
+       :page_count,
+       :num_pages].each do |method|
+        expect(search).to respond_to method
+      end
+    end
+
+    it "should return true for methods delegated to scopes mask by method_missing" do
+      [:facets,
+       :search,
+       :search_for_ids].each do |method|
+        expect(search).to respond_to method
+      end
+    end
+
+    it "should return true for methods delegated to group enumerators mask by method_missing" do
+      [:each_with_count,
+       :each_with_group,
+       :each_with_group_and_count].each do |method|
+        expect(search).to respond_to method
+      end
+    end
   end
 
   describe '#to_a' do

@@ -115,6 +115,16 @@ class ThinkingSphinx::Search < Array
     context[:results].send(method, *args, &block)
   end
 
+  def respond_to_missing?(method, include_private)
+    mask_stack.each do |mask|
+      return true if mask.can_handle?(method)
+    end
+
+    populate if !SAFE_METHODS.include?(method.to_s)
+
+    context[:results].respond_to?(method, include_private) || super
+  end
+
   def middleware
     @options[:middleware] || default_middleware
   end
