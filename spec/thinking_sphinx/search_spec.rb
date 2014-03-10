@@ -201,9 +201,11 @@ describe ThinkingSphinx::Search do
   end
 
   it "correctly handles access to methods delegated to masks through 'method' call" do
-    [pagination_mask_methods,
-     scopes_mask_methods,
-     group_enumerator_mask_methods].flatten.each do |method|
+    [
+      pagination_mask_methods,
+      scopes_mask_methods,
+      group_enumerator_mask_methods
+    ].flatten.each do |method|
       expect { search.method method }.to_not raise_exception
     end
   end
