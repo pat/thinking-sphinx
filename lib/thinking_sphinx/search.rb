@@ -84,7 +84,9 @@ class ThinkingSphinx::Search < Array
   end
 
   def respond_to?(method, include_private = false)
-    super || context[:results].respond_to?(method, include_private)
+    super                                        ||
+    results_respond_to?(method, include_private) ||
+    masks_respond_to?(method)
   end
 
   def to_a
@@ -103,6 +105,10 @@ class ThinkingSphinx::Search < Array
 
   def mask_stack
     @mask_stack ||= masks.collect { |klass| klass.new self }
+  end
+
+  def masks_respond_to?(method)
+    mask_stack.any? { |mask| mask.can_handle? method }
   end
 
   def method_missing(method, *args, &block)
@@ -127,6 +133,10 @@ class ThinkingSphinx::Search < Array
 
   def middleware
     @options[:middleware] || default_middleware
+  end
+
+  def results_respond_to?(method, include_private = true)
+    context[:results].respond_to?(method, include_private)
   end
 end
 

@@ -4,7 +4,7 @@ class ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks
   end
 
   def after_save(instance)
-    return unless real_time_indices?
+    return unless real_time_indices? && callbacks_enabled?
 
     real_time_indices.each do |index|
       objects_for(instance).each do |object|
@@ -16,6 +16,11 @@ class ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks
   private
 
   attr_reader :reference, :path
+
+  def callbacks_enabled?
+    setting = configuration.settings['real_time_callbacks']
+    setting.nil? || setting
+  end
 
   def configuration
     ThinkingSphinx::Configuration.instance

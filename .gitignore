@@ -9,4 +9,5 @@ spec/internal/db/sphinx
 spec/internal/log/*.log
 !spec/internal/tmp/.gitkeep
 spec/internal/tmp/*
+tmp
 _site
