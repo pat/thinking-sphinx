@@ -5,6 +5,34 @@ describe ThinkingSphinx::Search do
   let(:context)       { {:results => []} }
   let(:stack)         { double('stack', :call => true) }
 
+  let(:pagination_mask_methods) do
+    [:first_page?,
+     :last_page?,
+     :next_page,
+     :next_page?,
+     :page,
+     :per,
+     :previous_page,
+     :total_entries,
+     :total_count,
+     :count,
+     :total_pages,
+     :page_count,
+     :num_pages]
+  end
+
+  let(:scopes_mask_methods) do
+    [:facets,
+     :search,
+     :search_for_ids]
+  end
+
+  let(:group_enumerator_mask_methods) do
+    [:each_with_count,
+     :each_with_group,
+     :each_with_group_and_count]
+  end
+
   before :each do
     ThinkingSphinx::Search::Context.stub :new => context
 
@@ -142,8 +170,22 @@ describe ThinkingSphinx::Search do
       search.respond_to?(:per_page).should be_true
     end
 
-    it "should respond to Mask methods" do
-      search.respond_to?(:total_entries).should be_true
+    it "should return true for methods delegated to pagination mask by method_missing" do
+      pagination_mask_methods.each do |method|
+        expect(search).to respond_to method
+      end
+    end
+
+    it "should return true for methods delegated to scopes mask by method_missing" do
+      scopes_mask_methods.each do |method|
+        expect(search).to respond_to method
+      end
+    end
+
+    it "should return true for methods delegated to group enumerators mask by method_missing" do
+      group_enumerator_mask_methods.each do |method|
+        expect(search).to respond_to method
+      end
     end
   end
 
@@ -155,6 +197,14 @@ describe ThinkingSphinx::Search do
       context[:results] << glazed
 
       search.to_a.first.__id__.should == unglazed.__id__
+    end
+  end
+
+  it "correctly handles access to methods delegated to masks through 'method' call" do
+    [pagination_mask_methods,
+     scopes_mask_methods,
+     group_enumerator_mask_methods].flatten.each do |method|
+      expect { search.method method }.to_not raise_exception
     end
   end
 end
