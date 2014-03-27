@@ -51,7 +51,7 @@ class ThinkingSphinx::Context
   #
   def load_models
     ThinkingSphinx::Configuration.instance.model_directories.each do |base|
-      Dir["#{base}**/*.rb"].each do |file|
+      Dir["#{base}/**/*.rb"].each do |file|
         model_name = file.gsub(/^#{base}([\w_\/\\]+)\.rb/, '\1')
 
         next if model_name.nil?
