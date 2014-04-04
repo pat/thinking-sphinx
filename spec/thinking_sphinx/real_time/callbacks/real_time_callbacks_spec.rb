@@ -5,7 +5,8 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
     ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks.new :article
   }
   let(:instance)   { double('instance', :id => 12) }
-  let(:config)     { double('config', :indices_for_references => [index]) }
+  let(:config)     { double('config', :indices_for_references => [index],
+    :settings => {}) }
   let(:index)      { double('index', :name => 'my_index', :is_a? => true,
     :document_id_for_key => 123, :fields => [], :attributes => [],
     :conditions => []) }
