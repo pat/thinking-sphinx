@@ -48,6 +48,12 @@ describe ThinkingSphinx::ActiveRecord::Base do
   end
 
   describe '.search' do
+    let(:stack) { double('stack', :call => true) }
+
+    before :each do
+      stub_const 'ThinkingSphinx::Middlewares::DEFAULT', stack
+    end
+
     it "returns a new search object" do
       model.search.should be_a(ThinkingSphinx::Search)
     end
@@ -58,6 +64,17 @@ describe ThinkingSphinx::ActiveRecord::Base do
 
     it "scopes the search to a given model" do
       model.search('pancakes').options[:classes].should == [model]
+    end
+
+    it "passes through options to the search object" do
+      model.search('pancakes', populate: true).
+        options[:populate].should be_true
+    end
+
+    it "should automatically populate when :populate is set to true" do
+      stack.should_receive(:call).and_return(true)
+
+      model.search('pancakes', populate: true)
     end
 
     it "merges the :classes option with the model" do

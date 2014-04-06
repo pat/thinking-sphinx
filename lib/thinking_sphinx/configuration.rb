@@ -74,7 +74,9 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
       end
     end
 
-    ThinkingSphinx::Configuration::DistributedIndices.new(indices).reconcile
+    if settings['distributed_indices'].nil? || settings['distributed_indices']
+      ThinkingSphinx::Configuration::DistributedIndices.new(indices).reconcile
+    end
 
     @preloaded_indices = true
   end
@@ -117,11 +119,16 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def log_root
-    framework_root.join('log').realpath
+    real_path 'log'
   end
 
   def framework_root
     Pathname.new(framework.root)
+  end
+
+  def real_path(*arguments)
+    path = framework_root.join(*arguments)
+    path.exist? ? path.realpath : path
   end
 
   def settings_to_hash
@@ -142,7 +149,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     @indices_location = settings['indices_location'] || framework_root.join(
       'db', 'sphinx', environment
     ).to_s
-    @version = settings['version'] || '2.0.6'
+    @version = settings['version'] || '2.1.4'
 
     configure_searchd
 
@@ -152,8 +159,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def tmp_path
-    path = framework_root.join('tmp')
-    File.exists?(path) ? path.realpath : path
+    real_path 'tmp'
   end
 
   def apply_sphinx_settings!

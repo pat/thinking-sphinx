@@ -9,7 +9,7 @@ class ThinkingSphinx::SphinxError < StandardError
       replacement = ThinkingSphinx::SyntaxError.new(error.message)
     when /query error/
       replacement = ThinkingSphinx::QueryError.new(error.message)
-    when /Can't connect to MySQL server/
+    when /Can't connect to MySQL server/, /Communications link failure/
       replacement = ThinkingSphinx::ConnectionError.new(error.message)
     else
       replacement = new(error.message)

@@ -11,7 +11,7 @@ class ThinkingSphinx::Wildcard
   end
 
   def call
-    query.gsub(/("#{pattern}(.*?#{pattern})?"|(?![!-])#{pattern})/u) do
+    query.gsub(extended_pattern) do
       pre, proper, post = $`, $&, $'
       # E.g. "@foo", "/2", "~3", but not as part of a token pattern
       is_operator = pre == '@' ||
@@ -31,4 +31,10 @@ class ThinkingSphinx::Wildcard
   private
 
   attr_reader :query, :pattern
+
+  def extended_pattern
+    Regexp.new(
+      "(\"#{pattern}(.*?#{pattern})?\"|(?![!-])#{pattern})".encode('UTF-8')
+    )
+  end
 end

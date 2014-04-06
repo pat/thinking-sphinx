@@ -26,12 +26,12 @@ describe ThinkingSphinx::FacetSearch do
   DumbSearch = ::Struct.new(:query, :options) do
     def raw
       [{
-        'sphinx_internal_class'           => 'Foo',
-        'price_bracket'                   => 3,
-        'tag_ids'                         => '1,2',
-        'category_id'                     => 11,
-        ThinkingSphinx::SphinxQL.count    => 5,
-        ThinkingSphinx::SphinxQL.group_by => 2
+        'sphinx_internal_class' => 'Foo',
+        'price_bracket'         => 3,
+        'tag_ids'               => '1,2',
+        'category_id'           => 11,
+        'sphinx_internal_count' => 5,
+        'sphinx_internal_group' => 2
       }]
     end
   end

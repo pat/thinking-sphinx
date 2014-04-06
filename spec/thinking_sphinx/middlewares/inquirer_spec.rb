@@ -15,10 +15,6 @@ describe ThinkingSphinx::Middlewares::Inquirer do
     :results => [[:raw], [{'Variable_name' => 'meta', 'Value' => 'value'}]]) }
 
   before :each do
-    context.stub(:log) do |notification, message, &block|
-      block.call unless block.nil?
-    end
-
     batch_class = double
     batch_class.stub(:new).and_return(batch_inquirer)
 

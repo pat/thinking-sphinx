@@ -128,6 +128,10 @@ describe ThinkingSphinx::Configuration do
   end
 
   describe '#initialize' do
+    before :each do
+      FileUtils.rm_rf Rails.root.join('log')
+    end
+
     it "sets the daemon pid file within log for the Rails app" do
       config.searchd.pid_file.
         should == File.join(Rails.root, 'log', 'test.sphinx.pid')
@@ -176,6 +180,13 @@ describe ThinkingSphinx::Configuration do
   end
 
   describe '#preload_indices' do
+    let(:distributor) { double :reconcile => true }
+
+    before :each do
+      stub_const 'ThinkingSphinx::Configuration::DistributedIndices',
+        double(:new => distributor)
+    end
+
     it "searches each index path for ruby files" do
       config.index_paths.replace ['/path/to/indices', '/path/to/other/indices']
 
@@ -215,6 +226,20 @@ describe ThinkingSphinx::Configuration do
         with('/path/to/indices/bar_index.rb').once
 
       config.preload_indices
+      config.preload_indices
+    end
+
+    it 'adds distributed indices' do
+      distributor.should_receive(:reconcile)
+
+      config.preload_indices
+    end
+
+    it 'does not add distributed indices if disabled' do
+      write_configuration('distributed_indices' => false)
+
+      distributor.should_not_receive(:reconcile)
+
       config.preload_indices
     end
   end
@@ -373,8 +398,8 @@ describe ThinkingSphinx::Configuration do
   end
 
   describe '#version' do
-    it "defaults to 2.0.6" do
-      config.version.should == '2.0.6'
+    it "defaults to 2.1.4" do
+      config.version.should == '2.1.4'
     end
 
     it "respects supplied YAML versions" do

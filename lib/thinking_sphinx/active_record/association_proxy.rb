@@ -30,3 +30,4 @@ module ThinkingSphinx::ActiveRecord::AssociationProxy
 end
 
 require 'thinking_sphinx/active_record/association_proxy/attribute_finder'
+require 'thinking_sphinx/active_record/association_proxy/attribute_matcher'

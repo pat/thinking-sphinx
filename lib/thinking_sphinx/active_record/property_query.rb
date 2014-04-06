@@ -109,6 +109,7 @@ class ThinkingSphinx::ActiveRecord::PropertyQuery
     )
     relation = relation.joins(joins) if joins.present?
     relation = relation.where("#{quoted_foreign_key} BETWEEN $start AND $end") if ranged?
+    relation = relation.where("#{quoted_foreign_key} IS NOT NULL")
     relation = relation.order("#{quoted_foreign_key} ASC") if type.nil?
 
     relation.to_sql

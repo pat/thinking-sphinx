@@ -50,7 +50,9 @@ module ThinkingSphinx::ActiveRecord::Base
           'You cannot search with Sphinx through ActiveRecord scopes'
       end
 
-      merger.merge! nil, :classes => [self]
+      result = merger.merge! nil, :classes => [self]
+      result.populate if result.options[:populate]
+      result
     end
   end
 end
