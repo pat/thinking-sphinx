@@ -42,3 +42,6 @@ end
 
 class ThinkingSphinx::NoIndicesError < StandardError
 end
+
+class ThinkingSphinx::MissingColumnError < StandardError
+end

@@ -4,6 +4,7 @@ module ThinkingSphinx
   end
 end
 
+require 'thinking_sphinx/errors'
 require 'thinking_sphinx/active_record/attribute/type'
 
 describe ThinkingSphinx::ActiveRecord::Attribute::Type do
@@ -142,6 +143,12 @@ describe ThinkingSphinx::ActiveRecord::Attribute::Type do
       attribute.options[:type] = :timestamp
 
       type.type.should == :timestamp
+    end
+
+    it 'raises an error if the database column does not exist' do
+      model.columns.clear
+
+      expect { type.type }.to raise_error(ThinkingSphinx::MissingColumnError)
     end
   end
 end
