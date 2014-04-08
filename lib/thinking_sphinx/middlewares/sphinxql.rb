@@ -65,7 +65,8 @@ class ThinkingSphinx::Middlewares::SphinxQL <
     end
 
     def constantize_inheritance_column(klass)
-      klass.connection.select_values(inheritance_column_select(klass)).compact.each(&:constantize)
+      values = klass.connection.select_values inheritance_column_select(klass)
+      values.reject(&:blank?).each(&:constantize)
     end
 
     def descendants
