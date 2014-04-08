@@ -63,7 +63,9 @@ require 'vendor/plugins/thinking-sphinx/recipes/thinking_sphinx'
 
 <div class="note">
   <p class="old">Thinking Sphinx v1/v2</p>
-  <p><strong>Note</strong>: If you are using an older version of Thinking Sphinx, then you'll need to add some extra code to your <code>deploy.rb</code> file to make sure that Sphinx is properly configured, indexed, and started on each deploy:</p>
+  <p><strong>Note</strong>: If you are using an older version of Thinking Sphinx and you've not set your paths up to be outside of a specific deployed release directory, then you'll need to add some extra code to your <code>deploy.rb</code> file to make sure that Sphinx is properly configured, indexed, and started on each deploy.</p>
+
+  <p>It is far better, though, to use the configuration options mentioned above and avoid release-specific paths.</p>
 
 {% highlight ruby %}
 before 'deploy:update_code', 'thinking_sphinx:stop'
@@ -79,7 +81,7 @@ end
 after 'deploy:finalize_update', 'sphinx:symlink_indexes'
 {% endhighlight %}
 
-<p>The above makes sure we stop the Sphinx <code>searchd</code> search daemon before we update the code. After the code is updated, we reconfigure Sphinx and then restart. We'll setup a `cron` job next to keep the indexes up-to-date.</p>
+<p>The above makes sure we stop the Sphinx <code>searchd</code> search daemon before we update the code. After the code is updated, we reconfigure Sphinx and then restart. You should also setup a `cron` job to keep the indexes up-to-date.</p>
 </div>
 
 ### Regularly Processing the Indices
