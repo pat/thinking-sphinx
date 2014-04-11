@@ -28,7 +28,10 @@ class ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks <
   end
 
   def indices
-    @indices ||= configuration.indices_for_references reference
+    @indices ||= begin
+      all = configuration.indices_for_references(reference)
+      all.reject { |index| index.type == 'rt' }
+    end
   end
 
   def reference
