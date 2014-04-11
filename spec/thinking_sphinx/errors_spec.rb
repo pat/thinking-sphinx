@@ -33,11 +33,25 @@ describe ThinkingSphinx::SphinxError do
         should be_a(ThinkingSphinx::ConnectionError)
     end
 
+    it 'prefixes the connection error message' do
+      error.stub :message => "Can't connect to MySQL server on '127.0.0.1' (61)"
+
+      ThinkingSphinx::SphinxError.new_from_mysql(error).message.
+        should == "Error connecting to Sphinx via the MySQL protocol. Can't connect to MySQL server on '127.0.0.1' (61)"
+    end
+
     it "translates jdbc connection errors" do
       error.stub :message => "Communications link failure"
 
       ThinkingSphinx::SphinxError.new_from_mysql(error).
         should be_a(ThinkingSphinx::ConnectionError)
+    end
+
+    it 'prefixes the jdbc connection error message' do
+      error.stub :message => "Communications link failure"
+
+      ThinkingSphinx::SphinxError.new_from_mysql(error).message.
+        should == "Error connecting to Sphinx via the MySQL protocol. Communications link failure"
     end
 
     it "defaults to sphinx errors" do
