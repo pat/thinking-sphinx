@@ -228,12 +228,7 @@ describe 'separate queries for MVAs' do
     query.should match(/^SELECT .articles.\..user_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .articles. INNER JOIN .taggings. ON .taggings.\..article_id. = .articles.\..id. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. WHERE \(.articles.\..user_id. IS NOT NULL\)\s?$/)
   end
 
-  it "can handle HABTM joins for MVA queries" do
-    pending "Efficient HABTM queries are tricky."
-    # We don't really have any need for other tables, but that doesn't lend
-    # itself nicely to Thinking Sphinx's DSL, nor ARel SQL generation. This is
-    # a low priority - manual SQL queries for this situation may work better.
-
+  it "can handle simple HABTM joins for MVA queries" do
     index = ThinkingSphinx::ActiveRecord::Index.new(:book)
     index.definition_block = Proc.new {
       indexes title
@@ -248,7 +243,7 @@ describe 'separate queries for MVAs' do
     declaration, query = attribute.split(/;\s+/)
 
     declaration.should == 'uint genre_ids from query'
-    query.should match(/^SELECT .books_genres.\..book_id. \* #{count} \+ #{source.offset} AS .id., .genres.\..id. AS .genre_ids. FROM .books_genres. INNER JOIN .genres. ON .genres.\..id. = .books_genres.\..genre_id.\s? WHERE \(.taggings.\..article_id. IS NOT NULL\)$/)
+    query.should match(/^SELECT .books_genres.\..book_id. \* #{count} \+ #{source.offset} AS .id., .books_genres.\..genre_id. AS .genre_ids. FROM .books_genres.\s?$/)
   end
 
   it "generates an appropriate range SQL queries for an MVA" do
@@ -283,6 +278,25 @@ describe 'separate queries for MVAs' do
     declaration.should == 'uint tag_ids from ranged-query'
     query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. \s?WHERE \(.taggings.\..article_id. BETWEEN \$start AND \$end\) AND \(.taggings.\..article_id. IS NOT NULL\)$/)
     range.should match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
+  end
+
+  it "can handle ranged queries for simple HABTM joins for MVA queries" do
+    index = ThinkingSphinx::ActiveRecord::Index.new(:book)
+    index.definition_block = Proc.new {
+      indexes title
+      has genres.id, :as => :genre_ids, :source => :ranged_query
+    }
+    index.render
+    source = index.sources.first
+
+    attribute = source.sql_attr_multi.detect { |attribute|
+      attribute[/genre_ids/]
+    }
+    declaration, query, range = attribute.split(/;\s+/)
+
+    declaration.should == 'uint genre_ids from ranged-query'
+    query.should match(/^SELECT .books_genres.\..book_id. \* #{count} \+ #{source.offset} AS .id., .books_genres.\..genre_id. AS .genre_ids. FROM .books_genres. WHERE \(.books_genres.\..book_id. BETWEEN \$start AND \$end\)$/)
+    range.should match(/^SELECT MIN\(.books_genres.\..book_id.\), MAX\(.books_genres.\..book_id.\) FROM .books_genres.$/)
   end
 
   it "respects custom SQL snippets as the query value" do
