@@ -85,7 +85,8 @@ module ThinkingSphinx::Connection
     def query(*statements)
       results_for *statements
     rescue => error
-      wrapper           = ThinkingSphinx::QueryExecutionError.new error.message
+      message           = "#{error.message} - #{statements.join('; ')}"
+      wrapper           = ThinkingSphinx::QueryExecutionError.new message
       wrapper.statement = statements.join('; ')
       raise wrapper
     ensure
