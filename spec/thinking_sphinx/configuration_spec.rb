@@ -158,6 +158,19 @@ describe ThinkingSphinx::Configuration do
 
       config.searchd.workers.should == 'none'
     end
+
+    it 'adds settings to indexer without common section' do
+      write_configuration 'lemmatizer_base' => 'foo'
+
+      expect(config.indexer.lemmatizer_base).to eq('foo')
+    end
+
+    it 'adds settings to common section if requested' do
+      write_configuration 'lemmatizer_base' => 'foo',
+        'common_sphinx_configuration' => true
+
+      expect(config.common.lemmatizer_base).to eq('foo')
+    end
   end
 
   describe '#next_offset' do

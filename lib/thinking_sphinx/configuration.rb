@@ -151,6 +151,11 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     ).to_s
     @version = settings['version'] || '2.1.4'
 
+    if settings['common_sphinx_configuration']
+      common.common_sphinx_configuration  = true
+      indexer.common_sphinx_configuration = true
+    end
+
     configure_searchd
 
     apply_sphinx_settings!
@@ -162,8 +167,14 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     real_path 'tmp'
   end
 
+  def sphinx_sections
+    sections = [indexer, searchd]
+    sections.unshift common if settings['common_sphinx_configuration']
+    sections
+  end
+
   def apply_sphinx_settings!
-    [indexer, searchd].each do |object|
+    sphinx_sections.each do |object|
       settings.each do |key, value|
         next unless object.class.settings.include?(key.to_sym)
 
