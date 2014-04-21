@@ -1,4 +1,4 @@
-Edge:
+2014-04-22: 3.1.1
 * [CHANGE] Include full statements when query execution errors are raised (uglier, but more useful when debugging).
 * [FEATURE] Allow for common section in generated Sphinx configuration files for Sphinx 2.2.x (disabled by default, though) (Trevor Smith).
 * [FEATURE] Basic support for HABTM associations and MVAs with query/ranged-query sources.

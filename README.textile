@@ -1,11 +1,12 @@
 h1. Thinking Sphinx
 
-Thinking Sphinx is a library for connecting ActiveRecord to the Sphinx full-text search tool, and integrates closely with Rails (but also works with other Ruby web frameworks). The current release is v3.1.0.
+Thinking Sphinx is a library for connecting ActiveRecord to the Sphinx full-text search tool, and integrates closely with Rails (but also works with other Ruby web frameworks). The current release is v3.1.1.
 
 h2. Upgrading
 
 Please refer to the release notes for any changes you need to make when upgrading:
 
+* "v3.1.1":https://github.com/pat/thinking-sphinx/releases/tag/v3.1.1
 * "v3.1.0":https://github.com/pat/thinking-sphinx/releases/tag/v3.1.0
 * "v3.0.6":https://github.com/pat/thinking-sphinx/releases/tag/v3.0.6
 
@@ -15,9 +16,9 @@ h2. Installation
 
 It's a gem, so install it like you would any other gem. You will also need to specify the mysql2 gem if you're using MRI, or jdbc-mysql if you're using JRuby:
 
-<pre><code>gem 'mysql2',          '0.3.13', :platform => :ruby
-gem 'jdbc-mysql',      '5.1.28', :platform => :jruby
-gem 'thinking-sphinx', '3.1.0'</code></pre>
+<pre><code>gem 'mysql2',          '~> 0.3.13', :platform => :ruby
+gem 'jdbc-mysql',      '~> 5.1.28', :platform => :jruby
+gem 'thinking-sphinx', '~> 3.1.1'</code></pre>
 
 The MySQL gems mentioned are required for connecting to Sphinx, so please include it even when you're using PostgreSQL for your database.
 
@@ -31,7 +32,7 @@ h3. Extending with Middleware, Glazes and Panes
 
 These are covered in "a blog post":http://freelancing-gods.com/posts/rewriting_thinking_sphinx_middleware_glazes_and_panes.
 
-h2. Requiements
+h2. Requirements
 
 h3. Sphinx
 
