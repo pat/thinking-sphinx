@@ -30,7 +30,7 @@ class ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks <
   end
 
   def core_indices
-    @core_indices ||= indices.reject &:delta?
+    @core_indices ||= indices.select(&:delta_processor).reject(&:delta?)
   end
 
   def delta_indices

@@ -6,6 +6,9 @@ module ActiveRecord
   class Base; end
 end
 
+class SphinxQLSubclass
+end
+
 require 'active_support/core_ext/module/attribute_accessors'
 require 'active_support/core_ext/module/delegation'
 require 'active_support/core_ext/object/blank'
@@ -183,6 +186,28 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       model.connection.should_not_receive(:select_values)
 
       middleware.call [context]
+    end
+
+    it "ignores blank subclasses" do
+      db_connection = double('db connection', :select_values => [''],
+        :schema_cache => double('cache', :table_exists? => false))
+      supermodel = Class.new(ActiveRecord::Base) do
+        def self.name; 'Cat'; end
+        def self.inheritance_column; 'type'; end
+      end
+      supermodel.stub :connection => db_connection, :column_names => ['type']
+      submodel   = Class.new(supermodel) do
+        def self.name; 'Lion'; end
+        def self.inheritance_column; 'type'; end
+        def self.table_name; 'cats'; end
+      end
+      submodel.stub :connection => db_connection, :column_names => ['type'],
+        :descendants => []
+      index_set.first.stub :reference => :cat
+
+      search.options[:classes] = [submodel]
+
+      expect { middleware.call [context] }.to_not raise_error
     end
 
     it "filters out deleted values by default" do

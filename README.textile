@@ -1,11 +1,12 @@
 h1. Thinking Sphinx
 
-Thinking Sphinx is a library for connecting ActiveRecord to the Sphinx full-text search tool, and integrates closely with Rails (but also works with other Ruby web frameworks). The current release is v3.1.0.
+Thinking Sphinx is a library for connecting ActiveRecord to the Sphinx full-text search tool, and integrates closely with Rails (but also works with other Ruby web frameworks). The current release is v3.1.1.
 
 h2. Upgrading
 
 Please refer to the release notes for any changes you need to make when upgrading:
 
+* "v3.1.1":https://github.com/pat/thinking-sphinx/releases/tag/v3.1.1
 * "v3.1.0":https://github.com/pat/thinking-sphinx/releases/tag/v3.1.0
 * "v3.0.6":https://github.com/pat/thinking-sphinx/releases/tag/v3.0.6
 
@@ -15,9 +16,9 @@ h2. Installation
 
 It's a gem, so install it like you would any other gem. You will also need to specify the mysql2 gem if you're using MRI, or jdbc-mysql if you're using JRuby:
 
-<pre><code>gem 'mysql2',          '0.3.13', :platform => :ruby
-gem 'jdbc-mysql',      '5.1.28', :platform => :jruby
-gem 'thinking-sphinx', '3.1.0'</code></pre>
+<pre><code>gem 'mysql2',          '~> 0.3.13', :platform => :ruby
+gem 'jdbc-mysql',      '~> 5.1.28', :platform => :jruby
+gem 'thinking-sphinx', '~> 3.1.1'</code></pre>
 
 The MySQL gems mentioned are required for connecting to Sphinx, so please include it even when you're using PostgreSQL for your database.
 
@@ -31,7 +32,7 @@ h3. Extending with Middleware, Glazes and Panes
 
 These are covered in "a blog post":http://freelancing-gods.com/posts/rewriting_thinking_sphinx_middleware_glazes_and_panes.
 
-h2. Requiements
+h2. Requirements
 
 h3. Sphinx
 
@@ -45,7 +46,7 @@ If you want ActiveRecord 3.1 support, then refer to the 3.0.x releases of Thinki
 
 h3. Ruby
 
-You'll need either the standard Ruby (v1.9.3 or newer) or JRuby. I'm open to patches to improve Rubinius support (if required - it may work with it right now).
+You'll need either the standard Ruby (v1.9.3 or newer) or JRuby (1.7.9 or newer). I'm open to patches to improve Rubinius support (if required - it may work with it right now).
 
 JRuby is only supported as of Thinking Sphinx v3.1.0, and requires Sphinx 2.1.2 or newer.
 
@@ -68,7 +69,7 @@ psql
 # In that console, create the database:
 CREATE DATABASE thinking_sphinx;</code></pre>
 
-You can then run the unit tests with @rake spec:unit@, the acceptance tests with @rake spec:acceptance@, or all of the tests with just @rake@. To run these with PostgreSQL, you'll need to set the `DATABASE` environment variable accordingly:
+You can then run the unit tests with @rake spec:unit@, the acceptance tests with @rake spec:acceptance@, or all of the tests with just @rake@. To run these with PostgreSQL, you'll need to set the @DATABASE@ environment variable accordingly:
 
 <pre><code>DATABASE=postgresql rake</code></pre>
 

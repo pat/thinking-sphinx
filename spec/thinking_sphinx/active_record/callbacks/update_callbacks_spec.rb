@@ -20,7 +20,8 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks do
       :indices_for_references => [index]) }
     let(:connection)    { double('connection', :execute => '') }
     let(:index)         { double 'index', :name => 'article_core',
-      :sources => [source], :document_id_for_key => 3, :distributed? => false }
+      :sources => [source], :document_id_for_key => 3, :distributed? => false,
+      :type => 'plain'}
     let(:source)        { double('source', :attributes => []) }
 
     before :each do

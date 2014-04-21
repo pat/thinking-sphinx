@@ -1,6 +1,7 @@
 namespace :load do
   task :defaults do
     set :thinking_sphinx_roles, :db
+    set :thinking_sphinx_rails_env, -> { fetch(:stage) }
   end
 end
 
@@ -12,7 +13,7 @@ if you alter the structure of your indexes.
   task :rebuild do
     on roles fetch(:thinking_sphinx_roles) do
       within current_path do
-        with rails_env: fetch(:stage) do
+        with rails_env: fetch(:thinking_sphinx_rails_env) do
           execute :rake, "ts:rebuild"
         end
       end
@@ -21,9 +22,9 @@ if you alter the structure of your indexes.
 
   desc 'Stop Sphinx, clear Sphinx index files, generate configuration file, start Sphinx, repopulate all data.'
   task :regenerate do
-    on roles fetch(:thinking_sphinx_options) do
+    on roles fetch(:thinking_sphinx_roles) do
       within current_path do
-        with rails_env: fetch(:stage) do
+        with rails_env: fetch(:thinking_sphinx_rails_env) do
           execute :rake, 'ts:regenerate'
         end
       end
@@ -34,7 +35,7 @@ if you alter the structure of your indexes.
   task :index do
     on roles fetch(:thinking_sphinx_roles) do
       within current_path do
-        with rails_env: fetch(:stage) do
+        with rails_env: fetch(:thinking_sphinx_rails_env) do
           execute :rake, 'ts:index'
         end
       end
@@ -43,9 +44,9 @@ if you alter the structure of your indexes.
 
   desc 'Generate Sphinx indexes into the shared path.'
   task :generate do
-    on roles fetch(:thinking_sphinx_options) do
+    on roles fetch(:thinking_sphinx_roles) do
       within current_path do
-        with rails_env: fetch(:stage) do
+        with rails_env: fetch(:thinking_sphinx_rails_env) do
           execute :rake, 'ts:generate'
         end
       end
@@ -56,7 +57,7 @@ if you alter the structure of your indexes.
   task :restart do
     on roles fetch(:thinking_sphinx_roles) do
       within current_path do
-        with rails_env: fetch(:stage) do
+        with rails_env: fetch(:thinking_sphinx_rails_env) do
           %w(stop configure start).each do |task|
             execute :rake, "ts:#{task}"
           end
@@ -69,7 +70,7 @@ if you alter the structure of your indexes.
   task :start do
     on roles fetch(:thinking_sphinx_roles) do
       within current_path do
-        with rails_env: fetch(:stage) do
+        with rails_env: fetch(:thinking_sphinx_rails_env) do
           execute :rake, 'ts:start'
         end
       end
@@ -81,7 +82,7 @@ if you alter the structure of your indexes.
   task :configure do
     on roles fetch(:thinking_sphinx_roles) do
       within current_path do
-        with rails_env: fetch(:stage) do
+        with rails_env: fetch(:thinking_sphinx_rails_env) do
           execute :rake, 'ts:configure'
         end
       end
@@ -92,7 +93,7 @@ if you alter the structure of your indexes.
   task :stop do
     on roles fetch(:thinking_sphinx_roles) do
       within current_path do
-        with rails_env: fetch(:stage) do
+        with rails_env: fetch(:thinking_sphinx_rails_env) do
           execute :rake, 'ts:stop'
         end
       end

@@ -30,10 +30,16 @@ describe 'Searching by latitude and longitude', :live => true do
     index
 
     cities = City.search(:geo => [-0.616241, 2.602712], :order => 'geodist ASC')
+    if ENV['SPHINX_VERSION'].try :[], /2.2.\d/
+      expected = {:mysql => 249907.171875, :postgresql => 249912.03125}
+    else
+      expected = {:mysql => 250326.906250, :postgresql => 250331.234375}
+    end
+
     if ActiveRecord::Base.configurations['test']['adapter'][/postgres/]
-      cities.first.geodist.should == 250331.234375
+      cities.first.geodist.should == expected[:postgresql]
     else # mysql
-      cities.first.geodist.should == 250326.906250
+      cities.first.geodist.should == expected[:mysql]
     end
   end
 

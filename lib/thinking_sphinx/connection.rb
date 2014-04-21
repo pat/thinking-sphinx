@@ -12,7 +12,7 @@ module ThinkingSphinx::Connection
       :reconnect => true
     }.merge(configuration.settings['connection_options'] || {})
 
-    connection_class.new address, options[:port], options
+    connection_class.new options
   end
 
   def self.connection_class
@@ -85,7 +85,8 @@ module ThinkingSphinx::Connection
     def query(*statements)
       results_for *statements
     rescue => error
-      wrapper           = ThinkingSphinx::QueryExecutionError.new error.message
+      message           = "#{error.message} - #{statements.join('; ')}"
+      wrapper           = ThinkingSphinx::QueryExecutionError.new message
       wrapper.statement = statements.join('; ')
       raise wrapper
     ensure
@@ -94,8 +95,8 @@ module ThinkingSphinx::Connection
   end
 
   class MRI < Client
-    def initialize(address, port, options)
-      @address, @port, @options = address, port, options
+    def initialize(options)
+      @options = options
     end
 
     def base_error
@@ -104,12 +105,10 @@ module ThinkingSphinx::Connection
 
     private
 
-    attr_reader :address, :port, :options
+    attr_reader :options
 
     def client
       @client ||= Mysql2::Client.new({
-        :host  => address,
-        :port  => port,
         :flags => Mysql2::Client::MULTI_STATEMENTS
       }.merge(options))
     rescue base_error => error
@@ -126,8 +125,8 @@ module ThinkingSphinx::Connection
   class JRuby < Client
     attr_reader :address, :options
 
-    def initialize(address, port, options)
-      @address = "jdbc:mysql://#{address}:#{port}?allowMultiQueries=true"
+    def initialize(options)
+      @address = "jdbc:mysql://#{options[:host]}:#{options[:port]}/?allowMultiQueries=true"
       @options = options
     end
 

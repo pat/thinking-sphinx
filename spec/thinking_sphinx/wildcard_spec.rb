@@ -1,3 +1,4 @@
+# encoding: utf-8
 module ThinkingSphinx; end
 
 require './lib/thinking_sphinx/wildcard'
@@ -36,6 +37,10 @@ describe ThinkingSphinx::Wildcard do
 
     it "handles nil queries" do
       ThinkingSphinx::Wildcard.call(nil).should == ''
+    end
+
+    it "handles unicode values" do
+      ThinkingSphinx::Wildcard.call('älytön').should == '*älytön*'
     end
   end
 end

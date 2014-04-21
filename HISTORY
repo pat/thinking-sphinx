@@ -1,3 +1,30 @@
+2014-04-22: 3.1.1
+* [CHANGE] Include full statements when query execution errors are raised (uglier, but more useful when debugging).
+* [FEATURE] Allow for common section in generated Sphinx configuration files for Sphinx 2.2.x (disabled by default, though) (Trevor Smith).
+* [FEATURE] Basic support for HABTM associations and MVAs with query/ranged-query sources.
+* [CHANGE] Connection error messages now mention Sphinx, instead of just MySQL.
+* [FIX] Don't apply attribute-only updates to real-time indices.
+* [FIX] Don't instantiate blank strings (via inheritance type columns) as constants.
+* [FIX] Don't presume all indices for a model have delta pairs, even if one does.
+* [CHANGE] Raise an exception when a referenced column does not exist.
+* [CHANGE] Capistrano tasks use thinking_sphinx_rails_env (defaults to standard environment) (Robert Coleman).
+* [FIX] Always use connection options for connection information.
+* [FIX] respond_to? works reliably with masks (Konstantin Burnaev).
+* [FEATURE] Real-time indices callbacks can be disabled (useful for unit tests).
+* [FEATURE] ThinkingSphinx::Test has a clear method and no-index option for starting for real-time setups.
+* [FIX] Avoid null values in MVA query/ranged-query sources.
+* [CHANGE] Alias group and count columns for easier referencing in other clauses.
+* [FEATURE] Allow disabling of distributed indices.
+* [FIX] Don't send unicode null characters to real-time Sphinx indices.
+* [FIX] :populate option is now respected for single-model searches.
+* [FIX] :thinking_sphinx_roles is now used consistently in Capistrano v3 tasks.
+* [CHANGE] Log real-time index updates (Demian Ferreiro).
+* [FIX] Only expand log directory if it exists.
+* [FIX] Handle JDBC connection errors appropriately (Adam Hutchison).
+* [FIX] Fixing wildcarding of Unicode strings.
+* [CHANGE] All indices now respond to a public attributes method.
+* [FIX] Improved handling of association searches with real-time indices, including via has_many :though associations (Rob Anderton).
+
 2014-01-11: 3.1.0
 * [CHANGE] Updating Riddle requirement to >= 1.5.10.
 * [CHANGE] Extracting join generation into its own gem: Joiner.

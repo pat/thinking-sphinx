@@ -5,7 +5,7 @@ class ThinkingSphinx::Middlewares::Inquirer <
     @contexts = contexts
     @batch    = nil
 
-    contexts.first.log :query, combined_queries do
+    ThinkingSphinx::Logger.log :query, combined_queries do
       batch.results
     end
 
@@ -52,7 +52,7 @@ class ThinkingSphinx::Middlewares::Inquirer <
       }
 
       total = context[:meta]['total_found']
-      context.log :message, "Found #{total} result#{'s' unless total == 1}"
+      ThinkingSphinx::Logger.log :message, "Found #{total} result#{'s' unless total == 1}"
     end
 
     private

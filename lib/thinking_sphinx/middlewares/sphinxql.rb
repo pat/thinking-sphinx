@@ -65,7 +65,8 @@ class ThinkingSphinx::Middlewares::SphinxQL <
     end
 
     def constantize_inheritance_column(klass)
-      klass.connection.select_values(inheritance_column_select(klass)).compact.each(&:constantize)
+      values = klass.connection.select_values inheritance_column_select(klass)
+      values.reject(&:blank?).each(&:constantize)
     end
 
     def descendants
@@ -155,7 +156,10 @@ SQL
     end
 
     def values
-      options[:select] ||= "*, #{ThinkingSphinx::SphinxQL.group_by}, #{ThinkingSphinx::SphinxQL.count}" if group_attribute.present?
+      options[:select] ||= ['*',
+        "#{ThinkingSphinx::SphinxQL.group_by} as sphinx_internal_group",
+        "#{ThinkingSphinx::SphinxQL.count} as sphinx_internal_count"
+      ].join(', ') if group_attribute.present?
       options[:select]
     end
 
