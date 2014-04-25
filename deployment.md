@@ -27,13 +27,14 @@ production:
   pid_file: /path/to/app/shared/tmp/searchd.pid
   indices_location: /path/to/app/shared/db/sphinx
   configuration_file: /path/to/app/shared/production.sphinx.conf
+  binlog_path: /path/to/app/shared/binlog
 {% endhighlight %}
 
-Please make sure all of the above files (configuration file, pid file, index files) are located in a **shared directory** (instead of a directory tied to a specific deployed release). Otherwise, running rake tasks will become difficult and unreliable.
+Please make sure all of the above files (configuration file, pid file, index files, binlog path) are located in a **shared directory** (instead of a directory tied to a specific deployed release). Otherwise, running rake tasks will become difficult and unreliable.
 
 <div class="note">
   <p class="old">Thinking Sphinx v1/v2</p>
-  <p><strong>Note</strong>: If you are using an older version of Thinking Sphinx, then the file is <code>config/sphinx.yml</code>, and the second setting is <code>searchd_file_path</code> (and the third can be skipped):</p>
+  <p><strong>Note</strong>: If you are using an older version of Thinking Sphinx, then the file is <code>config/sphinx.yml</code>, and the second setting is <code>searchd_file_path</code> (and the third and fourth can be skipped):</p>
 
 {% highlight yaml %}
 production:
