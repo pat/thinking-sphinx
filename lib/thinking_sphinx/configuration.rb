@@ -1,7 +1,7 @@
 require 'pathname'
 
 class ThinkingSphinx::Configuration < Riddle::Configuration
-  attr_accessor :configuration_file, :indices_location, :version
+  attr_accessor :configuration_file, :indices_location, :on_indexer_error, :version
   attr_reader :index_paths
   attr_writer :controller
 
@@ -149,6 +149,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     @indices_location = settings['indices_location'] || framework_root.join(
       'db', 'sphinx', environment
     ).to_s
+    @on_indexer_error = settings['on_indexer_error']
     @version = settings['version'] || '2.1.4'
 
     if settings['common_sphinx_configuration']
