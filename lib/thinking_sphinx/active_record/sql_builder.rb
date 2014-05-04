@@ -34,7 +34,7 @@ module ThinkingSphinx
 
       delegate :adapter, :model, :delta_processor, :to => :source
       delegate :convert_nulls, :time_zone_query_pre, :utf8_query_pre,
-        :to => :adapter
+        :cast_to_bigint, :to => :adapter
 
       def query
         Query.new(self)
@@ -76,9 +76,17 @@ module ThinkingSphinx
         ('SQL_NO_CACHE ' if source.type == 'mysql').to_s
       end
 
+      def big_document_ids?
+        source.options[:big_document_ids] || config.settings['big_document_ids']
+      end
+
       def document_id
         quoted_alias = quote_column source.primary_key
-        "#{quoted_primary_key} * #{config.indices.count} + #{source.offset} AS #{quoted_alias}"
+        column = quoted_primary_key
+        column = cast_to_bigint column if big_document_ids?
+        column = "#{column} * #{config.indices.count} + #{source.offset}"
+
+        "#{column} AS #{quoted_alias}"
       end
 
       def reversed_document_id
