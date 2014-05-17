@@ -73,6 +73,13 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters do
         adapter_type_for(model).should == :postgresql
     end
 
+    it "translates a PostGIS adapter to PostgreSQL" do
+      klass.stub(:name => 'ActiveRecord::ConnectionAdapters::PostGISAdapter::MainAdapter')
+
+      ThinkingSphinx::ActiveRecord::DatabaseAdapters.
+        adapter_type_for(model).should == :postgresql
+    end
+
     it "translates a JDBC MySQL adapter to MySQL" do
       klass.stub(:name => 'ActiveRecord::ConnectionAdapters::JdbcAdapter')
       connection.stub(:config => {:adapter => 'jdbcmysql'})
