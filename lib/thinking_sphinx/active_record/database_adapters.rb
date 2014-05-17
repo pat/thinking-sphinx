@@ -25,6 +25,8 @@ module ThinkingSphinx::ActiveRecord::DatabaseAdapters
         :mysql
       when 'PostgreSQLAdapter'
         :postgresql
+      when 'MainAdapter'
+        class_name.split('::')[-2] == 'PostGISAdapter' ? :postgresql : class_name
       when 'JdbcAdapter'
         adapter_type_for_jdbc(model)
       else
