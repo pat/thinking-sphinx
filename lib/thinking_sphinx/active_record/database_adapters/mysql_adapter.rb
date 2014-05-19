@@ -30,7 +30,11 @@ class ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter <
   end
 
   def time_zone_query_pre
-    ["SET TIME_ZONE = '+0:00'"]
+    if ThinkingSphinx::Configuration.instance.settings['time_zone'].blank?
+      ["SET TIME_ZONE = '+0:00'"]
+    else
+      ["SET TIME_ZONE = '#{ThinkingSphinx::Configuration.instance.settings['time_zone']}'"]
+    end
   end
 
   def utf8_query_pre
