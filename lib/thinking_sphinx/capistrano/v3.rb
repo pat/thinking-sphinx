@@ -1,7 +1,7 @@
 namespace :load do
   task :defaults do
     set :thinking_sphinx_roles, :db
-    set :thinking_sphinx_rails_env, -> { fetch(:stage) }
+    set :thinking_sphinx_rails_env, -> { fetch(:rails_env) || fetch(:stage) }
   end
 end
 
