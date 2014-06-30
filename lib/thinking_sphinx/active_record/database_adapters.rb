@@ -11,6 +11,8 @@ module ThinkingSphinx::ActiveRecord::DatabaseAdapters
         MySQLAdapter
       when :postgresql
         PostgreSQLAdapter
+      when :postgis
+        PostgreSQLAdapter
       else
         raise "Invalid Database Adapter '#{adapter}': Thinking Sphinx only supports MySQL and PostgreSQL."
       end
