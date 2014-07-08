@@ -38,11 +38,13 @@ class ThinkingSphinx::Deletion
 
   class PlainDeletion < ThinkingSphinx::Deletion
     def perform
-      execute <<-SQL
+      document_ids_for_keys.each_slice(1000) do |document_ids|
+        execute <<-SQL
 UPDATE #{name}
 SET sphinx_deleted = 1
-WHERE id IN (#{document_ids_for_keys.join(', ')})
-      SQL
+WHERE id IN (#{document_ids.join(', ')})
+        SQL
+      end
     end
   end
 end
