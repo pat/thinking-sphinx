@@ -23,6 +23,10 @@ describe ThinkingSphinx::ActiveRecord::Polymorpher do
       ThinkingSphinx::ActiveRecord::FilteredReflection.
         stub(:clone_with_filter).
         and_return(article_reflection, animal_reflection)
+
+      if ActiveRecord::Reflection.respond_to?(:add_reflection)
+        ActiveRecord::Reflection.stub :add_reflection
+      end
     end
 
     it "creates a new reflection for each class" do
@@ -42,10 +46,19 @@ describe ThinkingSphinx::ActiveRecord::Polymorpher do
     end
 
     it "adds the new reflections to the end-of-stack model" do
-      polymorpher.morph!
+      if ActiveRecord::Reflection.respond_to?(:add_reflection)
+        ActiveRecord::Reflection.should_receive(:add_reflection).
+          with(model, :foo_article, article_reflection)
+        ActiveRecord::Reflection.should_receive(:add_reflection).
+          with(model, :foo_animal, animal_reflection)
 
-      model.reflections[:foo_article].should == article_reflection
-      model.reflections[:foo_animal].should  == animal_reflection
+        polymorpher.morph!
+      else
+        polymorpher.morph!
+
+        expect(model.reflections[:foo_article]).to eq(article_reflection)
+        expect(model.reflections[:foo_animal]).to eq(animal_reflection)
+      end
     end
 
     it "rebases each field" do
