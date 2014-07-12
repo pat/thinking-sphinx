@@ -57,7 +57,7 @@ describe 'specifying SQL for index definitions' do
     index.render
 
     query = index.sources.first.sql_query
-    query.should match(/GROUP BY .articles.\..id., .articles.\..title., .articles.\..id., lat/)
+    query.should match(/GROUP BY .articles.\..id., .?articles.?\..title., .?articles.?\..id., lat/)
   end
 
   it "handles WHERE clauses" do
