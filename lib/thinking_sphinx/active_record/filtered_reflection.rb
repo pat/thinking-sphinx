@@ -37,6 +37,10 @@ class ThinkingSphinx::ActiveRecord::FilteredReflection <
     end
 
     def scope
+      if ::Joiner::Joins.instance_methods.include?(:join_association_class)
+        return nil
+      end
+
       lambda { |association|
         reflection = association.reflection
         where(
