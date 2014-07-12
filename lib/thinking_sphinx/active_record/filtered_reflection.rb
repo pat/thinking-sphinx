@@ -17,7 +17,10 @@ class ThinkingSphinx::ActiveRecord::FilteredReflection <
       @options[:foreign_key] ||= "#{reflection.name}_id"
       @options[:foreign_type]  = reflection.foreign_type
 
-      return @options if reflection.respond_to?(:scope)
+      if reflection.respond_to?(:scope)
+        @options[:sphinx_internal_filtered] = true
+        return @options
+      end
 
       case @options[:conditions]
       when nil
