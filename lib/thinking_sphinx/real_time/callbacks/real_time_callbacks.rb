@@ -1,6 +1,6 @@
 class ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks
-  def initialize(reference, path = [])
-    @reference, @path = reference, path
+  def initialize(reference, path = [], &block)
+    @reference, @path, @block = reference, path, block
   end
 
   def after_save(instance)
@@ -15,7 +15,7 @@ class ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks
 
   private
 
-  attr_reader :reference, :path
+  attr_reader :reference, :path, :block
 
   def callbacks_enabled?
     setting = configuration.settings['real_time_callbacks']
@@ -31,7 +31,13 @@ class ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks
   end
 
   def objects_for(instance)
-    Array(path.inject(instance) { |object, method| object.send method })
+    if block
+      results = block.call instance
+    else
+      results = path.inject(instance) { |object, method| object.send method }
+    end
+
+    Array results
   end
 
   def real_time_indices?

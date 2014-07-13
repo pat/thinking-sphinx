@@ -3,8 +3,8 @@ module ThinkingSphinx::RealTime
     #
   end
 
-  def self.callback_for(reference, path = [])
-    Callbacks::RealTimeCallbacks.new reference, path
+  def self.callback_for(reference, path = [], &block)
+    Callbacks::RealTimeCallbacks.new reference, path, &block
   end
 end
 
