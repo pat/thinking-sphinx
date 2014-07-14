@@ -267,6 +267,8 @@ It's important to note that you'll want to include all existing attribute values
 
 Also for those using pre-v3 versions of Thinking Sphinx, the `:select` option should be `:sphinx_select`.
 
+Finally: if you've given your attributes aliases (using the `:as` option in your index definition), then you must refer to those attributes by their aliases, not the original database columns. This applies generally to anything using those attributes (filtering, ordering, facets, etc).
+
 For further reading, I recommend Sphinx's documentation on both [the select option](http://sphinxsearch.com/docs/manual-0.9.9.html#api-func-setselect) and [expression syntax](http://sphinxsearch.com/docs/manual-0.9.9.html#sort-expr).
 
 <h3 id="exceptions">Catching Exceptions when Searching</h3>
