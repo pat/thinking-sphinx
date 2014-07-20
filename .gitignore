@@ -6,7 +6,8 @@ Gemfile.lock
 pkg/*
 spec/internal/config/test.sphinx.conf
 spec/internal/db/sphinx
+spec/internal/log/*.log
 !spec/internal/tmp/.gitkeep
 spec/internal/tmp/*
-!spec/internal/tmp/.gitkeep
+tmp
 _site

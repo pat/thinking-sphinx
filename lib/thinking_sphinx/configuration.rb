@@ -27,7 +27,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 
   def controller
     @controller ||= begin
-      rc = Riddle::Controller.new self, configuration_file
+      rc = ThinkingSphinx::Controller.new self, configuration_file
       rc.bin_path = bin_path.gsub(/([^\/])$/, '\1/') if bin_path.present?
       rc
     end
@@ -50,8 +50,9 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def engine_indice_paths
-    Rails::Engine::Railties.engines.collect do |engine|
-      engine.paths['app/indices'].existent if engine.paths['app/indices']
+    Rails::Engine.subclasses.collect(&:instance).collect do |engine|
+      engine.paths.add 'app/indices' unless engine.paths['app/indices']
+      engine.paths['app/indices'].existent
     end
   end
 
@@ -71,6 +72,10 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
       Dir["#{path}/**/*.rb"].sort.each do |file|
         ActiveSupport::Dependencies.require_or_load file
       end
+    end
+
+    if settings['distributed_indices'].nil? || settings['distributed_indices']
+      ThinkingSphinx::Configuration::DistributedIndices.new(indices).reconcile
     end
 
     @preloaded_indices = true
@@ -104,6 +109,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     searchd.address = settings['address'].presence || Defaults::ADDRESS
     searchd.mysql41 = settings['mysql41'] || settings['port'] || Defaults::PORT
     searchd.workers = 'threads'
+    searchd.mysql_version_string = '5.5.21' if RUBY_PLATFORM == 'java'
   end
 
   def configure_searchd_log_files
@@ -113,11 +119,16 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def log_root
-    framework_root.join('log').realpath
+    real_path 'log'
   end
 
   def framework_root
     Pathname.new(framework.root)
+  end
+
+  def real_path(*arguments)
+    path = framework_root.join(*arguments)
+    path.exist? ? path.realpath : path
   end
 
   def settings_to_hash
@@ -138,7 +149,12 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     @indices_location = settings['indices_location'] || framework_root.join(
       'db', 'sphinx', environment
     ).to_s
-    @version = settings['version'] || '2.0.6'
+    @version = settings['version'] || '2.1.4'
+
+    if settings['common_sphinx_configuration']
+      common.common_sphinx_configuration  = true
+      indexer.common_sphinx_configuration = true
+    end
 
     configure_searchd
 
@@ -148,12 +164,17 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def tmp_path
-    path = framework_root.join('tmp')
-    File.exists?(path) ? path.realpath : path
+    real_path 'tmp'
+  end
+
+  def sphinx_sections
+    sections = [indexer, searchd]
+    sections.unshift common if settings['common_sphinx_configuration']
+    sections
   end
 
   def apply_sphinx_settings!
-    [indexer, searchd].each do |object|
+    sphinx_sections.each do |object|
       settings.each do |key, value|
         next unless object.class.settings.include?(key.to_sym)
 
@@ -165,4 +186,5 @@ end
 
 require 'thinking_sphinx/configuration/consistent_ids'
 require 'thinking_sphinx/configuration/defaults'
+require 'thinking_sphinx/configuration/distributed_indices'
 require 'thinking_sphinx/configuration/minimum_fields'

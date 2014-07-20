@@ -5,17 +5,16 @@ class ThinkingSphinx::ActiveRecord::AssociationProxy::AttributeFinder
 
   def attribute
     attributes.detect { |attribute|
-      # Don't bother with attributes built from multiple columns
-      next if attribute.columns.many?
-
-      attribute.columns.first.__name == foreign_key.to_sym ||
-      attribute.name == foreign_key.to_s
+      ThinkingSphinx::ActiveRecord::AssociationProxy::AttributeMatcher.new(
+        attribute, foreign_key
+      ).matches?
     } or raise "Missing Attribute for Foreign Key #{foreign_key}"
   end
 
   private
+
   def attributes
-    sources.collect(&:attributes).flatten
+    indices.collect(&:attributes).flatten
   end
 
   def configuration
@@ -31,7 +30,7 @@ class ThinkingSphinx::ActiveRecord::AssociationProxy::AttributeFinder
       configuration.preload_indices
       configuration.indices_for_references(
         *@association.klass.name.underscore.to_sym
-      )
+      ).reject &:distributed?
     end
   end
 
@@ -39,9 +38,5 @@ class ThinkingSphinx::ActiveRecord::AssociationProxy::AttributeFinder
     target = @association.reflection
     target = target.through_reflection if target.through_reflection
     target
-  end
-
-  def sources
-    indices.collect(&:sources).flatten
   end
 end

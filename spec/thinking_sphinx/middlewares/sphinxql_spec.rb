@@ -6,6 +6,9 @@ module ActiveRecord
   class Base; end
 end
 
+class SphinxQLSubclass
+end
+
 require 'active_support/core_ext/module/attribute_accessors'
 require 'active_support/core_ext/module/delegation'
 require 'active_support/core_ext/object/blank'
@@ -23,7 +26,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
     :offset => 0, :per_page => 5) }
   let(:index_set)     { [double(:name => 'article_core', :options => {})] }
   let(:sphinx_sql)    { double('sphinx_sql', :from => true, :offset => true,
-    :limit => true, :where => true, :matching => true) }
+    :limit => true, :where => true, :matching => true, :values => true) }
   let(:query)         { double('query') }
   let(:configuration) { double('configuration', :settings => {}) }
 
@@ -185,6 +188,28 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       middleware.call [context]
     end
 
+    it "ignores blank subclasses" do
+      db_connection = double('db connection', :select_values => [''],
+        :schema_cache => double('cache', :table_exists? => false))
+      supermodel = Class.new(ActiveRecord::Base) do
+        def self.name; 'Cat'; end
+        def self.inheritance_column; 'type'; end
+      end
+      supermodel.stub :connection => db_connection, :column_names => ['type']
+      submodel   = Class.new(supermodel) do
+        def self.name; 'Lion'; end
+        def self.inheritance_column; 'type'; end
+        def self.table_name; 'cats'; end
+      end
+      submodel.stub :connection => db_connection, :column_names => ['type'],
+        :descendants => []
+      index_set.first.stub :reference => :cat
+
+      search.options[:classes] = [submodel]
+
+      expect { middleware.call [context] }.to_not raise_error
+    end
+
     it "filters out deleted values by default" do
       sphinx_sql.should_receive(:where).with(:sphinx_deleted => false).
         and_return(sphinx_sql)
@@ -297,6 +322,22 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
 
       sphinx_sql.should_receive(:values).with('foo as bar').
         and_return(sphinx_sql)
+
+      middleware.call [context]
+    end
+
+    it "adds the provided group-best count" do
+      search.options[:group_best] = 5
+
+      sphinx_sql.should_receive(:group_best).with(5).and_return(sphinx_sql)
+
+      middleware.call [context]
+    end
+
+    it "adds the provided having clause" do
+      search.options[:having] = 'foo > 1'
+
+      sphinx_sql.should_receive(:having).with('foo > 1').and_return(sphinx_sql)
 
       middleware.call [context]
     end

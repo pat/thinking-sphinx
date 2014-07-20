@@ -75,6 +75,7 @@ class ThinkingSphinx::Middlewares::ActiveRecordTranslator <
         relation = relation.accessible_by(context.search.options[:current_ability])
       end
 
+      relation = relation.group  sql_options[:group]  if sql_options[:group]
       relation
     end
 

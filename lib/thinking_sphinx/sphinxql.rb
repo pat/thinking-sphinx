@@ -13,5 +13,5 @@ module ThinkingSphinx::SphinxQL
     self.count    = '@count'
   end
 
-  self.variables!
+  self.functions!
 end

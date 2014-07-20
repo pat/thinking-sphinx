@@ -83,10 +83,6 @@ class ThinkingSphinx::Search < Array
     context[:raw]
   end
 
-  def respond_to?(method, include_private = false)
-    super || context[:results].respond_to?(method, include_private)
-  end
-
   def to_a
     populate
     context[:results].collect { |result|
@@ -105,6 +101,10 @@ class ThinkingSphinx::Search < Array
     @mask_stack ||= masks.collect { |klass| klass.new self }
   end
 
+  def masks_respond_to?(method)
+    mask_stack.any? { |mask| mask.can_handle? method }
+  end
+
   def method_missing(method, *args, &block)
     mask_stack.each do |mask|
       return mask.send(method, *args, &block) if mask.can_handle?(method)
@@ -115,8 +115,18 @@ class ThinkingSphinx::Search < Array
     context[:results].send(method, *args, &block)
   end
 
+  def respond_to_missing?(method, include_private = false)
+    super ||
+      masks_respond_to?(method) ||
+      results_respond_to?(method, include_private)
+  end
+
   def middleware
     @options[:middleware] || default_middleware
+  end
+
+  def results_respond_to?(method, include_private = true)
+    context[:results].respond_to?(method, include_private)
   end
 end
 

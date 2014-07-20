@@ -1,6 +1,7 @@
 if RUBY_PLATFORM == 'java'
   require 'java'
   require 'jdbc/mysql'
+  Jdbc::MySQL.load_driver
 else
   require 'mysql2'
 end
@@ -46,6 +47,7 @@ require 'thinking_sphinx/callbacks'
 require 'thinking_sphinx/core'
 require 'thinking_sphinx/configuration'
 require 'thinking_sphinx/connection'
+require 'thinking_sphinx/controller'
 require 'thinking_sphinx/deletion'
 require 'thinking_sphinx/errors'
 require 'thinking_sphinx/excerpter'
@@ -58,6 +60,7 @@ require 'thinking_sphinx/index_set'
 require 'thinking_sphinx/masks'
 require 'thinking_sphinx/middlewares'
 require 'thinking_sphinx/panes'
+require 'thinking_sphinx/query'
 require 'thinking_sphinx/rake_interface'
 require 'thinking_sphinx/scopes'
 require 'thinking_sphinx/search'
@@ -65,9 +68,12 @@ require 'thinking_sphinx/sphinxql'
 require 'thinking_sphinx/subscribers/populator_subscriber'
 require 'thinking_sphinx/test'
 require 'thinking_sphinx/utf8'
+require 'thinking_sphinx/wildcard'
 # Extended
 require 'thinking_sphinx/active_record'
 require 'thinking_sphinx/deltas'
+require 'thinking_sphinx/distributed'
+require 'thinking_sphinx/logger'
 require 'thinking_sphinx/real_time'
 
 require 'thinking_sphinx/railtie' if defined?(Rails)

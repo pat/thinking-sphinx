@@ -1,7 +1,7 @@
 class ThinkingSphinx::ActiveRecord::Property
   include ThinkingSphinx::Core::Property
 
-  attr_reader :columns, :options
+  attr_reader :model, :columns, :options
 
   def initialize(model, columns, options = {})
     @model, @options = model, options

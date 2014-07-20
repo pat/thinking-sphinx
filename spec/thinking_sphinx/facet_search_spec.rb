@@ -1,7 +1,4 @@
-module ThinkingSphinx; end
-
-require 'thinking_sphinx/facet_search'
-require 'thinking_sphinx/facet'
+require 'spec_helper'
 
 describe ThinkingSphinx::FacetSearch do
   let(:facet_search)  { ThinkingSphinx::FacetSearch.new '', {} }
@@ -29,12 +26,12 @@ describe ThinkingSphinx::FacetSearch do
   DumbSearch = ::Struct.new(:query, :options) do
     def raw
       [{
-        'sphinx_internal_class'           => 'Foo',
-        'price_bracket'                   => 3,
-        'tag_ids'                         => '1,2',
-        'category_id'                     => 11,
-        ThinkingSphinx::SphinxQL.count    => 5,
-        ThinkingSphinx::SphinxQL.group_by => 2
+        'sphinx_internal_class' => 'Foo',
+        'price_bracket'         => 3,
+        'tag_ids'               => '1,2',
+        'category_id'           => 11,
+        'sphinx_internal_count' => 5,
+        'sphinx_internal_group' => 2
       }]
     end
   end
@@ -117,6 +114,18 @@ describe ThinkingSphinx::FacetSearch do
         batch.searches.each { |search|
           search.options[setting].should == 42
         }
+      end
+
+      it "allows separate #{setting} and max_matches settings to support pagination" do
+        configuration.settings['max_matches'] = 500
+        facet_search = ThinkingSphinx::FacetSearch.new '', {setting => 10}
+
+        facet_search.populate
+
+        batch.searches.each do |search|
+          search.options[setting].should == 10
+          search.options[:max_matches].should == 500
+        end
       end
     end
   end

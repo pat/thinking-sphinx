@@ -4,10 +4,13 @@ module SphinxHelpers
   end
 
   def index(*indices)
+    sleep 0.5 if ENV['TRAVIS']
+
     yield if block_given?
 
     sphinx.index *indices
     sleep 0.25
+    sleep 0.5 if ENV['TRAVIS']
   end
 end
 

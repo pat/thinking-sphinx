@@ -24,6 +24,12 @@ module ThinkingSphinx
         query.to_query
       end
 
+      def sql_query_post_index
+        return [] unless delta_processor && !source.delta?
+
+        [delta_processor.reset_query]
+      end
+
       private
 
       delegate :adapter, :model, :delta_processor, :to => :source
@@ -47,7 +53,7 @@ module ThinkingSphinx
       end
 
       def associations
-        @associations ||= ThinkingSphinx::ActiveRecord::Associations.new(model).tap do |assocs|
+        @associations ||= Joiner::Joins.new(model).tap do |assocs|
           source.associations.reject(&:string?).each do |association|
             assocs.add_join_to association.stack
           end

@@ -52,4 +52,11 @@ describe 'Searching across STI models', :live => true do
 
     Bird.search(nil, :skip_sti => true, :classes=>[Bird, FlightlessBird]).to_a.should == [duck, emu]
   end
+
+  it 'finds root objects when type is blank' do
+    animal = Animal.create :name => 'Animal', type: ''
+    index
+
+    Animal.search.to_a.should == [animal]
+  end
 end

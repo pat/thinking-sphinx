@@ -1,3 +1,62 @@
+2014-04-22: 3.1.1
+* [CHANGE] Include full statements when query execution errors are raised (uglier, but more useful when debugging).
+* [FEATURE] Allow for common section in generated Sphinx configuration files for Sphinx 2.2.x (disabled by default, though) (Trevor Smith).
+* [FEATURE] Basic support for HABTM associations and MVAs with query/ranged-query sources.
+* [CHANGE] Connection error messages now mention Sphinx, instead of just MySQL.
+* [FIX] Don't apply attribute-only updates to real-time indices.
+* [FIX] Don't instantiate blank strings (via inheritance type columns) as constants.
+* [FIX] Don't presume all indices for a model have delta pairs, even if one does.
+* [CHANGE] Raise an exception when a referenced column does not exist.
+* [CHANGE] Capistrano tasks use thinking_sphinx_rails_env (defaults to standard environment) (Robert Coleman).
+* [FIX] Always use connection options for connection information.
+* [FIX] respond_to? works reliably with masks (Konstantin Burnaev).
+* [FEATURE] Real-time indices callbacks can be disabled (useful for unit tests).
+* [FEATURE] ThinkingSphinx::Test has a clear method and no-index option for starting for real-time setups.
+* [FIX] Avoid null values in MVA query/ranged-query sources.
+* [CHANGE] Alias group and count columns for easier referencing in other clauses.
+* [FEATURE] Allow disabling of distributed indices.
+* [FIX] Don't send unicode null characters to real-time Sphinx indices.
+* [FIX] :populate option is now respected for single-model searches.
+* [FIX] :thinking_sphinx_roles is now used consistently in Capistrano v3 tasks.
+* [CHANGE] Log real-time index updates (Demian Ferreiro).
+* [FIX] Only expand log directory if it exists.
+* [FIX] Handle JDBC connection errors appropriately (Adam Hutchison).
+* [FIX] Fixing wildcarding of Unicode strings.
+* [CHANGE] All indices now respond to a public attributes method.
+* [FIX] Improved handling of association searches with real-time indices, including via has_many :though associations (Rob Anderton).
+
+2014-01-11: 3.1.0
+* [CHANGE] Updating Riddle requirement to >= 1.5.10.
+* [CHANGE] Extracting join generation into its own gem: Joiner.
+* [FEATURE] Support for Capistrano v3 (Alexander Tipugin).
+* [FEATURE] JRuby support (with Sphinx 2.1 or newer).
+* [CHANGE] Geodist calculation is now prepended to the SELECT statement, so it can be referred to by other dynamic attributes.
+* [FIX] Indices will be detected in Rails engines upon configuration.
+* [FEATURE] Support for Sphinx 2.2.x's HAVING and GROUP N BY SphinxQL options.
+* [FEATURE] Adding max_predicted_time search option (Sphinx 2.2.x).
+* [FEATURE] Wildcard/starring can be applied directly to strings using ThinkingSphinx::Query.wildcard('pancakes'), and escaping via ThinkingSphinx::Query.escape('pancakes').
+* [CHANGE] Auto-wildcard/starring (via :star => true) now treats escaped characters as word separators.
+* [FEATURE] Capistrano recipe now includes tasks for realtime indices.
+* [CHANGE] Capistrano recipe no longer automatically adds thinking_sphinx:index and thinking_sphinx:start to be run after deploy:cold.
+* [CHANGE] UTF-8 forced encoding is now disabled by default (in line with Sphinx 2.1.x).
+* [CHANGE] Sphinx functions are now the default, instead of the legacy special variables (in line with Sphinx 2.1.x).
+* [CHANGE] Rails 3.1 is no longer supported.
+* [CHANGE] MRI 1.9.2 is no longer supported.
+* [FIX] Destroy callbacks are ignored for non-persisted objects.
+* [FEATURE] :group option within :sql options in a search call is passed through to the underlying ActiveRecord relation (Siarhei Hanchuk).
+* [FIX] Blank STI values are converted to the parent class in Sphinx index data (Jonathan Greenberg).
+* [CHANGE] Insist on at least * for SphinxQL SELECT statements.
+* [FIX] Track indices on parent STI models when marking documents as deleted.
+* [FEATURE] Persistent connections can be disabled if you wish.
+* [FIX] Separate per_page/max_matches values are respected in facet searches (Timo Virkkala).
+* [FIX] Don't split function calls when casting timestamps (Timo Virkalla).
+* [FEATURE] Track what's being indexed, and don't double-up while indexing is running. Single indices (e.g. deltas) can be processed while a full index is happening, though.
+* [FEATURE] Pass through :delta_options to delta processors (Timo Virkalla).
+* [FEATURE] All delta records can have their core pairs marked as deleted after a suspended delta (use ThinkingSphinx::Deltas.suspend_and_update instead of ThinkingSphinx::Deltas.suspend).
+* [CHANGE] Reset the delta column to true after core indexing is completed, instead of before, and don't filter out delta records from the core source.
+* [FEATURE] Set custom database settings within the index definition, using the set_database method. A more sane approach with multiple databases.
+* [CHANGE] Provide a distributed index per model that covers both core and delta indices.
+
 2013-10-20: 3.0.6
 * [FEATURE] Raise an error if no indices match the search criteria (Bryan Ricker).
 * [FEATURE] skip_time_zone setting is now available per environment via config/thinking_sphinx.yml to avoid the sql_query_pre time zone command.

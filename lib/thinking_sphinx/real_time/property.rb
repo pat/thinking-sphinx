@@ -17,6 +17,7 @@ class ThinkingSphinx::RealTime::Property
     return @column.__name unless @column.__name.is_a?(Symbol)
 
     base = @column.__stack.inject(object) { |base, node| base.try(node) }
-    base.try(@column.__name)
+    base = base.try(@column.__name)
+    base.is_a?(String) ? base.gsub("\u0000", '') : base
   end
 end

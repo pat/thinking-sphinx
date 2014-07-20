@@ -12,12 +12,16 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
     end
   end
 
+  def attributes
+    sources.collect(&:attributes).flatten
+  end
+
   def delta?
     @options[:delta?]
   end
 
   def delta_processor
-    @options[:delta_processor].try(:new, adapter)
+    @options[:delta_processor].try(:new, adapter, @options[:delta_options] || {})
   end
 
   def facets
@@ -40,10 +44,6 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
       adapter_for(model)
   end
 
-  def attributes
-    sources.collect(&:attributes).flatten
-  end
-
   def fields
     sources.collect(&:fields).flatten
   end
@@ -62,6 +62,7 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
       :offset          => offset,
       :delta?          => @options[:delta?],
       :delta_processor => @options[:delta_processor],
+      :delta_options   => @options[:delta_options],
       :primary_key     => @options[:primary_key] || model.primary_key || :id
     }
   end

@@ -1,10 +1,10 @@
 class ThinkingSphinx::Middlewares::SphinxQL <
   ThinkingSphinx::Middlewares::Middleware
 
-  SELECT_OPTIONS = [:ranker, :max_matches, :cutoff, :max_query_time,
-    :retry_count, :retry_delay, :field_weights, :index_weights, :reverse_scan,
-    :comment, :agent_query_timeout, :boolean_simplify, :global_idf, :idf,
-    :sort_method]
+  SELECT_OPTIONS = [:agent_query_timeout, :boolean_simplify, :comment, :cutoff,
+    :field_weights, :global_idf, :idf, :index_weights, :max_matches,
+    :max_query_time, :max_predicted_time, :ranker, :retry_count, :retry_delay,
+    :reverse_scan, :sort_method]
 
   def call(contexts)
     contexts.each do |context|
@@ -65,7 +65,8 @@ class ThinkingSphinx::Middlewares::SphinxQL <
     end
 
     def constantize_inheritance_column(klass)
-      klass.connection.select_values(inheritance_column_select(klass)).compact.each(&:constantize)
+      values = klass.connection.select_values inheritance_column_select(klass)
+      values.reject(&:blank?).each(&:constantize)
     end
 
     def descendants
@@ -155,7 +156,10 @@ SQL
     end
 
     def values
-      options[:select] ||= "*, #{ThinkingSphinx::SphinxQL.group_by}, #{ThinkingSphinx::SphinxQL.count}" if group_attribute.present?
+      options[:select] ||= ['*',
+        "#{ThinkingSphinx::SphinxQL.group_by} as sphinx_internal_group",
+        "#{ThinkingSphinx::SphinxQL.count} as sphinx_internal_count"
+      ].join(', ') if group_attribute.present?
       options[:select]
     end
 
@@ -197,7 +201,7 @@ SQL
       end
 
       def scope_by_values
-        query.values values if values.present?
+        query.values(values.present? ? values : '*')
       end
 
       def scope_by_extended_query
@@ -225,8 +229,10 @@ SQL
       end
 
       def scope_by_group
-        query.group_by group_attribute if group_attribute.present?
+        query.group_by group_attribute        if group_attribute.present?
+        query.group_best options[:group_best] if options[:group_best]
         query.order_within_group_by group_order_clause if group_order_clause.present?
+        query.having options[:having]         if options[:having]
       end
 
       def scope_by_pagination

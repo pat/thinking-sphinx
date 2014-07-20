@@ -40,6 +40,20 @@ class ThinkingSphinx::ActiveRecord::Attribute::Type
     end
   end
 
+  def big_integer?
+    database_column.type == :integer && database_column.sql_type[/bigint/i]
+  end
+
+  def column_name
+    attribute.columns.first.__name.to_s
+  end
+
+  def database_column
+    @database_column ||= klass.columns.detect { |db_column|
+      db_column.name == column_name
+    }
+  end
+
   def klass
     @klass ||= associations.any? ? associations.last.klass : model
   end
@@ -57,15 +71,12 @@ class ThinkingSphinx::ActiveRecord::Attribute::Type
   end
 
   def type_from_database
-    db_column = klass.columns.detect { |db_column|
-      db_column.name == attribute.columns.first.__name.to_s
-    }
+    raise ThinkingSphinx::MissingColumnError,
+      "column #{column_name} does not exist" if database_column.nil?
 
-    if db_column.type == :integer && db_column.sql_type[/bigint/i]
-      return :bigint
-    end
+    return :bigint if big_integer?
 
-    case db_column.type
+    case database_column.type
     when :datetime, :date
       :timestamp
     when :text
@@ -73,7 +84,7 @@ class ThinkingSphinx::ActiveRecord::Attribute::Type
     when :decimal
       :float
     else
-      db_column.type
+      database_column.type
     end
   end
 end
