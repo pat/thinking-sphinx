@@ -5,11 +5,6 @@ title: Delta Indexes
 
 ## Delta Indexes
 
-<div class="note">
-  <p class="old">Thinking Sphinx v1/v2</p>
-  <p><strong>Note</strong>: This page has not yet been updated with details for Thinking Sphinx v3.</p>
-</div>
-
 Sphinx has one major limitation when compared to a lot of other search services: you cannot update the fields a single document in an index, but have to re-process all the data for that index.
 
 The common approach around this issue, used by Thinking Sphinx, is the delta index - an index that tracks just the changed documents. Because this index is much smaller, it is super-fast to index.
@@ -17,7 +12,7 @@ The common approach around this issue, used by Thinking Sphinx, is the delta ind
 To set this up in your web application, you need to do **3** things:
 
 1. Add a delta column to your model
-2. Turn on delta indexing for the model
+2. Turn on delta indexing for the index
 3. Stop, re-index and restart Sphinx.
 
 The first item on the list can be done via a migration, perhaps looking something like the following:
@@ -32,10 +27,8 @@ end
 Turning on delta indexing is done within your model's define_index block:
 
 {% highlight ruby %}
-define_index do
+ThinkingSphinx::Index.define :article, :with => :active_record, :delta => true do
   # ...
-
-  set_property :delta => true
 end
 {% endhighlight %}
 
@@ -58,6 +51,11 @@ ThinkingSphinx.suppress_delta_output = true
 </div>
 
 ### Deltas and Associations
+
+<div class="note">
+  <p class="old">Thinking Sphinx v1/v2</p>
+  <p><strong>Note</strong>: This section has not yet been updated with details for Thinking Sphinx v3.</p>
+</div>
 
 If you are using associations for field or attribute data, delta indexing will not automatically happen when you make changes to those association models. You will need to add a manual delta hook to make it all update accordingly.
 
@@ -88,6 +86,11 @@ end
 One issue with the default delta approach, as outlined above, is that it creates a noticeable speed decrease on busy websites, because the delta indexing is run as part of each request that makes a change to the model records.
 
 #### Timestamp/Datetime Deltas
+
+<div class="note">
+  <p class="old">Thinking Sphinx v1/v2</p>
+  <p><strong>Note</strong>: This section has not yet been updated with details for Thinking Sphinx v3.</p>
+</div>
 
 There are two other delta approaches that Thinking Sphinx supports. The first is by using a timestamp column to track when changes have happened, and then run a rake task to index just those changes on a regular basis.
 
@@ -140,6 +143,11 @@ It's actually best to set the threshold a bit higher than the occurance of the r
 There is one caveat with this approach: it uses Sphinx's index merging feature, which some people have found to have issues. I'm not sure whether it is fine on some versions of Sphinx and not others, so confirming everything works nicely may involve some trial and error. Apparently the 0.9.8.1 version of Sphinx is more reliable than the initial 0.9.8 release.
 
 #### Delayed Deltas
+
+<div class="note">
+  <p class="old">Thinking Sphinx v1/v2</p>
+  <p><strong>Note</strong>: This section has not yet been updated with details for Thinking Sphinx v3.</p>
+</div>
 
 The more reliable option for smarter delta indexing is using the [Delayed Job](http://github.com/tobi/delayed_job) plugin, which queues up the index requests in a separate process (invoked by a constantly running rake task), instead of dealing with them during each web request. As mentioned earlier on this page, the process will need local disk access to the Sphinx indices (essentially, your DJ workers need to be run on the same machine as Sphinx).
 
