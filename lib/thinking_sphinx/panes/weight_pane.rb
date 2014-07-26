@@ -4,6 +4,6 @@ class ThinkingSphinx::Panes::WeightPane
   end
 
   def weight
-    @raw[ThinkingSphinx::SphinxQL.weight]
+    @raw[ThinkingSphinx::SphinxQL.weight[:column]]
   end
 end

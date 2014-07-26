@@ -102,8 +102,8 @@ class ThinkingSphinx::FacetSearch
   def options_for(facet)
     options.merge(
       :select      => [(options[:select] || '*'),
-        "#{ThinkingSphinx::SphinxQL.group_by} as sphinx_internal_group",
-        "#{ThinkingSphinx::SphinxQL.count} as sphinx_internal_count"
+        "#{ThinkingSphinx::SphinxQL.group_by[:select]}",
+        "#{ThinkingSphinx::SphinxQL.count[:select]}"
       ].join(', '),
       :group_by    => facet.name,
       :indices     => index_names_for(facet),
