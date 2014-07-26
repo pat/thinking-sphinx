@@ -8,7 +8,7 @@ module ThinkingSphinx::SphinxQL
       :column => 'sphinx_internal_group'
     }
     self.count    = {
-      :select => 'count(*) AS sphinx_internal_count',
+      :select => 'id AS sphinx_document_id, count(DISTINCT sphinx_document_id) AS sphinx_internal_count',
       :column => 'sphinx_internal_count'
     }
   end
