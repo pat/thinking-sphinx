@@ -135,35 +135,9 @@ Also, keep in mind that because the delta indexing requests are queued, they wil
 
 #### Timestamp/Datetime Deltas
 
-<div class="note">
-  <p class="old">Thinking Sphinx v1/v2</p>
-  <p><strong>Note</strong>: This section has not yet been updated with details for Thinking Sphinx v3.</p>
-</div>
-
 This approach is managed by using a timestamp column to track when changes have happened, and then run a rake task to index just those changes on a regular basis.
 
-This functionality is in a separate gem, so you'll need to install it:
-
-{% highlight sh %}
-gem install ts-datetime-delta
-{% endhighlight %}
-
-And then add the details to your `environment.rb` file:
-
-{% highlight ruby %}
-config.gem 'ts-datetime-delta',
-  :lib     => 'thinking_sphinx/deltas/datetime_delta',
-  :version => '1.0.2'
-{% endhighlight %}
-
-For those of you using Rails 3, then your Gemfile is the place for this information:
-
-{% highlight ruby %}
-gem 'ts-datetime-delta', '1.0.2',
-  :require => 'thinking_sphinx/deltas/datetime_delta'
-{% endhighlight %}
-
-And finally, make sure the rake tasks are available, by adding the following line to the end of your `Rakefile`:
+This functionality is in a separate gem `ts-datetime-delta`, so you'll need to install it/add it to your Gemfile. Then, make sure the rake tasks are available, by adding the following line to the end of your `Rakefile`:
 
 {% highlight ruby %}
 require 'thinking_sphinx/deltas/datetime_delta/tasks'
@@ -171,11 +145,22 @@ require 'thinking_sphinx/deltas/datetime_delta/tasks'
 
 As for your models, no delta column is required for this method, and enabling it is done by the following code in the define_index block:
 
-{% highlight ruby %}
+% highlight ruby %}
+# In Thinking Sphinx v3:
+ThinkingSphinx::Index.define(:book,
+  :with          => :active_record,
+  :delta         => ThinkingSphinx::Deltas::DatetimeDelta,
+  :delta_options => {:threshold => 1.hour}
+) do
+  # ...
+end
+
+# In Thinking Sphinx v1/v2:
 define_index do
   # ...
 
-  set_property :delta => :datetime, :threshold => 1.hour
+  set_property :delta => ThinkingSphinx::Deltas::DelayedDelta,
+    :threshold => 1.hour
 end
 {% endhighlight %}
 
@@ -188,4 +173,4 @@ rake ts:in:delta # shortcut
 
 It's actually best to set the threshold a bit higher than the occurance of the rake task (so in this example, maybe the threshold should be 75 minutes), because the indexing will take some time.
 
-There is one caveat with this approach: it uses Sphinx's index merging feature, which some people have found to have issues. I'm not sure whether it is fine on some versions of Sphinx and not others, so confirming everything works nicely may involve some trial and error. Apparently the 0.9.8.1 version of Sphinx is more reliable than the initial 0.9.8 release.
+There is one caveat with this approach: it uses Sphinx's index merging feature, which some people have found to have issues. I'm not sure whether it is fine on some versions of Sphinx and not others, so confirming everything works nicely may involve some trial and error. (From what I understand, reliability has improved since Sphinx v0.9.)
