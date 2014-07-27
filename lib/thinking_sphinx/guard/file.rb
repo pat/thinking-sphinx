@@ -6,23 +6,21 @@ class ThinkingSphinx::Guard::File
   end
 
   def lock
-    FileUtils.touch file_name
+    FileUtils.touch path
   end
 
   def locked?
-    File.exists? file_name
+    File.exists? path
   end
 
-  def unlock
-    FileUtils.rm file_name
-  end
-
-  private
-
-  def file_name
-    @file_name ||= File.join(
+  def path
+    @path ||= File.join(
       ThinkingSphinx::Configuration.instance.indices_location,
       "ts-#{name}.tmp"
     )
+  end
+
+  def unlock
+    FileUtils.rm path
   end
 end

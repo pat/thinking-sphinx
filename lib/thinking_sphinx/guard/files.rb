@@ -19,9 +19,17 @@ class ThinkingSphinx::Guard::Files
 
   attr_reader :names
 
+  def log_lock(file)
+    ThinkingSphinx::Logger.log :guard,
+      "Guard file for index #{file.name} exists, not indexing: #{file.path}."
+  end
+
   def unlocked
     @unlocked ||= names.collect { |name|
       ThinkingSphinx::Guard::File.new name
-    }.reject &:locked?
+    }.reject { |file|
+      log_lock file if file.locked?
+      file.locked?
+    }
   end
 end
