@@ -145,7 +145,7 @@ require 'thinking_sphinx/deltas/datetime_delta/tasks'
 
 As for your models, no delta column is required for this method, and enabling it is done by the following code in the define_index block:
 
-% highlight ruby %}
+{% highlight ruby %}
 # In Thinking Sphinx v3:
 ThinkingSphinx::Index.define(:book,
   :with          => :active_record,
