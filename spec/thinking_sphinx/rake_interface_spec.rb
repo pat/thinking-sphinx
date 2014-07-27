@@ -195,4 +195,26 @@ describe ThinkingSphinx::RakeInterface do
       interface.stop
     end
   end
+
+  describe '#status' do
+    let(:controller) { double('controller') }
+
+    it "reports when the daemon is running" do
+      controller.stub :running? => true
+
+      interface.should_receive(:puts).
+        with('The Sphinx daemon searchd is currently running.')
+
+      interface.status
+    end
+
+    it "reports when the daemon is not running" do
+      controller.stub :running? => false
+
+      interface.should_receive(:puts).
+        with('The Sphinx daemon searchd is not currently running.')
+
+      interface.status
+    end
+  end
 end

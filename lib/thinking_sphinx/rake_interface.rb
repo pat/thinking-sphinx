@@ -47,6 +47,14 @@ class ThinkingSphinx::RakeInterface
     end
   end
 
+  def status
+    if controller.running?
+      puts "The Sphinx daemon searchd is currently running."
+    else
+      puts "The Sphinx daemon searchd is not currently running."
+    end
+  end
+
   def stop
     unless controller.running?
       puts 'searchd is not currently running.' and return

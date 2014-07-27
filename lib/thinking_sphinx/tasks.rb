@@ -42,6 +42,11 @@ namespace :ts do
     interface.stop
   end
 
+  desc 'Determine whether Sphinx is running'
+  task :status => :environment do
+    interface.status
+  end
+
   def interface
     @interface ||= ThinkingSphinx::RakeInterface.new
   end
