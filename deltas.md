@@ -5,7 +5,7 @@ title: Delta Indexes
 
 ## Delta Indexes
 
-Sphinx has one major limitation when compared to a lot of other search services: you cannot update the fields a single document in an index, but have to re-process all the data for that index.
+Sphinx has one major limitation when compared to a lot of other search services: you cannot update the fields a single document in a SQL-backed index, but have to re-process all the data for that index.
 
 The common approach around this issue, used by Thinking Sphinx, is the delta index - an index that tracks just the changed documents. Because this index is much smaller, it is super-fast to index.
 
@@ -32,6 +32,11 @@ ThinkingSphinx::Index.define :article, :with => :active_record, :delta => true d
 end
 {% endhighlight %}
 
+<div class="note">
+  <p class="old">Thinking Sphinx v1/v2</p>
+  <p><strong>Note</strong>: For older versions of Thinking Sphinx, deltas are enabled by adding `set_property :delta => true` within the `define_index` block.</p>
+</div>
+
 And finally, we need to rebuild the Sphinx indexes, as we have changed the structure of our Sphinx index setup.
 
 {% highlight sh %}
@@ -40,7 +45,16 @@ rake ts:rebuild
 
 Turning on delta indexing does not remove the need for regularly running a full re-index, as otherwise the delta index itself will grow to become just as large as the core indexes, and this removes the advantage of keeping it separate. It also slows down your requests to your server that make changes to the model records.
 
-It's also worth noting that when each change happens, and the delta indexing is invoked, you will see the output from Sphinx's indexer tool either in your logs, or into your console. This serves as an indication that everything is working, but should you want to hide it, there's a global setting you can use in an initializer:
+It's also worth noting that when each change happens, and the delta indexing is invoked, you will see the output from Sphinx's indexer tool either in your logs, or into your console. This serves as an indication that everything is working, but should you want to hide it, there's a global setting you can use to enable/disable it.
+
+In Thinking Sphinx v3, you want to add a setting to the appropriate environments in `config/thinking_sphinx.yml`:
+
+{% highlight yaml %}
+production:
+  quiet_deltas: true
+{% endhighlight %}
+
+In Thinking Sphinx v1/v2, it belongs in an initializer:
 
 {% highlight rb %}
 ThinkingSphinx.suppress_delta_output = true
@@ -51,11 +65,6 @@ ThinkingSphinx.suppress_delta_output = true
 </div>
 
 ### Deltas and Associations
-
-<div class="note">
-  <p class="old">Thinking Sphinx v1/v2</p>
-  <p><strong>Note</strong>: This section has not yet been updated with details for Thinking Sphinx v3.</p>
-</div>
 
 If you are using associations for field or attribute data, delta indexing will not automatically happen when you make changes to those association models. You will need to add a manual delta hook to make it all update accordingly.
 
@@ -144,53 +153,26 @@ There is one caveat with this approach: it uses Sphinx's index merging feature, 
 
 #### Delayed Deltas
 
-<div class="note">
-  <p class="old">Thinking Sphinx v1/v2</p>
-  <p><strong>Note</strong>: This section has not yet been updated with details for Thinking Sphinx v3.</p>
-</div>
+The more reliable option for smarter delta indexing is using a background worker such as Delayed Job, Resque or Sidekiq, instead of dealing with them during each web request. As mentioned earlier on this page, the process will need local disk access to the Sphinx indices (essentially, your worker processes need to be run on the same machine as Sphinx).
 
-The more reliable option for smarter delta indexing is using the [Delayed Job](http://github.com/tobi/delayed_job) plugin, which queues up the index requests in a separate process (invoked by a constantly running rake task), instead of dealing with them during each web request. As mentioned earlier on this page, the process will need local disk access to the Sphinx indices (essentially, your DJ workers need to be run on the same machine as Sphinx).
+To get this set up in your web application, you'll need to set up your background worker gem, and then add the specific Thinking Sphinx integration gem - one of ts-delayed-delta, ts-resque-delta or ts-sidekiq-delta. The Delayed Job and Resque implementations work with TS v1, v2 and v3, but the Sidekiq implementation is only compatible with TS v3.
 
-To get this set up in your web application, you'll need to install the separate gem. It has Delayed Job as a dependency, so that will be automatically installed as well.
-
-{% highlight sh %}
-gem install ts-delayed-delta
-{% endhighlight %}
-
-Don't forget to add the gem's details to your `environment.rb` file:
+To enable this approach in your models, you need to refer to the specific delta implementation, which is a class (`ThinkingSphinx::Deltas::DelayedDelta`, `ThinkingSphinx::Deltas::ResqueDelta` or `ThinkingSphinx::Deltas::SidekiqDelta`) for the argument of the `:delta` option:
 
 {% highlight ruby %}
-config.gem 'ts-delayed-delta',
-  :lib     => 'thinking_sphinx/deltas/delayed_delta',
-  :version => '1.1.2'
-{% endhighlight %}
+# In Thinking Sphinx v3:
+ThinkingSphinx::Index.define(:book,
+  :with  => :active_record,
+  :delta => ThinkingSphinx::Deltas::DelayedDelta
+) do
+  # ...
+end
 
-Or, for Rails 3 - put the following in your Gemfile:
-
-{% highlight ruby %}
-gem 'ts-delayed-delta', '1.1.2',
-  :require => 'thinking_sphinx/deltas/delayed_delta'
-{% endhighlight %}
-
-And add the following line to the bottom of your `Rakefile`:
-
-{% highlight ruby %}
-require 'thinking_sphinx/deltas/delayed_delta/tasks'
-{% endhighlight %}
-
-If this is your first time running Delayed Job, then you're going to need the jobs table migration as well:
-
-{% highlight sh %}
-script/generate delayed_job
-{% endhighlight %}
-
-To enable this approach in your models, change your define_index block to look more like this:
-
-{% highlight ruby %}
+# In Thinking Sphinx v1/v2:
 define_index do
   # ...
 
-  set_property :delta => :delayed
+  set_property :delta => ThinkingSphinx::Deltas::DelayedDelta
 end
 {% endhighlight %}
 
@@ -203,13 +185,6 @@ def self.up
 end
 {% endhighlight %}
 
-Once this is all set up, to process the delta indexing jobs, you'll need to run the following rake task - which deliberately doesn't ever stop (as it regularly tackles all jobs lined up):
+One very important caveat of this background processing approach is that it will only work for **a single searchd instance**, which may not the case if you have multiple app servers.  Delayed Job, Resque and Sidekiq are all designed to run each job only once, not once per app server.  Therefore when the job for the delta index runs, it will only run on the app server that actually processes the job.  The effects of this can range from indistinguishable to subtle depending on the particulars of your setup, so it's important to be aware of this up front. The best approach is to have Sphinx, the database and the delayed job processing task all running on one machine.
 
-{% highlight sh %}
-rake thinking_sphinx:delayed_delta
-rake ts:dd # shortcut
-{% endhighlight %}
-
-One very important caveat of the delayed_job method is that it will only work for **a single searchd instance**, which may not the case if you have multiple app servers.  Delayed Job is designed to run each job only once, not once per app server.  Therefore when the delayed_job for the delta index runs, it will only run on the app server that actually processes the job.  The effects of this can range from indistinguishable to subtle depending on the particulars of your setup, so it's important to be aware of this up front. The best approach is to have Sphinx, the database and the delayed job processing task all running on one machine.
-
-Also, keep in mind that because the delta indexing requests are queued, they will not be processed immediately - and so your search results will not not be accurate straight after a change. Delayed Job is pretty fast at getting through the queue though, so it shouldn't take too long.
+Also, keep in mind that because the delta indexing requests are queued, they will not be processed immediately - and so your search results will not not be accurate straight after a change (but, tuned correctly, within a few seconds is likely).
