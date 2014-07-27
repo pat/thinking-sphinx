@@ -34,7 +34,7 @@ end
 
 <div class="note">
   <p class="old">Thinking Sphinx v1/v2</p>
-  <p><strong>Note</strong>: For older versions of Thinking Sphinx, deltas are enabled by adding `set_property :delta => true` within the `define_index` block.</p>
+  <p><strong>Note</strong>: For older versions of Thinking Sphinx, deltas are enabled by adding <code>set_property :delta => true</code> within the <code>define_index</code> block.</p>
 </div>
 
 And finally, we need to rebuild the Sphinx indexes, as we have changed the structure of our Sphinx index setup.
