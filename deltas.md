@@ -5,7 +5,7 @@ title: Delta Indexes
 
 ## Delta Indexes
 
-Sphinx has one major limitation when compared to a lot of other search services: you cannot update the fields a single document in a SQL-backed index, but have to re-process all the data for that index.
+Sphinx has one major limitation when compared to a lot of other search services: you cannot update the fields a single document in a SQL-backed index, but have to re-process all the data for that index (this limitation, however, does not exist for [real-time indices](http://freelancing-gods.com/posts/rewriting_thinking_sphinx_introducing_realtime_indices)).
 
 The common approach around this issue, used by Thinking Sphinx, is the delta index - an index that tracks just the changed documents. Because this index is much smaller, it is super-fast to index.
 
