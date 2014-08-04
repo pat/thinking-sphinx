@@ -5,7 +5,7 @@ module ThinkingSphinx
     class SQLBuilder::Statement
       def initialize(report)
         @report = report
-        @scope = relation
+        @scope  = relation
       end
 
       def to_relation
@@ -110,6 +110,10 @@ module ThinkingSphinx
 
       def scope_by_order
         @scope = scope.order('NULL') if source.type == 'mysql'
+      end
+
+      def source
+        report.source
       end
 
       def method_missing(*args, &block)
