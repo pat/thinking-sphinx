@@ -4,8 +4,8 @@ module ThinkingSphinx
   module ActiveRecord
     class SQLBuilder::Statement
       def initialize(report)
-        self.report = report
-        self.scope = relation
+        @report = report
+        @scope = relation
       end
 
       def to_relation
@@ -32,8 +32,9 @@ module ThinkingSphinx
         scope
       end
 
-      protected
-      attr_accessor :report, :scope
+      private
+
+      attr_reader :report, :scope
 
       def custom_joins
         @custom_joins ||= source.associations.select(&:string?).collect(&:to_s)
@@ -43,11 +44,13 @@ module ThinkingSphinx
         minimum = convert_nulls "MIN(#{quoted_primary_key})", 1
         maximum = convert_nulls "MAX(#{quoted_primary_key})", 1
 
-        self.scope = scope.select("#{minimum}, #{maximum}").where(where_clause(true))
+        @scope = scope.select("#{minimum}, #{maximum}").where(
+          where_clause(true)
+        )
       end
 
       def filter_by_query_info
-        self.scope = scope.where("#{quoted_primary_key} = #{reversed_document_id}")
+        @scope = scope.where("#{quoted_primary_key} = #{reversed_document_id}")
       end
 
       def filter_by_scopes
@@ -86,27 +89,27 @@ module ThinkingSphinx
       end
 
       def scope_by_select
-        self.scope = scope.select(pre_select + select_clause)
+        @scope = scope.select(pre_select + select_clause)
       end
 
       def scope_by_where_clause
-        self.scope = scope.where where_clause
+        @scope = scope.where where_clause
       end
 
       def scope_by_group_clause
-        self.scope = scope.group(group_clause)
+        @scope = scope.group(group_clause)
       end
 
       def scope_by_joins
-        self.scope = scope.joins(associations.join_values)
+        @scope = scope.joins(associations.join_values)
       end
 
       def scope_by_custom_joins
-        self.scope = scope.joins(custom_joins) if custom_joins.any?
+        @scope = scope.joins(custom_joins) if custom_joins.any?
       end
 
       def scope_by_order
-        self.scope = scope.order('NULL') if source.type == 'mysql'
+        @scope = scope.order('NULL') if source.type == 'mysql'
       end
 
       def method_missing(*args, &block)
