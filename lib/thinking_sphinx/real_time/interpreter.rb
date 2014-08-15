@@ -23,7 +23,8 @@ class ThinkingSphinx::RealTime::Interpreter <
 
   def set_property(properties)
     properties.each do |key, value|
-      @index.send("#{key}=", value)   if @index.class.settings.include?(key)
+      @index.send("#{key}=", value) if @index.class.settings.include?(key)
+      @index.options[key] = value   if search_option?(key)
     end
   end
 

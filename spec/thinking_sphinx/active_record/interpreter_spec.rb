@@ -5,7 +5,7 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     ThinkingSphinx::ActiveRecord::Interpreter.new index, block
   }
   let(:model)   { double('model') }
-  let(:index)   { double('index', :append_source => source) }
+  let(:index)   { double('index', :append_source => source, :options => {}) }
   let(:source)  {
     Struct.new(:attributes, :fields, :associations, :groupings, :conditions).
       new([], [], [], [], [])
@@ -249,6 +249,12 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     before :each do
       index.class.stub  :settings => [:morphology]
       source.class.stub :settings => [:mysql_ssl_cert]
+    end
+
+    it 'saves other settings as index options' do
+      instance.set_property :field_weights => {:name => 10}
+
+      index.options[:field_weights].should == {:name => 10}
     end
 
     context 'index settings' do

@@ -50,6 +50,7 @@ class ThinkingSphinx::ActiveRecord::Interpreter <
       @index.send("#{key}=", value)   if @index.class.settings.include?(key)
       __source.send("#{key}=", value) if __source.class.settings.include?(key)
       __source.options[key] = value   if source_option?(key)
+      @index.options[key] = value     if search_option?(key)
     end
   end
 
