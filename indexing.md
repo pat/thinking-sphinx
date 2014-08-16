@@ -15,19 +15,19 @@ title: Indexing
 
 <h3 id="basic">Basic Indexing</h3>
 
-Everything to set up the indices for your models goes in files in `app/indices`. The files themselves can be named however you like, but I generally opt for `model_name_index.rb`. Here's an example of what goes in the file:
+Everything to set up the indices for your models goes in files in `app/indices`. The files themselves can be named however you like, but I generally opt for `model_name_index.rb`. At the very least, the file name should not be the same as your model's file name. Here's an example of what goes in the file:
 
 {% highlight ruby %}
 ThinkingSphinx::Index.define :article, :with => :active_record do
   indexes subject, :sortable => true
   indexes content
-  indexes author(:name), :as => :author, :sortable => true
+  indexes author.name, :as => :author, :sortable => true
 
   has author_id, created_at, updated_at
 end
 {% endhighlight %}
 
-You'll notice the first argument is the model name downcased and as a symbol, and we are specifying the processor - `:active_record`. Everything inside the block is just like previous versions of Thinking Sphinx, if you're familiar with that.
+You'll notice the first argument is the model name downcased and as a symbol, and we are specifying the processor - `:active_record`. Everything inside the block is just like previous versions of Thinking Sphinx, if you're familiar with that (and if not, keep reading).
 
 When you're defining indices for namespaced models, use a lowercase string with /'s for namespacing as the model reference:
 
@@ -68,13 +68,13 @@ The `indexes` method adds one (or many) fields, by referencing the model's colum
 indexes content
 {% endhighlight %}
 
-Keep in mind that if you're referencing a column that shares its name with a core Ruby method (such as id, name or type), then you'll need to specify it using a symbol.
+Keep in mind that if you're referencing a column that shares its name with a core Ruby method (such as id, name or type) and you're using Thinking Sphinx v1 or v2, then you'll need to specify it using a symbol.
 
 {% highlight ruby %}
 indexes :name
 {% endhighlight %}
 
-You don't need to keep the same names as the database, though. Use the `:as` option to signify an alias.
+You don't need to keep the same names as the database, though. Use the `:as` option to signify a new name. Field and attribute names must be unique, so specifying custom names (instead of the column name for both) is essential.
 
 {% highlight ruby %}
 indexes content, :as => :post
@@ -92,7 +92,7 @@ Use the `:facet` option to signify a facet.
 indexes authors.name, :as => :author, :facet => true
 {% endhighlight %}
 
-If there are associations in your model, you can drill down through them to access other columns. Explicit aliases are _required_ when doing this.
+If there are associations in your model, you can drill down through them to access other columns. Explicit names with the `:as` option are _required_ when doing this.
 
 {% highlight ruby %}
 indexes author(:name), :as => :author
@@ -105,7 +105,7 @@ There may be times when a normal column value isn't exactly what you're after, s
 indexes "LOWER(first_name)", :as => :first_name, :sortable => true
 {% endhighlight %}
 
-Again, in this situation, an explicit alias is required.
+Again, in this situation, an explicit name is required.
 
 <h3 id="attributes">Attributes</h3>
 
@@ -115,14 +115,14 @@ The `has` method adds one (or many) attributes, and just like the `indexes` meth
 has author_id
 {% endhighlight %}
 
-The syntax is very similar to setting up fields. You can set aliases, and drill down into associations. You don't ever need to label an attribute as `:sortable` though - in Sphinx, all attributes can be used for sorting.
-
-Also, just like fields, if you're referring to a reserved method of Ruby (such as id, name or type), you need to use a symbol (which, when dealing with associations, is within a method call).
+The syntax is very similar to setting up fields. You can set custom names, and drill down into associations. You don't ever need to label an attribute as `:sortable` though - in Sphinx, all attributes can be used for sorting.
 
 {% highlight ruby %}
-has :id, :as => :article_id
-has tags(:id), :as => :tag_ids
+has id, :as => :article_id
+has tags.id, :as => :tag_ids
 {% endhighlight %}
+
+Again: fields and attributes cannot share names - they must all be unique. Use the `:as` option to provide custom names when a column is being used more than once.
 
 <h3 id="conditions">Conditions and Groupings</h3>
 
