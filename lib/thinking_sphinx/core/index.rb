@@ -3,7 +3,7 @@ module ThinkingSphinx::Core::Index
   include ThinkingSphinx::Core::Settings
 
   included do
-    attr_reader :reference, :offset, :options
+    attr_reader :reference, :offset
     attr_writer :definition_block
   end
 
@@ -41,6 +41,11 @@ module ThinkingSphinx::Core::Index
 
   def model
     @model ||= reference.to_s.camelize.constantize
+  end
+
+  def options
+    interpret_definition!
+    @options
   end
 
   def render
