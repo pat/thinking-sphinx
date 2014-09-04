@@ -39,7 +39,7 @@ class ThinkingSphinx::ActiveRecord::Interpreter <
   end
 
   def set_database(hash_or_key)
-    configuration = hash_or_key.is_a?(::Hash) ? hash_or_key :
+    configuration = hash_or_key.is_a?(::Hash) ? hash_or_key.symbolize_keys :
       ::ActiveRecord::Base.configurations[hash_or_key.to_s]
 
     __source.set_database_settings configuration
