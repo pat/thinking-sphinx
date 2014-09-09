@@ -43,9 +43,10 @@ class ThinkingSphinx::ActiveRecord::FilteredReflection <
 
       lambda { |association|
         reflection = association.reflection
+        klass      = reflection.class_name.constantize
         where(
           association.parent.aliased_table_name.to_sym =>
-          {reflection.foreign_type => reflection.class_name}
+          {reflection.foreign_type => klass.base_class.name}
         )
       }
     end
