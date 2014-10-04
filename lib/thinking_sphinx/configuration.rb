@@ -91,7 +91,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def render_to_file
-    FileUtils.mkdir_p searchd.binlog_path
+    FileUtils.mkdir_p searchd.binlog_path unless searchd.binlog_path.blank?
 
     open(configuration_file, 'w') { |file| file.write render }
   end
