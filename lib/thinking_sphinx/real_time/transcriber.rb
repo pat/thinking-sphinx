@@ -4,7 +4,7 @@ class ThinkingSphinx::RealTime::Transcriber
   end
 
   def copy(instance)
-    return unless copy? instance
+    return unless instance.persisted? && copy?(instance)
 
     columns, values = ['id'], [index.document_id_for_key(instance.id)]
     (index.fields + index.attributes).each do |property|
