@@ -87,7 +87,7 @@ after 'deploy:finalize_update', 'sphinx:symlink_indexes'
 
 ### Regularly Processing the Indices
 
-One of the side effects of the Sphinx indexing methodology is that it is necessary to regularly process the your indices in order to be able to search with recent changes. In order to do this, we set up a `cron` job to run the appropriate command.
+One of the side effects of the Sphinx indexing methodology is that it is necessary to regularly process your indices in order to be able to search with recent changes. In order to do this, we set up a `cron` job to run the appropriate command.
 
 In your `/etc/crontab` file, add the following line to the bottom:
 
