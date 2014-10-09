@@ -25,7 +25,9 @@ module ThinkingSphinx::ActiveRecord::Base
     end
 
     def search_for_ids(query = nil, options = {})
-      ThinkingSphinx::Search::Merger.new(search(query, options)).merge! nil, :ids_only => true
+      ThinkingSphinx::Search::Merger.new(
+        search(query, options)
+      ).merge! nil, :ids_only => true
     end
 
     private
