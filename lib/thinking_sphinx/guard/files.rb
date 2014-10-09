@@ -12,6 +12,9 @@ class ThinkingSphinx::Guard::Files
 
     unlocked.each &:lock
     block.call unlocked.collect(&:name)
+  rescue => error
+    raise error
+  ensure
     unlocked.each &:unlock
   end
 
