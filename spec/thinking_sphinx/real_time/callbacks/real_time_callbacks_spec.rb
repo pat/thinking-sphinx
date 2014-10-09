@@ -4,7 +4,7 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
   let(:callbacks)  {
     ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks.new :article
   }
-  let(:instance)   { double('instance', :id => 12) }
+  let(:instance)   { double('instance', :id => 12, :persisted? => true) }
   let(:config)     { double('config', :indices_for_references => [index],
     :settings => {}) }
   let(:index)      { double('index', :name => 'my_index', :is_a? => true,
@@ -58,7 +58,7 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
         )
       }
       let(:instance)   { double('instance', :id => 12, :user => user) }
-      let(:user)       { double('user', :id => 13) }
+      let(:user)       { double('user', :id => 13, :persisted? => true) }
 
       it "creates an insert statement with all fields and attributes" do
         Riddle::Query::Insert.should_receive(:new).
@@ -89,8 +89,8 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
       }
       let(:instance)   { double('instance', :id => 12,
         :readers => [user_a, user_b]) }
-      let(:user_a)     { double('user', :id => 13) }
-      let(:user_b)     { double('user', :id => 14) }
+      let(:user_a)     { double('user', :id => 13, :persisted? => true) }
+      let(:user_b)     { double('user', :id => 14, :persisted? => true) }
 
       it "creates insert statements with all fields and attributes" do
         Riddle::Query::Insert.should_receive(:new).twice.
@@ -123,8 +123,8 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
       }
       let(:instance)   { double('instance', :id => 12,
         :readers => [user_a, user_b]) }
-      let(:user_a)     { double('user', :id => 13) }
-      let(:user_b)     { double('user', :id => 14) }
+      let(:user_a)     { double('user', :id => 13, :persisted? => true) }
+      let(:user_b)     { double('user', :id => 14, :persisted? => true) }
 
       it "creates insert statements with all fields and attributes" do
         Riddle::Query::Insert.should_receive(:new).twice.
