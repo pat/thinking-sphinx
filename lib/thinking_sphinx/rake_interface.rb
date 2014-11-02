@@ -1,11 +1,13 @@
 class ThinkingSphinx::RakeInterface
   def clear
-    [
-      configuration.indices_location,
-      configuration.searchd.binlog_path
-    ].each do |path|
-      FileUtils.rm_r(path) if File.exists?(path)
+    indices = configuration.indices.select { |index| index.type == 'rt' }
+    indices.each do |index|
+      index.render
+      Dir["#{index.path}.*"].each { |path| FileUtils.rm path }
     end
+
+    path = configuration.searchd.binlog_path
+    FileUtils.rm_r(path) if File.exists?(path)
   end
 
   def configure

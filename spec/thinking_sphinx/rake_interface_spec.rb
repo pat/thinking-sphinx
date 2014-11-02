@@ -11,19 +11,30 @@ describe ThinkingSphinx::RakeInterface do
 
   describe '#clear' do
     let(:controller) { double 'controller' }
+    let(:index)      {
+      double(:type => 'rt', :render => true, :path => '/path/to/my/index')
+    }
 
     before :each do
       configuration.stub(
-        :indices_location => '/path/to/indices',
-        :searchd          => double(:binlog_path => '/path/to/binlog')
+        :indices => [double(:type => 'plain'), index],
+        :searchd => double(:binlog_path => '/path/to/binlog')
       )
 
-      FileUtils.stub :rm_r => true
+      Dir.stub :[] => ['foo.a', 'foo.b']
+      FileUtils.stub :rm_r => true, :rm => true
       File.stub :exists? => true
     end
 
-    it "removes the directory for the index files" do
-      FileUtils.should_receive(:rm_r).with('/path/to/indices')
+    it 'finds each file for real-time indices' do
+      Dir.should_receive(:[]).with('/path/to/my/index.*').and_return([])
+
+      interface.clear
+    end
+
+    it "removes each file for real-time indices" do
+      FileUtils.should_receive(:rm).with('foo.a')
+      FileUtils.should_receive(:rm).with('foo.b')
 
       interface.clear
     end
