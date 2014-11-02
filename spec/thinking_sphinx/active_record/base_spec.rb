@@ -113,6 +113,7 @@ describe ThinkingSphinx::ActiveRecord::Base do
 
     before :each do
       ThinkingSphinx.stub :search => search
+      FileUtils.stub :mkdir_p => true
     end
 
     it "returns the search object's total entries count" do

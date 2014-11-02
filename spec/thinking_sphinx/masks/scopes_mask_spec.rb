@@ -9,6 +9,10 @@ describe ThinkingSphinx::Masks::ScopesMask do
     :populated? => false) }
   let(:mask)   { ThinkingSphinx::Masks::ScopesMask.new search }
 
+  before :each do
+    FileUtils.stub :mkdir_p => true
+  end
+
   describe '#search' do
     it "replaces the query if one is supplied" do
       search.should_receive(:query=).with('bar')
