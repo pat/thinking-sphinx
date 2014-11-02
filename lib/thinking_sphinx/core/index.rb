@@ -76,11 +76,16 @@ module ThinkingSphinx::Core::Index
     'core'
   end
 
+  def path_prefix
+    options[:path] || config.indices_location
+  end
+
   def pre_render
     interpret_definition!
   end
 
   def set_path
-    @path ||= File.join config.indices_location, name
+    FileUtils.mkdir_p path_prefix
+    @path = File.join path_prefix, name
   end
 end
