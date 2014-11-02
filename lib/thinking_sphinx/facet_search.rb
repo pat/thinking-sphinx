@@ -51,6 +51,10 @@ class ThinkingSphinx::FacetSearch
     @populated = true
   end
 
+  def populated?
+    @populated
+  end
+
   def to_hash
     populate
 

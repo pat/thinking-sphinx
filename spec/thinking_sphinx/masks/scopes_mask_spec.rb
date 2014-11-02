@@ -5,7 +5,8 @@ end
 require 'thinking_sphinx/masks/scopes_mask'
 
 describe ThinkingSphinx::Masks::ScopesMask do
-  let(:search) { double('search', :options => {}, :per_page => 20) }
+  let(:search) { double('search', :options => {}, :per_page => 20,
+    :populated? => false) }
   let(:mask)   { ThinkingSphinx::Masks::ScopesMask.new search }
 
   describe '#search' do
