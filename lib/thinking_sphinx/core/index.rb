@@ -27,7 +27,7 @@ module ThinkingSphinx::Core::Index
   end
 
   def document_id_for_key(key)
-     key * config.indices.count + offset
+    key * config.indices.count + offset
   end
 
   def interpret_definition!
