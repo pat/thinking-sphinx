@@ -1,3 +1,24 @@
+2014-11-04: 3.1.2
+* [CHANGE] regenerate task now only deletes index files for real-time indices.
+* [CHANGE] Raise an exception when a populated search query is modified (as it can't be requeried).
+* [FEATURE] Allow for custom paths for index files using :path option in the ThinkingSphinx::Index.define call.
+* [FIX] Ensure indexing guard files are removed when an exception is raised (Bobby Uhlenbrock).
+* [FIX] Don't update real-time indices for objects that are not persisted (Chance Downs).
+* [FEATURE] Allow the binlog path to be an empty string (Bobby Uhlenbrock).
+* [FIX] Use STI base class for polymorphic association replacements.
+* [FIX] Convert database setting keys to symbols for consistency with Rails (@dimko).
+* [FIX] Field weights and other search options are now respected from set_property.
+* [CHANGE] Log indices that aren't processed due to guard files existing.
+* [FEATURE] Add status task to report on whether Sphinx is running.
+* [FIX] Models with more than one index have correct facet counts (using Sphinx 2.1.x or newer).
+* [FEATURE] Real-time index callbacks can take a block for dynamic scoping.
+* [FIX] Some association fixes for Rails 4.1.
+* [CHANGE] Paginate records by 1000 results at a time when flagging as deleted.
+* [CHANGE] Default the Capistrano TS Rails environment to use rails_env, and then fall back to stage.
+* [CHANGE] rebuild task uses clear between stopping the daemon and indexing.
+* [FIX] Clear connections when raising connection errors.
+* [FEATURE] Allow casting of document ids pre-offset as bigints (via big_documents_id option).
+
 2014-04-22: 3.1.1
 * [CHANGE] Include full statements when query execution errors are raised (uglier, but more useful when debugging).
 * [FEATURE] Allow for common section in generated Sphinx configuration files for Sphinx 2.2.x (disabled by default, though) (Trevor Smith).
