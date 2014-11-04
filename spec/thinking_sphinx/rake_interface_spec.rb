@@ -9,7 +9,33 @@ describe ThinkingSphinx::RakeInterface do
     interface.stub(:puts => nil)
   end
 
-  describe '#clear' do
+  describe '#clear_all' do
+    let(:controller) { double 'controller' }
+
+    before :each do
+      configuration.stub(
+        :indices_location => '/path/to/indices',
+        :searchd          => double(:binlog_path => '/path/to/binlog')
+      )
+
+      FileUtils.stub :rm_r => true
+      File.stub :exists? => true
+    end
+
+    it "removes the directory for the index files" do
+      FileUtils.should_receive(:rm_r).with('/path/to/indices')
+
+      interface.clear_all
+    end
+
+    it "removes the directory for the binlog files" do
+      FileUtils.should_receive(:rm_r).with('/path/to/binlog')
+
+      interface.clear_all
+    end
+  end
+
+  describe '#clear_real_time' do
     let(:controller) { double 'controller' }
     let(:index)      {
       double(:type => 'rt', :render => true, :path => '/path/to/my/index')
@@ -29,20 +55,20 @@ describe ThinkingSphinx::RakeInterface do
     it 'finds each file for real-time indices' do
       Dir.should_receive(:[]).with('/path/to/my/index.*').and_return([])
 
-      interface.clear
+      interface.clear_real_time
     end
 
     it "removes each file for real-time indices" do
       FileUtils.should_receive(:rm).with('foo.a')
       FileUtils.should_receive(:rm).with('foo.b')
 
-      interface.clear
+      interface.clear_real_time
     end
 
     it "removes the directory for the binlog files" do
       FileUtils.should_receive(:rm_r).with('/path/to/binlog')
 
-      interface.clear
+      interface.clear_real_time
     end
   end
 
