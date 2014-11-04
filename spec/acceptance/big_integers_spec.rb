@@ -25,3 +25,14 @@ describe '64 bit integer support' do
     }.type.should == :bigint
   end
 end
+
+describe '64 bit document ids', :live => true do
+  it 'handles large 32 bit integers with an offset multiplier' do
+    user = User.create! :name => 'Pat'
+    user.update_column :id, 980190962
+
+    index
+
+    expect(User.search('pat').to_a).to eq([user])
+  end
+end

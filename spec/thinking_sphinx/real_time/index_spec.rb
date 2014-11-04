@@ -138,6 +138,10 @@ describe ThinkingSphinx::RealTime::Index do
   end
 
   describe '#render' do
+    before :each do
+      FileUtils.stub :mkdir_p => true
+    end
+
     it "interprets the provided definition" do
       index.should_receive(:interpret_definition!).at_least(:once)
 

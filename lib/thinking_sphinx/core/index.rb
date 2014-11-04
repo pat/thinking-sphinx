@@ -3,7 +3,7 @@ module ThinkingSphinx::Core::Index
   include ThinkingSphinx::Core::Settings
 
   included do
-    attr_reader :reference, :offset, :options
+    attr_reader :reference, :offset
     attr_writer :definition_block
   end
 
@@ -27,7 +27,7 @@ module ThinkingSphinx::Core::Index
   end
 
   def document_id_for_key(key)
-     key * config.indices.count + offset
+    key * config.indices.count + offset
   end
 
   def interpret_definition!
@@ -41,6 +41,11 @@ module ThinkingSphinx::Core::Index
 
   def model
     @model ||= reference.to_s.camelize.constantize
+  end
+
+  def options
+    interpret_definition!
+    @options
   end
 
   def render
@@ -71,11 +76,16 @@ module ThinkingSphinx::Core::Index
     'core'
   end
 
+  def path_prefix
+    options[:path] || config.indices_location
+  end
+
   def pre_render
     interpret_definition!
   end
 
   def set_path
-    @path ||= File.join config.indices_location, name
+    FileUtils.mkdir_p path_prefix
+    @path = File.join path_prefix, name
   end
 end

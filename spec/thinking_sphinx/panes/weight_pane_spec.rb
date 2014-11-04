@@ -12,7 +12,7 @@ describe ThinkingSphinx::Panes::WeightPane do
 
   describe '#weight' do
     it "returns the object's weight by default" do
-      raw[ThinkingSphinx::SphinxQL.weight] = 101
+      raw[ThinkingSphinx::SphinxQL.weight[:column]] = 101
 
       pane.weight.should == 101
     end

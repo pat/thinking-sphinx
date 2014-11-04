@@ -14,7 +14,14 @@ class ThinkingSphinx::ActiveRecord::Polymorpher
 
   def append_reflections
     mappings.each do |class_name, name|
-      klass.reflections[name] ||= clone_with name, class_name
+      next if klass.reflections[name]
+
+      reflection = clone_with name, class_name
+      if ActiveRecord::Reflection.respond_to?(:add_reflection)
+        ActiveRecord::Reflection.add_reflection klass, name, reflection
+      else
+        klass.reflections[name] = reflection
+      end
     end
   end
 

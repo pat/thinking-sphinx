@@ -24,4 +24,13 @@ describe 'Indexing', :live => true do
 
     FileUtils.rm path
   end
+
+  it "cleans up temp files even when an exception is raised" do
+    FileUtils.mkdir_p Rails.root.join('db/sphinx/test')
+
+    index 'article_core'
+
+    file = Rails.root.join('db/sphinx/test/ts-article_core.tmp')
+    File.exist?(file).should be_false
+  end
 end

@@ -39,7 +39,7 @@ class ThinkingSphinx::ActiveRecord::Interpreter <
   end
 
   def set_database(hash_or_key)
-    configuration = hash_or_key.is_a?(::Hash) ? hash_or_key :
+    configuration = hash_or_key.is_a?(::Hash) ? hash_or_key.symbolize_keys :
       ::ActiveRecord::Base.configurations[hash_or_key.to_s]
 
     __source.set_database_settings configuration
@@ -50,6 +50,7 @@ class ThinkingSphinx::ActiveRecord::Interpreter <
       @index.send("#{key}=", value)   if @index.class.settings.include?(key)
       __source.send("#{key}=", value) if __source.class.settings.include?(key)
       __source.options[key] = value   if source_option?(key)
+      @index.options[key] = value     if search_option?(key)
     end
   end
 

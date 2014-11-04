@@ -5,7 +5,7 @@ describe ThinkingSphinx::RealTime::Interpreter do
     ThinkingSphinx::RealTime::Interpreter.new index, block
   }
   let(:model)   { double('model') }
-  let(:index)   { Struct.new(:attributes, :fields).new([], []) }
+  let(:index)   { Struct.new(:attributes, :fields, :options).new([], [], {}) }
   let(:block)   { Proc.new { } }
 
   describe '.translate!' do
@@ -170,6 +170,12 @@ describe ThinkingSphinx::RealTime::Interpreter do
   describe '#set_property' do
     before :each do
       index.class.stub :settings => [:morphology]
+    end
+
+    it 'saves other settings as index options' do
+      instance.set_property :field_weights => {:name => 10}
+
+      index.options[:field_weights].should == {:name => 10}
     end
 
     context 'index settings' do

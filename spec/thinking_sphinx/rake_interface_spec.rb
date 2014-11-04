@@ -9,7 +9,7 @@ describe ThinkingSphinx::RakeInterface do
     interface.stub(:puts => nil)
   end
 
-  describe '#clear' do
+  describe '#clear_all' do
     let(:controller) { double 'controller' }
 
     before :each do
@@ -25,13 +25,50 @@ describe ThinkingSphinx::RakeInterface do
     it "removes the directory for the index files" do
       FileUtils.should_receive(:rm_r).with('/path/to/indices')
 
-      interface.clear
+      interface.clear_all
     end
 
     it "removes the directory for the binlog files" do
       FileUtils.should_receive(:rm_r).with('/path/to/binlog')
 
-      interface.clear
+      interface.clear_all
+    end
+  end
+
+  describe '#clear_real_time' do
+    let(:controller) { double 'controller' }
+    let(:index)      {
+      double(:type => 'rt', :render => true, :path => '/path/to/my/index')
+    }
+
+    before :each do
+      configuration.stub(
+        :indices => [double(:type => 'plain'), index],
+        :searchd => double(:binlog_path => '/path/to/binlog')
+      )
+
+      Dir.stub :[] => ['foo.a', 'foo.b']
+      FileUtils.stub :rm_r => true, :rm => true
+      File.stub :exists? => true
+    end
+
+    it 'finds each file for real-time indices' do
+      Dir.should_receive(:[]).with('/path/to/my/index.*').and_return([])
+
+      interface.clear_real_time
+    end
+
+    it "removes each file for real-time indices" do
+      FileUtils.should_receive(:rm).with('foo.a')
+      FileUtils.should_receive(:rm).with('foo.b')
+
+      interface.clear_real_time
+    end
+
+    it "removes the directory for the binlog files" do
+      FileUtils.should_receive(:rm_r).with('/path/to/binlog')
+
+      interface.clear_real_time
     end
   end
 
@@ -193,6 +230,28 @@ describe ThinkingSphinx::RakeInterface do
       controller.should_receive(:stop).twice.and_return(false, true)
 
       interface.stop
+    end
+  end
+
+  describe '#status' do
+    let(:controller) { double('controller') }
+
+    it "reports when the daemon is running" do
+      controller.stub :running? => true
+
+      interface.should_receive(:puts).
+        with('The Sphinx daemon searchd is currently running.')
+
+      interface.status
+    end
+
+    it "reports when the daemon is not running" do
+      controller.stub :running? => false
+
+      interface.should_receive(:puts).
+        with('The Sphinx daemon searchd is not currently running.')
+
+      interface.status
     end
   end
 end

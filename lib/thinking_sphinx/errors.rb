@@ -47,3 +47,6 @@ end
 
 class ThinkingSphinx::MissingColumnError < StandardError
 end
+
+class ThinkingSphinx::PopulatedResultsError < StandardError
+end

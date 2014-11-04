@@ -26,10 +26,13 @@ describe 'Faceted searching', :live => true do
     Tee.create!
     City.create!
     Product.create!
+    Article.create!
     index
 
+    article_count = ENV['SPHINX_VERSION'].try(:[], /2.0.\d/) ? 2 : 1
+
     ThinkingSphinx.facets.to_hash[:class].should == {
-      'Tee' => 2, 'City' => 1, 'Product' => 1
+      'Tee' => 2, 'City' => 1, 'Product' => 1, 'Article' => article_count
     }
   end
 

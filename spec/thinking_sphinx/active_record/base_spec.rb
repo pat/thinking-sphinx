@@ -108,10 +108,12 @@ describe ThinkingSphinx::ActiveRecord::Base do
   end
 
   describe '.search_count' do
-    let(:search) { double('search', :options => {}, :total_entries => 12) }
+    let(:search) { double('search', :options => {}, :total_entries => 12,
+      :populated? => false) }
 
     before :each do
       ThinkingSphinx.stub :search => search
+      FileUtils.stub :mkdir_p => true
     end
 
     it "returns the search object's total entries count" do

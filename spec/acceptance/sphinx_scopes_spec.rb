@@ -66,4 +66,13 @@ describe 'Sphinx scopes', :live => true do
 
     Book.by_query('gods').count.should == 2
   end
+
+  it 'raises an exception when trying to modify a populated request' do
+    request = Book.by_query('gods')
+    request.count
+
+    expect { request.search('foo') }.to raise_error(
+      ThinkingSphinx::PopulatedResultsError
+    )
+  end
 end

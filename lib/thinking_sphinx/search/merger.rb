@@ -6,6 +6,10 @@ class ThinkingSphinx::Search::Merger
   end
 
   def merge!(query = nil, options = {})
+    if search.populated?
+      raise ThinkingSphinx::PopulatedResultsError, 'This search request has already been made - you can no longer modify it.'
+    end
+
     query, options = nil, query if query.is_a?(Hash)
     @search.query  = query unless query.nil?
 

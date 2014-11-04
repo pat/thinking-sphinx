@@ -17,7 +17,10 @@ class ThinkingSphinx::ActiveRecord::FilteredReflection <
       @options[:foreign_key] ||= "#{reflection.name}_id"
       @options[:foreign_type]  = reflection.foreign_type
 
-      return @options if reflection.respond_to?(:scope)
+      if reflection.respond_to?(:scope)
+        @options[:sphinx_internal_filtered] = true
+        return @options
+      end
 
       case @options[:conditions]
       when nil
@@ -34,11 +37,16 @@ class ThinkingSphinx::ActiveRecord::FilteredReflection <
     end
 
     def scope
+      if ::Joiner::Joins.instance_methods.include?(:join_association_class)
+        return nil
+      end
+
       lambda { |association|
         reflection = association.reflection
+        klass      = reflection.class_name.constantize
         where(
           association.parent.aliased_table_name.to_sym =>
-          {reflection.foreign_type => reflection.class_name}
+          {reflection.foreign_type => klass.base_class.name}
         )
       }
     end

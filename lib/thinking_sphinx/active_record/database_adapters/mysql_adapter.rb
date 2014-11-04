@@ -5,6 +5,10 @@ class ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter <
     value ? 1 : 0
   end
 
+  def cast_to_bigint(clause)
+    "CAST(#{clause} AS UNSIGNED INTEGER)"
+  end
+
   def cast_to_string(clause)
     "CAST(#{clause} AS char)"
   end

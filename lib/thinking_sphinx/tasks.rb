@@ -14,7 +14,12 @@ namespace :ts do
 
   desc 'Clear out Sphinx files'
   task :clear => :environment do
-    interface.clear
+    interface.clear_all
+  end
+
+  desc 'Clear out real-time index files'
+  task :clear_rt => :environment do
+    interface.clear_real_time
   end
 
   desc 'Generate fresh index files for real-time indices'
@@ -24,10 +29,10 @@ namespace :ts do
   end
 
   desc 'Stop Sphinx, index and then restart Sphinx'
-  task :rebuild => [:stop, :index, :start]
+  task :rebuild => [:stop, :clear, :index, :start]
 
   desc 'Stop Sphinx, clear files, reconfigure, start Sphinx, generate files'
-  task :regenerate => [:stop, :clear, :configure, :start, :generate]
+  task :regenerate => [:stop, :clear_rt, :configure, :start, :generate]
 
   desc 'Restart the Sphinx daemon'
   task :restart => [:stop, :start]
@@ -40,6 +45,11 @@ namespace :ts do
   desc 'Stop the Sphinx daemon'
   task :stop => :environment do
     interface.stop
+  end
+
+  desc 'Determine whether Sphinx is running'
+  task :status => :environment do
+    interface.status
   end
 
   def interface

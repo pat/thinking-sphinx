@@ -144,6 +144,10 @@ describe ThinkingSphinx::ActiveRecord::Index do
 
   describe '#morphology' do
     context 'with a render' do
+      before :each do
+        FileUtils.stub :mkdir_p => true
+      end
+
       it "defaults to nil" do
         begin
           index.render
@@ -195,6 +199,10 @@ describe ThinkingSphinx::ActiveRecord::Index do
   end
 
   describe '#render' do
+    before :each do
+      FileUtils.stub :mkdir_p => true
+    end
+
     it "interprets the provided definition" do
       index.should_receive(:interpret_definition!).at_least(:once)
 

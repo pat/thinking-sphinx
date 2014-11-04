@@ -34,7 +34,7 @@ module ThinkingSphinx
 
       delegate :adapter, :model, :delta_processor, :to => :source
       delegate :convert_nulls, :time_zone_query_pre, :utf8_query_pre,
-        :to => :adapter
+        :cast_to_bigint, :to => :adapter
 
       def query
         Query.new(self)
@@ -53,10 +53,17 @@ module ThinkingSphinx
       end
 
       def associations
-        @associations ||= Joiner::Joins.new(model).tap do |assocs|
-          source.associations.reject(&:string?).each do |association|
-            assocs.add_join_to association.stack
+        @associations ||= begin
+          joins = Joiner::Joins.new model
+          if joins.respond_to?(:join_association_class)
+            joins.join_association_class = ThinkingSphinx::ActiveRecord::JoinAssociation
           end
+
+          source.associations.reject(&:string?).each do |association|
+            joins.add_join_to association.stack
+          end
+
+          joins
         end
       end
 
@@ -76,9 +83,17 @@ module ThinkingSphinx
         ('SQL_NO_CACHE ' if source.type == 'mysql').to_s
       end
 
+      def big_document_ids?
+        source.options[:big_document_ids] || config.settings['big_document_ids']
+      end
+
       def document_id
         quoted_alias = quote_column source.primary_key
-        "#{quoted_primary_key} * #{config.indices.count} + #{source.offset} AS #{quoted_alias}"
+        column = quoted_primary_key
+        column = cast_to_bigint column if big_document_ids?
+        column = "#{column} * #{config.indices.count} + #{source.offset}"
+
+        "#{column} AS #{quoted_alias}"
       end
 
       def reversed_document_id

@@ -322,6 +322,24 @@ describe ThinkingSphinx::Configuration do
 
       config.render_to_file
     end
+
+    it "creates a directory at the binlog_path" do
+      FileUtils.stub :mkdir_p => true
+      config.stub :searchd => double(:binlog_path => '/path/to/binlog')
+
+      FileUtils.should_receive(:mkdir_p).with('/path/to/binlog')
+
+      config.render_to_file
+    end
+
+    it "skips creating a directory when the binlog_path is blank" do
+      FileUtils.stub :mkdir_p => true
+      config.stub :searchd => double(:binlog_path => '')
+
+      FileUtils.should_not_receive(:mkdir_p)
+
+      config.render_to_file
+    end
   end
 
   describe '#searchd' do

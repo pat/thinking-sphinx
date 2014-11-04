@@ -13,6 +13,10 @@ class ThinkingSphinx::Core::Interpreter < BasicObject
 
   private
 
+  def search_option?(key)
+    ::ThinkingSphinx::Middlewares::SphinxQL::SELECT_OPTIONS.include? key
+  end
+
   def method_missing(method, *args)
     ::ThinkingSphinx::ActiveRecord::Column.new method, *args
   end

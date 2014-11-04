@@ -1,4 +1,6 @@
 module ThinkingSphinx::Connection
+  MAXIMUM_RETRIES = 3
+
   def self.new
     configuration = ThinkingSphinx::Configuration.instance
     # If you use localhost, MySQL insists on a socket connection, but Sphinx
@@ -37,13 +39,13 @@ module ThinkingSphinx::Connection
           yield connection
         rescue ThinkingSphinx::QueryExecutionError, connection.base_error => error
           original = ThinkingSphinx::SphinxError.new_from_mysql error
-          raise original if original.is_a?(ThinkingSphinx::QueryError)
+          retries += MAXIMUM_RETRIES if original.is_a?(ThinkingSphinx::QueryError)
           raise Innertube::Pool::BadResource
         end
       end
     rescue Innertube::Pool::BadResource
       retries += 1
-      raise original unless retries < 3
+      raise original unless retries < MAXIMUM_RETRIES
 
       ActiveSupport::Notifications.instrument(
         "message.thinking_sphinx", :message => "Retrying query \"#{original.statement}\" after error: #{original.message}"

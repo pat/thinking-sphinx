@@ -5,8 +5,13 @@ end
 require 'thinking_sphinx/masks/scopes_mask'
 
 describe ThinkingSphinx::Masks::ScopesMask do
-  let(:search) { double('search', :options => {}, :per_page => 20) }
+  let(:search) { double('search', :options => {}, :per_page => 20,
+    :populated? => false) }
   let(:mask)   { ThinkingSphinx::Masks::ScopesMask.new search }
+
+  before :each do
+    FileUtils.stub :mkdir_p => true
+  end
 
   describe '#search' do
     it "replaces the query if one is supplied" do

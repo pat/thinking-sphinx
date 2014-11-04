@@ -10,12 +10,12 @@ before_script:
   - "mysql -e 'create database thinking_sphinx;' > /dev/null"
   - "psql -c 'create database thinking_sphinx;' -U postgres >/dev/null"
 env:
-  - DATABASE=mysql2 SPHINX_BIN=/usr/local/sphinx-2.0.9/bin/ SPHINX_VERSION=2.0.9
-  - DATABASE=postgresql SPHINX_BIN=/usr/local/sphinx-2.0.9/bin/ SPHINX_VERSION=2.0.9
-  - DATABASE=mysql2 SPHINX_BIN=/usr/local/sphinx-2.1.3/bin/ SPHINX_VERSION=2.1.3
-  - DATABASE=postgresql SPHINX_BIN=/usr/local/sphinx-2.1.3/bin/ SPHINX_VERSION=2.1.3
-  - DATABASE=mysql2 SPHINX_BIN=/usr/local/sphinx-2.2.1/bin/ SPHINX_VERSION=2.2.1
-  - DATABASE=postgresql SPHINX_BIN=/usr/local/sphinx-2.2.1/bin/ SPHINX_VERSION=2.2.1
+  - DATABASE=mysql2 SPHINX_BIN=/usr/local/sphinx-2.0.10/bin/ SPHINX_VERSION=2.0.10
+  - DATABASE=postgresql SPHINX_BIN=/usr/local/sphinx-2.0.10/bin/ SPHINX_VERSION=2.0.10
+  - DATABASE=mysql2 SPHINX_BIN=/usr/local/sphinx-2.1.8/bin/ SPHINX_VERSION=2.1.8
+  - DATABASE=postgresql SPHINX_BIN=/usr/local/sphinx-2.1.8/bin/ SPHINX_VERSION=2.1.8
+  - DATABASE=mysql2 SPHINX_BIN=/usr/local/sphinx-2.2.2-beta/bin/ SPHINX_VERSION=2.2.2
+  - DATABASE=postgresql SPHINX_BIN=/usr/local/sphinx-2.2.2-beta/bin/ SPHINX_VERSION=2.2.2
 gemfile:
   - gemfiles/rails_3_2.gemfile
   - gemfiles/rails_4_0.gemfile

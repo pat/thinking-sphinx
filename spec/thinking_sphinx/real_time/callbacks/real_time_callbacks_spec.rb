@@ -4,7 +4,7 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
   let(:callbacks)  {
     ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks.new :article
   }
-  let(:instance)   { double('instance', :id => 12) }
+  let(:instance)   { double('instance', :id => 12, :persisted? => true) }
   let(:config)     { double('config', :indices_for_references => [index],
     :settings => {}) }
   let(:index)      { double('index', :name => 'my_index', :is_a? => true,
@@ -58,7 +58,7 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
         )
       }
       let(:instance)   { double('instance', :id => 12, :user => user) }
-      let(:user)       { double('user', :id => 13) }
+      let(:user)       { double('user', :id => 13, :persisted? => true) }
 
       it "creates an insert statement with all fields and attributes" do
         Riddle::Query::Insert.should_receive(:new).
@@ -89,8 +89,42 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
       }
       let(:instance)   { double('instance', :id => 12,
         :readers => [user_a, user_b]) }
-      let(:user_a)     { double('user', :id => 13) }
-      let(:user_b)     { double('user', :id => 14) }
+      let(:user_a)     { double('user', :id => 13, :persisted? => true) }
+      let(:user_b)     { double('user', :id => 14, :persisted? => true) }
+
+      it "creates insert statements with all fields and attributes" do
+        Riddle::Query::Insert.should_receive(:new).twice.
+          with('my_index', ['id', 'name', 'created_at'], [123, 'Foo', time]).
+          and_return(insert)
+
+        callbacks.after_save instance
+      end
+
+      it "gets the document id for each reader" do
+        index.should_receive(:document_id_for_key).with(13).and_return(123)
+        index.should_receive(:document_id_for_key).with(14).and_return(123)
+
+        callbacks.after_save instance
+      end
+
+      it "translates values for each reader" do
+        field.should_receive(:translate).with(user_a).and_return('Foo')
+        field.should_receive(:translate).with(user_b).and_return('Foo')
+
+        callbacks.after_save instance
+      end
+    end
+
+    context 'with a block instead of a path' do
+      let(:callbacks)  {
+        ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks.new(
+          :article
+        ) { |object| object.readers }
+      }
+      let(:instance)   { double('instance', :id => 12,
+        :readers => [user_a, user_b]) }
+      let(:user_a)     { double('user', :id => 13, :persisted? => true) }
+      let(:user_b)     { double('user', :id => 14, :persisted? => true) }
 
       it "creates insert statements with all fields and attributes" do
         Riddle::Query::Insert.should_receive(:new).twice.

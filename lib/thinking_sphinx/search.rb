@@ -74,6 +74,10 @@ class ThinkingSphinx::Search < Array
     @populated = true
   end
 
+  def populated?
+    @populated
+  end
+
   def query_time
     meta['time'].to_f
   end

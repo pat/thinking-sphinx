@@ -9,7 +9,7 @@ class ThinkingSphinx::Masks::WeightEnumeratorMask
 
   def each_with_weight(&block)
     @search.raw.each_with_index do |row, index|
-      yield @search[index], row[ThinkingSphinx::SphinxQL.weight]
+      yield @search[index], row[ThinkingSphinx::SphinxQL.weight[:column]]
     end
   end
 end
