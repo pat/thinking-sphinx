@@ -1,5 +1,14 @@
 class ThinkingSphinx::RakeInterface
-  def clear
+  def clear_all
+    [
+      configuration.indices_location,
+      configuration.searchd.binlog_path
+    ].each do |path|
+      FileUtils.rm_r(path) if File.exists?(path)
+    end
+  end
+
+  def clear_real_time
     indices = configuration.indices.select { |index| index.type == 'rt' }
     indices.each do |index|
       index.render
