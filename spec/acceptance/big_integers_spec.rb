@@ -12,8 +12,13 @@ describe '64 bit integer support' do
       indexes title
     }
 
+    real_time_index = ThinkingSphinx::RealTime::Index.new(:product)
+    real_time_index.definition_block = Proc.new {
+      indexes name
+    }
+
     ThinkingSphinx::Configuration::ConsistentIds.new(
-      [small_index, large_index]
+      [small_index, large_index, real_time_index]
     ).reconcile
 
     large_index.sources.first.attributes.detect { |attribute|
@@ -23,16 +28,31 @@ describe '64 bit integer support' do
     small_index.sources.first.attributes.detect { |attribute|
       attribute.name == 'sphinx_internal_id'
     }.type.should == :bigint
+
+    real_time_index.attributes.detect { |attribute|
+      attribute.name == 'sphinx_internal_id'
+    }.type.should == :bigint
   end
 end
 
 describe '64 bit document ids', :live => true do
-  it 'handles large 32 bit integers with an offset multiplier' do
-    user = User.create! :name => 'Pat'
-    user.update_column :id, 980190962
+  context 'with ActiveRecord' do
+    it 'handles large 32 bit integers with an offset multiplier' do
+      user = User.create! :name => 'Pat'
+      user.update_column :id, 980190962
 
-    index
+      index
 
-    expect(User.search('pat').to_a).to eq([user])
+      expect(User.search('pat').to_a).to eq([user])
+    end
   end
+
+  context 'with Real-Time' do
+    it 'handles large 32 bit integers with an offset multiplier' do
+      product = Product.create! :name => "Widget"
+      product.update_attribute :id, 980190962
+      expect(Product.search('widget').to_a).to eq([product])
+    end
+  end
+
 end
