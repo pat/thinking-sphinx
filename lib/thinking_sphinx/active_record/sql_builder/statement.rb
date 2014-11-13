@@ -129,7 +129,6 @@ module ThinkingSphinx
 
       def where_clause(for_range = false)
         builder = SQLBuilder::ClauseBuilder.new(nil)
-        builder.add_clause inheritance_column_condition unless model.descends_from_active_record?
         builder.add_clause delta_processor.clause(source.delta?) if delta_processor
         builder.add_clause range_condition unless for_range
         builder.separated(' AND ')
