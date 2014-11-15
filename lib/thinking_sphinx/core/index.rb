@@ -12,7 +12,7 @@ module ThinkingSphinx::Core::Index
     @docinfo      = :extern
     @charset_type = 'utf-8'
     @options      = options
-    @offset       = config.next_offset(reference)
+    @offset       = config.next_offset(options[:offset_as] || reference)
     @type         = 'plain'
 
     super "#{options[:name] || reference.to_s.gsub('/', '_')}_#{name_suffix}"
