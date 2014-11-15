@@ -28,12 +28,13 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
   let(:sphinx_sql)    { double('sphinx_sql', :from => true, :offset => true,
     :limit => true, :where => true, :matching => true, :values => true) }
   let(:query)         { double('query') }
-  let(:configuration) { double('configuration', :settings => {}) }
+  let(:configuration) { double('configuration', :settings => {},
+    index_set_class: set_class) }
+  let(:set_class)     { double(:new => index_set) }
 
   before :each do
     stub_const 'Riddle::Query::Select', double(:new => sphinx_sql)
     stub_const 'ThinkingSphinx::Search::Query', double(:new => query)
-    stub_const 'ThinkingSphinx::IndexSet', double(:new => index_set)
 
     context.stub :search => search, :configuration => configuration
   end
@@ -58,8 +59,9 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       search.options[:indices] = ['user_core']
       index_set.first.stub :reference => :user
 
-      ThinkingSphinx::IndexSet.should_receive(:new).
-        with([klass], ['user_core']).and_return(index_set)
+      set_class.should_receive(:new).
+        with(:classes => [klass], :indices => ['user_core']).
+        and_return(index_set)
 
       middleware.call [context]
     end

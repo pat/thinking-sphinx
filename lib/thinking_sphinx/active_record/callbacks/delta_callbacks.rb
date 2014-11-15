@@ -42,7 +42,7 @@ class ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks <
   end
 
   def indices
-    @indices ||= ThinkingSphinx::IndexSet.new [instance.class], []
+    @indices ||= config.index_set_class.new :classes => [instance.class]
   end
 
   def processors

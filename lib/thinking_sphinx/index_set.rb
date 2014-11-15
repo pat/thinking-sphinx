@@ -3,9 +3,9 @@ class ThinkingSphinx::IndexSet
 
   delegate :each, :empty?, :to => :indices
 
-  def initialize(classes, index_names, configuration = nil)
-    @classes       = classes || []
-    @index_names   = index_names
+  def initialize(options = {}, configuration = nil)
+    @options       = options
+    @index_names   = options[:indices] || []
     @configuration = configuration || ThinkingSphinx::Configuration.instance
   end
 
@@ -19,7 +19,20 @@ class ThinkingSphinx::IndexSet
 
   private
 
-  attr_reader :classes, :configuration, :index_names
+  attr_reader :configuration, :options
+
+  def all_indices
+    configuration.preload_indices
+    configuration.indices
+  end
+
+  def classes
+    options[:classes] || []
+  end
+
+  def classes_specified?
+    classes.any? || references_specified?
+  end
 
   def classes_and_ancestors
     @classes_and_ancestors ||= classes.collect { |model|
@@ -31,21 +44,30 @@ class ThinkingSphinx::IndexSet
     }.flatten
   end
 
+  def index_names
+    options[:indices] || []
+  end
+
   def indices
-    configuration.preload_indices
-
-    return configuration.indices.select { |index|
+    return all_indices.select { |index|
       index_names.include?(index.name)
-    } if index_names && index_names.any?
+    } if index_names.any?
 
-    everything = classes.empty? ? configuration.indices :
-      configuration.indices_for_references(*references)
+    everything = classes_specified? ? indices_for_references : all_indices
     everything.reject &:distributed?
   end
 
+  def indices_for_references
+    all_indices.select { |index| references.include? index.reference }
+  end
+
   def references
-    classes_and_ancestors.collect { |klass|
+    options[:references] || classes_and_ancestors.collect { |klass|
       klass.name.underscore.to_sym
     }
+  end
+
+  def references_specified?
+    options[:references] && options[:references].any?
   end
 end

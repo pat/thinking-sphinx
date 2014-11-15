@@ -101,19 +101,6 @@ describe ThinkingSphinx::Configuration do
     end
   end
 
-  describe '#indices_for_references' do
-    it "selects from the full index set those with matching references" do
-      config.preload_indices
-      config.indices.clear
-
-      config.indices << double('index', :reference => :article)
-      config.indices << double('index', :reference => :book)
-      config.indices << double('index', :reference => :page)
-
-      config.indices_for_references(:book, :article).length.should == 2
-    end
-  end
-
   describe '#indices_location' do
     it "stores index files in db/sphinx/ENVIRONMENT" do
       config.indices_location.

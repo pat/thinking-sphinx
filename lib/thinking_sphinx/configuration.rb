@@ -3,7 +3,7 @@ require 'pathname'
 class ThinkingSphinx::Configuration < Riddle::Configuration
   attr_accessor :configuration_file, :indices_location, :version
   attr_reader :index_paths
-  attr_writer :controller
+  attr_writer :controller, :index_set_class
 
   delegate :environment, :to => :framework
 
@@ -56,9 +56,12 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     end
   end
 
+  def index_set_class
+    @index_set_class ||= ThinkingSphinx::IndexSet
+  end
+
   def indices_for_references(*references)
-    preload_indices
-    indices.select { |index| references.include?(index.reference) }
+    index_set_class.new(:references => references).to_a
   end
 
   def next_offset(reference)

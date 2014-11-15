@@ -63,6 +63,10 @@ class ThinkingSphinx::FacetSearch
 
   private
 
+  def configuration
+    ThinkingSphinx::Configuration.instance
+  end
+
   def facets
     @facets ||= properties.group_by(&:name).collect { |name, matches|
       ThinkingSphinx::Facet.new name, matches
@@ -92,11 +96,13 @@ class ThinkingSphinx::FacetSearch
   end
 
   def indices
-    @indices ||= ThinkingSphinx::IndexSet.new options[:classes], options[:indices]
+    @indices ||= configuration.index_set_class.new(
+      options.slice(:classes, :indices)
+    )
   end
 
   def max_matches
-    ThinkingSphinx::Configuration.instance.settings['max_matches'] || 1000
+    configuration.settings['max_matches'] || 1000
   end
 
   def limit

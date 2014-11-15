@@ -10,10 +10,9 @@ describe ThinkingSphinx::FacetSearch do
     :multi? => false) }
   let(:property_b)    { double('property', :name => 'category_id',
     :multi? => false) }
-  let(:configuration) { double 'configuration', :settings => {} }
+  let(:configuration) { double 'configuration', :settings => {}, :index_set_class => double(:new => index_set) }
 
   before :each do
-    stub_const 'ThinkingSphinx::IndexSet',      double(:new => index_set)
     stub_const 'ThinkingSphinx::BatchedSearch', double(:new => batch)
     stub_const 'ThinkingSphinx::Search',        DumbSearch
     stub_const 'ThinkingSphinx::Middlewares::RAW_ONLY', double
