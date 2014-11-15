@@ -27,7 +27,7 @@ class ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks
   end
 
   def indices
-    @indices ||= configuration.indices_for_references reference
+    configuration.indices_for_references reference
   end
 
   def objects_for(instance)
@@ -45,8 +45,6 @@ class ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks
   end
 
   def real_time_indices
-    @real_time_indices ||= indices.select { |index|
-      index.is_a? ThinkingSphinx::RealTime::Index
-    }
+    indices.select { |index| index.is_a? ThinkingSphinx::RealTime::Index }
   end
 end
