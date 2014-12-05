@@ -23,7 +23,7 @@ gem 'thinking-sphinx', '~> 3.0.2',
 If you're using Thinking Sphinx v3 and you want to customise the environment and application root directory based on your own environment variables, you can do so with a few lines of Ruby code:
 
 {% highlight ruby %}
-framework = ThinkingSphinx::Framework::Plain.new
+framework = ThinkingSphinx::Frameworks::Plain.new
 framework.environment = RACK_ENV       # Defaults to production
 framework.root        = '/srv/www/app' # Defaults to Dir.pwd
 ThinkingSphinx::Configuration.instance.framework = framework
