@@ -10,6 +10,11 @@ Follow the instructions for Rails (going by the version of ActiveRecord you're u
 Firstly, you'll need to add the Thinking Sphinx rake tasks to your Rakefile:
 
 {% highlight ruby %}
+task :environment do
+  Sinatra::Application.environment = 'production' # or ENV['RACK_ENV'] if you're using rack
+end
+require '/path/to/your/app.rb'
+
 require 'thinking_sphinx/tasks'
 {% endhighlight %}
 
