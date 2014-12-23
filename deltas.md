@@ -27,7 +27,8 @@ end
 Turning on delta indexing is done within your model's define_index block:
 
 {% highlight ruby %}
-ThinkingSphinx::Index.define :article, :with => :active_record, :delta => true do
+ThinkingSphinx::Index.define :article, :with => :active_record, 
+  :delta => true do
   # ...
 end
 {% endhighlight %}
