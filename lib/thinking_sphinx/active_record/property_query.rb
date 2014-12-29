@@ -110,7 +110,7 @@ primary key.
       base = source.model
 
       column.__stack.collect { |key|
-        reflection = base.reflections[key]
+        reflection = base.reflect_on_association key
         base = reflection.klass
 
         extend_reflection reflection
