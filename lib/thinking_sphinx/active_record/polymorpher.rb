@@ -26,7 +26,7 @@ class ThinkingSphinx::ActiveRecord::Polymorpher
   end
 
   def clone_with(name, class_name)
-    ThinkingSphinx::ActiveRecord::FilteredReflection.clone_with_filter(
+    ThinkingSphinx::ActiveRecord::FilterReflection.call(
       reflection, name, class_name
     )
   end
