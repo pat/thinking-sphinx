@@ -19,7 +19,7 @@ For the first approach, once you've constructed your search, you need to add the
 
 {% highlight ruby %}
 @articles = Article.search params[:query]
-@articles.context.panes << ThinkingSphinx::Panes::ExcerptsPane
+@articles.context[:panes] << ThinkingSphinx::Panes::ExcerptsPane
 {% endhighlight %}
 
 And then you can access excerpted text for any method on each search result:
