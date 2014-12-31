@@ -17,7 +17,7 @@ There's quite a bit that's changed in Thinking Sphinx 3.0, as it's a complete re
 
 * [Index definitions](indexing.html) now live in `app/indices`.
 * `config/sphinx.yml` is now `config/thinking_sphinx.yml`.
-* `mysql2` gem (at least 0.3.12b4) is required for connecting to Sphinx (using its mysql41 protocol). At time of writing this version only available as a pre-release, so running `bundle update mysql2` on your `Gemfile` without also forcing the version will only install 0.3.11.
+* `mysql2` gem (at least 0.3.12) is required for connecting to Sphinx (using its mysql41 protocol).
 * Specifying a different port for Sphinx to use (in `config/thinking_sphinx.yml`) should be done with the mysql41 setting, not the port setting.
 * The match mode is always extended - SphinxQL doesn't know any other way.
 * If you're explicitly setting a time attribute's type, instead of `:datetime` it should now be `:timestamp`.
