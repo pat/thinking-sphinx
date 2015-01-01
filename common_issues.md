@@ -63,7 +63,7 @@ If you want to access weights directly for each search result, you should add a 
 
 {% highlight ruby %}
 search = Article.search('pancakes', :select => '*, weight()')
-search.context.panes << ThinkingSphinx::Panes::WeightPane
+search.context[:panes] << ThinkingSphinx::Panes::WeightPane
 
 search.each do |article|
   article.weight
