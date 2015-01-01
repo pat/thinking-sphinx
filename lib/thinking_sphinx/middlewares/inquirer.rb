@@ -44,7 +44,7 @@ class ThinkingSphinx::Middlewares::Inquirer <
     end
 
     def call(raw_results, meta_results)
-      context[:results] = raw_results
+      context[:results] = raw_results.to_a
       context[:raw]     = raw_results
       context[:meta]    = meta_results.inject({}) { |hash, row|
         hash[row['Variable_name']] = row['Value']
