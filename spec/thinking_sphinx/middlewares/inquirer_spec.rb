@@ -47,5 +47,24 @@ describe ThinkingSphinx::Middlewares::Inquirer do
 
       context[:results].should == [:raw]
     end
+
+    context "with mysql2 result" do
+      class FakeResult
+        include Enumerable
+        def each; [{"fake" => "value"}].each { |m| yield m }; end
+      end
+
+      let(:batch_inquirer) { double('batcher', :append_query => true,
+        :results => [
+          FakeResult.new, [{'Variable_name' => 'meta', 'Value' => 'value'}]
+        ])
+      }
+
+      it "converts the results into an array" do
+        middleware.call [context]
+
+        context[:results].should be_a Array
+      end
+    end
   end
 end
