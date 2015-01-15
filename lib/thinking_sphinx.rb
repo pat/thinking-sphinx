@@ -77,4 +77,4 @@ require 'thinking_sphinx/distributed'
 require 'thinking_sphinx/logger'
 require 'thinking_sphinx/real_time'
 
-require 'thinking_sphinx/railtie' if defined?(Rails)
+require 'thinking_sphinx/railtie' if defined?(Rails::Railtie)
