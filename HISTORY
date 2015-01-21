@@ -1,4 +1,4 @@
-Latest:
+2015-01-21: 3.1.3
 * [CHANGE] Log excerpt SphinxQL queries just like the search queries.
 * [CHANGE] Load Railtie if Rails::Railtie is defined, instead of just Rails (Andrew Cone).
 * [CHANGE] Convert raw Sphinx results to an array when querying (Bryan Ricker).
