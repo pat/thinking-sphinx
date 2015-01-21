@@ -1,3 +1,15 @@
+Latest:
+* [CHANGE] Log excerpt SphinxQL queries just like the search queries.
+* [CHANGE] Load Railtie if Rails::Railtie is defined, instead of just Rails (Andrew Cone).
+* [CHANGE] Convert raw Sphinx results to an array when querying (Bryan Ricker).
+* [FIX] Generate de-polymorphised associations properly for Rails 4.2
+* [FIX] Use reflect_on_association instead of reflections, to stick to the public ActiveRecord::Base API.
+* [FIX] Don't load ActiveRecord early - fixes a warning in Rails 4.2.
+* [FEATURE] Allow for custom offset references with the :offset_as option - thus one model across many schemas with Apartment can be treated differently.
+* [FEATURE] Allow for custom IndexSet classes.
+* [FIX] Don't double-up on STI filtering, already handled by Rails.
+* [CHANGE] Add bigint support for real-time indices, and use bigints for the sphinx_internal_id attribute (mapped to model primary keys) (Chance Downs).
+
 2014-11-04: 3.1.2
 * [CHANGE] regenerate task now only deletes index files for real-time indices.
 * [CHANGE] Raise an exception when a populated search query is modified (as it can't be requeried).
