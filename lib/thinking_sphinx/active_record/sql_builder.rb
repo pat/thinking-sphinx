@@ -100,10 +100,6 @@ module ThinkingSphinx
         "($id - #{source.offset}) / #{config.indices.count}"
       end
 
-      def inheritance_column_condition
-        "#{quoted_inheritance_column} = '#{model_name}'"
-      end
-
       def range_condition
         condition = []
         condition << "#{quoted_primary_key} BETWEEN $start AND $end" unless source.disable_range?

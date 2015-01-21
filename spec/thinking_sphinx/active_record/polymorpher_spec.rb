@@ -10,9 +10,12 @@ describe ThinkingSphinx::ActiveRecord::Polymorpher do
   let(:class_names) { %w( Article Animal ) }
   let(:field)       { double :rebase => true }
   let(:attribute)   { double :rebase => true }
-  let(:outer)       { double :reflections => {:a => double(:klass => inner)} }
-  let(:inner)       { double :reflections => {:b => double(:klass => model)} }
-  let(:model)       { double 'Model', :reflections => {:foo => reflection} }
+  let(:outer)       { double(
+    :reflect_on_association => double(:klass => inner)) }
+  let(:inner)       { double(
+    :reflect_on_association => double(:klass => model)) }
+  let(:model)       { double 'Model', :reflections => {},
+    :reflect_on_association => reflection }
   let(:reflection)  { double 'Polymorphic Reflection' }
 
   describe '#morph!' do
@@ -20,9 +23,13 @@ describe ThinkingSphinx::ActiveRecord::Polymorpher do
     let(:animal_reflection)  { double 'Animal Reflection' }
 
     before :each do
-      ThinkingSphinx::ActiveRecord::FilteredReflection.
-        stub(:clone_with_filter).
+      ThinkingSphinx::ActiveRecord::FilterReflection.
+        stub(:call).
         and_return(article_reflection, animal_reflection)
+
+      model.stub(:reflect_on_association) do |name|
+        name == :foo ? reflection : nil
+      end
 
       if ActiveRecord::Reflection.respond_to?(:add_reflection)
         ActiveRecord::Reflection.stub :add_reflection
@@ -30,15 +37,15 @@ describe ThinkingSphinx::ActiveRecord::Polymorpher do
     end
 
     it "creates a new reflection for each class" do
-      ThinkingSphinx::ActiveRecord::FilteredReflection.
-        unstub :clone_with_filter
+      ThinkingSphinx::ActiveRecord::FilterReflection.
+        unstub :call
 
-      ThinkingSphinx::ActiveRecord::FilteredReflection.
-        should_receive(:clone_with_filter).
+      ThinkingSphinx::ActiveRecord::FilterReflection.
+        should_receive(:call).
         with(reflection, :foo_article, 'Article').
         and_return(article_reflection)
-      ThinkingSphinx::ActiveRecord::FilteredReflection.
-        should_receive(:clone_with_filter).
+      ThinkingSphinx::ActiveRecord::FilterReflection.
+        should_receive(:call).
         with(reflection, :foo_animal, 'Animal').
         and_return(animal_reflection)
 

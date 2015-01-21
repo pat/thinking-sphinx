@@ -24,11 +24,13 @@ describe 'Hiding deleted records from search results', :live => true do
   it "removes records from real-time index results" do
     product = Product.create! :name => 'Shiny'
 
-    Product.search('Shiny').to_a.should == [product]
+    Product.search('Shiny', :indices => ['product_core']).to_a.
+      should == [product]
 
     product.destroy
 
-    Product.search_for_ids('Shiny').should be_empty
+    Product.search_for_ids('Shiny', :indices => ['product_core']).
+      should be_empty
   end
 
   it "deletes STI child classes from parent indices" do

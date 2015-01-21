@@ -15,7 +15,10 @@ class ThinkingSphinx::Excerpter
 
   def excerpt!(text)
     result = ThinkingSphinx::Connection.take do |connection|
-      connection.execute(statement_for(text)).first['snippet']
+      query = statement_for text
+      ThinkingSphinx::Logger.log :query, query do
+        connection.execute(query).first['snippet']
+      end
     end
 
     encoded? ? result : ThinkingSphinx::UTF8.encode(result)

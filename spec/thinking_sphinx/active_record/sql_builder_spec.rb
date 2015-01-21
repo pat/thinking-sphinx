@@ -192,27 +192,6 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
           model.stub! :store_full_sti_class => true
         end
 
-        it "limits results to just the model" do
-          relation.should_receive(:where) do |string|
-            string.should match(/`users`.`type` = 'User'/)
-            relation
-          end
-
-          builder.sql_query
-        end
-
-        it "uses the demodulised name if that's what is stored" do
-          model.stub! :store_full_sti_class => false
-          model.name.stub! :demodulize => 'U'
-
-          relation.should_receive(:where) do |string|
-            string.should match(/`users`.`type` = 'U'/)
-            relation
-          end
-
-          builder.sql_query
-        end
-
         it "groups by the inheritance column" do
           relation.should_receive(:group) do |string|
             string.should match(/`users`.`type`/)
@@ -226,15 +205,6 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
           before :each do
             model.column_names << 'custom_type'
             model.stub :inheritance_column => 'custom_type'
-          end
-
-          it "limits results on the right column" do
-            relation.should_receive(:where) do |string|
-              string.should match(/`users`.`custom_type` = 'User'/)
-              relation
-            end
-
-            builder.sql_query
           end
 
           it "groups by the right column" do
@@ -452,27 +422,6 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
           model.stub! :store_full_sti_class => true
         end
 
-        it "limits results to just the model" do
-          relation.should_receive(:where) do |string|
-            string.should match(/"users"."type" = 'User'/)
-            relation
-          end
-
-          builder.sql_query
-        end
-
-        it "uses the demodulised name if that's what is stored" do
-          model.stub! :store_full_sti_class => false
-          model.name.stub! :demodulize => 'U'
-
-          relation.should_receive(:where) do |string|
-            string.should match(/"users"."type" = 'U'/)
-            relation
-          end
-
-          builder.sql_query
-        end
-
         it "groups by the inheritance column" do
           relation.should_receive(:group) do |string|
             string.should match(/"users"."type"/)
@@ -486,15 +435,6 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
           before :each do
             model.column_names << 'custom_type'
             model.stub :inheritance_column => 'custom_type'
-          end
-
-          it "limits results on the right column" do
-            relation.should_receive(:where) do |string|
-              string.should match(/"users"."custom_type" = 'User'/)
-              relation
-            end
-
-            builder.sql_query
           end
 
           it "groups by the right column" do
@@ -673,51 +613,6 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
       end
 
       builder.sql_query_range
-    end
-
-    context 'STI model' do
-      before :each do
-        model.column_names << 'type'
-        model.stub! :descends_from_active_record? => false
-        model.stub! :store_full_sti_class => true
-      end
-
-      it "limits results to just the model" do
-        relation.should_receive(:where) do |string|
-          string.should match(/`users`.`type` = 'User'/)
-          relation
-        end
-
-        builder.sql_query_range
-      end
-
-      it "uses the demodulised name if that's what is stored" do
-        model.stub! :store_full_sti_class => false
-        model.name.stub! :demodulize => 'U'
-
-        relation.should_receive(:where) do |string|
-          string.should match(/`users`.`type` = 'U'/)
-          relation
-        end
-
-        builder.sql_query_range
-      end
-
-      context 'with a custom inheritance column' do
-        before :each do
-          model.column_names << 'custom_type'
-          model.stub :inheritance_column => 'custom_type'
-        end
-
-        it "limits results on the right column" do
-          relation.should_receive(:where) do |string|
-            string.should match(/`users`.`custom_type` = 'User'/)
-            relation
-          end
-
-          builder.sql_query_range
-        end
-      end
     end
 
     context 'with a delta processor' do

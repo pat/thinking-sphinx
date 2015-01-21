@@ -14,7 +14,7 @@ class ThinkingSphinx::ActiveRecord::Polymorpher
 
   def append_reflections
     mappings.each do |class_name, name|
-      next if klass.reflections[name]
+      next if klass.reflect_on_association(name)
 
       reflection = clone_with name, class_name
       if ActiveRecord::Reflection.respond_to?(:add_reflection)
@@ -26,7 +26,7 @@ class ThinkingSphinx::ActiveRecord::Polymorpher
   end
 
   def clone_with(name, class_name)
-    ThinkingSphinx::ActiveRecord::FilteredReflection.clone_with_filter(
+    ThinkingSphinx::ActiveRecord::FilterReflection.call(
       reflection, name, class_name
     )
   end
@@ -51,12 +51,12 @@ class ThinkingSphinx::ActiveRecord::Polymorpher
   end
 
   def reflection
-    @reflection ||= klass.reflections[column.__name]
+    @reflection ||= klass.reflect_on_association column.__name
   end
 
   def klass
     @klass ||= column.__stack.inject(source.model) { |parent, key|
-      parent.reflections[key].klass
+      parent.reflect_on_association(key).klass
     }
   end
 end

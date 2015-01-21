@@ -8,7 +8,7 @@ class ThinkingSphinx::ActiveRecord::SimpleManyQuery <
   private
 
   def reflection
-    @reflection ||= source.model.reflections[column.__stack.first]
+    @reflection ||= source.model.reflect_on_association column.__stack.first
   end
 
   def quoted_foreign_key

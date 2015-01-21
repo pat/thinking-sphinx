@@ -5,13 +5,11 @@ require 'active_support/core_ext/module/delegation'
 require 'thinking_sphinx/index_set'
 
 describe ThinkingSphinx::IndexSet do
-  let(:set)           { ThinkingSphinx::IndexSet.new classes, indices,
-    configuration }
-  let(:classes)       { [] }
-  let(:indices)       { [] }
+  let(:set)           { ThinkingSphinx::IndexSet.new options, configuration }
   let(:configuration) { double('configuration', :preload_indices => true,
     :indices => []) }
   let(:ar_base)       { double('ActiveRecord::Base') }
+  let(:options)       { {} }
 
   before :each do
     stub_const 'ActiveRecord::Base', ar_base
@@ -43,21 +41,29 @@ describe ThinkingSphinx::IndexSet do
     end
 
     it "uses indices for the given classes" do
-      classes << class_double('Article')
+      configuration.indices.replace [
+        double(:reference => :article,         :distributed? => false),
+        double(:reference => :opinion_article, :distributed? => false),
+        double(:reference => :page,            :distributed? => false)
+      ]
 
-      configuration.should_receive(:indices_for_references).with(:article).
-        and_return([])
+      options[:classes] = [class_double('Article')]
 
-      set.to_a
+      set.to_a.length.should == 1
     end
 
     it "requests indices for any superclasses" do
-      classes << class_double('OpinionArticle', class_double('Article'))
+      configuration.indices.replace [
+        double(:reference => :article,         :distributed? => false),
+        double(:reference => :opinion_article, :distributed? => false),
+        double(:reference => :page,            :distributed? => false)
+      ]
 
-      configuration.should_receive(:indices_for_references).
-        with(:opinion_article, :article).and_return([])
+      options[:classes] = [
+        class_double('OpinionArticle', class_double('Article'))
+      ]
 
-      set.to_a
+      set.to_a.length.should == 2
     end
 
     it "uses named indices if names are provided" do
@@ -65,9 +71,21 @@ describe ThinkingSphinx::IndexSet do
       user_core    = double('index', :name => 'user_core')
       configuration.indices.replace [article_core, user_core]
 
-      indices << 'article_core'
+      options[:indices] = ['article_core']
 
       set.to_a.should == [article_core]
+    end
+
+    it "selects from the full index set those with matching references" do
+      configuration.indices.replace [
+        double('index', :reference => :article, :distributed? => false),
+        double('index', :reference => :book,    :distributed? => false),
+        double('index', :reference => :page,    :distributed? => false)
+      ]
+
+      options[:references] = [:book, :article]
+
+      set.to_a.length.should == 2
     end
   end
 end

@@ -134,7 +134,9 @@ SQL
 
     def indices
       @indices ||= begin
-        set = ThinkingSphinx::IndexSet.new classes, options[:indices]
+        set = configuration.index_set_class.new(
+          options.slice(:classes, :indices)
+        )
         raise ThinkingSphinx::NoIndicesError if set.empty?
         set
       end
