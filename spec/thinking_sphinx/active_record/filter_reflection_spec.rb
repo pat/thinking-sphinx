@@ -7,7 +7,9 @@ describe ThinkingSphinx::ActiveRecord::FilterReflection do
       :foreign_type => :foo_type, :class => reflection_klass) }
     let(:options)    { {:polymorphic => true} }
     let(:filtered_reflection) { double 'filtered reflection' }
-    let(:reflection_klass)    { double :new => filtered_reflection }
+    let(:reflection_klass)    { double :new => filtered_reflection,
+      :instance_method => initialize_method }
+    let(:initialize_method)   { double :arity => 4 }
 
     before :each do
       reflection.active_record.stub_chain(:connection, :quote_column_name).
