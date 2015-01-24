@@ -469,22 +469,6 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
     end
   end
 
-  describe 'sql_query_info' do
-    it "filters on the reversed document id" do
-      relation.should_receive(:where).
-        with("`users`.`id` = ($id - #{source.offset}) / #{indices.count}").
-        and_return(relation)
-
-      builder.sql_query_info
-    end
-
-    it "returns the generated SQL query" do
-      relation.stub(:to_sql).and_return('SELECT * FROM people WHERE id = $id')
-
-      builder.sql_query_info.should == 'SELECT * FROM people WHERE id = $id'
-    end
-  end
-
   describe 'sql_query_post_index' do
     let(:processor) { double('processor', :reset_query => 'RESET DELTAS') }
 

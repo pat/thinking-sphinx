@@ -186,14 +186,6 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       source.sql_query_range.should == 'select 0, 10 from table'
     end
 
-    it "uses the builder's sql_query_info value" do
-      builder.stub! :sql_query_info => 'select * from table where id = ?'
-
-      source.render
-
-      source.sql_query_info.should == 'select * from table where id = ?'
-    end
-
     it "appends the builder's sql_query_pre value" do
       builder.stub! :sql_query_pre => ['Change Setting']
 
