@@ -6,8 +6,9 @@ class ThinkingSphinx::ActiveRecord::FilterReflection
   def self.call(reflection, name, class_name)
     filter = new(reflection, class_name)
     klass  = reflection.class
+    arity  = klass.instance_method(:initialize).arity
 
-    if defined?(ActiveRecord::Reflection::MacroReflection)
+    if defined?(ActiveRecord::Reflection::MacroReflection) && arity == 4
       klass.new name, filter.scope, filter.options, reflection.active_record
     elsif reflection.respond_to?(:scope)
       klass.new reflection.macro, name, filter.scope, filter.options,
