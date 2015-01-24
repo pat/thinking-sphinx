@@ -125,7 +125,7 @@ describe 'specifying SQL for index definitions' do
     query = index.sources.first.sql_query
     query.should match(/LEFT OUTER JOIN .articles. ON .articles.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Article'/)
     query.should match(/LEFT OUTER JOIN .books. ON .books.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Book'/)
-    query.should match(/articles\..title., books\..title./)
+    query.should match(/.articles.\..title., .books.\..title./)
   end
 
   it "concatenates references that have column" do
@@ -139,7 +139,7 @@ describe 'specifying SQL for index definitions' do
     query = index.sources.first.sql_query
     query.should match(/LEFT OUTER JOIN .articles. ON .articles.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Article'/)
     query.should_not match(/articles\..title., users\..title./)
-    query.should match(/articles\..title./)
+    query.should match(/.articles.\..title./)
   end
 
   it "respects deeper associations through polymorphic joins" do
@@ -153,7 +153,7 @@ describe 'specifying SQL for index definitions' do
     query = index.sources.first.sql_query
     query.should match(/LEFT OUTER JOIN .articles. ON .articles.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Article'/)
     query.should match(/LEFT OUTER JOIN .users. ON .users.\..id. = .articles.\..user_id./)
-    query.should match(/users\..name./)
+    query.should match(/.users.\..name./)
   end
 end
 
