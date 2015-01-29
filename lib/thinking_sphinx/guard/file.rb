@@ -21,6 +21,6 @@ class ThinkingSphinx::Guard::File
   end
 
   def unlock
-    FileUtils.rm path
+    FileUtils.rm(path) if locked?
   end
 end
