@@ -223,7 +223,7 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
       source.stub :set_database_settings => true
 
       stub_const 'ActiveRecord::Base',
-        double(:configurations => {'other' => {:baz => :qux}})
+        double(:configurations => {'other' => {'baz' => 'qux'}})
     end
 
     it "sends through a hash if provided" do
@@ -233,13 +233,13 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     end
 
     it "finds the environment settings if given a string key" do
-      source.should_receive(:set_database_settings).with(:baz => :qux)
+      source.should_receive(:set_database_settings).with(:baz => 'qux')
 
       instance.set_database 'other'
     end
 
     it "finds the environment settings if given a symbol key" do
-      source.should_receive(:set_database_settings).with(:baz => :qux)
+      source.should_receive(:set_database_settings).with(:baz => 'qux')
 
       instance.set_database :other
     end
