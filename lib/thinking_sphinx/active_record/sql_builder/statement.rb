@@ -130,9 +130,15 @@ module ThinkingSphinx
         builder.compose(
           presenters_to_group(field_presenters),
           presenters_to_group(attribute_presenters)
-        ) unless source.options[:minimal_group_by?]
+        ) unless minimal_group_by?
 
         builder.compose(groupings).separated
+      end
+
+      def minimal_group_by?
+        source.options[:minimal_group_by?] ||
+        config.settings['minimal_group_by?'] ||
+        config.settings['minimal_group_by']
       end
     end
   end

@@ -415,6 +415,55 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
         end
       end
 
+      context 'group by shortcut in global configuration' do
+        before :each do
+          config.settings['minimal_group_by'] = true
+        end
+
+        it "groups by the primary key" do
+          relation.should_receive(:group) do |string|
+            string.should match(/"users"."id"/)
+            relation
+          end
+
+          builder.sql_query
+        end
+
+        it "does not group by fields" do
+          source.fields << double('field')
+
+          relation.should_receive(:group) do |string|
+            string.should_not match(/"name"/)
+            relation
+          end
+
+          builder.sql_query
+        end
+
+        it "does not group by attributes" do
+          source.attributes << double('attribute')
+          presenter.stub!(:to_group => '"created_at"')
+
+          relation.should_receive(:group) do |string|
+            string.should_not match(/"created_at"/)
+            relation
+          end
+
+          builder.sql_query
+        end
+
+        it "groups by source groupings" do
+          source.groupings << '"latitude"'
+
+          relation.should_receive(:group) do |string|
+            string.should match(/"latitude"/)
+            relation
+          end
+
+          builder.sql_query
+        end
+      end
+
       context 'STI model' do
         before :each do
           model.column_names << 'type'
