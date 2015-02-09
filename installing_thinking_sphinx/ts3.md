@@ -28,7 +28,7 @@ Or by adding them to your Gemfile:
 
 {% highlight ruby %}
 gem 'mysql2',          '~> 0.3.13', :platform => :ruby
-gem 'jdbc-mysql',      '~> 5.1.28',   :platform => :jruby
+gem 'jdbc-mysql',      '~> 5.1.28', :platform => :jruby
 gem 'thinking-sphinx', '~> 3.1.0'
 {% endhighlight %}
 
@@ -36,7 +36,7 @@ You can also refer directly to the git repository - but if you're doing this, sp
 
 {% highlight ruby %}
 gem 'mysql2',          '~> 0.3.13', :platform => :ruby
-gem 'jdbc-mysql',      '~> 5.1.28',   :platform => :jruby
+gem 'jdbc-mysql',      '~> 5.1.28', :platform => :jruby
 gem 'thinking-sphinx', '~> 3.1.0',
   :git    => 'git://github.com/pat/thinking-sphinx.git',
   :branch => 'master',
