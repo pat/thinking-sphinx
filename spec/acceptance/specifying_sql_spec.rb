@@ -126,7 +126,7 @@ describe 'specifying SQL for index definitions' do
     query.should match(/LEFT OUTER JOIN .articles. ON .articles.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Article'/)
     query.should match(/LEFT OUTER JOIN .books. ON .books.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Book'/)
     query.should match(/.articles.\..title., .books.\..title./)
-  end
+  end if ActiveRecord::VERSION::MAJOR > 3
 
   it "concatenates references that have column" do
     index = ThinkingSphinx::ActiveRecord::Index.new(:event)
@@ -140,7 +140,7 @@ describe 'specifying SQL for index definitions' do
     query.should match(/LEFT OUTER JOIN .articles. ON .articles.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Article'/)
     query.should_not match(/articles\..title., users\..title./)
     query.should match(/.articles.\..title./)
-  end
+  end if ActiveRecord::VERSION::MAJOR > 3
 
   it "respects deeper associations through polymorphic joins" do
     index = ThinkingSphinx::ActiveRecord::Index.new(:event)
@@ -155,7 +155,7 @@ describe 'specifying SQL for index definitions' do
     query.should match(/LEFT OUTER JOIN .users. ON .users.\..id. = .articles.\..user_id./)
     query.should match(/.users.\..name./)
   end
-end
+end if ActiveRecord::VERSION::MAJOR > 3
 
 describe 'separate queries for MVAs' do
   let(:index)  { ThinkingSphinx::ActiveRecord::Index.new(:article) }

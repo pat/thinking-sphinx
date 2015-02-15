@@ -44,6 +44,8 @@ h3. Rails and ActiveRecord
 
 Currently Thinking Sphinx 3 is built to support Rails/ActiveRecord 3.2 or newer. If you're using Sinatra and ActiveRecord instead of Rails, that's fine - just make sure you add the @:require => 'thinking_sphinx/sinatra'@ option when listing @thinking-sphinx@ in your Gemfile.
 
+Please note that if you're referring to polymorphic associations in your index definitions, you'll want to be using Rails/ActiveRecord 4.0 or newer. Supporting polymorphic associations and Rails/ActiveRecord 3.2 is problematic, and likely will not be addressed in the future.
+
 If you want ActiveRecord 3.1 support, then refer to the 3.0.x releases of Thinking Sphinx. Anything older than that, then you're stuck with Thinking Sphinx v2.x (for Rails/ActiveRecord 3.0) or v1.x (Rails 2.3). Please note that these older versions are no longer actively supported.
 
 h3. Ruby
