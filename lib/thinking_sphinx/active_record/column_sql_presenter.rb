@@ -13,7 +13,10 @@ class ThinkingSphinx::ActiveRecord::ColumnSQLPresenter
     return __name if string?
     return nil unless exists?
 
-    "#{adapter.quote associations.alias_for(__stack)}.#{adapter.quote __name}"
+    table = associations.alias_for __stack
+    table = adapter.quote table if escape_table?
+
+    "#{table}.#{adapter.quote __name}"
   end
 
   private
@@ -21,6 +24,13 @@ class ThinkingSphinx::ActiveRecord::ColumnSQLPresenter
   attr_reader :model, :column, :adapter, :associations
 
   delegate :__stack, :__name, :string?, :to => :column
+
+  def escape_table?
+    return false if version::MAJOR <= 3
+    return true if  version::MAJOR >= 5
+
+    version::MINOR >= 1
+  end
 
   def exists?
     path.model.column_names.include?(column.__name.to_s)
@@ -30,5 +40,9 @@ class ThinkingSphinx::ActiveRecord::ColumnSQLPresenter
 
   def path
     Joiner::Path.new model, column.__stack
+  end
+
+  def version
+    ActiveRecord::VERSION
   end
 end
