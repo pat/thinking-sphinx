@@ -244,7 +244,7 @@ describe 'separate queries for MVAs' do
 
     declaration.should == 'uint genre_ids from query'
     query.should match(/^SELECT .books_genres.\..book_id. \* #{count} \+ #{source.offset} AS .id., .books_genres.\..genre_id. AS .genre_ids. FROM .books_genres.\s?$/)
-  end
+  end if ActiveRecord::VERSION::MAJOR > 3
 
   it "generates an appropriate range SQL queries for an MVA" do
     index.definition_block = Proc.new {
@@ -297,7 +297,7 @@ describe 'separate queries for MVAs' do
     declaration.should == 'uint genre_ids from ranged-query'
     query.should match(/^SELECT .books_genres.\..book_id. \* #{count} \+ #{source.offset} AS .id., .books_genres.\..genre_id. AS .genre_ids. FROM .books_genres. WHERE \(.books_genres.\..book_id. BETWEEN \$start AND \$end\)$/)
     range.should match(/^SELECT MIN\(.books_genres.\..book_id.\), MAX\(.books_genres.\..book_id.\) FROM .books_genres.$/)
-  end
+  end if ActiveRecord::VERSION::MAJOR > 3
 
   it "respects custom SQL snippets as the query value" do
     index.definition_block = Proc.new {
