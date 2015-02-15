@@ -15,7 +15,7 @@ script: bundle exec appraisal rspec
 env:
   - DATABASE=mysql2 SPHINX_BIN=/usr/local/sphinx-2.0.10/bin/ SPHINX_VERSION=2.0.10
   - DATABASE=postgresql SPHINX_BIN=/usr/local/sphinx-2.0.10/bin/ SPHINX_VERSION=2.0.10
-  - DATABASE=mysql2 SPHINX_BIN=/usr/local/sphinx-2.1.8/bin/ SPHINX_VERSION=2.1.8
-  - DATABASE=postgresql SPHINX_BIN=/usr/local/sphinx-2.1.8/bin/ SPHINX_VERSION=2.1.8
-  - DATABASE=mysql2 SPHINX_BIN=/usr/local/sphinx-2.2.2-beta/bin/ SPHINX_VERSION=2.2.2
-  - DATABASE=postgresql SPHINX_BIN=/usr/local/sphinx-2.2.2-beta/bin/ SPHINX_VERSION=2.2.2
+  - DATABASE=mysql2 SPHINX_BIN=/usr/local/sphinx-2.1.9/bin/ SPHINX_VERSION=2.1.9
+  - DATABASE=postgresql SPHINX_BIN=/usr/local/sphinx-2.1.9/bin/ SPHINX_VERSION=2.1.9
+  - DATABASE=mysql2 SPHINX_BIN=/usr/local/sphinx-2.2.6/bin/ SPHINX_VERSION=2.2.6
+  - DATABASE=postgresql SPHINX_BIN=/usr/local/sphinx-2.2.6/bin/ SPHINX_VERSION=2.2.6
