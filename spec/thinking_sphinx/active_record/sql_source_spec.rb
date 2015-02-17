@@ -325,6 +325,15 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       source.sql_attr_str2wordcount.should include('name')
     end
 
+    it "adds json attributes to sql_attr_json" do
+      source.attributes << double('attribute')
+      presenter.stub :declaration => 'json', :collection_type => :json
+
+      source.render
+
+      source.sql_attr_json.should include('json')
+    end
+
     it "adds relevant settings from thinking_sphinx.yml" do
       config.settings['mysql_ssl_cert'] = 'foo.cert'
       config.settings['morphology']     = 'stem_en' # should be ignored
