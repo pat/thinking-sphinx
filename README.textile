@@ -60,6 +60,8 @@ MySQL 5.x and Postgres 8.4 or better are supported.
 
 h2. Contributing
 
+Please note that this project now has a "Contributor Code of Conduct":http://contributor-covenant.org/version/1/0/0/. By participating in this project you agree to abide by its terms.
+
 To contribute, clone this repository and have a good look through the specs - you'll notice the distinction between acceptance tests that actually use Sphinx and go through the full stack, and unit tests (everything else) which use liberal test doubles to ensure they're only testing the behaviour of the class in question. I've found this leads to far better code design.
 
 All development is done on the @develop@ branch; please base any pull requests off of that branch. Please write the tests and then the code to get them passing, and send through a pull request.
