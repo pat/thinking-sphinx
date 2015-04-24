@@ -218,9 +218,16 @@ html_strip: true
 
 <h3 id="other_adapters">Using other Database Adapters</h3>
 
-If you're using Thinking Sphinx in combination with a database adapter that isn't quite run-of-the-mill, you may need to add a snippet of code to a Rails initialiser or equivalent (This is only available in versions 1.4.0 and 2.0.0 onwards, but not 3.0.0 or newer, though).
+If you're using Thinking Sphinx in combination with a database adapter that isn't quite run-of-the-mill, you may need to add a snippet of code to a Rails initialiser or equivalent (This is only available in versions 1.4.0, 2.0.0 and 3.0.0 onwards).
 
-Here's an example that covers things for Octopus:
+For Thinking Sphinx v3, there's just one way to do this, and it's pretty simple:
+
+{% highlight ruby %}
+ThinkingSphinx::ActiveRecord::DatabaseAdapters.default =
+  ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter
+{% endhighlight %}
+
+In v1 and v2, you can either supply a block:
 
 {% highlight ruby %}
 ThinkingSphinx.database_adapter = lambda do |model|
@@ -235,19 +242,10 @@ ThinkingSphinx.database_adapter = lambda do |model|
 end
 {% endhighlight %}
 
-Of course, `ThinkingSphinx.database_adapter` accepts a symbol as well, if you just want to presume that you'll always be using either MySQL or PostgreSQL:
+Or `ThinkingSphinx.database_adapter` accepts a symbol as well, if you just want to presume that you'll always be using either MySQL or PostgreSQL:
 
 {% highlight ruby %}
 ThinkingSphinx.database_adapter = :postgresql
-{% endhighlight %}
-
-In most situations, though, you shouldn't need to do this. Thinking Sphinx understands the standard MySQL, PostgreSQL, MySQL2, MySQL Plus and NullDB (as MySQL) adapters.
-
-If you're using ThinkingSphinx 3.0.0 or newer, it's not quite as clean, but a little more obvious:
-
-{% highlight ruby %}
-ThinkingSphinx::ActiveRecord::DatabaseAdapters.default =
-  ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter
 {% endhighlight %}
 
 <h3 id="or_attributes">Using OR Logic with Attribute Filters</h3>
