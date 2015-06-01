@@ -1,3 +1,16 @@
+Edge:
+* [FIX] Kaminari expects prev_page to be available.
+* [CHANGE] Add a contributor code of conduct.
+* [FEATURE] Add JSON as a Sphinx type for attributes (Daniel Vandersluis).
+* [CHANGE] Remove polymorphic association and HABTM query support (when related to Thinking Sphinx) when ActiveRecord 3.2 is involved.
+* [FIX] Don't try to delete guard files if they don't exist (@exAspArk).
+* [FEATURE] minimal_group_by? can now be set in config/thinking_sphinx.yml to automatically apply to all index definitions.
+* [FIX] Handle database settings reliably, now that ActiveRecord 4.2 uses strings all the time.
+* [FIX] More consistent with escaping table names.
+* [CHANGE] Remove default charset_type - no longer required for Sphinx 2.2.
+* [FIX] Bug fix for association creation (with polymophic fields/attributes).
+* [CHANGE] Removing sql_query_info setting, as it's no longer used by Sphinx (nor is it actually used by Thinking Sphinx).
+
 2015-01-21: 3.1.3
 * [CHANGE] Log excerpt SphinxQL queries just like the search queries.
 * [CHANGE] Load Railtie if Rails::Railtie is defined, instead of just Rails (Andrew Cone).
