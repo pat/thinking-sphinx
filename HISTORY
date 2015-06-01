@@ -1,4 +1,4 @@
-Edge:
+2015-06-01: 3.1.4
 * [FIX] Kaminari expects prev_page to be available.
 * [CHANGE] Add a contributor code of conduct.
 * [FEATURE] Add JSON as a Sphinx type for attributes (Daniel Vandersluis).
