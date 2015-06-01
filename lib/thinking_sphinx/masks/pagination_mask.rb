@@ -37,6 +37,8 @@ class ThinkingSphinx::Masks::PaginationMask
     search.current_page == 1 ? nil : search.current_page - 1
   end
 
+  alias_method :prev_page, :previous_page
+
   def total_entries
     search.meta['total_found'].to_i
   end

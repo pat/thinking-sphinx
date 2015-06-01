@@ -7,7 +7,8 @@ class ThinkingSphinx::ActiveRecord::Attribute::SphinxPresenter
     :string    => :string,
     :bigint    => :bigint,
     :ordinal   => :str2ordinal,
-    :wordcount => :str2wordcount
+    :wordcount => :str2wordcount,
+    :json      => :json
   }
 
   def initialize(attribute, source)

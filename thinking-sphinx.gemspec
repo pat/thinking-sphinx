@@ -3,11 +3,11 @@ $:.push File.expand_path('../lib', __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = 'thinking-sphinx'
-  s.version     = '3.1.3'
+  s.version     = '3.1.4'
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Pat Allan"]
   s.email       = ["pat@freelancing-gods.com"]
-  s.homepage    = 'http://pat.github.io/thinking-sphinx/'
+  s.homepage    = 'https://pat.github.io/thinking-sphinx/'
   s.summary     = 'A smart wrapper over Sphinx for ActiveRecord'
   s.description = %Q{An intelligent layer for ActiveRecord (via Rails and Sinatra) for the Sphinx full-text search tool.}
   s.license     = 'MIT'
@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'innertube',    '>= 1.0.2'
   s.add_runtime_dependency 'riddle',       '>= 1.5.11'
 
-  s.add_development_dependency 'appraisal',        '~> 0.5.2'
+  s.add_development_dependency 'appraisal',        '~> 1.0.2'
   s.add_development_dependency 'combustion',       '~> 0.4.0'
   s.add_development_dependency 'database_cleaner', '~> 1.2.0'
   s.add_development_dependency 'rspec',            '~> 2.13.0'

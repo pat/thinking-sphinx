@@ -16,10 +16,6 @@ module ThinkingSphinx
         statement.to_query_range_relation.to_sql
       end
 
-      def sql_query_info
-        statement.to_query_info_relation.to_sql
-      end
-
       def sql_query_pre
         query.to_query
       end
@@ -94,10 +90,6 @@ module ThinkingSphinx
         column = "#{column} * #{config.indices.count} + #{source.offset}"
 
         "#{column} AS #{quoted_alias}"
-      end
-
-      def reversed_document_id
-        "($id - #{source.offset}) / #{config.indices.count}"
       end
 
       def range_condition

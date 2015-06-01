@@ -139,6 +139,12 @@ describe ThinkingSphinx::ActiveRecord::Attribute::Type do
       type.type.should == :bigint
     end
 
+    it "detects JSON" do
+      db_column.stub :type => :json
+
+      type.type.should == :json
+    end
+
     it "respects provided type setting" do
       attribute.options[:type] = :timestamp
 

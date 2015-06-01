@@ -10,7 +10,6 @@ module ThinkingSphinx::Core::Index
   def initialize(reference, options = {})
     @reference    = reference.to_sym
     @docinfo      = :extern
-    @charset_type = 'utf-8'
     @options      = options
     @offset       = config.next_offset(options[:offset_as] || reference)
     @type         = 'plain'

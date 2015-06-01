@@ -20,12 +20,6 @@ module ThinkingSphinx
         scope
       end
 
-      def to_query_info_relation
-        filter_by_query_info
-
-        scope
-      end
-
       def to_query_pre
         filter_by_query_pre
 
@@ -47,10 +41,6 @@ module ThinkingSphinx
         @scope = scope.select("#{minimum}, #{maximum}").where(
           where_clause(true)
         )
-      end
-
-      def filter_by_query_info
-        @scope = scope.where("#{quoted_primary_key} = #{reversed_document_id}")
       end
 
       def filter_by_scopes
@@ -140,9 +130,15 @@ module ThinkingSphinx
         builder.compose(
           presenters_to_group(field_presenters),
           presenters_to_group(attribute_presenters)
-        ) unless source.options[:minimal_group_by?]
+        ) unless minimal_group_by?
 
         builder.compose(groupings).separated
+      end
+
+      def minimal_group_by?
+        source.options[:minimal_group_by?] ||
+        config.settings['minimal_group_by?'] ||
+        config.settings['minimal_group_by']
       end
     end
   end

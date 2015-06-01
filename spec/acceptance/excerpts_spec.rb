@@ -23,7 +23,7 @@ describe 'Accessing excerpts for methods on a search result', :live => true do
 
     search.first.excerpts.title.
       should == 'Война и <span class="match">миръ</span>'
-  end
+  end if ENV['SPHINX_VERSION'].try :[], /2.2.\d/
 
   it "does not include class names in excerpts" do
     Book.create! :title => 'The Graveyard Book'

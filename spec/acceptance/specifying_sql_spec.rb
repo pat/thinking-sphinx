@@ -125,8 +125,8 @@ describe 'specifying SQL for index definitions' do
     query = index.sources.first.sql_query
     query.should match(/LEFT OUTER JOIN .articles. ON .articles.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Article'/)
     query.should match(/LEFT OUTER JOIN .books. ON .books.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Book'/)
-    query.should match(/articles\..title., books\..title./)
-  end
+    query.should match(/.articles.\..title., .books.\..title./)
+  end if ActiveRecord::VERSION::MAJOR > 3
 
   it "concatenates references that have column" do
     index = ThinkingSphinx::ActiveRecord::Index.new(:event)
@@ -139,8 +139,8 @@ describe 'specifying SQL for index definitions' do
     query = index.sources.first.sql_query
     query.should match(/LEFT OUTER JOIN .articles. ON .articles.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Article'/)
     query.should_not match(/articles\..title., users\..title./)
-    query.should match(/articles\..title./)
-  end
+    query.should match(/.articles.\..title./)
+  end if ActiveRecord::VERSION::MAJOR > 3
 
   it "respects deeper associations through polymorphic joins" do
     index = ThinkingSphinx::ActiveRecord::Index.new(:event)
@@ -153,9 +153,9 @@ describe 'specifying SQL for index definitions' do
     query = index.sources.first.sql_query
     query.should match(/LEFT OUTER JOIN .articles. ON .articles.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Article'/)
     query.should match(/LEFT OUTER JOIN .users. ON .users.\..id. = .articles.\..user_id./)
-    query.should match(/users\..name./)
+    query.should match(/.users.\..name./)
   end
-end
+end if ActiveRecord::VERSION::MAJOR > 3
 
 describe 'separate queries for MVAs' do
   let(:index)  { ThinkingSphinx::ActiveRecord::Index.new(:article) }
@@ -244,7 +244,7 @@ describe 'separate queries for MVAs' do
 
     declaration.should == 'uint genre_ids from query'
     query.should match(/^SELECT .books_genres.\..book_id. \* #{count} \+ #{source.offset} AS .id., .books_genres.\..genre_id. AS .genre_ids. FROM .books_genres.\s?$/)
-  end
+  end if ActiveRecord::VERSION::MAJOR > 3
 
   it "generates an appropriate range SQL queries for an MVA" do
     index.definition_block = Proc.new {
@@ -297,7 +297,7 @@ describe 'separate queries for MVAs' do
     declaration.should == 'uint genre_ids from ranged-query'
     query.should match(/^SELECT .books_genres.\..book_id. \* #{count} \+ #{source.offset} AS .id., .books_genres.\..genre_id. AS .genre_ids. FROM .books_genres. WHERE \(.books_genres.\..book_id. BETWEEN \$start AND \$end\)$/)
     range.should match(/^SELECT MIN\(.books_genres.\..book_id.\), MAX\(.books_genres.\..book_id.\) FROM .books_genres.$/)
-  end
+  end if ActiveRecord::VERSION::MAJOR > 3
 
   it "respects custom SQL snippets as the query value" do
     index.definition_block = Proc.new {

@@ -1,11 +1,12 @@
 h1. Thinking Sphinx
 
-Thinking Sphinx is a library for connecting ActiveRecord to the Sphinx full-text search tool, and integrates closely with Rails (but also works with other Ruby web frameworks). The current release is v3.1.3.
+Thinking Sphinx is a library for connecting ActiveRecord to the Sphinx full-text search tool, and integrates closely with Rails (but also works with other Ruby web frameworks). The current release is v3.1.4.
 
 h2. Upgrading
 
 Please refer to the release notes for any changes you need to make when upgrading:
 
+* "v3.1.4":https://github.com/pat/thinking-sphinx/releases/tag/v3.1.4
 * "v3.1.3":https://github.com/pat/thinking-sphinx/releases/tag/v3.1.3
 * "v3.1.2":https://github.com/pat/thinking-sphinx/releases/tag/v3.1.2
 * "v3.1.1":https://github.com/pat/thinking-sphinx/releases/tag/v3.1.1
@@ -18,9 +19,9 @@ h2. Installation
 
 It's a gem, so install it like you would any other gem. You will also need to specify the mysql2 gem if you're using MRI, or jdbc-mysql if you're using JRuby:
 
-<pre><code>gem 'mysql2',          '~> 0.3.13', :platform => :ruby
-gem 'jdbc-mysql',      '~> 5.1.28', :platform => :jruby
-gem 'thinking-sphinx', '~> 3.1.3'</code></pre>
+<pre><code>gem 'mysql2',          '~> 0.3.18', :platform => :ruby
+gem 'jdbc-mysql',      '~> 5.1.35', :platform => :jruby
+gem 'thinking-sphinx', '~> 3.1.4'</code></pre>
 
 The MySQL gems mentioned are required for connecting to Sphinx, so please include it even when you're using PostgreSQL for your database.
 
@@ -44,6 +45,8 @@ h3. Rails and ActiveRecord
 
 Currently Thinking Sphinx 3 is built to support Rails/ActiveRecord 3.2 or newer. If you're using Sinatra and ActiveRecord instead of Rails, that's fine - just make sure you add the @:require => 'thinking_sphinx/sinatra'@ option when listing @thinking-sphinx@ in your Gemfile.
 
+Please note that if you're referring to polymorphic associations in your index definitions, you'll want to be using Rails/ActiveRecord 4.0 or newer. Supporting polymorphic associations and Rails/ActiveRecord 3.2 is problematic, and likely will not be addressed in the future.
+
 If you want ActiveRecord 3.1 support, then refer to the 3.0.x releases of Thinking Sphinx. Anything older than that, then you're stuck with Thinking Sphinx v2.x (for Rails/ActiveRecord 3.0) or v1.x (Rails 2.3). Please note that these older versions are no longer actively supported.
 
 h3. Ruby
@@ -57,6 +60,8 @@ h3. Database Versions
 MySQL 5.x and Postgres 8.4 or better are supported.
 
 h2. Contributing
+
+Please note that this project now has a "Contributor Code of Conduct":http://contributor-covenant.org/version/1/0/0/. By participating in this project you agree to abide by its terms.
 
 To contribute, clone this repository and have a good look through the specs - you'll notice the distinction between acceptance tests that actually use Sphinx and go through the full stack, and unit tests (everything else) which use liberal test doubles to ensure they're only testing the behaviour of the class in question. I've found this leads to far better code design.
 

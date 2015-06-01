@@ -6,18 +6,16 @@ rvm:
   - jruby-19mode
 before_install:
   - gem update --system
+  - gem install bundler
 before_script:
   - "mysql -e 'create database thinking_sphinx;' > /dev/null"
   - "psql -c 'create database thinking_sphinx;' -U postgres >/dev/null"
+  - bundle exec appraisal install
+script: bundle exec appraisal rspec
 env:
   - DATABASE=mysql2 SPHINX_BIN=/usr/local/sphinx-2.0.10/bin/ SPHINX_VERSION=2.0.10
   - DATABASE=postgresql SPHINX_BIN=/usr/local/sphinx-2.0.10/bin/ SPHINX_VERSION=2.0.10
-  - DATABASE=mysql2 SPHINX_BIN=/usr/local/sphinx-2.1.8/bin/ SPHINX_VERSION=2.1.8
-  - DATABASE=postgresql SPHINX_BIN=/usr/local/sphinx-2.1.8/bin/ SPHINX_VERSION=2.1.8
-  - DATABASE=mysql2 SPHINX_BIN=/usr/local/sphinx-2.2.2-beta/bin/ SPHINX_VERSION=2.2.2
-  - DATABASE=postgresql SPHINX_BIN=/usr/local/sphinx-2.2.2-beta/bin/ SPHINX_VERSION=2.2.2
-gemfile:
-  - gemfiles/rails_3_2.gemfile
-  - gemfiles/rails_4_0.gemfile
-  - gemfiles/rails_4_1.gemfile
-  - gemfiles/rails_4_2.gemfile
+  - DATABASE=mysql2 SPHINX_BIN=/usr/local/sphinx-2.1.9/bin/ SPHINX_VERSION=2.1.9
+  - DATABASE=postgresql SPHINX_BIN=/usr/local/sphinx-2.1.9/bin/ SPHINX_VERSION=2.1.9
+  - DATABASE=mysql2 SPHINX_BIN=/usr/local/sphinx-2.2.6/bin/ SPHINX_VERSION=2.2.6
+  - DATABASE=postgresql SPHINX_BIN=/usr/local/sphinx-2.2.6/bin/ SPHINX_VERSION=2.2.6
