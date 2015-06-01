@@ -10,6 +10,7 @@ title: Indexing
 * [Attributes](#attributes)
 * [Conditions and Groupings](#conditions)
 * [Sanitizing SQL](#sql)
+* [Index Options](#options)
 * [Multiple Indices](#multiple)
 * [Processing your Index](#processing)
 
@@ -145,6 +146,20 @@ where sanitize_sql(["published", true])
 {% endhighlight %}
 
 This will produce the expected `WHERE published = 1` for MySQL.
+
+<h3 id="options">Index Options</h3>
+
+Most [Sphinx index configuration](http://sphinxsearch.com/docs/current.html#confgroup-index) options can be set on a per-index basis using the `set_property` method within your index definition. Here's an example for the `min_infix_len` option:
+
+{% highlight ruby %}
+ThinkingSphinx::Index.define :article, :with => :active_record do
+  # ...
+
+  set_property :min_infix_len => 3
+end
+{% endhighlight %}
+
+`set_property` takes a hash of options, but also can be called as many times as you'd like.
 
 <h3 id="multiple">Multiple Indices</h3>
 
