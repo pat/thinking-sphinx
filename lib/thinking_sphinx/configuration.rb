@@ -1,3 +1,4 @@
+require 'erb'
 require 'pathname'
 
 class ThinkingSphinx::Configuration < Riddle::Configuration
