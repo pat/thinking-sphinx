@@ -135,7 +135,10 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def settings_to_hash
-    contents = YAML.load(ERB.new(File.read(settings_file)).result)
+    input    = File.read settings_file
+    input    = ERB.new(input).result if defined?(ERB)
+
+    contents = YAML.load input
     contents && contents[environment] || {}
   end
 
