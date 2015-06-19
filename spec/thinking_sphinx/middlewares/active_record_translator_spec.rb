@@ -11,9 +11,10 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
   let(:app)        { double('app', :call => true) }
   let(:middleware) {
     ThinkingSphinx::Middlewares::ActiveRecordTranslator.new app }
-  let(:context)    { {:raw => [], :results => []} }
+  let(:context)    { {:raw => [], :results => [] } }
   let(:model)      { double('model', :primary_key => :id) }
   let(:search)     { double('search', :options => {}) }
+  let(:configuration) { double('configuration', :settings => {:primary_key => :id}) }
 
   def raw_result(id, model_name)
     {'sphinx_internal_id' => id, 'sphinx_internal_class' => model_name}
@@ -22,6 +23,7 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
   describe '#call' do
     before :each do
       context.stub :search => search
+      context.stub :configuration => configuration
       model.stub :unscoped => model
     end
 

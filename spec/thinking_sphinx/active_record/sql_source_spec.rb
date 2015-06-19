@@ -9,7 +9,7 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
   let(:db_config)  { {:host => 'localhost', :user => 'root',
     :database => 'default'} }
   let(:source)     { ThinkingSphinx::ActiveRecord::SQLSource.new(model,
-    :position => 3) }
+    :position => 3, :primary_key => model.primary_key || :id ) }
   let(:adapter)    { double('adapter') }
 
   before :each do
@@ -53,12 +53,14 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
     let(:processor)       { double('processor') }
     let(:source)          {
       ThinkingSphinx::ActiveRecord::SQLSource.new model,
-        :delta_processor => processor_class
+        :delta_processor => processor_class,
+        :primary_key => model.primary_key || :id
     }
     let(:source_with_options)    {
       ThinkingSphinx::ActiveRecord::SQLSource.new model,
         :delta_processor => processor_class,
-        :delta_options   => { :opt_key => :opt_value }
+        :delta_options   => { :opt_key => :opt_value },
+        :primary_key => model.primary_key || :id
     }
 
     it "loads the processor with the adapter" do
@@ -81,7 +83,8 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
   describe '#delta?' do
     it "returns the given delta setting" do
       source = ThinkingSphinx::ActiveRecord::SQLSource.new model,
-        :delta? => true
+        :delta? => true,
+        :primary_key => model.primary_key || :id
 
       source.should be_a_delta
     end
@@ -90,7 +93,8 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
   describe '#disable_range?' do
     it "returns the given range setting" do
       source = ThinkingSphinx::ActiveRecord::SQLSource.new model,
-        :disable_range? => true
+        :disable_range? => true,
+        :primary_key => model.primary_key || :id
 
       source.disable_range?.should be_true
     end
@@ -129,7 +133,7 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
     it "allows for custom names, but adds the position suffix" do
       source = ThinkingSphinx::ActiveRecord::SQLSource.new model,
-        :name => 'people', :position => 2
+        :name => 'people', :position => 2, :primary_key => model.primary_key || :id
 
       source.name.should == 'people_2'
     end
@@ -137,7 +141,8 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
   describe '#offset' do
     it "returns the given offset" do
-      source = ThinkingSphinx::ActiveRecord::SQLSource.new model, :offset => 12
+      source = ThinkingSphinx::ActiveRecord::SQLSource.new model,
+        :offset => 12, :primary_key => model.primary_key || :id
 
       source.offset.should == 12
     end
