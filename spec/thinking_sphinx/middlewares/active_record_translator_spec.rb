@@ -103,6 +103,18 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
       context[:results].should == [instance_1, instance_2]
     end
 
+    it "handles model without primary key" do
+      no_primary_key_model = double('no primary key model')
+      no_primary_key_model.stub :unscoped => no_primary_key_model
+      model_name = double('article', :constantize => no_primary_key_model)
+      instance   = double('instance', :id => 1)
+      no_primary_key_model.stub :where => [instance]
+
+      context[:results] << raw_result(1, model_name)
+
+      middleware.call [context]
+    end
+
     context 'SQL options' do
       let(:relation) { double('relation', :where => []) }
 
