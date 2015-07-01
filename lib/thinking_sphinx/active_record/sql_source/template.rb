@@ -48,6 +48,6 @@ class ThinkingSphinx::ActiveRecord::SQLSource::Template
   end
 
   def primary_key
-    source.model.primary_key.to_sym
+    source.options[:primary_key].to_sym
   end
 end
