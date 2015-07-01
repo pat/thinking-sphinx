@@ -158,6 +158,19 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
       source.options[:utf8?].should be_true
     end
+
+    describe "#primary key" do
+      let(:model)  { double('model', :connection => connection,
+                           :name => 'User', :column_names => [], :inheritance_column => 'type') }
+      let(:source) { ThinkingSphinx::ActiveRecord::SQLSource.new(model,
+                           :position => 3, :primary_key => :custom_key) }
+      let(:template) { ThinkingSphinx::ActiveRecord::SQLSource::Template.new(source) }
+
+      it 'template should allow primary key from options' do
+        template.apply
+        template.source.attributes.collect(&:columns) == :custom_key
+      end
+    end
   end
 
   describe '#render' do
