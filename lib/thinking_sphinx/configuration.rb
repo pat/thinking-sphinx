@@ -10,7 +10,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   def initialize
     super
 
-    setup
+    reset
   end
 
   def self.instance
@@ -39,7 +39,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 
   def framework=(framework)
     @framework = framework
-    setup
+    reset
     framework
   end
 
@@ -103,6 +103,28 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     @settings ||= File.exists?(settings_file) ? settings_to_hash : {}
   end
 
+  def setup
+    @configuration_file = settings['configuration_file'] || framework_root.join(
+      'config', "#{environment}.sphinx.conf"
+    ).to_s
+    @index_paths = engine_index_paths + [framework_root.join('app', 'indices').to_s]
+    @indices_location = settings['indices_location'] || framework_root.join(
+      'db', 'sphinx', environment
+    ).to_s
+    @version = settings['version'] || '2.1.4'
+
+    if settings['common_sphinx_configuration']
+      common.common_sphinx_configuration  = true
+      indexer.common_sphinx_configuration = true
+    end
+
+    configure_searchd
+
+    apply_sphinx_settings!
+
+    @offsets = {}
+  end
+
   private
 
   def configure_searchd
@@ -146,27 +168,9 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     framework_root.join 'config', 'thinking_sphinx.yml'
   end
 
-  def setup
+  def reset
     @settings = nil
-    @configuration_file = settings['configuration_file'] || framework_root.join(
-      'config', "#{environment}.sphinx.conf"
-    ).to_s
-    @index_paths = engine_index_paths + [framework_root.join('app', 'indices').to_s]
-    @indices_location = settings['indices_location'] || framework_root.join(
-      'db', 'sphinx', environment
-    ).to_s
-    @version = settings['version'] || '2.1.4'
-
-    if settings['common_sphinx_configuration']
-      common.common_sphinx_configuration  = true
-      indexer.common_sphinx_configuration = true
-    end
-
-    configure_searchd
-
-    apply_sphinx_settings!
-
-    @offsets = {}
+    setup
   end
 
   def tmp_path
