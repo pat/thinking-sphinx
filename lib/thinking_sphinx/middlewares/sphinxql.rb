@@ -4,7 +4,7 @@ class ThinkingSphinx::Middlewares::SphinxQL <
   SELECT_OPTIONS = [:agent_query_timeout, :boolean_simplify, :comment, :cutoff,
     :field_weights, :global_idf, :idf, :index_weights, :max_matches,
     :max_query_time, :max_predicted_time, :ranker, :retry_count, :retry_delay,
-    :reverse_scan, :sort_method]
+    :reverse_scan, :sort_method, :rand_seed]
 
   def call(contexts)
     contexts.each do |context|
