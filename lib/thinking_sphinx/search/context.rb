@@ -17,4 +17,12 @@ class ThinkingSphinx::Search::Context
   def []=(key, value)
     @memory[key] = value
   end
+
+  def marshal_dump
+    [@memory.except(:raw, :indices)]
+  end
+
+  def marshal_load(array)
+    @memory = array.first
+  end
 end
