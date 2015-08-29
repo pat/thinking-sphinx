@@ -7,6 +7,8 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 
   delegate :environment, :to => :framework
 
+  @@mutex = Mutex.new
+
   def initialize
     super
 
@@ -69,19 +71,21 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def preload_indices
-    return if @preloaded_indices
+    @@mutex.synchronize do
+      return if @preloaded_indices
 
-    index_paths.each do |path|
-      Dir["#{path}/**/*.rb"].sort.each do |file|
-        ActiveSupport::Dependencies.require_or_load file
+      index_paths.each do |path|
+        Dir["#{path}/**/*.rb"].sort.each do |file|
+          ActiveSupport::Dependencies.require_or_load file
+        end
       end
-    end
 
-    if settings['distributed_indices'].nil? || settings['distributed_indices']
-      ThinkingSphinx::Configuration::DistributedIndices.new(indices).reconcile
-    end
+      if settings['distributed_indices'].nil? || settings['distributed_indices']
+        ThinkingSphinx::Configuration::DistributedIndices.new(indices).reconcile
+      end
 
-    @preloaded_indices = true
+      @preloaded_indices = true
+    end
   end
 
   def render
