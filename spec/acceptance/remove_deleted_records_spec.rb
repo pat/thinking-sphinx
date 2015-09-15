@@ -33,6 +33,24 @@ describe 'Hiding deleted records from search results', :live => true do
       should be_empty
   end
 
+  it "does not remove real-time results when callbacks are disabled" do
+    original = ThinkingSphinx::Configuration.instance.
+      settings['real_time_callbacks']
+    product = Product.create! :name => 'Shiny'
+    Product.search('Shiny', :indices => ['product_core']).to_a.
+      should == [product]
+
+    ThinkingSphinx::Configuration.instance.
+      settings['real_time_callbacks'] = false
+
+    product.destroy
+    Product.search_for_ids('Shiny', :indices => ['product_core']).
+      should_not be_empty
+
+    ThinkingSphinx::Configuration.instance.
+      settings['real_time_callbacks'] = original
+  end
+
   it "deletes STI child classes from parent indices" do
     duck = Bird.create :name => 'Duck'
     index
