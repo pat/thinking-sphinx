@@ -82,7 +82,7 @@ class ThinkingSphinx::Middlewares::SphinxQL <
 
     def indices_match_classes?
       indices.collect(&:reference).uniq.sort == classes.collect { |klass|
-        klass.name.underscore.to_sym
+        ThinkingSphinx::IndexSet.reference_name(klass)
       }.sort
     end
 

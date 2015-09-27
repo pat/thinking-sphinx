@@ -35,7 +35,7 @@ class ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks <
   end
 
   def reference
-    instance.class.name.underscore.to_sym
+    ThinkingSphinx::IndexSet.reference_name(instance.class)
   end
 
   def update(index)
