@@ -2,7 +2,8 @@ class ThinkingSphinx::IndexSet
   include Enumerable
   
   def self.reference_name(klass)
-    klass.name.underscore.to_sym
+    @cached_results ||= {}
+    @cached_results[klass.name] ||= klass.name.underscore.to_sym
   end
 
   delegate :each, :empty?, :to => :indices
