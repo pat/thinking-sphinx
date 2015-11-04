@@ -23,7 +23,7 @@ describe ThinkingSphinx::Middlewares::StaleIdFilter do
         app.stub(:call) do
           @calls ||= 0
           @calls += 1
-          raise ThinkingSphinx::Search::StaleIdsException, [12] if @calls == 1
+          raise ThinkingSphinx::Search::StaleIdsException.new([12], context) if @calls == 1
         end
       end
 
@@ -47,8 +47,8 @@ describe ThinkingSphinx::Middlewares::StaleIdFilter do
         app.stub(:call) do
           @calls ||= 0
           @calls += 1
-          raise ThinkingSphinx::Search::StaleIdsException, [12] if @calls == 1
-          raise ThinkingSphinx::Search::StaleIdsException, [13] if @calls == 2
+          raise ThinkingSphinx::Search::StaleIdsException.new([12], context) if @calls == 1
+          raise ThinkingSphinx::Search::StaleIdsException.new([13], context) if @calls == 2
         end
       end
 
@@ -73,9 +73,9 @@ describe ThinkingSphinx::Middlewares::StaleIdFilter do
           @calls ||= 0
           @calls += 1
 
-          raise ThinkingSphinx::Search::StaleIdsException, [12] if @calls == 1
-          raise ThinkingSphinx::Search::StaleIdsException, [13] if @calls == 2
-          raise ThinkingSphinx::Search::StaleIdsException, [14] if @calls == 3
+          raise ThinkingSphinx::Search::StaleIdsException.new([12], context) if @calls == 1
+          raise ThinkingSphinx::Search::StaleIdsException.new([13], context) if @calls == 2
+          raise ThinkingSphinx::Search::StaleIdsException.new([14], context) if @calls == 3
         end
       end
 
@@ -87,5 +87,25 @@ describe ThinkingSphinx::Middlewares::StaleIdFilter do
         }
       end
     end
+
+    context  'stale ids exceptions with multiple contexts' do
+      let(:context2) { {:raw => [], :results => []} }
+      let(:search2) { double('search2', :options => {}) }
+      before :each do
+        context2.stub :search => search2
+        app.stub(:call) do
+          @calls ||= 0
+          @calls += 1
+          raise ThinkingSphinx::Search::StaleIdsException.new([12], context2) if @calls == 1
+        end
+      end
+
+      it "appends the ids to the without_ids filter in the correct context" do
+        middleware.call [context, context2]
+        search.options[:without_ids].should == nil
+        search2.options[:without_ids].should == [12]
+      end
+    end
+
   end
 end

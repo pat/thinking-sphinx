@@ -1,8 +1,9 @@
 class ThinkingSphinx::Search::StaleIdsException < StandardError
-  attr_reader :ids
+  attr_reader :ids, :context
 
-  def initialize(ids)
+  def initialize(ids, context)
     @ids = ids
+    @context = context
   end
 
   def message

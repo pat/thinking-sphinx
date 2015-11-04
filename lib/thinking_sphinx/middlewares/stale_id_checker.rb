@@ -33,7 +33,7 @@ class ThinkingSphinx::Middlewares::StaleIdChecker <
     end
 
     def raise_exception
-      raise ThinkingSphinx::Search::StaleIdsException, stale_ids
+      raise ThinkingSphinx::Search::StaleIdsException.new(stale_ids, context)
     end
 
     def stale_ids

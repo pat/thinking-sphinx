@@ -11,7 +11,7 @@ class ThinkingSphinx::Middlewares::StaleIdFilter <
     rescue ThinkingSphinx::Search::StaleIdsException => error
       raise error if @retries <= 0
 
-      append_stale_ids error.ids
+      append_stale_ids error.ids, error.context
       ThinkingSphinx::Logger.log :message, log_message
 
       @retries -= 1 and retry
@@ -20,7 +20,7 @@ class ThinkingSphinx::Middlewares::StaleIdFilter <
 
   private
 
-  def append_stale_ids(ids)
+  def append_stale_ids(ids, context)
     @stale_ids |= ids
 
     context.search.options[:without_ids] ||= []
