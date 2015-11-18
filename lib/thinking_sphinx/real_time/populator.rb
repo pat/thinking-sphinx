@@ -13,8 +13,8 @@ class ThinkingSphinx::RealTime::Populator
     remove_files
 
     scope.find_in_batches do |instances|
-      transcriber.copy instances
-      instrument 'populated', :instance => instances
+      transcriber.copy *instances
+      instrument 'populated', :instances => instances
     end
 
     controller.rotate
