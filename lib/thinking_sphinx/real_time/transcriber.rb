@@ -3,18 +3,23 @@ class ThinkingSphinx::RealTime::Transcriber
     @index = index
   end
 
-  def copy(instance)
-    return unless instance.persisted? && copy?(instance)
-
-    columns, values = ['id'], [index.document_id_for_key(instance.id)]
-    (index.fields + index.attributes).each do |property|
+  def copy(*instances)
+    items = instances.flatten.select { |instance| instance.persisted? && copy?(instance) }
+    return unless items.present?
+    properties = (index.fields + index.attributes)
+    values = []
+    columns = properties.each_with_object(['id']) do |property, columns|
       columns << property.name
-      values  << property.translate(instance)
+    end
+    items.each do |instance|
+      values << properties.each_with_object([index.document_id_for_key(instance.id)]) do |property, instance_values|
+        instance_values << property.translate(instance)
+      end
     end
 
     insert = Riddle::Query::Insert.new index.name, columns, values
     sphinxql = insert.replace!.to_sql
-    
+
     ThinkingSphinx::Logger.log :query, sphinxql do
       ThinkingSphinx::Connection.take do |connection|
         connection.execute sphinxql
