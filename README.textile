@@ -20,10 +20,10 @@ h2. Installation
 It's a gem, so install it like you would any other gem. You will also need to specify the mysql2 gem if you're using MRI, or jdbc-mysql if you're using JRuby:
 
 <pre><code>gem 'mysql2',          '~> 0.3.18', :platform => :ruby
-gem 'jdbc-mysql',      '~> 5.1.35', :platform => :jruby
+gem 'jdbc-mysql',      '= 5.1.35', :platform => :jruby
 gem 'thinking-sphinx', '~> 3.1.4'</code></pre>
 
-The MySQL gems mentioned are required for connecting to Sphinx, so please include it even when you're using PostgreSQL for your database.
+The MySQL gems mentioned are required for connecting to Sphinx, so please include it even when you're using PostgreSQL for your database. If you're using JRuby, there is "currently an issue with Sphinx and jdbc-mysql 5.1.36 or newer":http://sphinxsearch.com/forum/view.html?id=13939, so you'll need to stick to nothing more recent than 5.1.35.
 
 You'll also need to install Sphinx - this is covered in "the extended documentation":http://pat.github.io/thinking-sphinx/installing_sphinx.html.
 
