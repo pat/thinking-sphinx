@@ -19,3 +19,4 @@ env:
   - DATABASE=postgresql SPHINX_BIN=/usr/local/sphinx-2.1.9/bin/ SPHINX_VERSION=2.1.9
   - DATABASE=mysql2 SPHINX_BIN=/usr/local/sphinx-2.2.6/bin/ SPHINX_VERSION=2.2.6
   - DATABASE=postgresql SPHINX_BIN=/usr/local/sphinx-2.2.6/bin/ SPHINX_VERSION=2.2.6
+sudo: false
