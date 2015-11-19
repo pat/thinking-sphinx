@@ -1,10 +1,12 @@
 class ThinkingSphinx::Controller < Riddle::Controller
   def index(*indices)
-    options = indices.extract_options!
-    indices << '--all' if indices.empty?
+    configuration = ThinkingSphinx::Configuration.instance
+    options       = indices.extract_options!
 
-    ThinkingSphinx::Guard::Files.call(indices) do |names|
-      super(*(names + [options]))
+    configuration.indexing_strategy.call(indices) do |index_names|
+      ThinkingSphinx::Guard::Files.call(index_names) do |names|
+        super(*(names + [options]))
+      end
     end
   end
 end
