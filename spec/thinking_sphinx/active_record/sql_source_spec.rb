@@ -212,14 +212,6 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       source.sql_query_pre.should == ['Change Setting']
     end
 
-    it "appends the builder's sql_query_post_index value" do
-      builder.stub! :sql_query_post_index => ['RESET DELTAS']
-
-      source.render
-
-      source.sql_query_post_index.should include('RESET DELTAS')
-    end
-
     it "adds fields with attributes to sql_field_string" do
       source.fields << double('field', :name => 'title', :source_type => nil,
         :with_attribute? => true, :file? => false, :wordcount? => false)

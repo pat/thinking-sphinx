@@ -119,7 +119,6 @@ module ThinkingSphinx
         @sql_query             = builder.sql_query
         @sql_query_range     ||= builder.sql_query_range
         @sql_query_pre        += builder.sql_query_pre
-        @sql_query_post_index += builder.sql_query_post_index
       end
 
       def config
