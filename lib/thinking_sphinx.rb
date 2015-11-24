@@ -16,7 +16,7 @@ require 'active_support/core_ext/module/attribute_accessors'
 
 module ThinkingSphinx
   def self.count(query = '', options = {})
-    search(query, options).total_entries
+    search_for_ids(query, options).total_entries
   end
 
   def self.facets(query = '', options = {})

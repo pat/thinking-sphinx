@@ -21,7 +21,7 @@ module ThinkingSphinx::ActiveRecord::Base
     end
 
     def search_count(query = nil, options = {})
-      search(query, options).total_entries
+      search_for_ids(query, options).total_entries
     end
 
     def search_for_ids(query = nil, options = {})
