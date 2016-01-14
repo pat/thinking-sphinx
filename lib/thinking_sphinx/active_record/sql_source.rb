@@ -74,6 +74,9 @@ module ThinkingSphinx
         @sql_db   ||= settings[:database]
         @sql_port ||= settings[:port]
         @sql_sock ||= settings[:socket]
+        @mysql_ssl_cert ||= settings[:sslcert]
+        @mysql_ssl_key  ||= settings[:sslkey]
+        @mysql_ssl_ca   ||= settings[:sslca]
       end
 
       def type
