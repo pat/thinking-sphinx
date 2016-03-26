@@ -5,6 +5,8 @@ class ThinkingSphinx::Configuration::DuplicateNames
 
   def reconcile
     indices.each do |index|
+      return if index.distributed?
+
       counts_for(index).each do |name, count|
         next if count <= 1
 
