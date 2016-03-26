@@ -72,7 +72,7 @@ class ThinkingSphinx::ActiveRecord::Attribute::Type
 
   def type_from_database
     raise ThinkingSphinx::MissingColumnError,
-      "column #{column_name} does not exist" if database_column.nil?
+      "Cannot determine the database type of column #{column_name}, as it does not exist" if database_column.nil?
 
     return :bigint if big_integer?
 
