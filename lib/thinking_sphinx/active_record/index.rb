@@ -28,6 +28,10 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
     @facets ||= sources.collect(&:facets).flatten
   end
 
+  def fields
+    sources.collect(&:fields).flatten
+  end
+
   def sources
     interpret_definition!
     super
@@ -42,10 +46,6 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
   def adapter
     @adapter ||= ThinkingSphinx::ActiveRecord::DatabaseAdapters.
       adapter_for(model)
-  end
-
-  def fields
-    sources.collect(&:fields).flatten
   end
 
   def interpreter

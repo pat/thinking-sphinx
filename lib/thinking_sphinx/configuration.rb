@@ -97,6 +97,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 
     ThinkingSphinx::Configuration::ConsistentIds.new(indices).reconcile
     ThinkingSphinx::Configuration::MinimumFields.new(indices).reconcile
+    ThinkingSphinx::Configuration::DuplicateNames.new(indices).reconcile
 
     super
   end
@@ -205,4 +206,5 @@ end
 require 'thinking_sphinx/configuration/consistent_ids'
 require 'thinking_sphinx/configuration/defaults'
 require 'thinking_sphinx/configuration/distributed_indices'
+require 'thinking_sphinx/configuration/duplicate_names'
 require 'thinking_sphinx/configuration/minimum_fields'

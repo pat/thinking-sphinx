@@ -50,3 +50,6 @@ end
 
 class ThinkingSphinx::PopulatedResultsError < StandardError
 end
+
+class ThinkingSphinx::DuplicateNameError < StandardError
+end
