@@ -33,6 +33,13 @@ describe ThinkingSphinx::SphinxError do
         should be_a(ThinkingSphinx::ConnectionError)
     end
 
+    it 'translates out-of-bounds errors' do
+      error.stub :message => "offset out of bounds (offset=1001, max_matches=1000)"
+
+      ThinkingSphinx::SphinxError.new_from_mysql(error).
+        should be_a(ThinkingSphinx::OutOfBoundsError)
+    end
+
     it 'prefixes the connection error message' do
       error.stub :message => "Can't connect to MySQL server on '127.0.0.1' (61)"
 
