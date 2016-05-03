@@ -9,6 +9,24 @@ class ThinkingSphinx::Callbacks
     extend mod
   end
 
+  def self.resume!
+    @suspended = false
+  end
+
+  def self.suspend(&block)
+    suspend!
+    yield
+    resume!
+  end
+
+  def self.suspend!
+    @suspended = true
+  end
+
+  def self.suspended?
+    @suspended
+  end
+
   def initialize(instance)
     @instance = instance
   end

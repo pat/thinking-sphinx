@@ -4,7 +4,7 @@ class ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks <
   callbacks :after_destroy
 
   def after_destroy
-    return if instance.new_record?
+    return if ThinkingSphinx::Callbacks.suspended? || instance.new_record?
 
     indices.each { |index|
       ThinkingSphinx::Deletion.perform index, instance.id
