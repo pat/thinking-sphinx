@@ -69,6 +69,8 @@ class ThinkingSphinx::RealTime::Index < Riddle::Configuration::RealtimeIndex
       @rt_attr_float
     when :bigint
       attribute.multi? ? @rt_attr_multi_64 : @rt_attr_bigint
+    when :json
+      @rt_attr_json
     else
       raise "Unknown attribute type '#{attribute.type}'"
     end

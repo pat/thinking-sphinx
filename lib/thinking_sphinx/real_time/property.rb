@@ -18,6 +18,7 @@ class ThinkingSphinx::RealTime::Property
 
     base = @column.__stack.inject(object) { |base, node| base.try(node) }
     base = base.try(@column.__name)
-    base.is_a?(String) ? base.gsub("\u0000", '') : base
+    base = base.is_a?(String) ? base.gsub("\u0000", '') : base
+    type == :json ? base.to_json : base
   end
 end
