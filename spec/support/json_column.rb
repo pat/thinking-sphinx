@@ -1,4 +1,6 @@
 class JSONColumn
+  include ActiveRecord::ConnectionAdapters
+
   def self.call
     new.call
   end
@@ -10,8 +12,15 @@ class JSONColumn
   private
 
   def column?
-    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::TableDefinition.
-      instance_methods.include?(:json)
+    (
+      ActiveRecord::ConnectionAdapters.constants.include?(:PostgreSQLAdapter) &&
+      PostgreSQLAdapter.constants.include?(:TableDefinition) &&
+      PostgreSQLAdapter::TableDefinition.instance_methods.include?(:json)
+    ) || (
+      ActiveRecord::ConnectionAdapters.constants.include?(:PostgreSQL) &&
+      PostgreSQL.constants.include?(:ColumnMethods) &&
+      PostgreSQL::ColumnMethods.instance_methods.include?(:json)
+    )
   end
 
   def postgresql?
