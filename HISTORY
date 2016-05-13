@@ -1,3 +1,27 @@
+Latest:
+* [FIX] Ensure SQL table aliases are reliable for SQL-backed index queries.
+* [FEATURE] Add JSON attribute support for real-time indices.
+* [FEATURE] Add ability to disable *all* Sphinx-related callbacks via ThinkingSphinx::Callbacks.suspend! and ThinkingSphinx::Callbacks.resume!. Particularly useful for unit tests.
+* [FEATURE] Add native OutOfBoundsError for search queries outside the pagination bounds.
+* [CHANGE] Improved error messages for duplicate property names and missing columns.
+* [FIX] Fixed mysql2 compatibility for memory references (Roman Usherenko).
+* [FIX] Fixed JRuby compatibility with camelCase method names (Brandon Dewitt).
+* [FEATURE] Support MySQL SSL options on a per-index level (@arrtchiu).
+* [CHANGE] Don't populate search results when requesting just the count values (Andrew Roth).
+* [CHANGE] Reset delta column before core indexing begins (reverting behaviour introduced in 3.1.0). See issue #958 for further discussion.
+* [FEATURE] Allow for different indexing strategies (e.g. all at once, or one by one).
+* [FIX] Fix stale id handling for multiple search contexts (Jonathan del Strother).
+* [CHANGE] Use Sphinx's bulk insert ability (Chance Downs).
+* [CHANGE] Reduce memory/object usage for model references (Jonathan del Strother).
+* [CHANGE] Disable deletion callbacks when real-time indices are in place and all other real-time callbacks are disabled.
+* [FIX] Handle quoting of namespaced tables (Roman Usherenko).
+* [FIX] Make preload_indices thread-safe.
+* [FIX] Improved handling of marshalled/demarshalled search results.
+* [FEATURE] Allow rand_seed as a select option (Mattia Gheda).
+* [FEATURE] Add primary_key option for index definitions (Nathaneal Gray).
+* [FEATURE] Add ability to start searchd in the foreground (Andrey Novikov).
+* [CHANGE] Only use ERB to parse the YAML file if ERB is loaded.
+
 2015-06-01: 3.1.4
 * [FIX] Kaminari expects prev_page to be available.
 * [CHANGE] Add a contributor code of conduct.
