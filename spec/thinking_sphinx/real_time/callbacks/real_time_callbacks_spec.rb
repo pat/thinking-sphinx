@@ -33,7 +33,7 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
 
     it "creates an insert statement with all fields and attributes" do
       Riddle::Query::Insert.should_receive(:new).
-        with('my_index', ['id', 'name', 'created_at'], [123, 'Foo', time]).
+        with('my_index', ['id', 'name', 'created_at'], [[123, 'Foo', time]]).
         and_return(insert)
 
       callbacks.after_save instance
@@ -62,7 +62,7 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
 
       it "creates an insert statement with all fields and attributes" do
         Riddle::Query::Insert.should_receive(:new).
-          with('my_index', ['id', 'name', 'created_at'], [123, 'Foo', time]).
+          with('my_index', ['id', 'name', 'created_at'], [[123, 'Foo', time]]).
           and_return(insert)
 
         callbacks.after_save instance
@@ -94,7 +94,7 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
 
       it "creates insert statements with all fields and attributes" do
         Riddle::Query::Insert.should_receive(:new).twice.
-          with('my_index', ['id', 'name', 'created_at'], [123, 'Foo', time]).
+          with('my_index', ['id', 'name', 'created_at'], [[123, 'Foo', time]]).
           and_return(insert)
 
         callbacks.after_save instance
@@ -128,7 +128,7 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
 
       it "creates insert statements with all fields and attributes" do
         Riddle::Query::Insert.should_receive(:new).twice.
-          with('my_index', ['id', 'name', 'created_at'], [123, 'Foo', time]).
+          with('my_index', ['id', 'name', 'created_at'], [[123, 'Foo', time]]).
           and_return(insert)
 
         callbacks.after_save instance

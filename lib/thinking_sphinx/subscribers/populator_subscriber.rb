@@ -21,7 +21,7 @@ class ThinkingSphinx::Subscribers::PopulatorSubscriber
   end
 
   def populated(event)
-    print '.'
+    print '.' * event.payload[:instances].length
   end
 
   def finish_populating(event)

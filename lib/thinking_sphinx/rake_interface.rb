@@ -45,16 +45,25 @@ class ThinkingSphinx::RakeInterface
     FileUtils.mkdir_p configuration.indices_location
   end
 
-  def start
+  def start(options={})
     raise RuntimeError, 'searchd is already running' if controller.running?
 
     FileUtils.mkdir_p configuration.indices_location
-    controller.start
 
-    if controller.running?
-      puts "Started searchd successfully (pid: #{controller.pid})."
+    if options[:nodetach]
+      unless pid = fork
+        controller.start(options)
+      end
+      Signal.trap('TERM') { Process.kill(:TERM, pid); }
+      Signal.trap('INT')  { Process.kill(:TERM, pid); }
+      Process.wait(pid)
     else
-      puts "Failed to start searchd. Check the log files for more information."
+      controller.start(options)
+      if controller.running?
+        puts "Started searchd successfully (pid: #{controller.pid})."
+      else
+        puts "Failed to start searchd. Check the log files for more information."
+      end
     end
   end
 

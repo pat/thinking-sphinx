@@ -11,9 +11,10 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
   let(:app)        { double('app', :call => true) }
   let(:middleware) {
     ThinkingSphinx::Middlewares::ActiveRecordTranslator.new app }
-  let(:context)    { {:raw => [], :results => []} }
+  let(:context)    { {:raw => [], :results => [] } }
   let(:model)      { double('model', :primary_key => :id) }
   let(:search)     { double('search', :options => {}) }
+  let(:configuration) { double('configuration', :settings => {:primary_key => :id}) }
 
   def raw_result(id, model_name)
     {'sphinx_internal_id' => id, 'sphinx_internal_class' => model_name}
@@ -22,6 +23,7 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
   describe '#call' do
     before :each do
       context.stub :search => search
+      context.stub :configuration => configuration
       model.stub :unscoped => model
     end
 
@@ -99,6 +101,18 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
       middleware.call [context]
 
       context[:results].should == [instance_1, instance_2]
+    end
+
+    it "handles model without primary key" do
+      no_primary_key_model = double('no primary key model')
+      no_primary_key_model.stub :unscoped => no_primary_key_model
+      model_name = double('article', :constantize => no_primary_key_model)
+      instance   = double('instance', :id => 1)
+      no_primary_key_model.stub :where => [instance]
+
+      context[:results] << raw_result(1, model_name)
+
+      middleware.call [context]
     end
 
     context 'SQL options' do

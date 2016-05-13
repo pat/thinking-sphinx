@@ -29,7 +29,7 @@ class ThinkingSphinx::ActiveRecord::AssociationProxy::AttributeFinder
     @indices ||= begin
       configuration.preload_indices
       configuration.indices_for_references(
-        *@association.klass.name.underscore.to_sym
+        *ThinkingSphinx::IndexSet.reference_name(@association.klass)
       ).reject &:distributed?
     end
   end

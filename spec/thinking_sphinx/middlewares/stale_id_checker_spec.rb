@@ -41,6 +41,7 @@ describe ThinkingSphinx::Middlewares::StaleIdChecker do
         middleware.call [context]
       }.should raise_error(ThinkingSphinx::Search::StaleIdsException) { |err|
         err.ids.should == [42]
+        err.context.should == context
       }
     end
   end

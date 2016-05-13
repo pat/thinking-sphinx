@@ -70,5 +70,15 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks do
 
       lambda { callbacks.after_update }.should_not raise_error
     end
+
+    it 'does nothing if callbacks are suspended' do
+      ThinkingSphinx::Callbacks.suspend!
+
+      connection.should_not_receive(:execute)
+
+      callbacks.after_update
+
+      ThinkingSphinx::Callbacks.resume!
+    end
   end
 end

@@ -13,6 +13,8 @@ class ThinkingSphinx::SphinxError < StandardError
       replacement = ThinkingSphinx::ConnectionError.new(
         "Error connecting to Sphinx via the MySQL protocol. #{error.message}"
       )
+    when /offset out of bounds/
+      replacement = ThinkingSphinx::OutOfBoundsError.new(error.message)
     else
       replacement = new(error.message)
     end
@@ -35,6 +37,9 @@ end
 class ThinkingSphinx::ParseError < ThinkingSphinx::QueryError
 end
 
+class ThinkingSphinx::OutOfBoundsError < ThinkingSphinx::QueryError
+end
+
 class ThinkingSphinx::QueryExecutionError < StandardError
   attr_accessor :statement
 end
@@ -49,4 +54,7 @@ class ThinkingSphinx::MissingColumnError < StandardError
 end
 
 class ThinkingSphinx::PopulatedResultsError < StandardError
+end
+
+class ThinkingSphinx::DuplicateNameError < StandardError
 end

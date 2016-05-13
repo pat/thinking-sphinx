@@ -72,6 +72,7 @@ ActiveRecord::Schema.define do
 
   create_table(:products, :force => true) do |t|
     t.string :name
+    t.json :options if ::JSONColumn.call
   end
 
   create_table(:taggings, :force => true) do |t|

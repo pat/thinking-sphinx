@@ -4,7 +4,7 @@ class ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks <
   callbacks :after_update
 
   def after_update
-    return unless updates_enabled?
+    return unless !ThinkingSphinx::Callbacks.suspended? && updates_enabled?
 
     indices.each do |index|
       update index unless index.distributed?
@@ -35,7 +35,7 @@ class ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks <
   end
 
   def reference
-    instance.class.name.underscore.to_sym
+    ThinkingSphinx::IndexSet.reference_name(instance.class)
   end
 
   def update(index)

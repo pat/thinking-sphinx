@@ -15,5 +15,6 @@ require 'thinking_sphinx/real_time/index'
 require 'thinking_sphinx/real_time/interpreter'
 require 'thinking_sphinx/real_time/populator'
 require 'thinking_sphinx/real_time/transcriber'
+require 'thinking_sphinx/real_time/translator'
 
 require 'thinking_sphinx/real_time/callbacks/real_time_callbacks'

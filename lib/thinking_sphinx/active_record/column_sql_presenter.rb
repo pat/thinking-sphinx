@@ -13,7 +13,7 @@ class ThinkingSphinx::ActiveRecord::ColumnSQLPresenter
     return __name if string?
     return nil unless exists?
 
-    quoted_table = escape_table? ? adapter.quote(table) : table
+    quoted_table = escape_table? ? escape_table(table) : table
 
     "#{quoted_table}.#{adapter.quote __name}"
   end
@@ -23,6 +23,10 @@ class ThinkingSphinx::ActiveRecord::ColumnSQLPresenter
   attr_reader :model, :column, :adapter, :associations
 
   delegate :__stack, :__name, :string?, :to => :column
+
+  def escape_table(table_name)
+    table_name.split('.').map { |t| adapter.quote(t) }.join('.')
+  end
 
   def escape_table?
     table[/[`"]/].nil?

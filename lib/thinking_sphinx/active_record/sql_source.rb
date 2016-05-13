@@ -61,6 +61,10 @@ module ThinkingSphinx
         options[:primary_key]
       end
 
+      def properties
+        fields + attributes
+      end
+
       def render
         prepare_for_render unless @prepared
 
@@ -74,6 +78,9 @@ module ThinkingSphinx
         @sql_db   ||= settings[:database]
         @sql_port ||= settings[:port]
         @sql_sock ||= settings[:socket]
+        @mysql_ssl_cert ||= settings[:sslcert]
+        @mysql_ssl_key  ||= settings[:sslkey]
+        @mysql_ssl_ca   ||= settings[:sslca]
       end
 
       def type
@@ -119,7 +126,6 @@ module ThinkingSphinx
         @sql_query             = builder.sql_query
         @sql_query_range     ||= builder.sql_query_range
         @sql_query_pre        += builder.sql_query_pre
-        @sql_query_post_index += builder.sql_query_post_index
       end
 
       def config
@@ -135,10 +141,6 @@ module ThinkingSphinx
         build_sql_query
 
         @prepared = true
-      end
-
-      def properties
-        fields + attributes
       end
     end
   end

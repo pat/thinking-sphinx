@@ -18,8 +18,15 @@ module ThinkingSphinx
 
       def filter_by_query_pre
         scope_by_time_zone
+        scope_by_delta_processor
         scope_by_session
         scope_by_utf8
+      end
+
+      def scope_by_delta_processor
+        return unless delta_processor && !source.delta?
+
+        self.scope << delta_processor.reset_query
       end
 
       def scope_by_session

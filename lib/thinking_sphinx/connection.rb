@@ -157,13 +157,13 @@ module ThinkingSphinx::Connection
     def set_to_array(set)
       return nil if set.nil?
 
-      meta = set.meta_data
+      meta = set.getMetaData
       rows = []
 
       while set.next
-        rows << (1..meta.column_count).inject({}) do |row, index|
-          name      = meta.column_name index
-          row[name] = set.get_object(index)
+        rows << (1..meta.getColumnCount).inject({}) do |row, index|
+          name      = meta.getColumnName index
+          row[name] = set.getObject(index)
           row
         end
       end

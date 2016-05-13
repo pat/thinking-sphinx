@@ -32,7 +32,20 @@ class ThinkingSphinx::Deletion
 
   class RealtimeDeletion < ThinkingSphinx::Deletion
     def perform
+      return unless callbacks_enabled?
+
       execute Riddle::Query::Delete.new(name, document_ids_for_keys).to_sql
+    end
+
+    private
+
+    def callbacks_enabled?
+      setting = configuration.settings['real_time_callbacks']
+      setting.nil? || setting
+    end
+
+    def configuration
+      ThinkingSphinx::Configuration.instance
     end
   end
 

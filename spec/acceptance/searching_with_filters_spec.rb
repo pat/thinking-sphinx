@@ -141,4 +141,17 @@ describe 'Searching with filters', :live => true do
     products = Product.search :with => {:category_ids => [flat.id]}
     products.to_a.should == [pancakes]
   end
+
+  it 'searches with real-time JSON attributes' do
+    pancakes = Product.create :name => 'Pancakes',
+      :options => {'lemon' => 1, 'sugar' => 1, :number => 3}
+    waffles  = Product.create :name => 'Waffles',
+      :options => {'chocolate' => 1, 'sugar' => 1, :number => 1}
+
+    products = Product.search :with => {"options.lemon" => 1}
+    products.to_a.should == [pancakes]
+
+    products = Product.search :with => {"options.sugar" => 1}
+    products.to_a.should == [pancakes, waffles]
+  end if JSONColumn.call
 end

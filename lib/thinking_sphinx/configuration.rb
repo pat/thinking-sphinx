@@ -3,14 +3,16 @@ require 'pathname'
 class ThinkingSphinx::Configuration < Riddle::Configuration
   attr_accessor :configuration_file, :indices_location, :version
   attr_reader :index_paths
-  attr_writer :controller, :index_set_class
+  attr_writer :controller, :index_set_class, :indexing_strategy
 
   delegate :environment, :to => :framework
+
+  @@mutex = Mutex.new
 
   def initialize
     super
 
-    setup
+    reset
   end
 
   def self.instance
@@ -39,7 +41,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 
   def framework=(framework)
     @framework = framework
-    setup
+    reset
     framework
   end
 
@@ -60,6 +62,10 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     @index_set_class ||= ThinkingSphinx::IndexSet
   end
 
+  def indexing_strategy
+    @indexing_strategy ||= ThinkingSphinx::IndexingStrategies::AllAtOnce
+  end
+
   def indices_for_references(*references)
     index_set_class.new(:references => references).to_a
   end
@@ -69,19 +75,21 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def preload_indices
-    return if @preloaded_indices
+    @@mutex.synchronize do
+      return if @preloaded_indices
 
-    index_paths.each do |path|
-      Dir["#{path}/**/*.rb"].sort.each do |file|
-        ActiveSupport::Dependencies.require_or_load file
+      index_paths.each do |path|
+        Dir["#{path}/**/*.rb"].sort.each do |file|
+          ActiveSupport::Dependencies.require_or_load file
+        end
       end
-    end
 
-    if settings['distributed_indices'].nil? || settings['distributed_indices']
-      ThinkingSphinx::Configuration::DistributedIndices.new(indices).reconcile
-    end
+      if settings['distributed_indices'].nil? || settings['distributed_indices']
+        ThinkingSphinx::Configuration::DistributedIndices.new(indices).reconcile
+      end
 
-    @preloaded_indices = true
+      @preloaded_indices = true
+    end
   end
 
   def render
@@ -89,6 +97,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 
     ThinkingSphinx::Configuration::ConsistentIds.new(indices).reconcile
     ThinkingSphinx::Configuration::MinimumFields.new(indices).reconcile
+    ThinkingSphinx::Configuration::DuplicateNames.new(indices).reconcile
 
     super
   end
@@ -101,6 +110,28 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 
   def settings
     @settings ||= File.exists?(settings_file) ? settings_to_hash : {}
+  end
+
+  def setup
+    @configuration_file = settings['configuration_file'] || framework_root.join(
+      'config', "#{environment}.sphinx.conf"
+    ).to_s
+    @index_paths = engine_index_paths + [framework_root.join('app', 'indices').to_s]
+    @indices_location = settings['indices_location'] || framework_root.join(
+      'db', 'sphinx', environment
+    ).to_s
+    @version = settings['version'] || '2.1.4'
+
+    if settings['common_sphinx_configuration']
+      common.common_sphinx_configuration  = true
+      indexer.common_sphinx_configuration = true
+    end
+
+    configure_searchd
+
+    apply_sphinx_settings!
+
+    @offsets = {}
   end
 
   private
@@ -135,7 +166,10 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def settings_to_hash
-    contents = YAML.load(ERB.new(File.read(settings_file)).result)
+    input    = File.read settings_file
+    input    = ERB.new(input).result if defined?(ERB)
+
+    contents = YAML.load input
     contents && contents[environment] || {}
   end
 
@@ -143,27 +177,9 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     framework_root.join 'config', 'thinking_sphinx.yml'
   end
 
-  def setup
+  def reset
     @settings = nil
-    @configuration_file = settings['configuration_file'] || framework_root.join(
-      'config', "#{environment}.sphinx.conf"
-    ).to_s
-    @index_paths = engine_index_paths + [framework_root.join('app', 'indices').to_s]
-    @indices_location = settings['indices_location'] || framework_root.join(
-      'db', 'sphinx', environment
-    ).to_s
-    @version = settings['version'] || '2.1.4'
-
-    if settings['common_sphinx_configuration']
-      common.common_sphinx_configuration  = true
-      indexer.common_sphinx_configuration = true
-    end
-
-    configure_searchd
-
-    apply_sphinx_settings!
-
-    @offsets = {}
+    setup
   end
 
   def tmp_path
@@ -190,4 +206,5 @@ end
 require 'thinking_sphinx/configuration/consistent_ids'
 require 'thinking_sphinx/configuration/defaults'
 require 'thinking_sphinx/configuration/distributed_indices'
+require 'thinking_sphinx/configuration/duplicate_names'
 require 'thinking_sphinx/configuration/minimum_fields'

@@ -39,7 +39,9 @@ namespace :ts do
 
   desc 'Start the Sphinx daemon'
   task :start => :environment do
-    interface.start
+    options = {}
+    options[:nodetach] = true  if ENV['NODETACH'] == 'true'
+    interface.start(options)
   end
 
   desc 'Stop the Sphinx daemon'

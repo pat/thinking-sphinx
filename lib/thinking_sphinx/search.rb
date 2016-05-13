@@ -38,6 +38,16 @@ class ThinkingSphinx::Search < Array
     options[:page].to_i
   end
 
+  def marshal_dump
+    populate
+
+    [@populated, @query, @options, @context]
+  end
+
+  def marshal_load(array)
+    @populated, @query, @options, @context = array
+  end
+
   def masks
     @masks ||= @options[:masks] || DEFAULT_MASKS.clone
   end

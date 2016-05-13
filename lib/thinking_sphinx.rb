@@ -16,7 +16,7 @@ require 'active_support/core_ext/module/attribute_accessors'
 
 module ThinkingSphinx
   def self.count(query = '', options = {})
-    search(query, options).total_entries
+    search_for_ids(query, options).total_entries
   end
 
   def self.facets(query = '', options = {})
@@ -39,6 +39,7 @@ module ThinkingSphinx
   @before_index_hooks = []
 
   module Subscribers; end
+  module IndexingStrategies; end
 end
 
 # Core
@@ -57,6 +58,8 @@ require 'thinking_sphinx/float_formatter'
 require 'thinking_sphinx/frameworks'
 require 'thinking_sphinx/guard'
 require 'thinking_sphinx/index'
+require 'thinking_sphinx/indexing_strategies/all_at_once'
+require 'thinking_sphinx/indexing_strategies/one_at_a_time'
 require 'thinking_sphinx/index_set'
 require 'thinking_sphinx/masks'
 require 'thinking_sphinx/middlewares'

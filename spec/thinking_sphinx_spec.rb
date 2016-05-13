@@ -2,7 +2,8 @@ require 'spec_helper'
 
 describe ThinkingSphinx do
   describe '.count' do
-    let(:search) { double('search', :total_entries => 23) }
+    let(:search) { double('search', :total_entries => 23, :populated? => false,
+      :options => {}) }
 
     before :each do
       ThinkingSphinx::Search.stub :new => search
