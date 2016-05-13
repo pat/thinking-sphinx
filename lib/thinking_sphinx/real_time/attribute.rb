@@ -8,12 +8,18 @@ class ThinkingSphinx::RealTime::Attribute < ThinkingSphinx::RealTime::Property
   end
 
   def translate(object)
-    super || default_value
+    output = super || default_value
+
+    json? ? output.to_json : output
   end
 
   private
 
   def default_value
     type == :string ? '' : 0
+  end
+
+  def json?
+    type == :json
   end
 end
