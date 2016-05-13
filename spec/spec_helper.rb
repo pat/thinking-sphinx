@@ -5,6 +5,7 @@ Bundler.require :default, :development
 
 root = File.expand_path File.dirname(__FILE__)
 require "#{root}/support/multi_schema"
+require "#{root}/support/json_column"
 require 'thinking_sphinx/railtie'
 
 Combustion.initialize! :active_record

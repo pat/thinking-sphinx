@@ -153,5 +153,5 @@ describe 'Searching with filters', :live => true do
 
     products = Product.search :with => {"options.sugar" => 1}
     products.to_a.should == [pancakes, waffles]
-  end if ENV['DATABASE'] == 'postgresql'
+  end if JSONColumn.call
 end
