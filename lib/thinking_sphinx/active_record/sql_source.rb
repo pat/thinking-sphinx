@@ -61,6 +61,10 @@ module ThinkingSphinx
         options[:primary_key]
       end
 
+      def properties
+        fields + attributes
+      end
+
       def render
         prepare_for_render unless @prepared
 
@@ -137,10 +141,6 @@ module ThinkingSphinx
         build_sql_query
 
         @prepared = true
-      end
-
-      def properties
-        fields + attributes
       end
     end
   end

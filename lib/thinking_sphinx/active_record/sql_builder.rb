@@ -43,18 +43,9 @@ module ThinkingSphinx
       end
 
       def associations
-        @associations ||= begin
-          joins = Joiner::Joins.new model
-          if joins.respond_to?(:join_association_class)
-            joins.join_association_class = ThinkingSphinx::ActiveRecord::JoinAssociation
-          end
-
-          source.associations.reject(&:string?).each do |association|
-            joins.add_join_to association.stack
-          end
-
-          joins
-        end
+        @associations ||= ThinkingSphinx::ActiveRecord::SourceJoins.call(
+          model, source
+        )
       end
 
       def quote_column(column)

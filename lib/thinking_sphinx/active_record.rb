@@ -23,6 +23,7 @@ require 'thinking_sphinx/active_record/polymorpher'
 require 'thinking_sphinx/active_record/property_query'
 require 'thinking_sphinx/active_record/property_sql_presenter'
 require 'thinking_sphinx/active_record/simple_many_query'
+require 'thinking_sphinx/active_record/source_joins'
 require 'thinking_sphinx/active_record/sql_builder'
 require 'thinking_sphinx/active_record/sql_source'
 

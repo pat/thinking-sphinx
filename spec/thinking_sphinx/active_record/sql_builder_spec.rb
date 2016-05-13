@@ -5,7 +5,7 @@ describe ThinkingSphinx::ActiveRecord::SQLBuilder do
     :fields => [], :attributes => [], :disable_range? => false,
     :delta_processor => nil, :conditions => [], :groupings => [],
     :adapter => adapter, :associations => [], :primary_key => :id,
-    :options => {}) }
+    :options => {}, :properties => []) }
   let(:model)        { double('model', :connection => connection,
     :descends_from_active_record? => true, :column_names => [],
     :inheritance_column => 'type', :unscoped => relation,
