@@ -25,6 +25,8 @@ class ThinkingSphinx::ActiveRecord::SourceJoins
   end
 
   def append_column_associations(column)
+    return if column.__stack.empty?
+
     joins.add_join_to column.__stack if column_exists?(column)
   end
 
