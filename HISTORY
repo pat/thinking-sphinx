@@ -1,4 +1,4 @@
-Latest:
+2016-05-13: 3.2.0
 * [FIX] Ensure SQL table aliases are reliable for SQL-backed index queries.
 * [FEATURE] Add JSON attribute support for real-time indices.
 * [FEATURE] Add ability to disable *all* Sphinx-related callbacks via ThinkingSphinx::Callbacks.suspend! and ThinkingSphinx::Callbacks.resume!. Particularly useful for unit tests.
