@@ -53,6 +53,17 @@ end
 indexes comment_texts
 {% endhighlight %}
 
+#### Eager-loading Associations
+
+Because Thinking Sphinx is loading your records via ActiveRecord, you can define a custom scope to use - although this is only in play for bulk inserts (via `rake ts:generate`/`rake ts:regenerate`):
+
+{% highlight ruby %}
+# in your index definition:
+scope { Article.includes(:comments) }
+{% endhighlight %}
+
+This allows eager loading of associations, or even filtering out specific values. However, keep in mind the default callbacks don't use this scope, so a record that does not get included in this scope but is then altered will be added to your Sphinx data.
+
 ### Model Callbacks
 
 To ensure changes to your model instances are reflected in Sphinx, you'll need to add a callback:
@@ -71,7 +82,7 @@ after_save ThinkingSphinx::RealTime.callback_for(
 )
 {% endhighlight %}
 
-The first argument, in all situations, should match the index definition's first argument: a symbolised version of the model name. The second argument is a chain, and should be in the form of an array of symbols, each symbol representing methods called to get to the indexed object (so, an instance of the Article model in the example above).
+The [rest of the callbacks documentation](indexing.html#callbacks) covers more advanced usage.
 
 ### Testing
 

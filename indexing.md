@@ -307,6 +307,33 @@ after_save ThinkingSphinx::RealTime.callback_for(
 
 The first argument, in all situations, should match the index definition's first argument: a symbolised version of the model name. The second argument is a chain, and should be in the form of an array of symbols, each symbol representing methods called to get to the indexed object (so, an instance of the Article model in the example above).
 
+If you wish to have your callbacks update Sphinx only in certain conditions, you can either define your own callback and then invoke TS if/when needed:
+
+{% highlight ruby %}
+after_save :populate_to_sphinx
+
+# ...
+
+def populate_to_sphinx
+  return unless indexing?
+
+  ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks.new(
+    :article
+  ).after_save self
+end
+{% endhighlight %}
+
+Or supply a block to the callback instantiation which returns an array of instances to process:
+
+{% highlight ruby %}
+# if your model is app/models/article.rb:
+after_save(
+  ThinkingSphinx::RealTime.callback_for(:article) { |instance|
+    instance.indexing? ? [instance] : []
+  }
+)
+{% endhighlight %}
+
 <h3 id="processing">Processing your Index</h3>
 
 Once you've got your index set up just how you like it, you can run [the rake task](rake_tasks.html) to get Sphinx to process the data.
