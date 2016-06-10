@@ -152,7 +152,7 @@ development:
 Don't forget to rebuild your Sphinx indexes so the daemon is aware of the change.
 
 {% highlight sh %}
-rake ts:rebuild
+rake ts:stop ts:configure ts:start
 {% endhighlight %}
 
 And you also need to specify it in your searches (Sphinx doesn't assume you want the higher number by default):

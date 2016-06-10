@@ -5,9 +5,27 @@ title: Rake Tasks
 
 ## Rake Tasks
 
-### Indexing
+### Processing real-time indices
 
-To index your data, you can run the following rake task:
+To process your data in real-time indices, use the `ts:generate` task:
+
+{% highlight sh %}
+rake ts:generate
+{% endhighlight %}
+
+Callbacks in your models should catch changes to your data, but it's recommended you still run this task regularly to ensure your data is up-to-date.
+
+Whenever you change your index structures, or add or remove indices, you will need to regenerate your Sphinx data from scratch. This can be done with the `ts:regenerate` task, which combines the following steps:
+
+* Stop the Sphinx daemon (if it's running) (`ts:stop`)
+* Delete existing Sphinx data files (`ts:clear_rt`)
+* Rewrite the Sphinx configuration file (`ts:configure`)
+* Start the Sphinx daemon (`ts:start`)
+* Populate all your data (`ts:generate`)
+
+### Processing SQL-backed indices
+
+To process your data in SQL-backed indices, you can run the following rake task:
 
 {% highlight sh %}
 rake ts:index

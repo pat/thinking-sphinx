@@ -11,7 +11,7 @@ Installing Sphinx can be done in various ways, depending on your operating syste
 * [Linux](installing_sphinx/linux.html)
 * [Windows](installing_sphinx/windows.html)
 
-If you are using Thinking Sphinx version 3.0.0 or greater, please make sure you are using Sphinx 2.0.6 or newer. Sphinx 2.1.4 is highly recommended for Thinking Sphinx v3.1.0 or newer.
+If you are using Thinking Sphinx version 3.0.0 or greater, please make sure you are using Sphinx 2.0.6 or newer. Sphinx 2.2.x is highly recommended for Thinking Sphinx v3.2.0 or newer.
 
 <h3 id="compiling">Compiling Sphinx manually</h3>
 

@@ -31,10 +31,12 @@ Once you've [got an index set up](indexing.html) on your model, and have [the Sp
 Article.search 'pancakes'
 {% endhighlight %}
 
-Sphinx does have some reserved characters (including the @ character), so you may need to escape your query terms. Riddle (a dependency of Thinking Sphinx) has escaping methods built-in:
+Sphinx does have some reserved characters (including the @ character), so you may need to escape your query terms.
 
 {% highlight ruby %}
-# For Thinking Sphinx v3 or newer:
+# For Thinking Sphinx v3.1.0 or newer:
+Article.search ThinkingSphinx::Query.escape(params[:query])
+# For Thinking Sphinx v3.0.x:
 Article.search Riddle::Query.escape(params[:query])
 # For Thinking Sphinx before v3:
 Article.search Riddle.escape(params[:query])
@@ -123,6 +125,14 @@ If you want to limit global searches to a few specific models, you can do so wit
 ThinkingSphinx.search 'pancakes', :classes => [Article, Comment]
 {% endhighlight %}
 
+If you want to limit searches to specific indices, you can do this with the `:indices` option (at both a global and model-specific level):
+
+{% highlight ruby %}
+ThinkingSphinx.search 'pancakes', :indices => ['article_core']
+{% endhighlight %}
+
+Standard indices will have the `_core` suffix, and there will also be an equivalent with the `_delta` suffix if deltas are enabled for the index in question.
+
 <h3 id="pagination">Pagination</h3>
 
 Sphinx paginates search results by default. Indeed, there's no way to turn it off (but you can request really big pages should you wish). The parameters for pagination in Thinking Sphinx are exactly the same as [Will Paginate](http://github.com/mislav/will_paginate/tree/master): `:page` and `:per_page`.
@@ -140,6 +150,8 @@ The output of search results can be used with Will Paginate's view helper as wel
 # in the view:
 will_paginate @articles
 {% endhighlight %}
+
+Pagination can also be used in combination with [Kaminari](https://github.com/amatsuda/kaminari) as well.
 
 <h3 id="matchmodes">Match Modes</h3>
 
@@ -358,6 +370,15 @@ If you'd like your search keywords to be wildcards for every search, you can use
 {% highlight ruby %}
 Article.search 'pancakes waffles', :star => true
 # => becomes '*pancakes* *waffles*'
+{% endhighlight %}
+
+If you want to manage auto-wildcarding in a more controlled fashion, since v3.1.0 Thinking Sphinx provides the `ThinkingSphinx::Query.wildcard` method:
+
+{% highlight ruby %}
+Article.search 'pancakes', :conditions => {
+  :name => ThinkingSphinx::Query.wildcard('waffles')
+}
+# => becomes 'pancakes @name *waffles*'
 {% endhighlight %}
 
 <h3 id="errors">Errors</h3>

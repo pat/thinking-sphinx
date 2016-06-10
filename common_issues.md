@@ -112,7 +112,7 @@ development:
 
 <h3 id="mysql_large_fields">MySQL and Large Fields</h3>
 
-If you've got a field that is built off multiple values in one column - ie: through a has_many association - then you may hit MySQL's default limit for string concatenation: 1024 characters. You can increase the [group_concat_max_len](http://dev.mysql.com/doc/refman/5.1/en/server-system-variables.html#sysvar_group_concat_max_len) value by adding the following to your index definition:
+If you've got a field that is built off multiple values in one column from a MySQL database - ie: through a has_many association - then you may hit MySQL's default limit for string concatenation: 1024 characters. You can increase the [group_concat_max_len](http://dev.mysql.com/doc/refman/5.1/en/server-system-variables.html#sysvar_group_concat_max_len) value by adding the following to your index definition:
 
 {% highlight rb %}
 set_property :group_concat_max_len => 8192
@@ -122,7 +122,7 @@ If these fields get particularly large though, then there's another setting you 
 
 <h3 id="postgresql">PostgreSQL with Manual Fields and Attributes</h3>
 
-If you're using fields or attributes defined by strings (raw SQL), then the columns used in them aren't automatically included in the GROUP BY clause of the generated SQL statement. To make sure the query is valid, you will need to explicitly add these columns to the GROUP BY clause.
+If you're using fields or attributes defined by strings (raw SQL) in SQL-backed indices, then the columns used in them aren't automatically included in the GROUP BY clause of the generated SQL statement. To make sure the query is valid, you will need to explicitly add these columns to the GROUP BY clause.
 
 A common example is if you're converting latitude and longitude columns from degrees to radians via SQL.
 

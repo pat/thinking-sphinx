@@ -9,7 +9,9 @@ title: Sphinx Basics
 
 Sphinx is a search engine. You feed it documents, each with a unique identifier and a bunch of text, and then you can send it search terms, and it will tell you the most relevant documents that match them. If you’re familiar with Lucene, Ferret, Solr or ElasticSearch, it’s pretty similar to those systems. You get the daemon running, your data indexed, and then using a client of some sort, start searching.
 
-When indexing your data, Sphinx talks directly to your data source itself – which must be one of MySQL, PostgreSQL, or XML files – which means it can be very fast to index (if your SQL statements aren’t too complex, anyway).
+If you use SQL-backed indices, Sphinx will talk directly to your data source itself – which when using Thinking Sphinx, must be either MySQL or PostgreSQL – which means it can be very fast to index (if your SQL statements aren’t too complex, anyway).
+
+The alternative is to use real-time indices, which allow for immediate updates to single Sphinx documents (instead of updating a batch at once, which is the only option for SQL-backed indices).
 
 ### Sphinx Structure
 
