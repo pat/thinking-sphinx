@@ -27,7 +27,40 @@ If your unit tests use factories or fixtures, you may wish to disable delta inde
 
 <h3 id="acceptance">Integration/Acceptance Testing</h3>
 
-Whenever you're using Sphinx with your test suite, you also _need_ to turn transactional fixtures off. The reason for this is that while ActiveRecord can run all its operations within a single transaction, Sphinx doesn't have access to that, and so indexing will not include your transaction's changes.
+#### Real-time indices
+
+Because updates to real-time indices happen within the context of your Ruby app, you can use transactional fixtures easily enough. Here's some example code for RSpec that only enables Sphinx for request specs (you may want to alter it to also be enabled for feature/integration specs):
+
+{% highlight ruby %}
+RSpec.configure do |config|
+  # Transactional fixtures work with real-time indices
+  config.use_transactional_fixtures = true
+
+  config.before :each do |example|
+    # Configure and start Sphinx for request specs
+    if example.metadata[:type] == :request
+      ThinkingSphinx::Test.init
+      ThinkingSphinx::Test.start index: false
+    end
+
+    # Disable real-time callbacks if Sphinx isn't running
+    ThinkingSphinx::Configuration.instance.settings['real_time_callbacks'] =
+      (example.metadata[:type] == :request)
+  end
+
+  config.after(:each) do |example|
+    # Stop Sphinx and clear out data after request specs
+    if example.metadata[:type] == :request
+      ThinkingSphinx::Test.stop
+      ThinkingSphinx::Test.clear
+    end
+  end
+end
+{% endhighlight %}
+
+#### SQL-backed indices
+
+Whenever you're using Sphinx and SQL-backed indices with your test suite, you also _need_ to turn transactional fixtures off. The reason for this is that while ActiveRecord can run all its operations within a single transaction, Sphinx doesn't have access to that, and so indexing will not include your transaction's changes.
 
 The added complication to this is that you'll probably want to clear all the data from your database between scenarios. Ben Mabey's [Database Cleaner](http://github.com/bmabey/database_cleaner) is the most common tool for this - but you could also manually delete everything from each model in your setup code:
 

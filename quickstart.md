@@ -29,7 +29,7 @@ end
 
 The above definition is for a **real-time** index, and so fields and attributes refer to your model's methods.
 
-You'll want to add a callback to your model to ensure any changes flow through to Sphinx:
+You'll want to add [a callback](indexing.html#callbacks) to your model to ensure any changes flow through to Sphinx:
 
 {% highlight ruby %}
 # if your model is app/models/article.rb:

@@ -13,6 +13,7 @@ title: Indexing
 * [Sanitizing SQL](#sql)
 * [Index Options](#options)
 * [Multiple Indices](#multiple)
+* [Real-time Callbacks](#callbacks)
 * [Processing your Index](#processing)
 
 <h3 id="basic">Basic Indexing</h3>
@@ -44,6 +45,8 @@ ThinkingSphinx::Index.define :article, :with => :real_time do
   has updated_at, :type => :timestamp
 end
 {% endhighlight %}
+
+You'll also want to add [a real-time callback](#callbacks) to your model.
 
 When you're defining indices for namespaced models, use a lowercase string with /'s for namespacing as the model reference:
 
@@ -283,6 +286,26 @@ define_index 'article_bar' do
 end
 {% endhighlight %}
 </div>
+
+<h3 id="callbacks">Real-time Callbacks</h3>
+
+If you're using real-time indices, you will want to add a callback to your model to ensure changes are reflected in Sphinx:
+
+{% highlight ruby %}
+# if your model is app/models/article.rb:
+after_save ThinkingSphinx::RealTime.callback_for(:article)
+{% endhighlight %}
+
+If you want changes to associated data to fire Sphinx updates for a related model, you can specify a method chain for the callback.
+
+{% highlight ruby %}
+# in app/models/comment.rb, presuming a comment belongs_to :article
+after_save ThinkingSphinx::RealTime.callback_for(
+  :article, [:article]
+)
+{% endhighlight %}
+
+The first argument, in all situations, should match the index definition's first argument: a symbolised version of the model name. The second argument is a chain, and should be in the form of an array of symbols, each symbol representing methods called to get to the indexed object (so, an instance of the Article model in the example above).
 
 <h3 id="processing">Processing your Index</h3>
 
