@@ -1,5 +1,6 @@
-pygments: true
-auto: true
-markdown: rdiscount
-rdiscount:
-  extensions: [smart]
+highligher: rouge
+name: Thinking Sphinx
+url: http://freelancing-gods.com/thinking-sphinx
+author:
+  name: Pat Allan
+  uri: http://freelancing-gods.com/about.html
