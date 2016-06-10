@@ -58,17 +58,41 @@ RSpec.configure do |config|
 end
 {% endhighlight %}
 
-#### SQL-backed indices
+However, if you're performing browser testing (headless or through Selenium), you'll need to disable transactional fixtures and use a tool like Database Cleaner.
 
-Whenever you're using Sphinx and SQL-backed indices with your test suite, you also _need_ to turn transactional fixtures off. The reason for this is that while ActiveRecord can run all its operations within a single transaction, Sphinx doesn't have access to that, and so indexing will not include your transaction's changes.
+#### Using non-transactional fixtures
 
-The added complication to this is that you'll probably want to clear all the data from your database between scenarios. Ben Mabey's [Database Cleaner](http://github.com/bmabey/database_cleaner) is the most common tool for this - but you could also manually delete everything from each model in your setup code:
+To use Sphinx with transactional fixtures disabled, I recommend using Ben Mabey's [Database Cleaner](http://github.com/bmabey/database_cleaner) and a configuration along the lines of the following (with any tests requiring Sphinx to be tagged with `:sphinx => true`):
 
 {% highlight ruby %}
-[Article, User].each do |model|
-  model.delete_all
+RSpec.configure do |config|
+  config.use_transactional_fixtures = false
+
+  config.before(:each) do
+    # Default to transaction strategy for all specs
+    DatabaseCleaner.strategy = :transaction
+  end
+
+  config.before(:each, :sphinx => true) do
+    # For tests tagged with Sphinx, use deletion (or truncation)
+    DatabaseCleaner.strategy = :deletion
+  end
+
+  config.before(:each) do
+    DatabaseCleaner.start
+  end
+
+  config.append_after(:each) do
+    DatabaseCleaner.clean
+  end
 end
 {% endhighlight %}
+
+The configuration above should be combined with either the appropriate real-time index setup (above) or SQL-backed index setup (below).
+
+#### SQL-backed indices
+
+Whenever you're using Sphinx and SQL-backed indices with your test suite, you also _need_ to turn transactional fixtures off. The reason for this is that while ActiveRecord can run all its operations within a single transaction, Sphinx doesn't have access to that, and so indexing will not include your transaction's changes. Configuration for this is covered above.
 
 The next step is to make sure Sphinx is set up for each test. Here's an example of a file for RSpec that could live at `spec/support/sphinx.rb`:
 
