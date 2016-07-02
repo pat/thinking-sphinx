@@ -57,7 +57,7 @@ class ThinkingSphinx::Middlewares::ActiveRecordTranslator <
       @results_for_models ||= model_names.inject({}) do |hash, name|
         model = name.constantize
         hash[name] = model_relation_with_sql_options(model.unscoped).where(
-          (context.configuration.settings[:primary_key] || model.primary_key || :id) => ids_for_model(name)
+          (context.configuration.settings['primary_key'] || model.primary_key || :id) => ids_for_model(name)
         )
 
         hash
