@@ -1,6 +1,8 @@
 class ThinkingSphinx::Middlewares::ActiveRecordTranslator <
   ThinkingSphinx::Middlewares::Middleware
 
+  NO_MODEL = Struct.new(:primary_key).new(:id).freeze
+
   def call(contexts)
     contexts.each do |context|
       Inner.new(context).call
@@ -42,6 +44,16 @@ class ThinkingSphinx::Middlewares::ActiveRecordTranslator <
       }.uniq
     end
 
+    def primary_key
+      @primary_key ||= primary_key_for NO_MODEL
+    end
+
+    def primary_key_for(model)
+      model = NO_MODEL unless model.respond_to?(:primary_key)
+
+      context.configuration.settings['primary_key'] || model.primary_key || :id
+    end
+
     def reset_memos
       @model_names        = nil
       @results_for_models = nil
@@ -49,7 +61,7 @@ class ThinkingSphinx::Middlewares::ActiveRecordTranslator <
 
     def result_for(row)
       results_for_models[row['sphinx_internal_class']].detect { |record|
-        record.public_send(context.configuration.settings['primary_key'] || :id) == row['sphinx_internal_id']
+        record.public_send(primary_key) == row['sphinx_internal_id']
       }
     end
 
@@ -57,7 +69,7 @@ class ThinkingSphinx::Middlewares::ActiveRecordTranslator <
       @results_for_models ||= model_names.inject({}) do |hash, name|
         model = name.constantize
         hash[name] = model_relation_with_sql_options(model.unscoped).where(
-          (context.configuration.settings['primary_key'] || model.primary_key || :id) => ids_for_model(name)
+          primary_key_for(model) => ids_for_model(name)
         )
 
         hash
