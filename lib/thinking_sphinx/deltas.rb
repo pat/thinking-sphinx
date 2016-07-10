@@ -21,12 +21,16 @@ module ThinkingSphinx::Deltas
   end
 
   def self.suspend(reference, &block)
+    was_suspended = suspended?
     suspend!
     yield
-    resume!
 
-    config.indices_for_references(reference).each do |index|
-      index.delta_processor.index index if index.delta?
+    unless was_suspended
+      resume!
+
+      config.indices_for_references(reference).each do |index|
+        index.delta_processor.index index if index.delta?
+      end
     end
   end
 
