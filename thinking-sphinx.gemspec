@@ -29,7 +29,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'riddle',       '>= 1.5.11'
 
   s.add_development_dependency 'appraisal',        '~> 1.0.2'
-  s.add_development_dependency 'combustion',       '~> 0.4.0'
+  s.add_development_dependency 'combustion',       '~> 0.5.4'
   s.add_development_dependency 'database_cleaner', '~> 1.2.0'
   s.add_development_dependency 'rspec',            '~> 2.13.0'
 end
