@@ -12,7 +12,7 @@ module ThinkingSphinx::ActiveRecord::DatabaseAdapters
       when :postgresql
         PostgreSQLAdapter
       else
-        raise "Invalid Database Adapter '#{adapter}': Thinking Sphinx only supports MySQL and PostgreSQL."
+        raise ThinkingSphinx::InvalidDatabaseAdapter, "Invalid adapter '#{adapter}': Thinking Sphinx only supports MySQL and PostgreSQL."
       end
 
       klass.new model

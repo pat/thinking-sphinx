@@ -453,7 +453,9 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       allow(ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter).
         to receive_messages(:=== => false)
 
-      expect { source.type }.to raise_error
+      expect { source.type }.to raise_error(
+        ThinkingSphinx::UnknownDatabaseAdapter
+      )
     end
   end
 end

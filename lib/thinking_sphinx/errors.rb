@@ -58,3 +58,9 @@ end
 
 class ThinkingSphinx::DuplicateNameError < StandardError
 end
+
+class ThinkingSphinx::InvalidDatabaseAdapter < StandardError
+end
+
+class ThinkingSphinx::UnknownDatabaseAdapter < StandardError
+end

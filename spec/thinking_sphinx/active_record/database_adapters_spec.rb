@@ -43,7 +43,7 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters do
 
       expect {
         ThinkingSphinx::ActiveRecord::DatabaseAdapters.adapter_for(model)
-      }.to raise_error
+      }.to raise_error(ThinkingSphinx::InvalidDatabaseAdapter)
     end
   end
 
