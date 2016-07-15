@@ -31,7 +31,9 @@ class SphinxController
   end
 
   def stop
-    config.controller.stop
+    until config.controller.stop do
+      sleep(0.1)
+    end
   end
 
   def index(*indices)
