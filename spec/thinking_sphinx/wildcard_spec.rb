@@ -30,6 +30,11 @@ describe ThinkingSphinx::Wildcard do
       ThinkingSphinx::Wildcard.call("@title pan").should == "@title *pan*"
     end
 
+    it 'does not star multiple field tags' do
+      ThinkingSphinx::Wildcard.call("@title pan @tags food").
+        should == "@title *pan* @tags *food*"
+    end
+
     it "does not star manually provided arrays of field tags" do
       ThinkingSphinx::Wildcard.call("@(title, body) pan").
         should == "@(title, body) *pan*"
