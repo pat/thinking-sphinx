@@ -7,16 +7,16 @@ describe ThinkingSphinx::ActiveRecord::Field do
   let(:model)        { double('model') }
 
   before :each do
-    column.stub! :to_a => [column]
+    allow(column).to receive_messages :to_a => [column]
   end
 
   describe '#columns' do
     it 'returns the provided Column object' do
-      field.columns.should == [column]
+      expect(field.columns).to eq([column])
     end
 
     it 'translates symbols to Column objects' do
-      ThinkingSphinx::ActiveRecord::Column.should_receive(:new).with(:title).
+      expect(ThinkingSphinx::ActiveRecord::Column).to receive(:new).with(:title).
         and_return(column)
 
       ThinkingSphinx::ActiveRecord::Field.new model, :title
@@ -25,25 +25,25 @@ describe ThinkingSphinx::ActiveRecord::Field do
 
   describe '#file?' do
     it "defaults to false" do
-      field.should_not be_file
+      expect(field).not_to be_file
     end
 
     it "is true if file option is set" do
       field = ThinkingSphinx::ActiveRecord::Field.new model, column,
         :file => true
-      field.should be_file
+      expect(field).to be_file
     end
   end
 
   describe '#with_attribute?' do
     it "defaults to false" do
-      field.should_not be_with_attribute
+      expect(field).not_to be_with_attribute
     end
 
     it "is true if the field is sortable" do
       field = ThinkingSphinx::ActiveRecord::Field.new model, column,
         :sortable => true
-      field.should be_with_attribute
+      expect(field).to be_with_attribute
     end
   end
 end

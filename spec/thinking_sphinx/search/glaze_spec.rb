@@ -12,11 +12,11 @@ describe ThinkingSphinx::Search::Glaze do
 
   describe '#!=' do
     it "is true for objects that don't match" do
-      (glaze != double('foo')).should be_true
+      expect(glaze != double('foo')).to be_truthy
     end
 
     it "is false when the underlying object is a match" do
-      (glaze != object).should be_false
+      expect(glaze != object).to be_falsey
     end
   end
 
@@ -28,50 +28,50 @@ describe ThinkingSphinx::Search::Glaze do
     let(:pane_two) { double('pane two', :foo => 'two', :bar => 'two') }
 
     before :each do
-      klass.stub(:new).and_return(pane_one, pane_two)
+      allow(klass).to receive(:new).and_return(pane_one, pane_two)
     end
 
     it "respects objects existing methods" do
-      object.stub :foo => 'original'
+      allow(object).to receive_messages :foo => 'original'
 
-      glaze.foo.should == 'original'
+      expect(glaze.foo).to eq('original')
     end
 
     it "uses the first pane that responds to the method" do
-      glaze.foo.should == 'one'
-      glaze.bar.should == 'two'
+      expect(glaze.foo).to eq('one')
+      expect(glaze.bar).to eq('two')
     end
 
     it "raises the method missing error otherwise" do
-      object.stub :respond_to? => false
-      object.stub(:baz).and_raise(NoMethodError)
+      allow(object).to receive_messages :respond_to? => false
+      allow(object).to receive(:baz).and_raise(NoMethodError)
 
-      lambda { glaze.baz }.should raise_error(NoMethodError)
+      expect { glaze.baz }.to raise_error(NoMethodError)
     end
   end
 
   describe '#respond_to?' do
     it "responds to underlying object methods" do
-      object.stub :foo => true
+      allow(object).to receive_messages :foo => true
 
-      glaze.respond_to?(:foo).should be_true
+      expect(glaze.respond_to?(:foo)).to be_truthy
     end
 
     it "responds to underlying pane methods" do
       pane  = double('Pane Class', :new => double('pane', :bar => true))
       glaze = ThinkingSphinx::Search::Glaze.new context, object, raw, [pane]
 
-      glaze.respond_to?(:bar).should be_true
+      expect(glaze.respond_to?(:bar)).to be_truthy
     end
 
     it "does not to respond to methods that don't exist" do
-      glaze.respond_to?(:something).should be_false
+      expect(glaze.respond_to?(:something)).to be_falsey
     end
   end
 
   describe '#unglazed' do
     it "returns the original object" do
-      glaze.unglazed.should == object
+      expect(glaze.unglazed).to eq(object)
     end
   end
 end

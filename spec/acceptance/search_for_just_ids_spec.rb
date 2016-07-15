@@ -6,7 +6,7 @@ describe 'Searching for just instance Ids', :live => true do
     waffles  = Article.create! :title => 'Waffles'
     index
 
-    Article.search_for_ids('pancakes').to_a.should == [pancakes.id]
+    expect(Article.search_for_ids('pancakes').to_a).to eq([pancakes.id])
   end
 
   it "works across the global context" do
@@ -14,6 +14,6 @@ describe 'Searching for just instance Ids', :live => true do
     book    = Book.create! :title => 'American Gods'
     index
 
-    ThinkingSphinx.search_for_ids.to_a.should =~ [article.id, book.id]
+    expect(ThinkingSphinx.search_for_ids.to_a).to match_array([article.id, book.id])
   end
 end

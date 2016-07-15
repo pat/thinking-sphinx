@@ -30,7 +30,7 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks do
       stub_const 'ThinkingSphinx::Connection', double
       stub_const 'Riddle::Query', double(:update => 'SphinxQL')
 
-      ThinkingSphinx::Connection.stub(:take).and_yield(connection)
+      allow(ThinkingSphinx::Connection).to receive(:take).and_yield(connection)
 
       source.attributes.replace([
         double(:name => 'foo', :updateable? => true,
@@ -40,41 +40,41 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks do
         double(:name => 'baz', :updateable? => false)
       ])
 
-      instance.stub :changed => ['bar_column', 'baz'], :bar_column => 7
+      allow(instance).to receive_messages :changed => ['bar_column', 'baz'], :bar_column => 7
     end
 
     it "does not send any updates to Sphinx if updates are disabled" do
       configuration.settings['attribute_updates'] = false
 
-      connection.should_not_receive(:execute)
+      expect(connection).not_to receive(:execute)
 
       callbacks.after_update
     end
 
     it "builds an update query with only updateable attributes that have changed" do
-      Riddle::Query.should_receive(:update).
+      expect(Riddle::Query).to receive(:update).
         with('article_core', 3, 'bar' => 7).and_return('SphinxQL')
 
       callbacks.after_update
     end
 
     it "sends the update query through to Sphinx" do
-      connection.should_receive(:execute).with('SphinxQL')
+      expect(connection).to receive(:execute).with('SphinxQL')
 
       callbacks.after_update
     end
 
     it "doesn't care if the update fails at Sphinx's end" do
-      connection.stub(:execute).
+      allow(connection).to receive(:execute).
         and_raise(ThinkingSphinx::ConnectionError.new(''))
 
-      lambda { callbacks.after_update }.should_not raise_error
+      expect { callbacks.after_update }.not_to raise_error
     end
 
     it 'does nothing if callbacks are suspended' do
       ThinkingSphinx::Callbacks.suspend!
 
-      connection.should_not_receive(:execute)
+      expect(connection).not_to receive(:execute)
 
       callbacks.after_update
 

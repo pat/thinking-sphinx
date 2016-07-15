@@ -7,7 +7,7 @@ describe 'Sorting search results', :live => true do
     boys  = Book.create! :title => 'Anansi Boys',        :year => 2005
     index
 
-    Book.search(:order => 'year ASC').to_a.should == [gods, boys, grave]
+    expect(Book.search(:order => 'year ASC').to_a).to eq([gods, boys, grave])
   end
 
   it "sorts by a given attribute in ascending order" do
@@ -16,7 +16,7 @@ describe 'Sorting search results', :live => true do
     boys  = Book.create! :title => 'Anansi Boys',        :year => 2005
     index
 
-    Book.search(:order => :year).to_a.should == [gods, boys, grave]
+    expect(Book.search(:order => :year).to_a).to eq([gods, boys, grave])
   end
 
   it "sorts by a given sortable field" do
@@ -25,14 +25,14 @@ describe 'Sorting search results', :live => true do
     boys  = Book.create! :title => 'Anansi Boys',        :year => 2005
     index
 
-    Book.search(:order => :title).to_a.should == [gods, boys, grave]
+    expect(Book.search(:order => :title).to_a).to eq([gods, boys, grave])
   end
 
   it "sorts by a given sortable field with real-time indices" do
     widgets = Product.create! :name => 'Widgets'
     gadgets = Product.create! :name => 'Gadgets'
 
-    Product.search(:order => "name_sort ASC").to_a.should == [gadgets, widgets]
+    expect(Product.search(:order => "name_sort ASC").to_a).to eq([gadgets, widgets])
   end
 
   it "can sort with a provided expression" do
@@ -41,8 +41,8 @@ describe 'Sorting search results', :live => true do
     boys  = Book.create! :title => 'Anansi Boys',        :year => 2005
     index
 
-    Book.search(
+    expect(Book.search(
       :select => '*, year MOD 2004 as mod_year', :order => 'mod_year ASC'
-    ).to_a.should == [boys, grave, gods]
+    ).to_a).to eq([boys, grave, gods])
   end
 end

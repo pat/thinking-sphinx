@@ -9,14 +9,14 @@ describe ThinkingSphinx::Configuration do
 
   describe '.instance' do
     it "returns an instance of ThinkingSphinx::Configuration" do
-      ThinkingSphinx::Configuration.instance.
-        should be_a(ThinkingSphinx::Configuration)
+      expect(ThinkingSphinx::Configuration.instance).
+        to be_a(ThinkingSphinx::Configuration)
     end
 
     it "memoizes the instance" do
       config = double('configuration')
 
-      ThinkingSphinx::Configuration.should_receive(:new).once.and_return(config)
+      expect(ThinkingSphinx::Configuration).to receive(:new).once.and_return(config)
 
       ThinkingSphinx::Configuration.instance
       ThinkingSphinx::Configuration.instance
@@ -29,8 +29,8 @@ describe ThinkingSphinx::Configuration do
     end
 
     it 'does not cache settings after reset' do
-      File.stub :exists? => true
-      File.stub :read => {
+      allow(File).to receive_messages :exists? => true
+      allow(File).to receive_messages :read => {
         'test'       => {'foo' => 'bugs'},
         'production' => {'foo' => 'bar'}
       }.to_yaml
@@ -38,33 +38,33 @@ describe ThinkingSphinx::Configuration do
       ThinkingSphinx::Configuration.reset
       # Grab a new copy of the instance.
       config = ThinkingSphinx::Configuration.instance
-      config.settings['foo'].should == 'bugs'
+      expect(config.settings['foo']).to eq('bugs')
 
       config.framework = double :environment => 'production', :root => Pathname.new(__FILE__).join('..', '..', 'internal')
-      config.settings['foo'].should == 'bar'
+      expect(config.settings['foo']).to eq('bar')
     end
   end
 
   describe '#configuration_file' do
     it "uses the Rails environment in the configuration file name" do
-      config.configuration_file.
-        should == File.join(Rails.root, 'config', 'test.sphinx.conf')
+      expect(config.configuration_file).
+        to eq(File.join(Rails.root, 'config', 'test.sphinx.conf'))
     end
 
     it "respects provided settings" do
       write_configuration 'configuration_file' => '/path/to/foo.conf'
 
-      config.configuration_file.should == '/path/to/foo.conf'
+      expect(config.configuration_file).to eq('/path/to/foo.conf')
     end
   end
 
   describe '#controller' do
     it "returns an instance of Riddle::Controller" do
-      config.controller.should be_a(Riddle::Controller)
+      expect(config.controller).to be_a(Riddle::Controller)
     end
 
     it "memoizes the instance" do
-      Riddle::Controller.should_receive(:new).once.
+      expect(Riddle::Controller).to receive(:new).once.
         and_return(double('controller'))
 
       config.controller
@@ -74,19 +74,19 @@ describe ThinkingSphinx::Configuration do
     it "sets the bin path from the thinking_sphinx.yml file" do
       write_configuration('bin_path' => '/foo/bar/bin/')
 
-      config.controller.bin_path.should == '/foo/bar/bin/'
+      expect(config.controller.bin_path).to eq('/foo/bar/bin/')
     end
 
     it "appends a backslash to the bin_path if appropriate" do
       write_configuration('bin_path' => '/foo/bar/bin')
 
-      config.controller.bin_path.should == '/foo/bar/bin/'
+      expect(config.controller.bin_path).to eq('/foo/bar/bin/')
     end
   end
 
   describe '#index_paths' do
     it "uses app/indices in the Rails app by default" do
-      config.index_paths.should include(File.join(Rails.root, 'app', 'indices'))
+      expect(config.index_paths).to include(File.join(Rails.root, 'app', 'indices'))
     end
 
     it "uses app/indices in the Rails engines" do
@@ -95,22 +95,22 @@ describe ThinkingSphinx::Configuration do
       } }
       engine_class = double :instance => engine
 
-      Rails::Engine.should_receive(:subclasses).and_return([ engine_class ])
+      expect(Rails::Engine).to receive(:subclasses).and_return([ engine_class ])
 
-      config.index_paths.should include('/engine/app/indices')
+      expect(config.index_paths).to include('/engine/app/indices')
     end
   end
 
   describe '#indices_location' do
     it "stores index files in db/sphinx/ENVIRONMENT" do
-      config.indices_location.
-        should == File.join(Rails.root, 'db', 'sphinx', 'test')
+      expect(config.indices_location).
+        to eq(File.join(Rails.root, 'db', 'sphinx', 'test'))
     end
 
     it "respects provided settings" do
       write_configuration 'indices_location' => '/my/index/files'
 
-      config.indices_location.should == '/my/index/files'
+      expect(config.indices_location).to eq('/my/index/files')
     end
   end
 
@@ -120,30 +120,30 @@ describe ThinkingSphinx::Configuration do
     end
 
     it "sets the daemon pid file within log for the Rails app" do
-      config.searchd.pid_file.
-        should == File.join(Rails.root, 'log', 'test.sphinx.pid')
+      expect(config.searchd.pid_file).
+        to eq(File.join(Rails.root, 'log', 'test.sphinx.pid'))
     end
 
     it "sets the daemon log within log for the Rails app" do
-      config.searchd.log.
-        should == File.join(Rails.root, 'log', 'test.searchd.log')
+      expect(config.searchd.log).
+        to eq(File.join(Rails.root, 'log', 'test.searchd.log'))
     end
 
     it "sets the query log within log for the Rails app" do
-      config.searchd.query_log.
-        should == File.join(Rails.root, 'log', 'test.searchd.query.log')
+      expect(config.searchd.query_log).
+        to eq(File.join(Rails.root, 'log', 'test.searchd.query.log'))
     end
 
     it "sets indexer settings if within thinking_sphinx.yml" do
       write_configuration 'mem_limit' => '128M'
 
-      config.indexer.mem_limit.should == '128M'
+      expect(config.indexer.mem_limit).to eq('128M')
     end
 
     it "sets searchd settings if within thinking_sphinx.yml" do
       write_configuration 'workers' => 'none'
 
-      config.searchd.workers.should == 'none'
+      expect(config.searchd.workers).to eq('none')
     end
 
     it 'adds settings to indexer without common section' do
@@ -164,18 +164,18 @@ describe ThinkingSphinx::Configuration do
     let(:reference) { double('reference') }
 
     it "starts at 0" do
-      config.next_offset(reference).should == 0
+      expect(config.next_offset(reference)).to eq(0)
     end
 
     it "increments for each new reference" do
-      config.next_offset(double('reference')).should == 0
-      config.next_offset(double('reference')).should == 1
-      config.next_offset(double('reference')).should == 2
+      expect(config.next_offset(double('reference'))).to eq(0)
+      expect(config.next_offset(double('reference'))).to eq(1)
+      expect(config.next_offset(double('reference'))).to eq(2)
     end
 
     it "doesn't increment for recorded references" do
-      config.next_offset(reference).should == 0
-      config.next_offset(reference).should == 0
+      expect(config.next_offset(reference)).to eq(0)
+      expect(config.next_offset(reference)).to eq(0)
     end
   end
 
@@ -190,9 +190,9 @@ describe ThinkingSphinx::Configuration do
     it "searches each index path for ruby files" do
       config.index_paths.replace ['/path/to/indices', '/path/to/other/indices']
 
-      Dir.should_receive(:[]).with('/path/to/indices/**/*.rb').once.
+      expect(Dir).to receive(:[]).with('/path/to/indices/**/*.rb').once.
         and_return([])
-      Dir.should_receive(:[]).with('/path/to/other/indices/**/*.rb').once.
+      expect(Dir).to receive(:[]).with('/path/to/other/indices/**/*.rb').once.
         and_return([])
 
       config.preload_indices
@@ -200,14 +200,14 @@ describe ThinkingSphinx::Configuration do
 
     it "loads each file returned" do
       config.index_paths.replace ['/path/to/indices']
-      Dir.stub! :[] => [
+      allow(Dir).to receive_messages :[] => [
         '/path/to/indices/foo_index.rb',
         '/path/to/indices/bar_index.rb'
       ]
 
-      ActiveSupport::Dependencies.should_receive(:require_or_load).
+      expect(ActiveSupport::Dependencies).to receive(:require_or_load).
         with('/path/to/indices/foo_index.rb').once
-      ActiveSupport::Dependencies.should_receive(:require_or_load).
+      expect(ActiveSupport::Dependencies).to receive(:require_or_load).
         with('/path/to/indices/bar_index.rb').once
 
       config.preload_indices
@@ -215,14 +215,14 @@ describe ThinkingSphinx::Configuration do
 
     it "does not double-load indices" do
       config.index_paths.replace ['/path/to/indices']
-      Dir.stub! :[] => [
+      allow(Dir).to receive_messages :[] => [
         '/path/to/indices/foo_index.rb',
         '/path/to/indices/bar_index.rb'
       ]
 
-      ActiveSupport::Dependencies.should_receive(:require_or_load).
+      expect(ActiveSupport::Dependencies).to receive(:require_or_load).
         with('/path/to/indices/foo_index.rb').once
-      ActiveSupport::Dependencies.should_receive(:require_or_load).
+      expect(ActiveSupport::Dependencies).to receive(:require_or_load).
         with('/path/to/indices/bar_index.rb').once
 
       config.preload_indices
@@ -230,7 +230,7 @@ describe ThinkingSphinx::Configuration do
     end
 
     it 'adds distributed indices' do
-      distributor.should_receive(:reconcile)
+      expect(distributor).to receive(:reconcile)
 
       config.preload_indices
     end
@@ -238,7 +238,7 @@ describe ThinkingSphinx::Configuration do
     it 'does not add distributed indices if disabled' do
       write_configuration('distributed_indices' => false)
 
-      distributor.should_not_receive(:reconcile)
+      expect(distributor).not_to receive(:reconcile)
 
       config.preload_indices
     end
@@ -246,15 +246,15 @@ describe ThinkingSphinx::Configuration do
 
   describe '#render' do
     before :each do
-      config.searchd.stub! :render => 'searchd { }'
+      allow(config.searchd).to receive_messages :render => 'searchd { }'
     end
 
     it "searches each index path for ruby files" do
       config.index_paths.replace ['/path/to/indices', '/path/to/other/indices']
 
-      Dir.should_receive(:[]).with('/path/to/indices/**/*.rb').once.
+      expect(Dir).to receive(:[]).with('/path/to/indices/**/*.rb').once.
         and_return([])
-      Dir.should_receive(:[]).with('/path/to/other/indices/**/*.rb').once.
+      expect(Dir).to receive(:[]).with('/path/to/other/indices/**/*.rb').once.
         and_return([])
 
       config.render
@@ -262,14 +262,14 @@ describe ThinkingSphinx::Configuration do
 
     it "loads each file returned" do
       config.index_paths.replace ['/path/to/indices']
-      Dir.stub! :[] => [
+      allow(Dir).to receive_messages :[] => [
         '/path/to/indices/foo_index.rb',
         '/path/to/indices/bar_index.rb'
       ]
 
-      ActiveSupport::Dependencies.should_receive(:require_or_load).
+      expect(ActiveSupport::Dependencies).to receive(:require_or_load).
         with('/path/to/indices/foo_index.rb').once
-      ActiveSupport::Dependencies.should_receive(:require_or_load).
+      expect(ActiveSupport::Dependencies).to receive(:require_or_load).
         with('/path/to/indices/bar_index.rb').once
 
       config.render
@@ -277,14 +277,14 @@ describe ThinkingSphinx::Configuration do
 
     it "does not double-load indices" do
       config.index_paths.replace ['/path/to/indices']
-      Dir.stub! :[] => [
+      allow(Dir).to receive_messages :[] => [
         '/path/to/indices/foo_index.rb',
         '/path/to/indices/bar_index.rb'
       ]
 
-      ActiveSupport::Dependencies.should_receive(:require_or_load).
+      expect(ActiveSupport::Dependencies).to receive(:require_or_load).
         with('/path/to/indices/foo_index.rb').once
-      ActiveSupport::Dependencies.should_receive(:require_or_load).
+      expect(ActiveSupport::Dependencies).to receive(:require_or_load).
         with('/path/to/indices/bar_index.rb').once
 
       config.preload_indices
@@ -297,33 +297,33 @@ describe ThinkingSphinx::Configuration do
     let(:output) { config.render }
 
     before :each do
-      config.searchd.stub! :render => 'searchd { }'
+      allow(config.searchd).to receive_messages :render => 'searchd { }'
     end
 
     it "writes the rendered configuration to the file" do
       config.configuration_file = '/path/to/file.config'
 
-      config.should_receive(:open).with('/path/to/file.config', 'w').
+      expect(config).to receive(:open).with('/path/to/file.config', 'w').
         and_yield(file)
-      file.should_receive(:write).with(output)
+      expect(file).to receive(:write).with(output)
 
       config.render_to_file
     end
 
     it "creates a directory at the binlog_path" do
-      FileUtils.stub :mkdir_p => true
-      config.stub :searchd => double(:binlog_path => '/path/to/binlog')
+      allow(FileUtils).to receive_messages :mkdir_p => true
+      allow(config).to receive_messages :searchd => double(:binlog_path => '/path/to/binlog')
 
-      FileUtils.should_receive(:mkdir_p).with('/path/to/binlog')
+      expect(FileUtils).to receive(:mkdir_p).with('/path/to/binlog')
 
       config.render_to_file
     end
 
     it "skips creating a directory when the binlog_path is blank" do
-      FileUtils.stub :mkdir_p => true
-      config.stub :searchd => double(:binlog_path => '')
+      allow(FileUtils).to receive_messages :mkdir_p => true
+      allow(config).to receive_messages :searchd => double(:binlog_path => '')
 
-      FileUtils.should_not_receive(:mkdir_p)
+      expect(FileUtils).not_to receive(:mkdir_p)
 
       config.render_to_file
     end
@@ -332,31 +332,31 @@ describe ThinkingSphinx::Configuration do
   describe '#searchd' do
     describe '#address' do
       it "defaults to 127.0.0.1" do
-        config.searchd.address.should == '127.0.0.1'
+        expect(config.searchd.address).to eq('127.0.0.1')
       end
 
       it "respects the address setting" do
         write_configuration('address' => '10.11.12.13')
 
-        config.searchd.address.should == '10.11.12.13'
+        expect(config.searchd.address).to eq('10.11.12.13')
       end
     end
 
     describe '#mysql41' do
       it "defaults to 9306" do
-        config.searchd.mysql41.should == 9306
+        expect(config.searchd.mysql41).to eq(9306)
       end
 
       it "respects the port setting" do
         write_configuration('port' => 9313)
 
-        config.searchd.mysql41.should == 9313
+        expect(config.searchd.mysql41).to eq(9313)
       end
 
       it "respects the mysql41 setting" do
         write_configuration('mysql41' => 9307)
 
-        config.searchd.mysql41.should == 9307
+        expect(config.searchd.mysql41).to eq(9307)
       end
     end
   end
@@ -364,66 +364,66 @@ describe ThinkingSphinx::Configuration do
   describe '#settings' do
     context 'YAML file exists' do
       before :each do
-        File.stub :exists? => true
+        allow(File).to receive_messages :exists? => true
       end
 
       it "reads from the YAML file" do
-        File.should_receive(:read).and_return('')
+        expect(File).to receive(:read).and_return('')
 
         config.settings
       end
 
       it "uses the settings for the given environment" do
-        File.stub :read => {
+        allow(File).to receive_messages :read => {
           'test'    => {'foo' => 'bar'},
           'staging' => {'baz' => 'qux'}
         }.to_yaml
-        Rails.stub :env => 'staging'
+        allow(Rails).to receive_messages :env => 'staging'
 
-        config.settings['baz'].should == 'qux'
+        expect(config.settings['baz']).to eq('qux')
       end
 
       it "remembers the file contents" do
-        File.should_receive(:read).and_return('')
+        expect(File).to receive(:read).and_return('')
 
         config.settings
         config.settings
       end
 
       it "returns an empty hash when no settings for the environment exist" do
-        File.stub :read => {'test' => {'foo' => 'bar'}}.to_yaml
-        Rails.stub :env => 'staging'
+        allow(File).to receive_messages :read => {'test' => {'foo' => 'bar'}}.to_yaml
+        allow(Rails).to receive_messages :env => 'staging'
 
-        config.settings.should == {}
+        expect(config.settings).to eq({})
       end
     end
 
     context 'YAML file does not exist' do
       before :each do
-        File.stub :exists? => false
+        allow(File).to receive_messages :exists? => false
       end
 
       it "does not read the file" do
-        File.should_not_receive(:read)
+        expect(File).not_to receive(:read)
 
         config.settings
       end
 
       it "returns an empty hash" do
-        config.settings.should == {}
+        expect(config.settings).to eq({})
       end
     end
   end
 
   describe '#version' do
     it "defaults to 2.1.4" do
-      config.version.should == '2.1.4'
+      expect(config.version).to eq('2.1.4')
     end
 
     it "respects supplied YAML versions" do
       write_configuration 'version' => '2.0.4'
 
-      config.version.should == '2.0.4'
+      expect(config.version).to eq('2.0.4')
     end
   end
 end

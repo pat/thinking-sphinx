@@ -5,7 +5,7 @@ describe 'Get search result counts', :live => true do
     4.times { |i| Article.create :title => "Article #{i}" }
     index
 
-    Article.search_count.should == 4
+    expect(Article.search_count).to eq(4)
   end
 
   it "returns counts across all models" do
@@ -13,6 +13,6 @@ describe 'Get search result counts', :live => true do
     2.times { |i| Book.create :title => "Book #{i}" }
     index
 
-    ThinkingSphinx.count.should == 5
+    expect(ThinkingSphinx.count).to eq(5)
   end
 end

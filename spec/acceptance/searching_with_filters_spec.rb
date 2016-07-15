@@ -6,7 +6,7 @@ describe 'Searching with filters', :live => true do
     waffles  = Article.create! :title => 'Waffles',  :published => false
     index
 
-    Article.search(:with => {:published => true}).to_a.should == [pancakes]
+    expect(Article.search(:with => {:published => true}).to_a).to eq([pancakes])
   end
 
   it "limits results by an array of values" do
@@ -15,7 +15,7 @@ describe 'Searching with filters', :live => true do
     grave = Book.create! :title => 'The Graveyard Book', :year => 2009
     index
 
-    Book.search(:with => {:year => [2001, 2005]}).to_a.should == [gods, boys]
+    expect(Book.search(:with => {:year => [2001, 2005]}).to_a).to eq([gods, boys])
   end
 
   it "limits results by a ranged filter" do
@@ -28,8 +28,8 @@ describe 'Searching with filters', :live => true do
     grave.update_column :created_at, 1.day.ago
     index
 
-    Book.search(:with => {:created_at => 6.days.ago..2.days.ago}).to_a.
-      should == [gods, boys]
+    expect(Book.search(:with => {:created_at => 6.days.ago..2.days.ago}).to_a).
+      to eq([gods, boys])
   end
 
   it "limits results by exclusive filters on single values" do
@@ -37,7 +37,7 @@ describe 'Searching with filters', :live => true do
     waffles  = Article.create! :title => 'Waffles',  :published => false
     index
 
-    Article.search(:without => {:published => true}).to_a.should == [waffles]
+    expect(Article.search(:without => {:published => true}).to_a).to eq([waffles])
   end
 
   it "limits results by exclusive filters on arrays of values" do
@@ -46,7 +46,7 @@ describe 'Searching with filters', :live => true do
     grave = Book.create! :title => 'The Graveyard Book', :year => 2009
     index
 
-    Book.search(:without => {:year => [2001, 2005]}).to_a.should == [grave]
+    expect(Book.search(:without => {:year => [2001, 2005]}).to_a).to eq([grave])
   end
 
   it "limits results by ranged filters on timestamp MVAs" do
@@ -64,9 +64,9 @@ describe 'Searching with filters', :live => true do
 
     index
 
-    Article.search(
+    expect(Article.search(
       :with => {:taggings_at => 1.days.ago..1.day.from_now}
-    ).to_a.should == [pancakes]
+    ).to_a).to eq([pancakes])
   end
 
   it "takes into account local timezones for timestamps" do
@@ -84,9 +84,9 @@ describe 'Searching with filters', :live => true do
 
     index
 
-    Article.search(
+    expect(Article.search(
       :with => {:taggings_at => 2.minutes.ago..Time.zone.now}
-    ).to_a.should == [pancakes]
+    ).to_a).to eq([pancakes])
   end
 
   it "limits results with MVAs having all of the given values" do
@@ -103,13 +103,13 @@ describe 'Searching with filters', :live => true do
     index
 
     articles = Article.search :with_all => {:tag_ids => [food.id, flat.id]}
-    articles.to_a.should == [pancakes]
+    expect(articles.to_a).to eq([pancakes])
   end
 
   it "limits results with MVAs that don't contain all the given values" do
     # Matching results may have some of the given values, but cannot have all
     # of them. Certainly an edge case.
-    pending "SphinxQL doesn't yet support OR in its WHERE clause"
+    skip "SphinxQL doesn't yet support OR in its WHERE clause"
 
     pancakes = Article.create :title => 'Pancakes'
     waffles  = Article.create :title => 'Waffles'
@@ -124,7 +124,7 @@ describe 'Searching with filters', :live => true do
     index
 
     articles = Article.search :without_all => {:tag_ids => [food.id, flat.id]}
-    articles.to_a.should == [waffles]
+    expect(articles.to_a).to eq([waffles])
   end
 
   it "limits results on real-time indices with multi-value integer attributes" do
@@ -139,7 +139,7 @@ describe 'Searching with filters', :live => true do
     waffles.categories  << food
 
     products = Product.search :with => {:category_ids => [flat.id]}
-    products.to_a.should == [pancakes]
+    expect(products.to_a).to eq([pancakes])
   end
 
   it 'searches with real-time JSON attributes' do
@@ -149,9 +149,9 @@ describe 'Searching with filters', :live => true do
       :options => {'chocolate' => 1, 'sugar' => 1, :number => 1}
 
     products = Product.search :with => {"options.lemon" => 1}
-    products.to_a.should == [pancakes]
+    expect(products.to_a).to eq([pancakes])
 
     products = Product.search :with => {"options.sugar" => 1}
-    products.to_a.should == [pancakes, waffles]
+    expect(products.to_a).to eq([pancakes, waffles])
   end if JSONColumn.call
 end

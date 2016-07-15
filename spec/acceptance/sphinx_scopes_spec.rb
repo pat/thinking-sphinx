@@ -7,7 +7,7 @@ describe 'Sphinx scopes', :live => true do
     grave = Book.create! :title => 'The Graveyard Book', :year => 2009
     index
 
-    Book.by_year(2009).to_a.should == [grave]
+    expect(Book.by_year(2009).to_a).to eq([grave])
   end
 
   it "allows scopes to return both query and options" do
@@ -16,7 +16,7 @@ describe 'Sphinx scopes', :live => true do
     grave = Book.create! :title => 'The Graveyard Book', :year => 2009
     index
 
-    Book.by_query_and_year('Graveyard', 2009).to_a.should == [grave]
+    expect(Book.by_query_and_year('Graveyard', 2009).to_a).to eq([grave])
   end
 
   it "allows chaining of scopes" do
@@ -25,7 +25,7 @@ describe 'Sphinx scopes', :live => true do
     grave = Book.create! :title => 'The Graveyard Book', :year => 2009
     index
 
-    Book.by_year(2001..2005).ordered.to_a.should == [boys, gods]
+    expect(Book.by_year(2001..2005).ordered.to_a).to eq([boys, gods])
   end
 
   it "allows chaining of scopes that include queries" do
@@ -34,8 +34,8 @@ describe 'Sphinx scopes', :live => true do
     grave = Book.create! :title => 'The Graveyard Book', :year => 2009
     index
 
-    Book.by_year(2001).by_query_and_year('Graveyard', 2009).to_a.
-      should == [grave]
+    expect(Book.by_year(2001).by_query_and_year('Graveyard', 2009).to_a).
+      to eq([grave])
   end
 
   it "allows further search calls on scopes" do
@@ -43,7 +43,7 @@ describe 'Sphinx scopes', :live => true do
     pratchett = Book.create! :title => 'Small Gods'
     index
 
-    Book.by_query('Gods').search('Small').to_a.should == [pratchett]
+    expect(Book.by_query('Gods').search('Small').to_a).to eq([pratchett])
   end
 
   it "allows facet calls on scopes" do
@@ -52,9 +52,9 @@ describe 'Sphinx scopes', :live => true do
     Book.create! :title => 'Small Gods',    :author => 'Terry Pratchett'
     index
 
-    Book.by_query('Gods').facets.to_hash[:author].should == {
+    expect(Book.by_query('Gods').facets.to_hash[:author]).to eq({
       'Neil Gaiman' => 1, 'Terry Pratchett' => 1
-    }
+    })
   end
 
   it "allows accessing counts on scopes" do
@@ -64,7 +64,7 @@ describe 'Sphinx scopes', :live => true do
     Book.create! :title => 'Night Watch'
     index
 
-    Book.by_query('gods').count.should == 2
+    expect(Book.by_query('gods').count).to eq(2)
   end
 
   it 'raises an exception when trying to modify a populated request' do

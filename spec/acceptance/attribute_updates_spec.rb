@@ -5,12 +5,12 @@ describe 'Update attributes automatically where possible', :live => true do
     article = Article.create :title => 'Pancakes', :published => false
     index
 
-    Article.search('pancakes', :with => {:published => true}).should be_empty
+    expect(Article.search('pancakes', :with => {:published => true})).to be_empty
 
     article.published = true
     article.save
 
-    Article.search('pancakes', :with => {:published => true}).to_a
-      .should == [article]
+    expect(Article.search('pancakes', :with => {:published => true}).to_a)
+      .to eq([article])
   end
 end

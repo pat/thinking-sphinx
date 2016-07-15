@@ -13,8 +13,8 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
   let(:connection) { double('connection', :execute => true) }
 
   before :each do
-    ThinkingSphinx::Configuration.stub :instance => config
-    ThinkingSphinx::Connection.stub_chain(:pool, :take).and_yield connection
+    allow(ThinkingSphinx::Configuration).to receive_messages :instance => config
+    allow(ThinkingSphinx::Connection).to receive_message_chain(:pool, :take).and_yield connection
   end
 
   describe '#after_save' do
@@ -25,14 +25,14 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
       :translate => time) }
 
     before :each do
-      ThinkingSphinx::Configuration.stub :instance => config
-      Riddle::Query::Insert.stub :new => insert
-      insert.stub :replace! => insert
-      index.stub :fields => [field], :attributes => [attribute]
+      allow(ThinkingSphinx::Configuration).to receive_messages :instance => config
+      allow(Riddle::Query::Insert).to receive_messages :new => insert
+      allow(insert).to receive_messages :replace! => insert
+      allow(index).to receive_messages :fields => [field], :attributes => [attribute]
     end
 
     it "creates an insert statement with all fields and attributes" do
-      Riddle::Query::Insert.should_receive(:new).
+      expect(Riddle::Query::Insert).to receive(:new).
         with('my_index', ['id', 'name', 'created_at'], [[123, 'Foo', time]]).
         and_return(insert)
 
@@ -40,13 +40,13 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
     end
 
     it "switches the insert to a replace statement" do
-      insert.should_receive(:replace!).and_return(insert)
+      expect(insert).to receive(:replace!).and_return(insert)
 
       callbacks.after_save instance
     end
 
     it "sends the insert through to the server" do
-      connection.should_receive(:execute).with('REPLACE INTO my_index')
+      expect(connection).to receive(:execute).with('REPLACE INTO my_index')
 
       callbacks.after_save instance
     end
@@ -61,7 +61,7 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
       let(:user)       { double('user', :id => 13, :persisted? => true) }
 
       it "creates an insert statement with all fields and attributes" do
-        Riddle::Query::Insert.should_receive(:new).
+        expect(Riddle::Query::Insert).to receive(:new).
           with('my_index', ['id', 'name', 'created_at'], [[123, 'Foo', time]]).
           and_return(insert)
 
@@ -69,13 +69,13 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
       end
 
       it "gets the document id for the user object" do
-        index.should_receive(:document_id_for_key).with(13).and_return(123)
+        expect(index).to receive(:document_id_for_key).with(13).and_return(123)
 
         callbacks.after_save instance
       end
 
       it "translates values for the user object" do
-        field.should_receive(:translate).with(user).and_return('Foo')
+        expect(field).to receive(:translate).with(user).and_return('Foo')
 
         callbacks.after_save instance
       end
@@ -93,7 +93,7 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
       let(:user_b)     { double('user', :id => 14, :persisted? => true) }
 
       it "creates insert statements with all fields and attributes" do
-        Riddle::Query::Insert.should_receive(:new).twice.
+        expect(Riddle::Query::Insert).to receive(:new).twice.
           with('my_index', ['id', 'name', 'created_at'], [[123, 'Foo', time]]).
           and_return(insert)
 
@@ -101,15 +101,15 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
       end
 
       it "gets the document id for each reader" do
-        index.should_receive(:document_id_for_key).with(13).and_return(123)
-        index.should_receive(:document_id_for_key).with(14).and_return(123)
+        expect(index).to receive(:document_id_for_key).with(13).and_return(123)
+        expect(index).to receive(:document_id_for_key).with(14).and_return(123)
 
         callbacks.after_save instance
       end
 
       it "translates values for each reader" do
-        field.should_receive(:translate).with(user_a).and_return('Foo')
-        field.should_receive(:translate).with(user_b).and_return('Foo')
+        expect(field).to receive(:translate).with(user_a).and_return('Foo')
+        expect(field).to receive(:translate).with(user_b).and_return('Foo')
 
         callbacks.after_save instance
       end
@@ -127,7 +127,7 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
       let(:user_b)     { double('user', :id => 14, :persisted? => true) }
 
       it "creates insert statements with all fields and attributes" do
-        Riddle::Query::Insert.should_receive(:new).twice.
+        expect(Riddle::Query::Insert).to receive(:new).twice.
           with('my_index', ['id', 'name', 'created_at'], [[123, 'Foo', time]]).
           and_return(insert)
 
@@ -135,15 +135,15 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
       end
 
       it "gets the document id for each reader" do
-        index.should_receive(:document_id_for_key).with(13).and_return(123)
-        index.should_receive(:document_id_for_key).with(14).and_return(123)
+        expect(index).to receive(:document_id_for_key).with(13).and_return(123)
+        expect(index).to receive(:document_id_for_key).with(14).and_return(123)
 
         callbacks.after_save instance
       end
 
       it "translates values for each reader" do
-        field.should_receive(:translate).with(user_a).and_return('Foo')
-        field.should_receive(:translate).with(user_b).and_return('Foo')
+        expect(field).to receive(:translate).with(user_a).and_return('Foo')
+        expect(field).to receive(:translate).with(user_b).and_return('Foo')
 
         callbacks.after_save instance
       end

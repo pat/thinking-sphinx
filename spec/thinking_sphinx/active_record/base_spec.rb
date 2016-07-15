@@ -16,34 +16,34 @@ describe ThinkingSphinx::ActiveRecord::Base do
 
   describe '.facets' do
     it "returns a new search object" do
-      model.facets.should be_a(ThinkingSphinx::FacetSearch)
+      expect(model.facets).to be_a(ThinkingSphinx::FacetSearch)
     end
 
     it "passes through arguments to the search object" do
-      model.facets('pancakes').query.should == 'pancakes'
+      expect(model.facets('pancakes').query).to eq('pancakes')
     end
 
     it "scopes the search to a given model" do
-      model.facets('pancakes').options[:classes].should == [model]
+      expect(model.facets('pancakes').options[:classes]).to eq([model])
     end
 
     it "merges the :classes option with the model" do
-      model.facets('pancakes', :classes => [sub_model]).
-        options[:classes].should == [sub_model, model]
+      expect(model.facets('pancakes', :classes => [sub_model]).
+        options[:classes]).to eq([sub_model, model])
     end
 
     it "applies the default scope if there is one" do
-      model.stub :default_sphinx_scope => :default,
+      allow(model).to receive_messages :default_sphinx_scope => :default,
         :sphinx_scopes => {:default => Proc.new { {:order => :created_at} }}
 
-      model.facets.options[:order].should == :created_at
+      expect(model.facets.options[:order]).to eq(:created_at)
     end
 
     it "does not apply a default scope if one is not set" do
-      model.stub :default_sphinx_scope => nil,
+      allow(model).to receive_messages :default_sphinx_scope => nil,
         :default => {:order => :created_at}
 
-      model.facets.options[:order].should be_nil
+      expect(model.facets.options[:order]).to be_nil
     end
   end
 
@@ -55,55 +55,55 @@ describe ThinkingSphinx::ActiveRecord::Base do
     end
 
     it "returns a new search object" do
-      model.search.should be_a(ThinkingSphinx::Search)
+      expect(model.search).to be_a(ThinkingSphinx::Search)
     end
 
     it "passes through arguments to the search object" do
-      model.search('pancakes').query.should == 'pancakes'
+      expect(model.search('pancakes').query).to eq('pancakes')
     end
 
     it "scopes the search to a given model" do
-      model.search('pancakes').options[:classes].should == [model]
+      expect(model.search('pancakes').options[:classes]).to eq([model])
     end
 
     it "passes through options to the search object" do
-      model.search('pancakes', populate: true).
-        options[:populate].should be_true
+      expect(model.search('pancakes', populate: true).
+        options[:populate]).to be_truthy
     end
 
     it "should automatically populate when :populate is set to true" do
-      stack.should_receive(:call).and_return(true)
+      expect(stack).to receive(:call).and_return(true)
 
       model.search('pancakes', populate: true)
     end
 
     it "merges the :classes option with the model" do
-      model.search('pancakes', :classes => [sub_model]).
-        options[:classes].should == [sub_model, model]
+      expect(model.search('pancakes', :classes => [sub_model]).
+        options[:classes]).to eq([sub_model, model])
     end
 
     it "respects provided middleware" do
-      model.search(:middleware => ThinkingSphinx::Middlewares::RAW_ONLY).
-        options[:middleware].should == ThinkingSphinx::Middlewares::RAW_ONLY
+      expect(model.search(:middleware => ThinkingSphinx::Middlewares::RAW_ONLY).
+        options[:middleware]).to eq(ThinkingSphinx::Middlewares::RAW_ONLY)
     end
 
     it "respects provided masks" do
-      model.search(:masks => [ThinkingSphinx::Masks::PaginationMask]).
-        masks.should == [ThinkingSphinx::Masks::PaginationMask]
+      expect(model.search(:masks => [ThinkingSphinx::Masks::PaginationMask]).
+        masks).to eq([ThinkingSphinx::Masks::PaginationMask])
     end
 
     it "applies the default scope if there is one" do
-      model.stub :default_sphinx_scope => :default,
+      allow(model).to receive_messages :default_sphinx_scope => :default,
         :sphinx_scopes => {:default => Proc.new { {:order => :created_at} }}
 
-      model.search.options[:order].should == :created_at
+      expect(model.search.options[:order]).to eq(:created_at)
     end
 
     it "does not apply a default scope if one is not set" do
-      model.stub :default_sphinx_scope => nil,
+      allow(model).to receive_messages :default_sphinx_scope => nil,
         :default => {:order => :created_at}
 
-      model.search.options[:order].should be_nil
+      expect(model.search.options[:order]).to be_nil
     end
   end
 
@@ -112,18 +112,18 @@ describe ThinkingSphinx::ActiveRecord::Base do
       :populated? => false) }
 
     before :each do
-      ThinkingSphinx.stub :search => search
-      FileUtils.stub :mkdir_p => true
+      allow(ThinkingSphinx).to receive_messages :search => search
+      allow(FileUtils).to receive_messages :mkdir_p => true
     end
 
     it "returns the search object's total entries count" do
-      model.search_count.should == search.total_entries
+      expect(model.search_count).to eq(search.total_entries)
     end
 
     it "scopes the search to a given model" do
       model.search_count
 
-      search.options[:classes].should == [model]
+      expect(search.options[:classes]).to eq([model])
     end
   end
 end

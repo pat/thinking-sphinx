@@ -10,8 +10,8 @@ describe 'Accessing excerpts for methods on a search result', :live => true do
     search = Book.search('gods')
     search.context[:panes] << ThinkingSphinx::Panes::ExcerptsPane
 
-    search.first.excerpts.title.
-      should == 'American <span class="match">Gods</span>'
+    expect(search.first.excerpts.title).
+      to eq('American <span class="match">Gods</span>')
   end
 
   it "handles UTF-8 text for excerpts" do
@@ -21,8 +21,8 @@ describe 'Accessing excerpts for methods on a search result', :live => true do
     search = Book.search 'миръ'
     search.context[:panes] << ThinkingSphinx::Panes::ExcerptsPane
 
-    search.first.excerpts.title.
-      should == 'Война и <span class="match">миръ</span>'
+    expect(search.first.excerpts.title).
+      to eq('Война и <span class="match">миръ</span>')
   end if ENV['SPHINX_VERSION'].try :[], /2.2.\d/
 
   it "does not include class names in excerpts" do
@@ -32,8 +32,8 @@ describe 'Accessing excerpts for methods on a search result', :live => true do
     search = Book.search('graveyard')
     search.context[:panes] << ThinkingSphinx::Panes::ExcerptsPane
 
-    search.first.excerpts.title.
-      should == 'The <span class="match">Graveyard</span> Book'
+    expect(search.first.excerpts.title).
+      to eq('The <span class="match">Graveyard</span> Book')
   end
 
   it "respects the star option with queries" do
@@ -43,7 +43,7 @@ describe 'Accessing excerpts for methods on a search result', :live => true do
     search = Article.search('thin', :star => true)
     search.context[:panes] << ThinkingSphinx::Panes::ExcerptsPane
 
-    search.first.excerpts.title.
-      should == '<span class="match">Something</span>'
+    expect(search.first.excerpts.title).
+      to eq('<span class="match">Something</span>')
   end
 end

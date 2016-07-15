@@ -9,23 +9,23 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters::AbstractAdapter do
 
   describe '#quote' do
     it "uses the model's connection to quote columns" do
-      connection.should_receive(:quote_column_name).with('foo')
+      expect(connection).to receive(:quote_column_name).with('foo')
 
       adapter.quote 'foo'
     end
 
     it "returns the quoted value" do
-      connection.stub :quote_column_name => '"foo"'
+      allow(connection).to receive_messages :quote_column_name => '"foo"'
 
-      adapter.quote('foo').should == '"foo"'
+      expect(adapter.quote('foo')).to eq('"foo"')
     end
   end
 
   describe '#quoted_table_name' do
     it "passes the method through to the model" do
-      model.should_receive(:quoted_table_name).and_return('"articles"')
+      expect(model).to receive(:quoted_table_name).and_return('"articles"')
 
-      adapter.quoted_table_name.should == '"articles"'
+      expect(adapter.quoted_table_name).to eq('"articles"')
     end
   end
 end

@@ -5,47 +5,47 @@ describe 'Hiding deleted records from search results', :live => true do
     pancakes = Article.create! :title => 'Pancakes'
     index
 
-    Article.search('pancakes').should_not be_empty
+    expect(Article.search('pancakes')).not_to be_empty
     pancakes.destroy
 
-    Article.search('pancakes').should be_empty
+    expect(Article.search('pancakes')).to be_empty
   end
 
   it "will catch stale records deleted without callbacks being fired" do
     pancakes = Article.create! :title => 'Pancakes'
     index
 
-    Article.search('pancakes').should_not be_empty
+    expect(Article.search('pancakes')).not_to be_empty
     Article.connection.execute "DELETE FROM articles WHERE id = #{pancakes.id}"
 
-    Article.search('pancakes').should be_empty
+    expect(Article.search('pancakes')).to be_empty
   end
 
   it "removes records from real-time index results" do
     product = Product.create! :name => 'Shiny'
 
-    Product.search('Shiny', :indices => ['product_core']).to_a.
-      should == [product]
+    expect(Product.search('Shiny', :indices => ['product_core']).to_a).
+      to eq([product])
 
     product.destroy
 
-    Product.search_for_ids('Shiny', :indices => ['product_core']).
-      should be_empty
+    expect(Product.search_for_ids('Shiny', :indices => ['product_core'])).
+      to be_empty
   end
 
   it "does not remove real-time results when callbacks are disabled" do
     original = ThinkingSphinx::Configuration.instance.
       settings['real_time_callbacks']
     product = Product.create! :name => 'Shiny'
-    Product.search('Shiny', :indices => ['product_core']).to_a.
-      should == [product]
+    expect(Product.search('Shiny', :indices => ['product_core']).to_a).
+      to eq([product])
 
     ThinkingSphinx::Configuration.instance.
       settings['real_time_callbacks'] = false
 
     product.destroy
-    Product.search_for_ids('Shiny', :indices => ['product_core']).
-      should_not be_empty
+    expect(Product.search_for_ids('Shiny', :indices => ['product_core'])).
+      not_to be_empty
 
     ThinkingSphinx::Configuration.instance.
       settings['real_time_callbacks'] = original

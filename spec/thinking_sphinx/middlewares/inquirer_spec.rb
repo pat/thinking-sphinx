@@ -16,7 +16,7 @@ describe ThinkingSphinx::Middlewares::Inquirer do
 
   before :each do
     batch_class = double
-    batch_class.stub(:new).and_return(batch_inquirer)
+    allow(batch_class).to receive(:new).and_return(batch_inquirer)
 
     stub_const 'Riddle::Query', double(:meta => 'SHOW META')
     stub_const 'ThinkingSphinx::Search::BatchInquirer', batch_class
@@ -24,8 +24,8 @@ describe ThinkingSphinx::Middlewares::Inquirer do
 
   describe '#call' do
     it "passes through the SphinxQL from a Riddle::Query::Select object" do
-      batch_inquirer.should_receive(:append_query).with('SELECT * FROM index')
-      batch_inquirer.should_receive(:append_query).with('SHOW META')
+      expect(batch_inquirer).to receive(:append_query).with('SELECT * FROM index')
+      expect(batch_inquirer).to receive(:append_query).with('SHOW META')
 
       middleware.call [context]
     end
@@ -33,19 +33,19 @@ describe ThinkingSphinx::Middlewares::Inquirer do
     it "sets up the raw results" do
       middleware.call [context]
 
-      context[:raw].should == [:raw]
+      expect(context[:raw]).to eq([:raw])
     end
 
     it "sets up the meta results as a hash" do
       middleware.call [context]
 
-      context[:meta].should == {'meta' => 'value'}
+      expect(context[:meta]).to eq({'meta' => 'value'})
     end
 
     it "uses the raw values as the initial results" do
       middleware.call [context]
 
-      context[:results].should == [:raw]
+      expect(context[:results]).to eq([:raw])
     end
 
     context "with mysql2 result" do
@@ -63,7 +63,7 @@ describe ThinkingSphinx::Middlewares::Inquirer do
       it "converts the results into an array" do
         middleware.call [context]
 
-        context[:results].should be_a Array
+        expect(context[:results]).to be_a Array
       end
     end
   end

@@ -6,7 +6,7 @@ describe ThinkingSphinx::ActiveRecord::Association do
 
   describe '#stack' do
     it "returns the column's stack and name" do
-      association.stack.should == [:users, :post]
+      expect(association.stack).to eq([:users, :post])
     end
   end
 end

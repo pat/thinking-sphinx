@@ -3,19 +3,19 @@ require 'spec_helper'
 describe ThinkingSphinx::Deltas do
   describe '.processor_for' do
     it "returns the default processor class when given true" do
-      ThinkingSphinx::Deltas.processor_for(true).
-        should == ThinkingSphinx::Deltas::DefaultDelta
+      expect(ThinkingSphinx::Deltas.processor_for(true)).
+        to eq(ThinkingSphinx::Deltas::DefaultDelta)
     end
 
     it "returns the class when given one" do
       klass = Class.new
-      ThinkingSphinx::Deltas.processor_for(klass).should == klass
+      expect(ThinkingSphinx::Deltas.processor_for(klass)).to eq(klass)
     end
 
     it "instantiates a class from the name as a string" do
-      ThinkingSphinx::Deltas.
-        processor_for('ThinkingSphinx::Deltas::DefaultDelta').
-        should == ThinkingSphinx::Deltas::DefaultDelta
+      expect(ThinkingSphinx::Deltas.
+        processor_for('ThinkingSphinx::Deltas::DefaultDelta')).
+        to eq(ThinkingSphinx::Deltas::DefaultDelta)
     end
   end
 
@@ -29,7 +29,7 @@ describe ThinkingSphinx::Deltas do
     let(:processor)   { double('processor', :index => true) }
 
     before :each do
-      ThinkingSphinx::Configuration.stub :instance => config
+      allow(ThinkingSphinx::Configuration).to receive_messages :instance => config
     end
 
     it "executes the given block" do
@@ -39,12 +39,12 @@ describe ThinkingSphinx::Deltas do
         variable = :bar
       end
 
-      variable.should == :bar
+      expect(variable).to eq(:bar)
     end
 
     it "suspends deltas within the block" do
       ThinkingSphinx::Deltas.suspend :user do
-        ThinkingSphinx::Deltas.should be_suspended
+        expect(ThinkingSphinx::Deltas).to be_suspended
       end
     end
 
@@ -53,11 +53,11 @@ describe ThinkingSphinx::Deltas do
         #
       end
 
-      ThinkingSphinx::Deltas.should_not be_suspended
+      expect(ThinkingSphinx::Deltas).not_to be_suspended
     end
 
     it "processes the delta indices for the given reference" do
-      processor.should_receive(:index).with(delta_index)
+      expect(processor).to receive(:index).with(delta_index)
 
       ThinkingSphinx::Deltas.suspend :user do
         #
@@ -65,7 +65,7 @@ describe ThinkingSphinx::Deltas do
     end
 
     it "does not process the core indices for the given reference" do
-      processor.should_not_receive(:index).with(core_index)
+      expect(processor).not_to receive(:index).with(core_index)
 
       ThinkingSphinx::Deltas.suspend :user do
         #

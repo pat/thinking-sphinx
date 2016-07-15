@@ -14,11 +14,11 @@ describe 'Index options' do
       end
 
       it "keeps #{type}_fields blank" do
-        index.send("#{type}_fields").should be_nil
+        expect(index.send("#{type}_fields")).to be_nil
       end
 
       it "sets min_#{type}_len" do
-        index.send("min_#{type}_len").should == 3
+        expect(index.send("min_#{type}_len")).to eq(3)
       end
     end
 
@@ -33,11 +33,11 @@ describe 'Index options' do
       end
 
       it "#{type}_fields should contain the field" do
-        index.send("#{type}_fields").should == 'title'
+        expect(index.send("#{type}_fields")).to eq('title')
       end
 
       it "sets min_#{type}_len" do
-        index.send("min_#{type}_len").should == 3
+        expect(index.send("min_#{type}_len")).to eq(3)
       end
     end
   end
@@ -57,12 +57,12 @@ describe 'Index options' do
     end
 
     it "stores each source definition" do
-      index.sources.length.should == 2
+      expect(index.sources.length).to eq(2)
     end
 
     it "treats each source as separate" do
-      index.sources.first.fields.length.should == 2
-      index.sources.last.fields.length.should  == 3
+      expect(index.sources.first.fields.length).to eq(2)
+      expect(index.sources.last.fields.length).to  eq(3)
     end
   end
 
@@ -77,11 +77,11 @@ describe 'Index options' do
     end
 
     it "declares wordcount fields" do
-      index.sources.first.sql_field_str2wordcount.should == ['title']
+      expect(index.sources.first.sql_field_str2wordcount).to eq(['title'])
     end
 
     it "declares wordcount attributes" do
-      index.sources.first.sql_attr_str2wordcount.should == ['content']
+      expect(index.sources.first.sql_attr_str2wordcount).to eq(['content'])
     end
   end
 
@@ -98,15 +98,15 @@ describe 'Index options' do
     end
 
     it "allows for core source settings" do
-      index.sources.first.sql_range_step.should == 5
+      expect(index.sources.first.sql_range_step).to eq(5)
     end
 
     it "allows for source options" do
-      index.sources.first.disable_range?.should be_true
+      expect(index.sources.first.disable_range?).to be_truthy
     end
 
     it "respects sql_query_pre values" do
-      index.sources.first.sql_query_pre.should include("DO STUFF")
+      expect(index.sources.first.sql_query_pre).to include("DO STUFF")
     end
   end
 
@@ -130,23 +130,23 @@ describe 'Index options' do
     end
 
     it "prioritises index-level options over YAML options" do
-      index.min_infix_len.should == 1
+      expect(index.min_infix_len).to eq(1)
     end
 
     it "prioritises index-level source options" do
-      index.sources.first.sql_range_step.should == 20
+      expect(index.sources.first.sql_range_step).to eq(20)
     end
 
     it "keeps index-level options prioritised when rendered again" do
       index.render
 
-      index.min_infix_len.should == 1
+      expect(index.min_infix_len).to eq(1)
     end
 
     it "keeps index-level options prioritised when rendered again" do
       index.render
 
-      index.sources.first.sql_range_step.should == 20
+      expect(index.sources.first.sql_range_step).to eq(20)
     end
   end
 end

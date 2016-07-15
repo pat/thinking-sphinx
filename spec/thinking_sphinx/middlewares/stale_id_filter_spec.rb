@@ -15,12 +15,12 @@ describe ThinkingSphinx::Middlewares::StaleIdFilter do
 
   describe '#call' do
     before :each do
-      context.stub :search => search
+      allow(context).to receive_messages :search => search
     end
 
     context 'one stale ids exception' do
       before :each do
-        app.stub(:call) do
+        allow(app).to receive(:call) do
           @calls ||= 0
           @calls += 1
           raise ThinkingSphinx::Search::StaleIdsException.new([12], context) if @calls == 1
@@ -30,7 +30,7 @@ describe ThinkingSphinx::Middlewares::StaleIdFilter do
       it "appends the ids to the without_ids filter" do
         middleware.call [context]
 
-        search.options[:without_ids].should == [12]
+        expect(search.options[:without_ids]).to eq([12])
       end
 
       it "respects existing without_ids filters" do
@@ -38,13 +38,13 @@ describe ThinkingSphinx::Middlewares::StaleIdFilter do
 
         middleware.call [context]
 
-        search.options[:without_ids].should == [11, 12]
+        expect(search.options[:without_ids]).to eq([11, 12])
       end
     end
 
     context  'two stale ids exceptions' do
       before :each do
-        app.stub(:call) do
+        allow(app).to receive(:call) do
           @calls ||= 0
           @calls += 1
           raise ThinkingSphinx::Search::StaleIdsException.new([12], context) if @calls == 1
@@ -55,7 +55,7 @@ describe ThinkingSphinx::Middlewares::StaleIdFilter do
       it "appends the ids to the without_ids filter" do
         middleware.call [context]
 
-        search.options[:without_ids].should == [12, 13]
+        expect(search.options[:without_ids]).to eq([12, 13])
       end
 
       it "respects existing without_ids filters" do
@@ -63,13 +63,13 @@ describe ThinkingSphinx::Middlewares::StaleIdFilter do
 
         middleware.call [context]
 
-        search.options[:without_ids].should == [11, 12, 13]
+        expect(search.options[:without_ids]).to eq([11, 12, 13])
       end
     end
 
     context 'three stale ids exceptions' do
       before :each do
-        app.stub(:call) do
+        allow(app).to receive(:call) do
           @calls ||= 0
           @calls += 1
 
@@ -80,10 +80,10 @@ describe ThinkingSphinx::Middlewares::StaleIdFilter do
       end
 
       it "raises the final stale ids exceptions" do
-        lambda {
+        expect {
           middleware.call [context]
-        }.should raise_error(ThinkingSphinx::Search::StaleIdsException) { |err|
-          err.ids.should == [14]
+        }.to raise_error(ThinkingSphinx::Search::StaleIdsException) { |err|
+          expect(err.ids).to eq([14])
         }
       end
     end
@@ -92,8 +92,8 @@ describe ThinkingSphinx::Middlewares::StaleIdFilter do
       let(:context2) { {:raw => [], :results => []} }
       let(:search2) { double('search2', :options => {}) }
       before :each do
-        context2.stub :search => search2
-        app.stub(:call) do
+        allow(context2).to receive_messages :search => search2
+        allow(app).to receive(:call) do
           @calls ||= 0
           @calls += 1
           raise ThinkingSphinx::Search::StaleIdsException.new([12], context2) if @calls == 1
@@ -102,8 +102,8 @@ describe ThinkingSphinx::Middlewares::StaleIdFilter do
 
       it "appends the ids to the without_ids filter in the correct context" do
         middleware.call [context, context2]
-        search.options[:without_ids].should == nil
-        search2.options[:without_ids].should == [12]
+        expect(search.options[:without_ids]).to eq(nil)
+        expect(search2.options[:without_ids]).to eq([12])
       end
     end
 

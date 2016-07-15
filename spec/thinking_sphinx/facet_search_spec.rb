@@ -37,7 +37,7 @@ describe ThinkingSphinx::FacetSearch do
 
   describe '#[]' do
     it "populates facet results" do
-      facet_search[:price_bracket].should == {3 => 5}
+      expect(facet_search[:price_bracket]).to eq({3 => 5})
     end
   end
 
@@ -45,17 +45,17 @@ describe ThinkingSphinx::FacetSearch do
     it "queries on each facet with a grouped search in a batch" do
       facet_search.populate
 
-      batch.searches.detect { |search|
+      expect(batch.searches.detect { |search|
         search.options[:group_by] == 'price_bracket'
-      }.should_not be_nil
+      }).not_to be_nil
     end
 
     it "limits query for a facet to just indices that have that facet" do
       facet_search.populate
 
-      batch.searches.detect { |search|
+      expect(batch.searches.detect { |search|
         search.options[:indices] == ['foo_core']
-      }.should_not be_nil
+      }).not_to be_nil
     end
 
     it "limits facets to the specified set" do
@@ -63,25 +63,25 @@ describe ThinkingSphinx::FacetSearch do
 
       facet_search.populate
 
-      batch.searches.collect { |search|
+      expect(batch.searches.collect { |search|
         search.options[:group_by]
-      }.should == ['category_id']
+      }).to eq(['category_id'])
     end
 
     it "aliases the class facet from sphinx_internal_class" do
-      property_a.stub :name => 'sphinx_internal_class'
+      allow(property_a).to receive_messages :name => 'sphinx_internal_class'
 
       facet_search.populate
 
-      facet_search[:class].should == {'Foo' => 5}
+      expect(facet_search[:class]).to eq({'Foo' => 5})
     end
 
     it "uses the @groupby value for MVAs" do
-      property_a.stub :name => 'tag_ids', :multi? => true
+      allow(property_a).to receive_messages :name => 'tag_ids', :multi? => true
 
       facet_search.populate
 
-      facet_search[:tag_ids].should == {2 => 5}
+      expect(facet_search[:tag_ids]).to eq({2 => 5})
     end
 
     [:max_matches, :limit].each do |setting|
@@ -89,7 +89,7 @@ describe ThinkingSphinx::FacetSearch do
         facet_search.populate
 
         batch.searches.each { |search|
-          search.options[setting].should == 1000
+          expect(search.options[setting]).to eq(1000)
         }
       end
 
@@ -99,7 +99,7 @@ describe ThinkingSphinx::FacetSearch do
         facet_search.populate
 
         batch.searches.each { |search|
-          search.options[setting].should == 1234
+          expect(search.options[setting]).to eq(1234)
         }
       end
     end
@@ -111,7 +111,7 @@ describe ThinkingSphinx::FacetSearch do
         facet_search.populate
 
         batch.searches.each { |search|
-          search.options[setting].should == 42
+          expect(search.options[setting]).to eq(42)
         }
       end
 
@@ -122,8 +122,8 @@ describe ThinkingSphinx::FacetSearch do
         facet_search.populate
 
         batch.searches.each do |search|
-          search.options[setting].should == 10
-          search.options[:max_matches].should == 500
+          expect(search.options[setting]).to eq(10)
+          expect(search.options[:max_matches]).to eq(500)
         end
       end
     end

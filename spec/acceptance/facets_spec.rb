@@ -16,9 +16,9 @@ describe 'Faceted searching', :live => true do
     Tee.create! :colour => green
     index
 
-    Tee.facets.to_hash[:colour_id].should == {
+    expect(Tee.facets.to_hash[:colour_id]).to eq({
       blue.id => 2, red.id => 1, green.id => 3
-    }
+    })
   end
 
   it "provides facet breakdowns across classes" do
@@ -30,9 +30,9 @@ describe 'Faceted searching', :live => true do
 
     article_count = ENV['SPHINX_VERSION'].try(:[], /2.0.\d/) ? 2 : 1
 
-    ThinkingSphinx.facets.to_hash[:class].should == {
+    expect(ThinkingSphinx.facets.to_hash[:class]).to eq({
       'Tee' => 2, 'City' => 1, 'Article' => article_count
-    }
+    })
   end
 
   it "handles field facets" do
@@ -42,9 +42,9 @@ describe 'Faceted searching', :live => true do
     Book.create! :title => '1Q84',          :author => '村上 春樹'
     index
 
-    Book.facets.to_hash[:author].should == {
+    expect(Book.facets.to_hash[:author]).to eq({
       'Neil Gaiman' => 2, 'Terry Pratchett' => 1, '村上 春樹' => 1
-    }
+    })
   end
 
   it "handles MVA facets" do
@@ -62,9 +62,9 @@ describe 'Faceted searching', :live => true do
       :tag => pancakes
     index
 
-    User.facets.to_hash[:tag_ids].should == {
+    expect(User.facets.to_hash[:tag_ids]).to eq({
       pancakes.id => 2, waffles.id => 1
-    }
+    })
   end
 
   it "can filter on integer facet results" do
@@ -76,7 +76,7 @@ describe 'Faceted searching', :live => true do
     r1 = Tee.create! :colour => red
     index
 
-    Tee.facets.for(:colour_id => blue.id).to_a.should == [b1, b2]
+    expect(Tee.facets.for(:colour_id => blue.id).to_a).to eq([b1, b2])
   end
 
   it "can filter on MVA facet results" do
@@ -91,7 +91,7 @@ describe 'Faceted searching', :live => true do
     Tagging.create! :article => Article.create!(:user => u2), :tag => pancakes
     index
 
-    User.facets.for(:tag_ids => waffles.id).to_a.should == [u1]
+    expect(User.facets.for(:tag_ids => waffles.id).to_a).to eq([u1])
   end
 
   it "can filter on string facet results" do
@@ -100,7 +100,7 @@ describe 'Faceted searching', :live => true do
     snuff = Book.create! :title => 'Snuff', :author => 'Terry Pratchett'
     index
 
-    Book.facets.for(:author => 'Neil Gaiman').to_a.should == [gods, boys]
+    expect(Book.facets.for(:author => 'Neil Gaiman').to_a).to eq([gods, boys])
   end
 
   it "allows enumeration" do
@@ -119,8 +119,8 @@ describe 'Faceted searching', :live => true do
       [:class, {'Tee' => 3}]
     ]
     Tee.facets.each do |facet, hash|
-      facet.should == expectations[calls].first
-      hash.should == expectations[calls].last
+      expect(facet).to eq(expectations[calls].first)
+      expect(hash).to eq(expectations[calls].last)
 
       calls += 1
     end
