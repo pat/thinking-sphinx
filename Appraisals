@@ -20,4 +20,9 @@ end
 
 appraise 'rails_5_0' do
   gem 'rails', '~> 5.0.0'
-end if RUBY_VERSION.to_f >= 2.2
+  # gem 'activerecord-jdbc-adapter',
+  #   :git      => 'git://github.com/jruby/activerecord-jdbc-adapter.git',
+  #   :branch   => 'rails-5',
+  #   :platform => :jruby,
+  #   :ref      => 'c3570ce730'
+end if RUBY_VERSION.to_f >= 2.2 && RUBY_PLATFORM != 'java'
