@@ -4,12 +4,14 @@ class MultiSchema
   end
 
   def create(schema_name)
+    return unless active?
+
     unless connection.schema_exists? schema_name
       connection.execute %Q{CREATE SCHEMA "#{schema_name}"}
     end
 
     switch schema_name
-    silence_stream(STDOUT) { load Rails.root.join('db', 'schema.rb') }
+    load Rails.root.join('db', 'schema.rb')
   end
 
   def current

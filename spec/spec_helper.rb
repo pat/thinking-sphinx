@@ -10,6 +10,8 @@ require 'thinking_sphinx/railtie'
 
 Combustion.initialize! :active_record
 
+MultiSchema.new.create 'thinking_sphinx'
+
 Dir["#{root}/support/**/*.rb"].each { |file| require file }
 
 RSpec.configure do |config|

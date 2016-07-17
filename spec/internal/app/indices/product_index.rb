@@ -8,8 +8,6 @@ ThinkingSphinx::Index.define :product, :with => :real_time do
 end
 
 if multi_schema.active?
-  multi_schema.create 'thinking_sphinx'
-
   ThinkingSphinx::Index.define(:product,
     :name => :product_two, :offset_as => :product_two, :with => :real_time
   ) do
