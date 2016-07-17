@@ -41,7 +41,7 @@ class ThinkingSphinx::ActiveRecord::Attribute::Type
   end
 
   def big_integer?
-    database_column.type == :integer && database_column.sql_type[/bigint/i]
+    type_symbol == :integer && database_column.sql_type[/bigint/i]
   end
 
   def column_name
@@ -76,15 +76,29 @@ class ThinkingSphinx::ActiveRecord::Attribute::Type
 
     return :bigint if big_integer?
 
-    case database_column.type
+    case type_symbol
     when :datetime, :date
       :timestamp
     when :text
       :string
     when :decimal
       :float
+    when :integer, :boolean, :timestamp, :float, :string, :bigint, :json
+      type_symbol
     else
-      database_column.type
+      raise ThinkingSphinx::UnknownAttributeType,
+        <<-ERROR
+Unable to determine an equivalent Sphinx attribute type from #{database_column.type.class.name} for attribute #{attribute.name}. You may want to manually set the type.
+
+e.g.
+  has my_column, :type => :integer
+        ERROR
     end
+  end
+
+  def type_symbol
+    return database_column.type if database_column.type.is_a?(Symbol)
+
+    database_column.type.class.name.demodulize.downcase.to_sym
   end
 end

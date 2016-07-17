@@ -64,3 +64,6 @@ end
 
 class ThinkingSphinx::UnknownDatabaseAdapter < StandardError
 end
+
+class ThinkingSphinx::UnknownAttributeType < StandardError
+end
