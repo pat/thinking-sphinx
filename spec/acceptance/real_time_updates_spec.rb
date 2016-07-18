@@ -5,7 +5,7 @@ describe 'Updates to records in real-time indices', :live => true do
     product = Product.create! :name => "Widget \u0000"
 
     expect(Product.search.first).to eq(product)
-  end
+  end unless ENV['DATABASE'] == 'postgresql'
 
   it "handles attributes for sortable fields accordingly" do
     product = Product.create! :name => 'Red Fish'
