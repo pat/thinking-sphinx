@@ -25,3 +25,6 @@ addons:
   postgresql: "9.4"
 services:
   - postgresql
+matrix:
+  allow_failures:
+  - rvm: jruby-9.0.5.0
