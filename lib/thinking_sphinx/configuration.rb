@@ -48,7 +48,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   def engine_index_paths
     return [] unless defined?(Rails)
 
-    engine_indice_paths.flatten.compact
+    engine_indice_paths.flatten.compact.sort
   end
 
   def engine_indice_paths
