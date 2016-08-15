@@ -12,7 +12,7 @@ class ThinkingSphinx::RealTime::Populator
 
     remove_files
 
-    scope.find_in_batches do |instances|
+    scope.find_in_batches(:batch_size => batch_size) do |instances|
       transcriber.copy *instances
       instrument 'populated', :instances => instances
     end
@@ -25,8 +25,8 @@ class ThinkingSphinx::RealTime::Populator
 
   attr_reader :index
 
-  delegate :controller, :to => :configuration
-  delegate :scope,      :to => :index
+  delegate :controller, :batch_size, :to => :configuration
+  delegate :scope,                   :to => :index
 
   def configuration
     ThinkingSphinx::Configuration.instance

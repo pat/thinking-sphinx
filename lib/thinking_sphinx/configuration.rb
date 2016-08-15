@@ -1,7 +1,7 @@
 require 'pathname'
 
 class ThinkingSphinx::Configuration < Riddle::Configuration
-  attr_accessor :configuration_file, :indices_location, :version
+  attr_accessor :configuration_file, :indices_location, :version, :batch_size
   attr_reader :index_paths
   attr_writer :controller, :index_set_class, :indexing_strategy
 
@@ -121,6 +121,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
       'db', 'sphinx', environment
     ).to_s
     @version = settings['version'] || '2.1.4'
+    @batch_size = settings['batch_size'] || 1000
 
     if settings['common_sphinx_configuration']
       common.common_sphinx_configuration  = true
