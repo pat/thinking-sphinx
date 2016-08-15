@@ -32,6 +32,16 @@ class ThinkingSphinx::QueryError < ThinkingSphinx::SphinxError
 end
 
 class ThinkingSphinx::QueryLengthError < ThinkingSphinx::SphinxError
+  def message
+    <<-MESSAGE
+The supplied SphinxQL statement is #{statement.length} characters long. The maximum allowed length is #{ThinkingSphinx::MAXIMUM_STATEMENT_LENGTH}.
+
+If this error has been raised during real-time index population, it's probably due to overly large batches of records being processed at once. The default is 1000, but you can lower it on a per-environment basis in config/thinking_sphinx.yml:
+
+  development:
+    batch_size: 500
+    MESSAGE
+  end
 end
 
 class ThinkingSphinx::SyntaxError < ThinkingSphinx::QueryError

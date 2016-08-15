@@ -65,8 +65,6 @@ module ThinkingSphinx::Connection
   @persistent = true
 
   class Client
-    MAXIMUM_LENGTH = (2 ** 23) - 1
-
     def close
       client.close unless ThinkingSphinx::Connection.persistent?
     end
@@ -82,8 +80,10 @@ module ThinkingSphinx::Connection
     private
 
     def check(statements)
-      if statements.length > MAXIMUM_LENGTH
-        raise ThinkingSphinx::QueryLengthError, "Query is #{statements.length} long, and can not be longer than #{MAXIMUM_LENGTH}"
+      if statements.length > ThinkingSphinx::MAXIMUM_STATEMENT_LENGTH
+        exception           = ThinkingSphinx::QueryLengthError.new
+        exception.statement = statements
+        raise exception
       end
     end
 
