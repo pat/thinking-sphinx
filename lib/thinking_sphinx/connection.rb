@@ -65,26 +65,39 @@ module ThinkingSphinx::Connection
   @persistent = true
 
   class Client
+    MAXIMUM_LENGTH = (2 ** 23) - 1
+
     def close
       client.close unless ThinkingSphinx::Connection.persistent?
     end
 
     def execute(statement)
-      query(statement).first
+      check_and_perform(statement).first
     end
 
     def query_all(*statements)
-      query statements.join('; ')
+      check_and_perform statements.join('; ')
     end
 
     private
+
+    def check(statements)
+      if statements.length > MAXIMUM_LENGTH
+        raise ThinkingSphinx::QueryLengthError, "Query is #{statements.length} long, and can not be longer than #{MAXIMUM_LENGTH}"
+      end
+    end
+
+    def check_and_perform(statements)
+      check statements
+      perform statements
+    end
 
     def close_and_clear
       client.close
       @client = nil
     end
 
-    def query(statements)
+    def perform(statements)
       results_for statements
     rescue => error
       message           = "#{error.message} - #{statements}"

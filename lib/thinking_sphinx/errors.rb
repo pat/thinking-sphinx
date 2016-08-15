@@ -31,6 +31,9 @@ end
 class ThinkingSphinx::QueryError < ThinkingSphinx::SphinxError
 end
 
+class ThinkingSphinx::QueryLengthError < ThinkingSphinx::SphinxError
+end
+
 class ThinkingSphinx::SyntaxError < ThinkingSphinx::QueryError
 end
 
