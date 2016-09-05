@@ -9,6 +9,7 @@ class ThinkingSphinx::RakeInterface
   end
 
   def clear_real_time
+    configuration.preload_indices
     indices = configuration.indices.select { |index| index.type == 'rt' }
     indices.each do |index|
       index.render

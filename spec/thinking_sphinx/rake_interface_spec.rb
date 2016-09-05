@@ -43,8 +43,9 @@ describe ThinkingSphinx::RakeInterface do
 
     before :each do
       allow(configuration).to receive_messages(
-        :indices => [double(:type => 'plain'), index],
-        :searchd => double(:binlog_path => '/path/to/binlog')
+        :indices         => [double(:type => 'plain'), index],
+        :searchd         => double(:binlog_path => '/path/to/binlog'),
+        :preload_indices => true
       )
 
       allow(Dir).to receive_messages :[] => ['foo.a', 'foo.b']
