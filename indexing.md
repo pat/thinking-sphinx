@@ -21,7 +21,7 @@ title: Indexing
 Everything to set up the indices for your models goes in files in `app/indices`. The files themselves can be named however you like, but I generally opt for `model_name_index.rb`. At the very least, the file name should not be the same as your model's file name. Here's an example of what goes in the file:
 
 {% highlight ruby %}
-ThinkingSphinx::Index.define :article, :with => :real_time do
+ThinkingSphinx::Index.define :article, :with => :active_record do
   indexes subject, :sortable => true
   indexes content
   indexes author.name, :as => :author, :sortable => true
