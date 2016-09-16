@@ -11,6 +11,10 @@ The documentation here is now pretty good at distinguishing any different behavi
 
 However, if you have used SQL-backed indices before and want to change, this page is the best place to understand what's different.
 
+### Index Files
+
+If you're changing from SQL-backed indices to real-time indices, make sure you stop Sphinx, and then delete your index and binlog files (which are stored by default in `db/sphinx` and `tmp/binlog` respectively). Otherwise, Sphinx gets confused between the old (SQL-backed) index data and the new (real-time) index definitions.
+
 ### Rake Tasks
 
 With real-time indices, you should never use `ts:index` or `ts:rebuild`. Their functional equivalents are `ts:generate` and `ts:regenerate` (as covered on [the rake tasks page](rake_tasks.html)). You only need to run `ts:regenerate` when you've added an index, removed an index, or edited the structure of an index (e.g. added/removed/modified fields or attributes).
