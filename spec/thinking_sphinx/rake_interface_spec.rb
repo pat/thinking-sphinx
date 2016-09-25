@@ -178,7 +178,7 @@ describe ThinkingSphinx::RakeInterface do
 
       expect {
         interface.start
-      }.to raise_error(RuntimeError)
+      }.to raise_error(ThinkingSphinx::SphinxAlreadyRunning)
     end
 
     it "prints a success message if the daemon has started" do
@@ -193,8 +193,9 @@ describe ThinkingSphinx::RakeInterface do
     it "prints a failure message if the daemon does not start" do
       allow(controller).to receive(:running?).and_return(false, false)
 
-      expect(interface).to receive(:puts).
-        with('Failed to start searchd. Check the log files for more information.')
+      expect(interface).to receive(:puts) do |string|
+        expect(string).to match('The Sphinx start command failed')
+      end
 
       interface.start
     end

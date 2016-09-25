@@ -75,6 +75,9 @@ end
 class ThinkingSphinx::InvalidDatabaseAdapter < StandardError
 end
 
+class ThinkingSphinx::SphinxAlreadyRunning < StandardError
+end
+
 class ThinkingSphinx::UnknownDatabaseAdapter < StandardError
 end
 

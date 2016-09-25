@@ -37,6 +37,8 @@ class ThinkingSphinx::RakeInterface
     FileUtils.mkdir_p configuration.indices_location
     ThinkingSphinx.before_index_hooks.each { |hook| hook.call }
     controller.index :verbose => verbose
+  rescue Riddle::CommandFailedError => error
+    handle_command_failure 'indexing', error.command_result
   end
 
   def prepare
@@ -47,29 +49,17 @@ class ThinkingSphinx::RakeInterface
   end
 
   def start(options={})
-    raise RuntimeError, 'searchd is already running' if controller.running?
+    if running?
+      raise ThinkingSphinx::SphinxAlreadyRunning, 'searchd is already running'
+    end
 
     FileUtils.mkdir_p configuration.indices_location
 
-    if options[:nodetach]
-      unless pid = fork
-        controller.start(options)
-      end
-      Signal.trap('TERM') { Process.kill(:TERM, pid); }
-      Signal.trap('INT')  { Process.kill(:TERM, pid); }
-      Process.wait(pid)
-    else
-      controller.start(options)
-      if controller.running?
-        puts "Started searchd successfully (pid: #{controller.pid})."
-      else
-        puts "Failed to start searchd. Check the log files for more information."
-      end
-    end
+    options[:nodetach] ? start_attached(options) : start_detached(options)
   end
 
   def status
-    if controller.running?
+    if running?
       puts "The Sphinx daemon searchd is currently running."
     else
       puts "The Sphinx daemon searchd is not currently running."
@@ -77,7 +67,7 @@ class ThinkingSphinx::RakeInterface
   end
 
   def stop
-    unless controller.running?
+    unless running?
       puts 'searchd is not currently running.' and return
     end
 
@@ -87,13 +77,56 @@ class ThinkingSphinx::RakeInterface
     end
 
     puts "Stopped searchd daemon (pid: #{pid})."
+  rescue Riddle::CommandFailedError => error
+    handle_command_failure 'stop', error.command_result
   end
 
   private
 
   delegate :controller, :to => :configuration
+  delegate :running?,   :to => :controller
+
+  def command_output(output)
+    return "See above\n" if output.nil?
+
+    "\n\t" + output.gsub("\n", "\n\t")
+  end
 
   def configuration
     ThinkingSphinx::Configuration.instance
+  end
+
+  def handle_command_failure(type, result)
+    puts <<-TXT
+
+The Sphinx #{type} command failed:
+  Command: #{result.command}
+  Status:  #{result.status}
+  Output:  #{command_output result.output}
+There may be more information about the failure in #{configuration.searchd.log}.
+    TXT
+    exit result.status
+  end
+
+  def start_attached(options)
+    unless pid = fork
+      controller.start(options)
+    end
+
+    Signal.trap('TERM') { Process.kill(:TERM, pid); }
+    Signal.trap('INT')  { Process.kill(:TERM, pid); }
+    Process.wait(pid)
+  end
+
+  def start_detached(options)
+    result = controller.start options
+
+    if running?
+      puts "Started searchd successfully (pid: #{controller.pid})."
+    else
+      handle_command_failure 'start', result
+    end
+  rescue Riddle::CommandFailedError => error
+    handle_command_failure 'start', error.command_result
   end
 end
