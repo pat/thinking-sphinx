@@ -197,6 +197,7 @@ describe ThinkingSphinx::RakeInterface do
 
     it "prints a failure message if the daemon does not start" do
       allow(controller).to receive(:running?).and_return(false, false)
+      allow(interface).to receive(:exit)
 
       expect(interface).to receive(:puts) do |string|
         expect(string).to match('The Sphinx start command failed')
