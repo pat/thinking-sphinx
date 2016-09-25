@@ -208,9 +208,11 @@ describe ThinkingSphinx::RakeInterface do
 
   describe '#stop' do
     let(:controller) { double('controller', :stop => true, :pid => 101) }
+    let(:result)     { double 'result', :command => 'start', :status => 1,
+      :output => '' }
 
     before :each do
-      allow(controller).to receive_messages :running? => true
+      allow(controller).to receive(:running?).and_return(true, true, false)
     end
 
     it "prints a message if the daemon is not already running" do
@@ -234,7 +236,10 @@ describe ThinkingSphinx::RakeInterface do
     end
 
     it "should retry stopping the daemon until it stops" do
-      expect(controller).to receive(:stop).twice.and_return(false, true)
+      allow(controller).to receive(:running?).
+        and_return(true, true, true, false)
+
+      expect(controller).to receive(:stop).twice
 
       interface.stop
     end

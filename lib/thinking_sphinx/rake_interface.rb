@@ -77,7 +77,8 @@ class ThinkingSphinx::RakeInterface
     end
 
     pid = controller.pid
-    until controller.stop options do
+    until !running? do
+      controller.stop options
       sleep(0.5)
     end
 

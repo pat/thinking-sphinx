@@ -31,7 +31,8 @@ class SphinxController
   end
 
   def stop
-    until config.controller.stop do
+    while config.controller.running? do
+      config.controller.stop
       sleep(0.1)
     end
   end
