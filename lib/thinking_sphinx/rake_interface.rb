@@ -1,4 +1,9 @@
 class ThinkingSphinx::RakeInterface
+  def initialize(options = {})
+    @options           = options
+    @options[:verbose] = false if @options[:silent]
+  end
+
   def clear_all
     [
       configuration.indices_location,
@@ -21,7 +26,7 @@ class ThinkingSphinx::RakeInterface
   end
 
   def configure
-    puts "Generating configuration to #{configuration.configuration_file}"
+    log "Generating configuration to #{configuration.configuration_file}"
     configuration.render_to_file
   end
 
@@ -48,14 +53,14 @@ class ThinkingSphinx::RakeInterface
     FileUtils.mkdir_p configuration.indices_location
   end
 
-  def start(options={})
+  def start
     if running?
       raise ThinkingSphinx::SphinxAlreadyRunning, 'searchd is already running'
     end
 
     FileUtils.mkdir_p configuration.indices_location
 
-    options[:nodetach] ? start_attached(options) : start_detached(options)
+    options[:nodetach] ? start_attached : start_detached
   end
 
   def status
@@ -68,20 +73,22 @@ class ThinkingSphinx::RakeInterface
 
   def stop
     unless running?
-      puts 'searchd is not currently running.' and return
+      log 'searchd is not currently running.' and return
     end
 
     pid = controller.pid
-    until controller.stop do
+    until controller.stop options do
       sleep(0.5)
     end
 
-    puts "Stopped searchd daemon (pid: #{pid})."
+    log "Stopped searchd daemon (pid: #{pid})."
   rescue Riddle::CommandFailedError => error
     handle_command_failure 'stop', error.command_result
   end
 
   private
+
+  attr_reader :options
 
   delegate :controller, :to => :configuration
   delegate :running?,   :to => :controller
@@ -108,9 +115,15 @@ There may be more information about the failure in #{configuration.searchd.log}.
     exit result.status
   end
 
-  def start_attached(options)
+  def log(message)
+    return if options[:silent]
+
+    puts message
+  end
+
+  def start_attached
     unless pid = fork
-      controller.start(options)
+      controller.start :verbose => options[:verbose]
     end
 
     Signal.trap('TERM') { Process.kill(:TERM, pid); }
@@ -118,11 +131,11 @@ There may be more information about the failure in #{configuration.searchd.log}.
     Process.wait(pid)
   end
 
-  def start_detached(options)
-    result = controller.start options
+  def start_detached
+    result = controller.start :verbose => options[:verbose]
 
     if running?
-      puts "Started searchd successfully (pid: #{controller.pid})."
+      log "Started searchd successfully (pid: #{controller.pid})."
     else
       handle_command_failure 'start', result
     end

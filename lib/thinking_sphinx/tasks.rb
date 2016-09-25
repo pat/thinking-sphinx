@@ -6,10 +6,7 @@ namespace :ts do
 
   desc 'Generate the Sphinx configuration file and process all indices'
   task :index => :environment do
-    interface.index(
-      ENV['INDEX_ONLY'] != 'true',
-      !Rake.application.options.silent
-    )
+    interface.index(ENV['INDEX_ONLY'] != 'true')
   end
 
   desc 'Clear out Sphinx files'
@@ -39,9 +36,7 @@ namespace :ts do
 
   desc 'Start the Sphinx daemon'
   task :start => :environment do
-    options = {}
-    options[:nodetach] = true  if ENV['NODETACH'] == 'true'
-    interface.start(options)
+    interface.start
   end
 
   desc 'Stop the Sphinx daemon'
@@ -55,6 +50,10 @@ namespace :ts do
   end
 
   def interface
-    @interface ||= ThinkingSphinx::RakeInterface.new
+    @interface ||= ThinkingSphinx::RakeInterface.new(
+      :verbose  => Rake::FileUtilsExt.verbose_flag,
+      :silent   => Rake.application.options.silent,
+      :nodetach => (ENV['NODETACH'] == 'true')
+    )
   end
 end
