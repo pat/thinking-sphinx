@@ -152,11 +152,16 @@ describe ThinkingSphinx::RakeInterface do
   end
 
   describe '#start' do
-    let(:controller) { double('controller', :start => true, :pid => 101) }
+    let(:controller) { double('controller', :start => result, :pid => 101) }
+    let(:result)     { double 'result', :command => 'start', :status => 1,
+      :output => '' }
 
     before :each do
       allow(controller).to receive(:running?).and_return(false, true)
-      allow(configuration).to receive_messages :indices_location => 'my/index/files'
+      allow(configuration).to receive_messages(
+        :indices_location => 'my/index/files',
+        :searchd          => double(:log => '/path/to/log')
+      )
 
       allow(FileUtils).to receive_messages :mkdir_p => true
     end
