@@ -45,6 +45,10 @@ module ThinkingSphinx
         self.scope += utf8_query_pre if source.options[:utf8?]
       end
 
+      def source
+        report.source
+      end
+      
       def method_missing(*args, &block)
         report.send *args, &block
       end
