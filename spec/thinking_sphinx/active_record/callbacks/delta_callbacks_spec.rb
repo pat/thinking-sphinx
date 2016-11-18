@@ -130,6 +130,10 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks do
 
     before :each do
       allow(config).to receive_messages :index_set_class => double(:new => [index])
+      allow(instance).to receive_messages(
+        :changed?    => true,
+        :new_record? => false
+      )
     end
 
     it "sets delta to true if there are delta indices" do
@@ -142,6 +146,25 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks do
       allow(index).to receive_messages :delta? => false
 
       expect(processor).not_to receive(:toggle)
+
+      callbacks.before_save
+    end
+
+    it "does not try to set delta to true if the instance is unchanged" do
+      allow(instance).to receive_messages :changed? => false
+
+      expect(processor).not_to receive(:toggle)
+
+      callbacks.before_save
+    end
+
+    it "does set delta to true if the instance is unchanged but new" do
+      allow(instance).to receive_messages(
+        :changed?    => false,
+        :new_record? => true
+      )
+
+      expect(processor).to receive(:toggle)
 
       callbacks.before_save
     end
