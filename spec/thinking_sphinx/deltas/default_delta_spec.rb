@@ -74,7 +74,7 @@ describe ThinkingSphinx::Deltas::DefaultDelta do
     end
 
     it "indexes the given index" do
-      expect(controller).to receive(:index).with('foo_delta', :verbose => true)
+      expect(controller).to receive(:index).with('foo_delta', :verbose => false)
 
       delta.index double('index', :name => 'foo_delta')
     end

@@ -4,7 +4,7 @@ class ThinkingSphinx::Deltas::IndexJob
   end
 
   def perform
-    configuration.controller.index @index_name, !:verbose => quiet_deltas?
+    configuration.controller.index @index_name, :verbose => !quiet_deltas?
   end
 
   private
