@@ -3,14 +3,12 @@ class ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks
     @reference, @path, @block = reference, path, block
   end
 
-  def after_save(instance)
-    return unless real_time_indices? && callbacks_enabled?
+  def after_commit(instance)
+    persist_changes instance
+  end
 
-    real_time_indices.each do |index|
-      objects_for(instance).each do |object|
-        ThinkingSphinx::RealTime::Transcriber.new(index).copy object
-      end
-    end
+  def after_save(instance)
+    persist_changes instance
   end
 
   private
@@ -38,6 +36,16 @@ class ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks
     end
 
     Array results
+  end
+
+  def persist_changes(instance)
+    return unless real_time_indices? && callbacks_enabled?
+
+    real_time_indices.each do |index|
+      objects_for(instance).each do |object|
+        ThinkingSphinx::RealTime::Transcriber.new(index).copy object
+      end
+    end
   end
 
   def real_time_indices?
