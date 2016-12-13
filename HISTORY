@@ -1,4 +1,4 @@
-Edge:
+2016-12-13: 3.3.0
 * [FEATURE] Real-time callbacks can now be used with after_commit hooks if that's preferred over after_save.
 * [CHANGE] Only toggle the delta value if the record has changed or is new (rather than on every single save call).
 * [CHANGE] Delta indexing is now quiet by default (rather than verbose).
