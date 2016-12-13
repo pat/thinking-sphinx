@@ -12,12 +12,12 @@ describe ThinkingSphinx::ActiveRecord::FilterReflection do
     let(:initialize_method)   { double :arity => 4 }
 
     before :each do
-      reflection.active_record.stub_chain(:connection, :quote_column_name).
+      allow(reflection.active_record).to receive_message_chain(:connection, :quote_column_name).
         and_return('"foo_type"')
     end
 
     it "uses the existing reflection's macro" do
-      reflection_klass.should_receive(:new).
+      expect(reflection_klass).to receive(:new).
         with(:has_some, anything, anything, anything)
 
       ThinkingSphinx::ActiveRecord::FilterReflection.call(
@@ -27,10 +27,10 @@ describe ThinkingSphinx::ActiveRecord::FilterReflection do
 
     it "uses the supplied name" do
       if defined?(ActiveRecord::Reflection::MacroReflection)
-        reflection_klass.should_receive(:new).
+        expect(reflection_klass).to receive(:new).
           with('foo_bar', anything, anything, anything)
       else
-        reflection_klass.should_receive(:new).
+        expect(reflection_klass).to receive(:new).
           with(anything, 'foo_bar', anything, anything)
       end
 
@@ -41,10 +41,10 @@ describe ThinkingSphinx::ActiveRecord::FilterReflection do
 
     it "uses the existing reflection's parent" do
       if defined?(ActiveRecord::Reflection::MacroReflection)
-        reflection_klass.should_receive(:new).
+        expect(reflection_klass).to receive(:new).
           with(anything, anything, anything, reflection.active_record)
       else
-        reflection_klass.should_receive(:new).
+        expect(reflection_klass).to receive(:new).
           with(anything, anything, anything, reflection.active_record)
       end
 
@@ -55,12 +55,12 @@ describe ThinkingSphinx::ActiveRecord::FilterReflection do
 
     it "removes the polymorphic setting from the options" do
       if defined?(ActiveRecord::Reflection::MacroReflection)
-        reflection_klass.should_receive(:new) do |name, scope, options, parent|
-          options[:polymorphic].should be_nil
+        expect(reflection_klass).to receive(:new) do |name, scope, options, parent|
+          expect(options[:polymorphic]).to be_nil
         end
       else
-        reflection_klass.should_receive(:new) do |macro, name, options, parent|
-          options[:polymorphic].should be_nil
+        expect(reflection_klass).to receive(:new) do |macro, name, options, parent|
+          expect(options[:polymorphic]).to be_nil
         end
       end
 
@@ -71,12 +71,12 @@ describe ThinkingSphinx::ActiveRecord::FilterReflection do
 
     it "adds the class name option" do
       if defined?(ActiveRecord::Reflection::MacroReflection)
-        reflection_klass.should_receive(:new) do |name, scope, options, parent|
-          options[:class_name].should == 'Bar'
+        expect(reflection_klass).to receive(:new) do |name, scope, options, parent|
+          expect(options[:class_name]).to eq('Bar')
         end
       else
-        reflection_klass.should_receive(:new) do |macro, name, options, parent|
-          options[:class_name].should == 'Bar'
+        expect(reflection_klass).to receive(:new) do |macro, name, options, parent|
+          expect(options[:class_name]).to eq('Bar')
         end
       end
 
@@ -87,12 +87,12 @@ describe ThinkingSphinx::ActiveRecord::FilterReflection do
 
     it "sets the foreign key if necessary" do
       if defined?(ActiveRecord::Reflection::MacroReflection)
-        reflection_klass.should_receive(:new) do |name, scope, options, parent|
-          options[:foreign_key].should == 'baz_id'
+        expect(reflection_klass).to receive(:new) do |name, scope, options, parent|
+          expect(options[:foreign_key]).to eq('baz_id')
         end
       else
-        reflection_klass.should_receive(:new) do |macro, name, options, parent|
-          options[:foreign_key].should == 'baz_id'
+        expect(reflection_klass).to receive(:new) do |macro, name, options, parent|
+          expect(options[:foreign_key]).to eq('baz_id')
         end
       end
 
@@ -105,12 +105,12 @@ describe ThinkingSphinx::ActiveRecord::FilterReflection do
       options[:foreign_key] = 'qux_id'
 
       if defined?(ActiveRecord::Reflection::MacroReflection)
-        reflection_klass.should_receive(:new) do |name, scope, options, parent|
-          options[:foreign_key].should == 'qux_id'
+        expect(reflection_klass).to receive(:new) do |name, scope, options, parent|
+          expect(options[:foreign_key]).to eq('qux_id')
         end
       else
-        reflection_klass.should_receive(:new) do |macro, name, options, parent|
-          options[:foreign_key].should == 'qux_id'
+        expect(reflection_klass).to receive(:new) do |macro, name, options, parent|
+          expect(options[:foreign_key]).to eq('qux_id')
         end
       end
 
@@ -120,8 +120,8 @@ describe ThinkingSphinx::ActiveRecord::FilterReflection do
     end
 
     it "sets conditions if there are none" do
-      reflection_klass.should_receive(:new) do |macro, name, options, parent|
-        options[:conditions].should == "::ts_join_alias::.\"foo_type\" = 'Bar'"
+      expect(reflection_klass).to receive(:new) do |macro, name, options, parent|
+        expect(options[:conditions]).to eq("::ts_join_alias::.\"foo_type\" = 'Bar'")
       end
 
       ThinkingSphinx::ActiveRecord::FilterReflection.call(
@@ -132,8 +132,8 @@ describe ThinkingSphinx::ActiveRecord::FilterReflection do
     it "appends to the conditions array" do
       options[:conditions] = ['existing']
 
-      reflection_klass.should_receive(:new) do |macro, name, options, parent|
-        options[:conditions].should == ['existing', "::ts_join_alias::.\"foo_type\" = 'Bar'"]
+      expect(reflection_klass).to receive(:new) do |macro, name, options, parent|
+        expect(options[:conditions]).to eq(['existing', "::ts_join_alias::.\"foo_type\" = 'Bar'"])
       end
 
       ThinkingSphinx::ActiveRecord::FilterReflection.call(
@@ -144,8 +144,8 @@ describe ThinkingSphinx::ActiveRecord::FilterReflection do
     it "extends the conditions hash" do
       options[:conditions] = {:x => :y}
 
-      reflection_klass.should_receive(:new) do |macro, name, options, parent|
-        options[:conditions].should == {:x => :y, :foo_type => 'Bar'}
+      expect(reflection_klass).to receive(:new) do |macro, name, options, parent|
+        expect(options[:conditions]).to eq({:x => :y, :foo_type => 'Bar'})
       end
 
       ThinkingSphinx::ActiveRecord::FilterReflection.call(
@@ -156,8 +156,8 @@ describe ThinkingSphinx::ActiveRecord::FilterReflection do
     it "appends to the conditions string" do
       options[:conditions] = 'existing'
 
-      reflection_klass.should_receive(:new) do |macro, name, options, parent|
-        options[:conditions].should == "existing AND ::ts_join_alias::.\"foo_type\" = 'Bar'"
+      expect(reflection_klass).to receive(:new) do |macro, name, options, parent|
+        expect(options[:conditions]).to eq("existing AND ::ts_join_alias::.\"foo_type\" = 'Bar'")
       end
 
       ThinkingSphinx::ActiveRecord::FilterReflection.call(
@@ -166,9 +166,9 @@ describe ThinkingSphinx::ActiveRecord::FilterReflection do
     end unless defined?(ActiveRecord::Reflection::MacroReflection)
 
     it "returns the new reflection" do
-      ThinkingSphinx::ActiveRecord::FilterReflection.call(
+      expect(ThinkingSphinx::ActiveRecord::FilterReflection.call(
         reflection, 'foo_bar', 'Bar'
-      ).should == filtered_reflection
+      )).to eq(filtered_reflection)
     end
   end
 end

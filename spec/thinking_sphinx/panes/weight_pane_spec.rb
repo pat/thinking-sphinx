@@ -14,7 +14,7 @@ describe ThinkingSphinx::Panes::WeightPane do
     it "returns the object's weight by default" do
       raw[ThinkingSphinx::SphinxQL.weight[:column]] = 101
 
-      pane.weight.should == 101
+      expect(pane.weight).to eq(101)
     end
   end
 end

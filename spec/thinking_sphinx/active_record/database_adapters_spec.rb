@@ -5,21 +5,21 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters do
 
   describe '.adapter_for' do
     it "returns a MysqlAdapter object for :mysql" do
-      ThinkingSphinx::ActiveRecord::DatabaseAdapters.
-        stub(:adapter_type_for => :mysql)
+      allow(ThinkingSphinx::ActiveRecord::DatabaseAdapters).
+        to receive_messages(:adapter_type_for => :mysql)
 
-      ThinkingSphinx::ActiveRecord::DatabaseAdapters.adapter_for(model).
-        should be_a(
+      expect(ThinkingSphinx::ActiveRecord::DatabaseAdapters.adapter_for(model)).
+        to be_a(
           ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter
         )
     end
 
     it "returns a PostgreSQLAdapter object for :postgresql" do
-      ThinkingSphinx::ActiveRecord::DatabaseAdapters.
-        stub(:adapter_type_for => :postgresql)
+      allow(ThinkingSphinx::ActiveRecord::DatabaseAdapters).
+        to receive_messages(:adapter_type_for => :postgresql)
 
-      ThinkingSphinx::ActiveRecord::DatabaseAdapters.adapter_for(model).
-        should be_a(
+      expect(ThinkingSphinx::ActiveRecord::DatabaseAdapters.adapter_for(model)).
+        to be_a(
           ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter
         )
     end
@@ -29,21 +29,21 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters do
       adapter_instance = double('adapter instance')
 
       ThinkingSphinx::ActiveRecord::DatabaseAdapters.default = adapter_class
-      adapter_class.stub!(:new => adapter_instance)
+      allow(adapter_class).to receive_messages(:new => adapter_instance)
 
-      ThinkingSphinx::ActiveRecord::DatabaseAdapters.adapter_for(model).
-        should == adapter_instance
+      expect(ThinkingSphinx::ActiveRecord::DatabaseAdapters.adapter_for(model)).
+        to eq(adapter_instance)
 
       ThinkingSphinx::ActiveRecord::DatabaseAdapters.default = nil
     end
 
     it "raises an exception for other responses" do
-      ThinkingSphinx::ActiveRecord::DatabaseAdapters.
-        stub(:adapter_type_for => :sqlite)
+      allow(ThinkingSphinx::ActiveRecord::DatabaseAdapters).
+        to receive_messages(:adapter_type_for => :sqlite)
 
-      lambda {
+      expect {
         ThinkingSphinx::ActiveRecord::DatabaseAdapters.adapter_for(model)
-      }.should raise_error
+      }.to raise_error(ThinkingSphinx::InvalidDatabaseAdapter)
     end
   end
 
@@ -53,74 +53,74 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters do
     let(:model)      { double('model', :connection => connection) }
 
     it "translates a normal MySQL adapter" do
-      klass.stub(:name => 'ActiveRecord::ConnectionAdapters::MysqlAdapter')
+      allow(klass).to receive_messages(:name => 'ActiveRecord::ConnectionAdapters::MysqlAdapter')
 
-      ThinkingSphinx::ActiveRecord::DatabaseAdapters.
-        adapter_type_for(model).should == :mysql
+      expect(ThinkingSphinx::ActiveRecord::DatabaseAdapters.
+        adapter_type_for(model)).to eq(:mysql)
     end
 
     it "translates a MySQL2 adapter" do
-      klass.stub(:name => 'ActiveRecord::ConnectionAdapters::Mysql2Adapter')
+      allow(klass).to receive_messages(:name => 'ActiveRecord::ConnectionAdapters::Mysql2Adapter')
 
-      ThinkingSphinx::ActiveRecord::DatabaseAdapters.
-        adapter_type_for(model).should == :mysql
+      expect(ThinkingSphinx::ActiveRecord::DatabaseAdapters.
+        adapter_type_for(model)).to eq(:mysql)
     end
 
     it "translates a normal PostgreSQL adapter" do
-      klass.stub(:name => 'ActiveRecord::ConnectionAdapters::PostgreSQLAdapter')
+      allow(klass).to receive_messages(:name => 'ActiveRecord::ConnectionAdapters::PostgreSQLAdapter')
 
-      ThinkingSphinx::ActiveRecord::DatabaseAdapters.
-        adapter_type_for(model).should == :postgresql
+      expect(ThinkingSphinx::ActiveRecord::DatabaseAdapters.
+        adapter_type_for(model)).to eq(:postgresql)
     end
 
     it "translates a JDBC MySQL adapter to MySQL" do
-      klass.stub(:name => 'ActiveRecord::ConnectionAdapters::JdbcAdapter')
-      connection.stub(:config => {:adapter => 'jdbcmysql'})
+      allow(klass).to receive_messages(:name => 'ActiveRecord::ConnectionAdapters::JdbcAdapter')
+      allow(connection).to receive_messages(:config => {:adapter => 'jdbcmysql'})
 
-      ThinkingSphinx::ActiveRecord::DatabaseAdapters.
-        adapter_type_for(model).should == :mysql
+      expect(ThinkingSphinx::ActiveRecord::DatabaseAdapters.
+        adapter_type_for(model)).to eq(:mysql)
     end
 
     it "translates a JDBC PostgreSQL adapter to PostgreSQL" do
-      klass.stub(:name => 'ActiveRecord::ConnectionAdapters::JdbcAdapter')
-      connection.stub(:config => {:adapter => 'jdbcpostgresql'})
+      allow(klass).to receive_messages(:name => 'ActiveRecord::ConnectionAdapters::JdbcAdapter')
+      allow(connection).to receive_messages(:config => {:adapter => 'jdbcpostgresql'})
 
-      ThinkingSphinx::ActiveRecord::DatabaseAdapters.
-        adapter_type_for(model).should == :postgresql
+      expect(ThinkingSphinx::ActiveRecord::DatabaseAdapters.
+        adapter_type_for(model)).to eq(:postgresql)
     end
 
     it "translates a JDBC adapter with MySQL connection string to MySQL" do
-      klass.stub(:name => 'ActiveRecord::ConnectionAdapters::JdbcAdapter')
-      connection.stub(:config => {:adapter => 'jdbc',
+      allow(klass).to receive_messages(:name => 'ActiveRecord::ConnectionAdapters::JdbcAdapter')
+      allow(connection).to receive_messages(:config => {:adapter => 'jdbc',
                                   :url => 'jdbc:mysql://127.0.0.1:3306/sphinx'})
 
-      ThinkingSphinx::ActiveRecord::DatabaseAdapters.
-        adapter_type_for(model).should == :mysql
+      expect(ThinkingSphinx::ActiveRecord::DatabaseAdapters.
+        adapter_type_for(model)).to eq(:mysql)
     end
 
     it "translates a JDBC adapter with PostgresSQL connection string to PostgresSQL" do
-      klass.stub(:name => 'ActiveRecord::ConnectionAdapters::JdbcAdapter')
-      connection.stub(:config => {:adapter => 'jdbc',
+      allow(klass).to receive_messages(:name => 'ActiveRecord::ConnectionAdapters::JdbcAdapter')
+      allow(connection).to receive_messages(:config => {:adapter => 'jdbc',
                                   :url => 'jdbc:postgresql://127.0.0.1:3306/sphinx'})
 
-      ThinkingSphinx::ActiveRecord::DatabaseAdapters.
-        adapter_type_for(model).should == :postgresql
+      expect(ThinkingSphinx::ActiveRecord::DatabaseAdapters.
+        adapter_type_for(model)).to eq(:postgresql)
     end
 
     it "returns other JDBC adapters without translation" do
-      klass.stub(:name => 'ActiveRecord::ConnectionAdapters::JdbcAdapter')
-      connection.stub(:config => {:adapter => 'jdbcmssql'})
+      allow(klass).to receive_messages(:name => 'ActiveRecord::ConnectionAdapters::JdbcAdapter')
+      allow(connection).to receive_messages(:config => {:adapter => 'jdbcmssql'})
 
-      ThinkingSphinx::ActiveRecord::DatabaseAdapters.
-        adapter_type_for(model).should == 'jdbcmssql'
+      expect(ThinkingSphinx::ActiveRecord::DatabaseAdapters.
+        adapter_type_for(model)).to eq('jdbcmssql')
     end
 
     it "returns other unknown adapters without translation" do
-      klass.stub(:name => 'ActiveRecord::ConnectionAdapters::FooAdapter')
+      allow(klass).to receive_messages(:name => 'ActiveRecord::ConnectionAdapters::FooAdapter')
 
-      ThinkingSphinx::ActiveRecord::DatabaseAdapters.
-        adapter_type_for(model).
-        should == 'ActiveRecord::ConnectionAdapters::FooAdapter'
+      expect(ThinkingSphinx::ActiveRecord::DatabaseAdapters.
+        adapter_type_for(model)).
+        to eq('ActiveRecord::ConnectionAdapters::FooAdapter')
     end
   end
 end

@@ -7,13 +7,13 @@ describe ThinkingSphinx::Deletion do
       :document_id_for_key => 14, :type => 'plain', :distributed? => false) }
 
     before :each do
-      ThinkingSphinx::Connection.stub(:take).and_yield(connection)
-      Riddle::Query.stub :update => 'UPDATE STATEMENT'
+      allow(ThinkingSphinx::Connection).to receive(:take).and_yield(connection)
+      allow(Riddle::Query).to receive_messages :update => 'UPDATE STATEMENT'
     end
 
     context 'index is SQL-backed' do
       it "updates the deleted flag to false" do
-        connection.should_receive(:execute).with <<-SQL
+        expect(connection).to receive(:execute).with <<-SQL
 UPDATE foo_core
 SET sphinx_deleted = 1
 WHERE id IN (14)
@@ -23,34 +23,34 @@ WHERE id IN (14)
       end
 
       it "doesn't care about Sphinx errors" do
-        connection.stub(:execute).
+        allow(connection).to receive(:execute).
           and_raise(ThinkingSphinx::ConnectionError.new(''))
 
-        lambda {
+        expect {
           ThinkingSphinx::Deletion.perform index, 7
-        }.should_not raise_error
+        }.not_to raise_error
       end
     end
 
     context "index is real-time" do
       before :each do
-        index.stub :type => 'rt'
+        allow(index).to receive_messages :type => 'rt'
       end
 
       it "deletes the record to false" do
-        connection.should_receive(:execute).
+        expect(connection).to receive(:execute).
           with('DELETE FROM foo_core WHERE id = 14')
 
         ThinkingSphinx::Deletion.perform index, 7
       end
 
       it "doesn't care about Sphinx errors" do
-        connection.stub(:execute).
+        allow(connection).to receive(:execute).
           and_raise(ThinkingSphinx::ConnectionError.new(''))
 
-        lambda {
+        expect {
           ThinkingSphinx::Deletion.perform index, 7
-        }.should_not raise_error
+        }.not_to raise_error
       end
     end
   end

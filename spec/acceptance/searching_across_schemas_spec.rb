@@ -16,23 +16,23 @@ describe 'Searching across PostgreSQL schemas', :live => true do
   it 'can distinguish between objects with the same primary key' do
     multi_schema.switch :public
     jekyll = Product.create name: 'Doctor Jekyll'
-    Product.search('Jekyll', :retry_stale => false).to_a.should == [jekyll]
-    Product.search(:retry_stale => false).to_a.should == [jekyll]
+    expect(Product.search('Jekyll', :retry_stale => false).to_a).to eq([jekyll])
+    expect(Product.search(:retry_stale => false).to_a).to eq([jekyll])
 
     multi_schema.switch :thinking_sphinx
     hyde = Product.create name: 'Mister Hyde'
-    Product.search('Jekyll', :retry_stale => false).to_a.should == []
-    Product.search('Hyde', :retry_stale => false).to_a.should == [hyde]
-    Product.search(:retry_stale => false).to_a.should == [hyde]
+    expect(Product.search('Jekyll', :retry_stale => false).to_a).to eq([])
+    expect(Product.search('Hyde', :retry_stale => false).to_a).to eq([hyde])
+    expect(Product.search(:retry_stale => false).to_a).to eq([hyde])
 
     multi_schema.switch :public
-    Product.search('Jekyll', :retry_stale => false).to_a.should == [jekyll]
-    Product.search(:retry_stale => false).to_a.should == [jekyll]
-    Product.search('Hyde', :retry_stale => false).to_a.should == []
+    expect(Product.search('Jekyll', :retry_stale => false).to_a).to eq([jekyll])
+    expect(Product.search(:retry_stale => false).to_a).to eq([jekyll])
+    expect(Product.search('Hyde', :retry_stale => false).to_a).to eq([])
 
-    Product.search(
+    expect(Product.search(
       :middleware => ThinkingSphinx::Middlewares::RAW_ONLY,
       :indices    => ['product_core', 'product_two_core']
-    ).to_a.length.should == 2
+    ).to_a.length).to eq(2)
   end
 end if multi_schema.active?

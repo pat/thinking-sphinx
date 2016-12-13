@@ -8,57 +8,57 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter do
 
   describe '#boolean_value' do
     it "returns 'TRUE' for true" do
-      adapter.boolean_value(true).should == 'TRUE'
+      expect(adapter.boolean_value(true)).to eq('TRUE')
     end
 
     it "returns 'FALSE' for false" do
-      adapter.boolean_value(false).should == 'FALSE'
+      expect(adapter.boolean_value(false)).to eq('FALSE')
     end
   end
 
   describe '#cast_to_string' do
     it "casts the clause to characters" do
-      adapter.cast_to_string('foo').should == 'foo::varchar'
+      expect(adapter.cast_to_string('foo')).to eq('foo::varchar')
     end
   end
 
   describe '#cast_to_timestamp' do
     it "converts to int unix timestamps" do
-      adapter.cast_to_timestamp('created_at').
-        should == 'extract(epoch from created_at)::int'
+      expect(adapter.cast_to_timestamp('created_at')).
+        to eq('extract(epoch from created_at)::int')
     end
 
     it "converts to bigint unix timestamps" do
       ThinkingSphinx::Configuration.instance.settings['64bit_timestamps'] = true
 
-      adapter.cast_to_timestamp('created_at').
-        should == 'extract(epoch from created_at)::bigint'
+      expect(adapter.cast_to_timestamp('created_at')).
+        to eq('extract(epoch from created_at)::bigint')
     end
   end
 
   describe '#concatenate' do
     it "concatenates with the given separator" do
-      adapter.concatenate('foo, bar, baz', ',').
-        should == "COALESCE(foo, '') || ',' || COALESCE(bar, '') || ',' || COALESCE(baz, '')"
+      expect(adapter.concatenate('foo, bar, baz', ',')).
+        to eq("COALESCE(foo, '') || ',' || COALESCE(bar, '') || ',' || COALESCE(baz, '')")
     end
   end
 
   describe '#convert_nulls' do
     it "translates arguments to a COALESCE SQL call" do
-      adapter.convert_nulls('id', 5).should == 'COALESCE(id, 5)'
+      expect(adapter.convert_nulls('id', 5)).to eq('COALESCE(id, 5)')
     end
   end
 
   describe '#convert_blank' do
     it "translates arguments to a COALESCE NULLIF SQL call" do
-      adapter.convert_blank('id', 5).should == "COALESCE(NULLIF(id, ''), 5)"
+      expect(adapter.convert_blank('id', 5)).to eq("COALESCE(NULLIF(id, ''), 5)")
     end
   end
 
   describe '#group_concatenate' do
     it "group concatenates the clause with the given separator" do
-      adapter.group_concatenate('foo', ',').
-        should == "array_to_string(array_agg(DISTINCT foo), ',')"
+      expect(adapter.group_concatenate('foo', ',')).
+        to eq("array_to_string(array_agg(DISTINCT foo), ',')")
     end
   end
 end

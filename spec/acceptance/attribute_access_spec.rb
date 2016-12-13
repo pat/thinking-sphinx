@@ -8,7 +8,7 @@ describe 'Accessing attributes directly via search results', :live => true do
     search = Book.search('gods')
     search.context[:panes] << ThinkingSphinx::Panes::AttributesPane
 
-    search.first.sphinx_attributes['year'].should == 2001
+    expect(search.first.sphinx_attributes['year']).to eq(2001)
   end
 
   it "provides direct access to the search weight/relevance scores" do
@@ -19,7 +19,7 @@ describe 'Accessing attributes directly via search results', :live => true do
       :select => "*, #{ThinkingSphinx::SphinxQL.weight[:select]}"
     search.context[:panes] << ThinkingSphinx::Panes::WeightPane
 
-    search.first.weight.should == 2500
+    expect(search.first.weight).to eq(2500)
   end
 
   it "can enumerate with the weight" do
@@ -34,8 +34,8 @@ describe 'Accessing attributes directly via search results', :live => true do
     search.each_with_weight do |result, weight|
       expectation = expectations.shift
 
-      result.should == expectation.first
-      weight.should == expectation.last
+      expect(result).to eq(expectation.first)
+      expect(weight).to eq(expectation.last)
     end
   end
 end

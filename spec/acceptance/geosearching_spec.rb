@@ -7,8 +7,8 @@ describe 'Searching by latitude and longitude', :live => true do
     bri = City.create :name => 'Brisbane',  :lat => -0.4794031, :lng => 2.670838
     index
 
-    City.search(:geo => [-0.616241, 2.602712], :order => 'geodist ASC').
-      to_a.should == [syd, mel, bri]
+    expect(City.search(:geo => [-0.616241, 2.602712], :order => 'geodist ASC').
+      to_a).to eq([syd, mel, bri])
   end
 
   it "filters by distance" do
@@ -17,10 +17,10 @@ describe 'Searching by latitude and longitude', :live => true do
     bri = City.create :name => 'Brisbane',  :lat => -0.4794031, :lng => 2.670838
     index
 
-    City.search(
+    expect(City.search(
       :geo  => [-0.616241, 2.602712],
       :with => {:geodist => 0.0..470_000.0}
-    ).to_a.should == [mel, syd]
+    ).to_a).to eq([mel, syd])
   end
 
   it "provides the distance for each search result" do
@@ -37,9 +37,9 @@ describe 'Searching by latitude and longitude', :live => true do
     end
 
     if ActiveRecord::Base.configurations['test']['adapter'][/postgres/]
-      cities.first.geodist.should == expected[:postgresql]
+      expect(cities.first.geodist).to eq(expected[:postgresql])
     else # mysql
-      cities.first.geodist.should == expected[:mysql]
+      expect(cities.first.geodist).to eq(expected[:mysql])
     end
   end
 
@@ -49,10 +49,10 @@ describe 'Searching by latitude and longitude', :live => true do
     bri = City.create :name => 'Brisbane',  :lat => -0.4794031, :lng => 2.670838
     index
 
-    City.search(
+    expect(City.search(
       :geo  => [-0.616241, 2.602712],
       :with => {:geodist => 0.0..470_000.0},
       :select => "*, geodist as custom_weight"
-    ).to_a.should == [mel, syd]
+    ).to_a).to eq([mel, syd])
   end
 end

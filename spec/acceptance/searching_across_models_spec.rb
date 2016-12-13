@@ -5,7 +5,7 @@ describe 'Searching across models', :live => true do
     article = Article.create! :title => 'Pancakes'
     index
 
-    ThinkingSphinx.search.first.should == article
+    expect(ThinkingSphinx.search.first).to eq(article)
   end
 
   it "returns results matching the given query" do
@@ -14,8 +14,8 @@ describe 'Searching across models', :live => true do
     index
 
     articles = ThinkingSphinx.search 'pancakes'
-    articles.should include(pancakes)
-    articles.should_not include(waffles)
+    expect(articles).to include(pancakes)
+    expect(articles).not_to include(waffles)
   end
 
   it "handles results from different models" do
@@ -23,7 +23,7 @@ describe 'Searching across models', :live => true do
     book    = Book.create! :title => 'American Gods'
     index
 
-    ThinkingSphinx.search.to_a.should =~ [article, book]
+    expect(ThinkingSphinx.search.to_a).to match_array([article, book])
   end
 
   it "filters by multiple classes" do
@@ -32,7 +32,7 @@ describe 'Searching across models', :live => true do
     user    = User.create! :name => 'Pat'
     index
 
-    ThinkingSphinx.search(:classes => [User, Article]).to_a.
-      should =~ [article, user]
+    expect(ThinkingSphinx.search(:classes => [User, Article]).to_a).
+      to match_array([article, user])
   end
 end

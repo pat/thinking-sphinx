@@ -13,38 +13,38 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
   let(:adapter)    { double('adapter') }
 
   before :each do
-    ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter.
-      stub!(:=== => true)
-    ThinkingSphinx::ActiveRecord::DatabaseAdapters.
-      stub!(:adapter_for => adapter)
+    allow(ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter).
+      to receive_messages(:=== => true)
+    allow(ThinkingSphinx::ActiveRecord::DatabaseAdapters).
+      to receive_messages(:adapter_for => adapter)
   end
 
   describe '#adapter' do
     it "returns a database adapter for the model" do
-      ThinkingSphinx::ActiveRecord::DatabaseAdapters.
-        should_receive(:adapter_for).with(model).and_return(adapter)
+      expect(ThinkingSphinx::ActiveRecord::DatabaseAdapters).
+        to receive(:adapter_for).with(model).and_return(adapter)
 
-      source.adapter.should == adapter
+      expect(source.adapter).to eq(adapter)
     end
   end
 
   describe '#attributes' do
     it "has the internal id attribute by default" do
-      source.attributes.collect(&:name).should include('sphinx_internal_id')
+      expect(source.attributes.collect(&:name)).to include('sphinx_internal_id')
     end
 
     it "has the class name attribute by default" do
-      source.attributes.collect(&:name).should include('sphinx_internal_class')
+      expect(source.attributes.collect(&:name)).to include('sphinx_internal_class')
     end
 
     it "has the internal deleted attribute by default" do
-      source.attributes.collect(&:name).should include('sphinx_deleted')
+      expect(source.attributes.collect(&:name)).to include('sphinx_deleted')
     end
 
     it "marks the internal class attribute as a facet" do
-      source.attributes.detect { |attribute|
+      expect(source.attributes.detect { |attribute|
         attribute.name == 'sphinx_internal_class'
-      }.options[:facet].should be_true
+      }.options[:facet]).to be_truthy
     end
   end
 
@@ -64,18 +64,18 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
     }
 
     it "loads the processor with the adapter" do
-      processor_class.should_receive(:try).with(:new, adapter, {}).
+      expect(processor_class).to receive(:try).with(:new, adapter, {}).
         and_return processor
 
       source.delta_processor
     end
 
     it "returns the given processor" do
-      source.delta_processor.should == processor
+      expect(source.delta_processor).to eq(processor)
     end
 
     it "passes given options to the processor" do
-      processor_class.should_receive(:try).with(:new, adapter, {:opt_key => :opt_value})
+      expect(processor_class).to receive(:try).with(:new, adapter, {:opt_key => :opt_value})
       source_with_options.delta_processor
     end
   end
@@ -86,7 +86,7 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
         :delta? => true,
         :primary_key => model.primary_key || :id
 
-      source.should be_a_delta
+      expect(source).to be_a_delta
     end
   end
 
@@ -96,46 +96,46 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
         :disable_range? => true,
         :primary_key => model.primary_key || :id
 
-      source.disable_range?.should be_true
+      expect(source.disable_range?).to be_truthy
     end
   end
 
   describe '#fields' do
     it "has the internal class field by default" do
-      source.fields.collect(&:name).
-        should include('sphinx_internal_class_name')
+      expect(source.fields.collect(&:name)).
+        to include('sphinx_internal_class_name')
     end
 
     it "sets the sphinx class field to use a string of the class name" do
-      source.fields.detect { |field|
+      expect(source.fields.detect { |field|
         field.name == 'sphinx_internal_class_name'
-      }.columns.first.__name.should == "'User'"
+      }.columns.first.__name).to eq("'User'")
     end
 
     it "uses the inheritance column if it exists for the sphinx class field" do
-      adapter.stub :quoted_table_name => '"users"', :quote => '"type"'
-      adapter.stub(:convert_blank) { |clause, default|
+      allow(adapter).to receive_messages :quoted_table_name => '"users"', :quote => '"type"'
+      allow(adapter).to receive(:convert_blank) { |clause, default|
         "coalesce(nullif(#{clause}, ''), #{default})"
       }
-      model.stub :column_names => ['type'], :sti_name => 'User'
+      allow(model).to receive_messages :column_names => ['type'], :sti_name => 'User'
 
-      source.fields.detect { |field|
+      expect(source.fields.detect { |field|
         field.name == 'sphinx_internal_class_name'
-      }.columns.first.__name.
-        should == "coalesce(nullif(\"users\".\"type\", ''), 'User')"
+      }.columns.first.__name).
+        to eq("coalesce(nullif(\"users\".\"type\", ''), 'User')")
     end
   end
 
   describe '#name' do
     it "defaults to the model name downcased with the given position" do
-      source.name.should == 'user_3'
+      expect(source.name).to eq('user_3')
     end
 
     it "allows for custom names, but adds the position suffix" do
       source = ThinkingSphinx::ActiveRecord::SQLSource.new model,
         :name => 'people', :position => 2, :primary_key => model.primary_key || :id
 
-      source.name.should == 'people_2'
+      expect(source.name).to eq('people_2')
     end
   end
 
@@ -144,19 +144,19 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       source = ThinkingSphinx::ActiveRecord::SQLSource.new model,
         :offset => 12, :primary_key => model.primary_key || :id
 
-      source.offset.should == 12
+      expect(source.offset).to eq(12)
     end
   end
 
   describe '#options' do
     it "defaults to having utf8? set to false" do
-      source.options[:utf8?].should be_false
+      expect(source.options[:utf8?]).to be_falsey
     end
 
     it "sets utf8? to true if the database encoding is utf8" do
       db_config[:encoding] = 'utf8'
 
-      source.options[:utf8?].should be_true
+      expect(source.options[:utf8?]).to be_truthy
     end
 
     describe "#primary key" do
@@ -182,34 +182,34 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
     let(:template)  { double('template', :apply => true) }
 
     before :each do
-      ThinkingSphinx::ActiveRecord::SQLBuilder.stub! :new => builder
-      ThinkingSphinx::ActiveRecord::Attribute::SphinxPresenter.stub :new => presenter
-      ThinkingSphinx::ActiveRecord::SQLSource::Template.stub :new => template
-      ThinkingSphinx::Configuration.stub :instance => config
+      allow(ThinkingSphinx::ActiveRecord::SQLBuilder).to receive_messages :new => builder
+      allow(ThinkingSphinx::ActiveRecord::Attribute::SphinxPresenter).to receive_messages :new => presenter
+      allow(ThinkingSphinx::ActiveRecord::SQLSource::Template).to receive_messages :new => template
+      allow(ThinkingSphinx::Configuration).to receive_messages :instance => config
     end
 
     it "uses the builder's sql_query value" do
-      builder.stub! :sql_query => 'select * from table'
+      allow(builder).to receive_messages :sql_query => 'select * from table'
 
       source.render
 
-      source.sql_query.should == 'select * from table'
+      expect(source.sql_query).to eq('select * from table')
     end
 
     it "uses the builder's sql_query_range value" do
-      builder.stub! :sql_query_range => 'select 0, 10 from table'
+      allow(builder).to receive_messages :sql_query_range => 'select 0, 10 from table'
 
       source.render
 
-      source.sql_query_range.should == 'select 0, 10 from table'
+      expect(source.sql_query_range).to eq('select 0, 10 from table')
     end
 
     it "appends the builder's sql_query_pre value" do
-      builder.stub! :sql_query_pre => ['Change Setting']
+      allow(builder).to receive_messages :sql_query_pre => ['Change Setting']
 
       source.render
 
-      source.sql_query_pre.should == ['Change Setting']
+      expect(source.sql_query_pre).to eq(['Change Setting'])
     end
 
     it "adds fields with attributes to sql_field_string" do
@@ -218,7 +218,7 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
       source.render
 
-      source.sql_field_string.should include('title')
+      expect(source.sql_field_string).to include('title')
     end
 
     it "adds any joined or file fields" do
@@ -227,7 +227,7 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
       source.render
 
-      source.sql_file_field.should include('title')
+      expect(source.sql_file_field).to include('title')
     end
 
     it "adds wordcounted fields to sql_field_str2wordcount" do
@@ -236,11 +236,11 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
       source.render
 
-      source.sql_field_str2wordcount.should include('title')
+      expect(source.sql_field_str2wordcount).to include('title')
     end
 
     it "adds any joined fields" do
-      ThinkingSphinx::ActiveRecord::PropertyQuery.stub(
+      allow(ThinkingSphinx::ActiveRecord::PropertyQuery).to receive_messages(
         :new => double(:to_s => 'query for title')
       )
       source.fields << double('field', :name => 'title',
@@ -249,99 +249,99 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
       source.render
 
-      source.sql_joined_field.should include('query for title')
+      expect(source.sql_joined_field).to include('query for title')
     end
 
     it "adds integer attributes to sql_attr_uint" do
       source.attributes << double('attribute')
-      presenter.stub :declaration => 'count', :collection_type => :uint
+      allow(presenter).to receive_messages :declaration => 'count', :collection_type => :uint
 
       source.render
 
-      source.sql_attr_uint.should include('count')
+      expect(source.sql_attr_uint).to include('count')
     end
 
     it "adds boolean attributes to sql_attr_bool" do
       source.attributes << double('attribute')
-      presenter.stub :declaration => 'published', :collection_type => :bool
+      allow(presenter).to receive_messages :declaration => 'published', :collection_type => :bool
 
       source.render
 
-      source.sql_attr_bool.should include('published')
+      expect(source.sql_attr_bool).to include('published')
     end
 
     it "adds string attributes to sql_attr_string" do
       source.attributes << double('attribute')
-      presenter.stub :declaration => 'name', :collection_type => :string
+      allow(presenter).to receive_messages :declaration => 'name', :collection_type => :string
 
       source.render
 
-      source.sql_attr_string.should include('name')
+      expect(source.sql_attr_string).to include('name')
     end
 
     it "adds timestamp attributes to sql_attr_timestamp" do
       source.attributes << double('attribute')
-      presenter.stub :declaration => 'created_at',
+      allow(presenter).to receive_messages :declaration => 'created_at',
         :collection_type => :timestamp
 
       source.render
 
-      source.sql_attr_timestamp.should include('created_at')
+      expect(source.sql_attr_timestamp).to include('created_at')
     end
 
     it "adds float attributes to sql_attr_float" do
       source.attributes << double('attribute')
-      presenter.stub :declaration => 'rating', :collection_type => :float
+      allow(presenter).to receive_messages :declaration => 'rating', :collection_type => :float
 
       source.render
 
-      source.sql_attr_float.should include('rating')
+      expect(source.sql_attr_float).to include('rating')
     end
 
     it "adds bigint attributes to sql_attr_bigint" do
       source.attributes << double('attribute')
-      presenter.stub :declaration => 'super_id', :collection_type => :bigint
+      allow(presenter).to receive_messages :declaration => 'super_id', :collection_type => :bigint
 
       source.render
 
-      source.sql_attr_bigint.should include('super_id')
+      expect(source.sql_attr_bigint).to include('super_id')
     end
 
     it "adds ordinal strings to sql_attr_str2ordinal" do
       source.attributes << double('attribute')
-      presenter.stub :declaration => 'name', :collection_type => :str2ordinal
+      allow(presenter).to receive_messages :declaration => 'name', :collection_type => :str2ordinal
 
       source.render
 
-      source.sql_attr_str2ordinal.should include('name')
+      expect(source.sql_attr_str2ordinal).to include('name')
     end
 
     it "adds multi-value attributes to sql_attr_multi" do
       source.attributes << double('attribute')
-      presenter.stub :declaration => 'uint tag_ids from field',
+      allow(presenter).to receive_messages :declaration => 'uint tag_ids from field',
         :collection_type => :multi
 
       source.render
 
-      source.sql_attr_multi.should include('uint tag_ids from field')
+      expect(source.sql_attr_multi).to include('uint tag_ids from field')
     end
 
     it "adds word count attributes to sql_attr_str2wordcount" do
       source.attributes << double('attribute')
-      presenter.stub :declaration => 'name', :collection_type => :str2wordcount
+      allow(presenter).to receive_messages :declaration => 'name', :collection_type => :str2wordcount
 
       source.render
 
-      source.sql_attr_str2wordcount.should include('name')
+      expect(source.sql_attr_str2wordcount).to include('name')
     end
 
     it "adds json attributes to sql_attr_json" do
       source.attributes << double('attribute')
-      presenter.stub :declaration => 'json', :collection_type => :json
+      allow(presenter).to receive_messages :declaration => 'json', :collection_type => :json
 
       source.render
 
-      source.sql_attr_json.should include('json')
+      expect(source.sql_attr_json).to include('json')
     end
 
     it "adds relevant settings from thinking_sphinx.yml" do
@@ -350,7 +350,7 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
       source.render
 
-      source.mysql_ssl_cert.should == 'foo.cert'
+      expect(source.mysql_ssl_cert).to eq('foo.cert')
     end
   end
 
@@ -358,102 +358,104 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
     it "sets the sql_host setting from the model's database settings" do
       source.set_database_settings :host => '12.34.56.78'
 
-      source.sql_host.should == '12.34.56.78'
+      expect(source.sql_host).to eq('12.34.56.78')
     end
 
     it "defaults sql_host to localhost if the model has no host" do
       source.set_database_settings :host => nil
 
-      source.sql_host.should == 'localhost'
+      expect(source.sql_host).to eq('localhost')
     end
 
     it "sets the sql_user setting from the model's database settings" do
       source.set_database_settings :username => 'pat'
 
-      source.sql_user.should == 'pat'
+      expect(source.sql_user).to eq('pat')
     end
 
     it "uses the user setting if username is not set in the model" do
       source.set_database_settings :username => nil, :user => 'pat'
 
-      source.sql_user.should == 'pat'
+      expect(source.sql_user).to eq('pat')
     end
 
     it "sets the sql_pass setting from the model's database settings" do
       source.set_database_settings :password => 'swordfish'
 
-      source.sql_pass.should == 'swordfish'
+      expect(source.sql_pass).to eq('swordfish')
     end
 
     it "escapes hashes in the password for sql_pass" do
       source.set_database_settings :password => 'sword#fish'
 
-      source.sql_pass.should == 'sword\#fish'
+      expect(source.sql_pass).to eq('sword\#fish')
     end
 
     it "sets the sql_db setting from the model's database settings" do
       source.set_database_settings :database => 'rails_app'
 
-      source.sql_db.should == 'rails_app'
+      expect(source.sql_db).to eq('rails_app')
     end
 
     it "sets the sql_port setting from the model's database settings" do
       source.set_database_settings :port => 5432
 
-      source.sql_port.should == 5432
+      expect(source.sql_port).to eq(5432)
     end
 
     it "sets the sql_sock setting from the model's database settings" do
       source.set_database_settings :socket => '/unix/socket'
 
-      source.sql_sock.should == '/unix/socket'
+      expect(source.sql_sock).to eq('/unix/socket')
     end
 
     it "sets the mysql_ssl_cert from the model's database settings" do
       source.set_database_settings :sslcert => '/path/to/cert.pem'
 
-      source.mysql_ssl_cert.should  eq '/path/to/cert.pem'
+      expect(source.mysql_ssl_cert).to  eq '/path/to/cert.pem'
     end
 
     it "sets the mysql_ssl_key from the model's database settings" do
       source.set_database_settings :sslkey => '/path/to/key.pem'
 
-      source.mysql_ssl_key.should  eq '/path/to/key.pem'
+      expect(source.mysql_ssl_key).to  eq '/path/to/key.pem'
     end
 
     it "sets the mysql_ssl_ca from the model's database settings" do
       source.set_database_settings :sslca => '/path/to/ca.pem'
 
-      source.mysql_ssl_ca.should  eq '/path/to/ca.pem'
+      expect(source.mysql_ssl_ca).to  eq '/path/to/ca.pem'
     end
   end
 
   describe '#type' do
     it "is mysql when using the MySQL Adapter" do
-      ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter.
-        stub!(:=== => true)
-      ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter.
-        stub!(:=== => false)
+      allow(ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter).
+        to receive_messages(:=== => true)
+      allow(ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter).
+        to receive_messages(:=== => false)
 
-      source.type.should == 'mysql'
+      expect(source.type).to eq('mysql')
     end
 
     it "is pgsql when using the PostgreSQL Adapter" do
-      ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter.
-        stub!(:=== => false)
-      ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter.
-        stub!(:=== => true)
+      allow(ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter).
+        to receive_messages(:=== => false)
+      allow(ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter).
+        to receive_messages(:=== => true)
 
-      source.type.should == 'pgsql'
+      expect(source.type).to eq('pgsql')
     end
 
     it "raises an exception for any other adapter" do
-      ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter.
-        stub!(:=== => false)
-      ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter.
-        stub!(:=== => false)
+      allow(ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter).
+        to receive_messages(:=== => false)
+      allow(ThinkingSphinx::ActiveRecord::DatabaseAdapters::PostgreSQLAdapter).
+        to receive_messages(:=== => false)
 
-      lambda { source.type }.should raise_error
+      expect { source.type }.to raise_error(
+        ThinkingSphinx::UnknownDatabaseAdapter
+      )
     end
   end
 end

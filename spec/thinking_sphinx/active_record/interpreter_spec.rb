@@ -13,23 +13,23 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
   let(:block)   { Proc.new { } }
 
   before :each do
-    ThinkingSphinx::ActiveRecord::SQLSource.stub! :new => source
-    source.stub :model => model
+    allow(ThinkingSphinx::ActiveRecord::SQLSource).to receive_messages :new => source
+    allow(source).to receive_messages :model => model
   end
 
   describe '.translate!' do
     let(:instance) { double('interpreter', :translate! => true) }
 
     it "creates a new interpreter instance with the given block and index" do
-      ThinkingSphinx::ActiveRecord::Interpreter.should_receive(:new).
+      expect(ThinkingSphinx::ActiveRecord::Interpreter).to receive(:new).
         with(index, block).and_return(instance)
 
       ThinkingSphinx::ActiveRecord::Interpreter.translate! index, block
     end
 
     it "calls translate! on the instance" do
-      ThinkingSphinx::ActiveRecord::Interpreter.stub!(:new => instance)
-      instance.should_receive(:translate!)
+      allow(ThinkingSphinx::ActiveRecord::Interpreter).to receive_messages(:new => instance)
+      expect(instance).to receive(:translate!)
 
       ThinkingSphinx::ActiveRecord::Interpreter.translate! index, block
     end
@@ -37,13 +37,13 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
 
   describe '#group_by' do
     it "adds a source to the index" do
-      index.should_receive(:append_source).and_return(source)
+      expect(index).to receive(:append_source).and_return(source)
 
       instance.group_by 'lat'
     end
 
     it "only adds a single source for the given context" do
-      index.should_receive(:append_source).once.and_return(source)
+      expect(index).to receive(:append_source).once.and_return(source)
 
       instance.group_by 'lat'
       instance.group_by 'lng'
@@ -52,7 +52,7 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     it "appends a new grouping statement to the source" do
       instance.group_by 'lat'
 
-      source.groupings.should include('lat')
+      expect(source.groupings).to include('lat')
     end
   end
 
@@ -61,31 +61,31 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     let(:attribute) { double('attribute') }
 
     before :each do
-      ThinkingSphinx::ActiveRecord::Attribute.stub! :new => attribute
+      allow(ThinkingSphinx::ActiveRecord::Attribute).to receive_messages :new => attribute
     end
 
     it "adds a source to the index" do
-      index.should_receive(:append_source).and_return(source)
+      expect(index).to receive(:append_source).and_return(source)
 
       instance.has column
     end
 
     it "only adds a single source for the given context" do
-      index.should_receive(:append_source).once.and_return(source)
+      expect(index).to receive(:append_source).once.and_return(source)
 
       instance.has column
       instance.has column
     end
 
     it "creates a new attribute with the provided column" do
-      ThinkingSphinx::ActiveRecord::Attribute.should_receive(:new).
+      expect(ThinkingSphinx::ActiveRecord::Attribute).to receive(:new).
         with(model, column, {}).and_return(attribute)
 
       instance.has column
     end
 
     it "passes through options to the attribute" do
-      ThinkingSphinx::ActiveRecord::Attribute.should_receive(:new).
+      expect(ThinkingSphinx::ActiveRecord::Attribute).to receive(:new).
         with(model, column, :as => :other_name).and_return(attribute)
 
       instance.has column, :as => :other_name
@@ -94,15 +94,15 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     it "adds an attribute to the source" do
       instance.has column
 
-      source.attributes.should include(attribute)
+      expect(source.attributes).to include(attribute)
     end
 
     it "adds multiple attributes when passed multiple columns" do
       instance.has column, column
 
-      source.attributes.select { |saved_attribute|
+      expect(source.attributes.select { |saved_attribute|
         saved_attribute == attribute
-      }.length.should == 2
+      }.length).to eq(2)
     end
   end
 
@@ -111,31 +111,31 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     let(:field)  { double('field') }
 
     before :each do
-      ThinkingSphinx::ActiveRecord::Field.stub! :new => field
+      allow(ThinkingSphinx::ActiveRecord::Field).to receive_messages :new => field
     end
 
     it "adds a source to the index" do
-      index.should_receive(:append_source).and_return(source)
+      expect(index).to receive(:append_source).and_return(source)
 
       instance.indexes column
     end
 
     it "only adds a single source for the given context" do
-      index.should_receive(:append_source).once.and_return(source)
+      expect(index).to receive(:append_source).once.and_return(source)
 
       instance.indexes column
       instance.indexes column
     end
 
     it "creates a new field with the provided column" do
-      ThinkingSphinx::ActiveRecord::Field.should_receive(:new).
+      expect(ThinkingSphinx::ActiveRecord::Field).to receive(:new).
         with(model, column, {}).and_return(field)
 
       instance.indexes column
     end
 
     it "passes through options to the field" do
-      ThinkingSphinx::ActiveRecord::Field.should_receive(:new).
+      expect(ThinkingSphinx::ActiveRecord::Field).to receive(:new).
         with(model, column, :as => :other_name).and_return(field)
 
       instance.indexes column, :as => :other_name
@@ -144,15 +144,15 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     it "adds a field to the source" do
       instance.indexes column
 
-      source.fields.should include(field)
+      expect(source.fields).to include(field)
     end
 
     it "adds multiple fields when passed multiple columns" do
       instance.indexes column, column
 
-      source.fields.select { |saved_field|
+      expect(source.fields.select { |saved_field|
         saved_field == field
-      }.length.should == 2
+      }.length).to eq(2)
     end
   end
 
@@ -161,24 +161,24 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     let(:association) { double('association') }
 
     before :each do
-      ThinkingSphinx::ActiveRecord::Association.stub! :new => association
+      allow(ThinkingSphinx::ActiveRecord::Association).to receive_messages :new => association
     end
 
     it "adds a source to the index" do
-      index.should_receive(:append_source).and_return(source)
+      expect(index).to receive(:append_source).and_return(source)
 
       instance.join column
     end
 
     it "only adds a single source for the given context" do
-      index.should_receive(:append_source).once.and_return(source)
+      expect(index).to receive(:append_source).once.and_return(source)
 
       instance.join column
       instance.join column
     end
 
     it "creates a new association with the provided column" do
-      ThinkingSphinx::ActiveRecord::Association.should_receive(:new).
+      expect(ThinkingSphinx::ActiveRecord::Association).to receive(:new).
         with(column).and_return(association)
 
       instance.join column
@@ -187,15 +187,15 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     it "adds an association to the source" do
       instance.join column
 
-      source.associations.should include(association)
+      expect(source.associations).to include(association)
     end
 
     it "adds multiple fields when passed multiple columns" do
       instance.join column, column
 
-      source.associations.select { |saved_assoc|
+      expect(source.associations.select { |saved_assoc|
         saved_assoc == association
-      }.length.should == 2
+      }.length).to eq(2)
     end
   end
 
@@ -203,15 +203,15 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     let(:column) { double('column') }
 
     before :each do
-      ThinkingSphinx::ActiveRecord::Column.stub!(:new => column)
+      allow(ThinkingSphinx::ActiveRecord::Column).to receive_messages(:new => column)
     end
 
     it "returns a new column for the given method" do
-      instance.id.should == column
+      expect(instance.id).to eq(column)
     end
 
     it "should initialise the column with the method name and arguments" do
-      ThinkingSphinx::ActiveRecord::Column.should_receive(:new).
+      expect(ThinkingSphinx::ActiveRecord::Column).to receive(:new).
         with(:users, :posts, :subject).and_return(column)
 
       instance.users(:posts, :subject)
@@ -220,26 +220,26 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
 
   describe '#set_database' do
     before :each do
-      source.stub :set_database_settings => true
+      allow(source).to receive_messages :set_database_settings => true
 
       stub_const 'ActiveRecord::Base',
         double(:configurations => {'other' => {'baz' => 'qux'}})
     end
 
     it "sends through a hash if provided" do
-      source.should_receive(:set_database_settings).with(:foo => :bar)
+      expect(source).to receive(:set_database_settings).with(:foo => :bar)
 
       instance.set_database :foo => :bar
     end
 
     it "finds the environment settings if given a string key" do
-      source.should_receive(:set_database_settings).with(:baz => 'qux')
+      expect(source).to receive(:set_database_settings).with(:baz => 'qux')
 
       instance.set_database 'other'
     end
 
     it "finds the environment settings if given a symbol key" do
-      source.should_receive(:set_database_settings).with(:baz => 'qux')
+      expect(source).to receive(:set_database_settings).with(:baz => 'qux')
 
       instance.set_database :other
     end
@@ -247,19 +247,19 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
 
   describe '#set_property' do
     before :each do
-      index.class.stub  :settings => [:morphology]
-      source.class.stub :settings => [:mysql_ssl_cert]
+      allow(index.class).to receive_messages  :settings => [:morphology]
+      allow(source.class).to receive_messages :settings => [:mysql_ssl_cert]
     end
 
     it 'saves other settings as index options' do
       instance.set_property :field_weights => {:name => 10}
 
-      index.options[:field_weights].should == {:name => 10}
+      expect(index.options[:field_weights]).to eq({:name => 10})
     end
 
     context 'index settings' do
       it "sets the provided setting" do
-        index.should_receive(:morphology=).with('stem_en')
+        expect(index).to receive(:morphology=).with('stem_en')
 
         instance.set_property :morphology => 'stem_en'
       end
@@ -267,24 +267,24 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
 
     context 'source settings' do
       before :each do
-        source.stub :mysql_ssl_cert= => true
+        allow(source).to receive_messages :mysql_ssl_cert= => true
       end
 
       it "adds a source to the index" do
-        index.should_receive(:append_source).and_return(source)
+        expect(index).to receive(:append_source).and_return(source)
 
         instance.set_property :mysql_ssl_cert => 'private.cert'
       end
 
       it "only adds a single source for the given context" do
-        index.should_receive(:append_source).once.and_return(source)
+        expect(index).to receive(:append_source).once.and_return(source)
 
         instance.set_property :mysql_ssl_cert => 'private.cert'
         instance.set_property :mysql_ssl_cert => 'private.cert'
       end
 
       it "sets the provided setting" do
-        source.should_receive(:mysql_ssl_cert=).with('private.cert')
+        expect(source).to receive(:mysql_ssl_cert=).with('private.cert')
 
         instance.set_property :mysql_ssl_cert => 'private.cert'
       end
@@ -298,20 +298,20 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
       }
 
       interpreter = ThinkingSphinx::ActiveRecord::Interpreter.new index, block
-      interpreter.translate!.
-        should == interpreter.__id__
+      expect(interpreter.translate!).
+        to eq(interpreter.__id__)
     end
   end
 
   describe '#where' do
     it "adds a source to the index" do
-      index.should_receive(:append_source).and_return(source)
+      expect(index).to receive(:append_source).and_return(source)
 
       instance.where 'id > 100'
     end
 
     it "only adds a single source for the given context" do
-      index.should_receive(:append_source).once.and_return(source)
+      expect(index).to receive(:append_source).once.and_return(source)
 
       instance.where 'id > 100'
       instance.where 'id < 150'
@@ -320,7 +320,7 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     it "appends a new grouping statement to the source" do
       instance.where 'id > 100'
 
-      source.conditions.should include('id > 100')
+      expect(source.conditions).to include('id > 100')
     end
   end
 end

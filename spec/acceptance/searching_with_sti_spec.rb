@@ -6,7 +6,7 @@ describe 'Searching across STI models', :live => true do
     duck     = Bird.create :name => 'Duck'
     index
 
-    Animal.search(:indices  => ['animal_core']).to_a.should == [platypus, duck]
+    expect(Animal.search(:indices  => ['animal_core']).to_a).to eq([platypus, duck])
   end
 
   it "limits results based on subclasses" do
@@ -14,7 +14,7 @@ describe 'Searching across STI models', :live => true do
     duck     = Bird.create :name => 'Duck'
     index
 
-    Bird.search(:indices  => ['animal_core']).to_a.should == [duck]
+    expect(Bird.search(:indices  => ['animal_core']).to_a).to eq([duck])
   end
 
   it "returns results for deeper subclasses when searching on their parents" do
@@ -23,7 +23,7 @@ describe 'Searching across STI models', :live => true do
     emu      = FlightlessBird.create :name => 'Emu'
     index
 
-    Bird.search(:indices  => ['animal_core']).to_a.should == [duck, emu]
+    expect(Bird.search(:indices  => ['animal_core']).to_a).to eq([duck, emu])
   end
 
   it "returns results for deeper subclasses" do
@@ -32,7 +32,7 @@ describe 'Searching across STI models', :live => true do
     emu      = FlightlessBird.create :name => 'Emu'
     index
 
-    FlightlessBird.search(:indices  => ['animal_core']).to_a.should == [emu]
+    expect(FlightlessBird.search(:indices  => ['animal_core']).to_a).to eq([emu])
   end
 
   it "filters out sibling subclasses" do
@@ -41,7 +41,7 @@ describe 'Searching across STI models', :live => true do
     otter    = Mammal.create :name => 'Otter'
     index
 
-    Bird.search(:indices  => ['animal_core']).to_a.should == [duck]
+    expect(Bird.search(:indices  => ['animal_core']).to_a).to eq([duck])
   end
 
   it "obeys :classes if supplied" do
@@ -50,18 +50,18 @@ describe 'Searching across STI models', :live => true do
     emu      = FlightlessBird.create :name => 'Emu'
     index
 
-    Bird.search(
+    expect(Bird.search(
       :indices  => ['animal_core'],
       :skip_sti => true,
       :classes  => [Bird, FlightlessBird]
-    ).to_a.should == [duck, emu]
+    ).to_a).to eq([duck, emu])
   end
 
   it 'finds root objects when type is blank' do
     animal = Animal.create :name => 'Animal', type: ''
     index
 
-    Animal.search(:indices => ['animal_core']).to_a.should == [animal]
+    expect(Animal.search(:indices => ['animal_core']).to_a).to eq([animal])
   end
 
   it 'allows for indices on mid-hierarchy classes' do
@@ -69,6 +69,6 @@ describe 'Searching across STI models', :live => true do
     emu      = FlightlessBird.create :name => 'Emu'
     index
 
-    Bird.search(:indices => ['bird_core']).to_a.should == [duck, emu]
+    expect(Bird.search(:indices => ['bird_core']).to_a).to eq([duck, emu])
   end
 end

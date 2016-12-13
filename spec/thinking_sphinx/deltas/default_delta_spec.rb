@@ -9,11 +9,11 @@ describe ThinkingSphinx::Deltas::DefaultDelta do
   describe '#clause' do
     context 'for a delta source' do
       before :each do
-        adapter.stub :boolean_value => 't'
+        allow(adapter).to receive_messages :boolean_value => 't'
       end
 
       it "limits results to those flagged as deltas" do
-        delta.clause(true).should == "articles.delta = t"
+        expect(delta.clause(true)).to eq("articles.delta = t")
       end
     end
   end
@@ -25,42 +25,42 @@ describe ThinkingSphinx::Deltas::DefaultDelta do
     let(:instance)   { double('instance', :id => 7) }
 
     before :each do
-      ThinkingSphinx::Connection.stub(:take).and_yield(connection)
-      Riddle::Query.stub :update => 'UPDATE STATEMENT'
+      allow(ThinkingSphinx::Connection).to receive(:take).and_yield(connection)
+      allow(Riddle::Query).to receive_messages :update => 'UPDATE STATEMENT'
     end
 
     it "updates the deleted flag to false" do
-      connection.should_receive(:execute).with('UPDATE STATEMENT')
+      expect(connection).to receive(:execute).with('UPDATE STATEMENT')
 
       delta.delete index, instance
     end
 
     it "builds the update query for the given index" do
-      Riddle::Query.should_receive(:update).
+      expect(Riddle::Query).to receive(:update).
         with('foo_core', anything, anything).and_return('')
 
       delta.delete index, instance
     end
 
     it "builds the update query for the sphinx document id" do
-      Riddle::Query.should_receive(:update).
+      expect(Riddle::Query).to receive(:update).
         with(anything, 14, anything).and_return('')
 
       delta.delete index, instance
     end
 
     it "builds the update query for setting sphinx_deleted to true" do
-      Riddle::Query.should_receive(:update).
+      expect(Riddle::Query).to receive(:update).
         with(anything, anything, :sphinx_deleted => true).and_return('')
 
       delta.delete index, instance
     end
 
     it "doesn't care about Sphinx errors" do
-      connection.stub(:execute).
+      allow(connection).to receive(:execute).
         and_raise(ThinkingSphinx::ConnectionError.new(''))
 
-      lambda { delta.delete index, instance }.should_not raise_error
+      expect { delta.delete index, instance }.not_to raise_error
     end
   end
 
@@ -70,11 +70,11 @@ describe ThinkingSphinx::Deltas::DefaultDelta do
     let(:controller) { double('controller') }
 
     before :each do
-      ThinkingSphinx::Configuration.stub :instance => config
+      allow(ThinkingSphinx::Configuration).to receive_messages :instance => config
     end
 
     it "indexes the given index" do
-      controller.should_receive(:index).with('foo_delta', :verbose => true)
+      expect(controller).to receive(:index).with('foo_delta', :verbose => false)
 
       delta.index double('index', :name => 'foo_delta')
     end
@@ -82,9 +82,9 @@ describe ThinkingSphinx::Deltas::DefaultDelta do
 
   describe '#reset_query' do
     it "updates the table to set delta flags to false" do
-      adapter.stub(:boolean_value) { |value| value ? 't' : 'f' }
-      delta.reset_query.
-        should == 'UPDATE articles SET delta = f WHERE delta = t'
+      allow(adapter).to receive(:boolean_value) { |value| value ? 't' : 'f' }
+      expect(delta.reset_query).
+        to eq('UPDATE articles SET delta = f WHERE delta = t')
     end
   end
 
@@ -92,7 +92,7 @@ describe ThinkingSphinx::Deltas::DefaultDelta do
     let(:instance) { double('instance') }
 
     it "sets instance's delta flag to true" do
-      instance.should_receive(:delta=).with(true)
+      expect(instance).to receive(:delta=).with(true)
 
       delta.toggle(instance)
     end
@@ -102,15 +102,15 @@ describe ThinkingSphinx::Deltas::DefaultDelta do
     let(:instance) { double('instance') }
 
     it "returns the delta flag value when true" do
-      instance.stub! :delta? => true
+      allow(instance).to receive_messages :delta? => true
 
-      delta.toggled?(instance).should be_true
+      expect(delta.toggled?(instance)).to be_truthy
     end
 
     it "returns the delta flag value when false" do
-      instance.stub! :delta? => false
+      allow(instance).to receive_messages :delta? => false
 
-      delta.toggled?(instance).should be_false
+      expect(delta.toggled?(instance)).to be_falsey
     end
   end
 end

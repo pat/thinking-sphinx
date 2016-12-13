@@ -12,10 +12,10 @@ describe 'Executing multiple searches in one Sphinx call', :live => true do
 
     batch.populate
 
-    batch.searches.first.should include(pancakes)
-    batch.searches.first.should_not include(waffles)
+    expect(batch.searches.first).to include(pancakes)
+    expect(batch.searches.first).not_to include(waffles)
 
-    batch.searches.last.should include(waffles)
-    batch.searches.last.should_not include(pancakes)
+    expect(batch.searches.last).to include(waffles)
+    expect(batch.searches.last).not_to include(pancakes)
   end
 end

@@ -15,22 +15,22 @@ describe ThinkingSphinx::ActiveRecord::ColumnSQLPresenter do
 
     before do
       stub_const 'Joiner::Path', double(:new => path)
-      adapter.stub(:quote) { |arg| "`#{arg}`" }
+      allow(adapter).to receive(:quote) { |arg| "`#{arg}`" }
     end
 
     context "when there's no explicit db name" do
-      before { associations.stub(:alias_for => 'table_name') }
+      before { allow(associations).to receive_messages(:alias_for => 'table_name') }
 
       it 'returns quoted table and column names' do
-        presenter.with_table.should == '`table_name`.`column_name`'
+        expect(presenter.with_table).to eq('`table_name`.`column_name`')
       end
     end
 
     context 'when an eplicit db name is provided' do
-      before { associations.stub(:alias_for => 'db_name.table_name') }
+      before { allow(associations).to receive_messages(:alias_for => 'db_name.table_name') }
 
       it 'returns properly quoted table name with column name' do
-        presenter.with_table.should == '`db_name`.`table_name`.`column_name`'
+        expect(presenter.with_table).to eq('`db_name`.`table_name`.`column_name`')
       end
     end
   end

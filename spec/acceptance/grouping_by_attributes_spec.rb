@@ -8,7 +8,7 @@ describe 'Grouping search results by attributes', :live => true do
 
     index
 
-    Book.search(:group_by => :year).to_a.should == [snuff, earth]
+    expect(Book.search(:group_by => :year).to_a).to eq([snuff, earth])
   end
 
   it "allows sorting within the group" do
@@ -18,8 +18,8 @@ describe 'Grouping search results by attributes', :live => true do
 
     index
 
-    Book.search(:group_by => :year, :order_group_by => 'title ASC').to_a.
-      should == [snuff, dodger]
+    expect(Book.search(:group_by => :year, :order_group_by => 'title ASC').to_a).
+      to eq([snuff, dodger])
   end
 
   it "allows enumerating by count" do
@@ -34,8 +34,8 @@ describe 'Grouping search results by attributes', :live => true do
     Book.search(:group_by => :year).each_with_count do |book, count|
       expectation = expectations.shift
 
-      book.should  == expectation.first
-      count.should == expectation.last
+      expect(book).to  eq(expectation.first)
+      expect(count).to eq(expectation.last)
     end
   end
 
@@ -51,8 +51,8 @@ describe 'Grouping search results by attributes', :live => true do
     Book.search(:group_by => :year).each_with_group do |book, group|
       expectation = expectations.shift
 
-      book.should  == expectation.first
-      group.should == expectation.last
+      expect(book).to  eq(expectation.first)
+      expect(group).to eq(expectation.last)
     end
   end
 
@@ -69,9 +69,9 @@ describe 'Grouping search results by attributes', :live => true do
     search.each_with_group_and_count do |book, group, count|
       expectation = expectations.shift
 
-      book.should  == expectation[0]
-      group.should == expectation[1]
-      count.should == expectation[2]
+      expect(book).to  eq(expectation[0])
+      expect(group).to eq(expectation[1])
+      expect(count).to eq(expectation[2])
     end
   end
 end

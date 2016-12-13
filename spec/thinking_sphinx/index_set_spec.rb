@@ -17,13 +17,13 @@ describe ThinkingSphinx::IndexSet do
 
   def class_double(name, *superclasses)
     klass = double 'class', :name => name, :class => Class
-    klass.stub :ancestors => ([klass] + superclasses + [ar_base])
+    allow(klass).to receive_messages :ancestors => ([klass] + superclasses + [ar_base])
     klass
   end
 
   describe '#to_a' do
     it "ensures the indices are loaded" do
-      configuration.should_receive(:preload_indices)
+      expect(configuration).to receive(:preload_indices)
 
       set.to_a
     end
@@ -37,7 +37,7 @@ describe ThinkingSphinx::IndexSet do
 
       configuration.indices.replace [article_core, user_core, distributed]
 
-      set.to_a.should == [article_core, user_core]
+      expect(set.to_a).to eq([article_core, user_core])
     end
 
     it "uses indices for the given classes" do
@@ -49,7 +49,7 @@ describe ThinkingSphinx::IndexSet do
 
       options[:classes] = [class_double('Article')]
 
-      set.to_a.length.should == 1
+      expect(set.to_a.length).to eq(1)
     end
 
     it "requests indices for any superclasses" do
@@ -63,7 +63,7 @@ describe ThinkingSphinx::IndexSet do
         class_double('OpinionArticle', class_double('Article'))
       ]
 
-      set.to_a.length.should == 2
+      expect(set.to_a.length).to eq(2)
     end
 
     it "uses named indices if names are provided" do
@@ -73,7 +73,7 @@ describe ThinkingSphinx::IndexSet do
 
       options[:indices] = ['article_core']
 
-      set.to_a.should == [article_core]
+      expect(set.to_a).to eq([article_core])
     end
 
     it "selects from the full index set those with matching references" do
@@ -85,7 +85,7 @@ describe ThinkingSphinx::IndexSet do
 
       options[:references] = [:book, :article]
 
-      set.to_a.length.should == 2
+      expect(set.to_a.length).to eq(2)
     end
   end
 end

@@ -12,15 +12,15 @@ describe ThinkingSphinx::RealTime::Interpreter do
     let(:instance) { double('interpreter', :translate! => true) }
 
     it "creates a new interpreter instance with the given block and index" do
-      ThinkingSphinx::RealTime::Interpreter.should_receive(:new).
+      expect(ThinkingSphinx::RealTime::Interpreter).to receive(:new).
         with(index, block).and_return(instance)
 
       ThinkingSphinx::RealTime::Interpreter.translate! index, block
     end
 
     it "calls translate! on the instance" do
-      ThinkingSphinx::RealTime::Interpreter.stub!(:new => instance)
-      instance.should_receive(:translate!)
+      allow(ThinkingSphinx::RealTime::Interpreter).to receive_messages(:new => instance)
+      expect(instance).to receive(:translate!)
 
       ThinkingSphinx::RealTime::Interpreter.translate! index, block
     end
@@ -31,18 +31,18 @@ describe ThinkingSphinx::RealTime::Interpreter do
     let(:attribute) { double('attribute') }
 
     before :each do
-      ThinkingSphinx::RealTime::Attribute.stub! :new => attribute
+      allow(ThinkingSphinx::RealTime::Attribute).to receive_messages :new => attribute
     end
 
     it "creates a new attribute with the provided column" do
-      ThinkingSphinx::RealTime::Attribute.should_receive(:new).
+      expect(ThinkingSphinx::RealTime::Attribute).to receive(:new).
         with(column, {}).and_return(attribute)
 
       instance.has column
     end
 
     it "passes through options to the attribute" do
-      ThinkingSphinx::RealTime::Attribute.should_receive(:new).
+      expect(ThinkingSphinx::RealTime::Attribute).to receive(:new).
         with(column, :as => :other_name).and_return(attribute)
 
       instance.has column, :as => :other_name
@@ -51,15 +51,15 @@ describe ThinkingSphinx::RealTime::Interpreter do
     it "adds an attribute to the index" do
       instance.has column
 
-      index.attributes.should include(attribute)
+      expect(index.attributes).to include(attribute)
     end
 
     it "adds multiple attributes when passed multiple columns" do
       instance.has column, column
 
-      index.attributes.select { |saved_attribute|
+      expect(index.attributes.select { |saved_attribute|
         saved_attribute == attribute
-      }.length.should == 2
+      }.length).to eq(2)
     end
   end
 
@@ -68,18 +68,18 @@ describe ThinkingSphinx::RealTime::Interpreter do
     let(:field)  { double('field') }
 
     before :each do
-      ThinkingSphinx::RealTime::Field.stub! :new => field
+      allow(ThinkingSphinx::RealTime::Field).to receive_messages :new => field
     end
 
     it "creates a new field with the provided column" do
-      ThinkingSphinx::RealTime::Field.should_receive(:new).
+      expect(ThinkingSphinx::RealTime::Field).to receive(:new).
         with(column, {}).and_return(field)
 
       instance.indexes column
     end
 
     it "passes through options to the field" do
-      ThinkingSphinx::RealTime::Field.should_receive(:new).
+      expect(ThinkingSphinx::RealTime::Field).to receive(:new).
         with(column, :as => :other_name).and_return(field)
 
       instance.indexes column, :as => :other_name
@@ -88,28 +88,28 @@ describe ThinkingSphinx::RealTime::Interpreter do
     it "adds a field to the index" do
       instance.indexes column
 
-      index.fields.should include(field)
+      expect(index.fields).to include(field)
     end
 
     it "adds multiple fields when passed multiple columns" do
       instance.indexes column, column
 
-      index.fields.select { |saved_field|
+      expect(index.fields.select { |saved_field|
         saved_field == field
-      }.length.should == 2
+      }.length).to eq(2)
     end
 
     context 'sortable' do
       let(:attribute) { double('attribute') }
 
       before :each do
-        ThinkingSphinx::RealTime::Attribute.stub! :new => attribute
+        allow(ThinkingSphinx::RealTime::Attribute).to receive_messages :new => attribute
 
-        column.stub :__name => :col
+        allow(column).to receive_messages :__name => :col
       end
 
       it "adds the _sort suffix to the field's name" do
-        ThinkingSphinx::RealTime::Attribute.should_receive(:new).
+        expect(ThinkingSphinx::RealTime::Attribute).to receive(:new).
           with(column, :as => :col_sort, :type => :string).
           and_return(attribute)
 
@@ -117,7 +117,7 @@ describe ThinkingSphinx::RealTime::Interpreter do
       end
 
       it "respects given aliases" do
-        ThinkingSphinx::RealTime::Attribute.should_receive(:new).
+        expect(ThinkingSphinx::RealTime::Attribute).to receive(:new).
           with(column, :as => :other_sort, :type => :string).
           and_return(attribute)
 
@@ -125,7 +125,7 @@ describe ThinkingSphinx::RealTime::Interpreter do
       end
 
       it "respects symbols instead of columns" do
-        ThinkingSphinx::RealTime::Attribute.should_receive(:new).
+        expect(ThinkingSphinx::RealTime::Attribute).to receive(:new).
           with(:title, :as => :title_sort, :type => :string).
           and_return(attribute)
 
@@ -135,7 +135,7 @@ describe ThinkingSphinx::RealTime::Interpreter do
       it "adds an attribute to the index" do
         instance.indexes column, :sortable => true
 
-        index.attributes.should include(attribute)
+        expect(index.attributes).to include(attribute)
       end
     end
   end
@@ -144,15 +144,15 @@ describe ThinkingSphinx::RealTime::Interpreter do
     let(:column) { double('column') }
 
     before :each do
-      ThinkingSphinx::ActiveRecord::Column.stub!(:new => column)
+      allow(ThinkingSphinx::ActiveRecord::Column).to receive_messages(:new => column)
     end
 
     it "returns a new column for the given method" do
-      instance.id.should == column
+      expect(instance.id).to eq(column)
     end
 
     it "should initialise the column with the method name and arguments" do
-      ThinkingSphinx::ActiveRecord::Column.should_receive(:new).
+      expect(ThinkingSphinx::ActiveRecord::Column).to receive(:new).
         with(:users, :posts, :subject).and_return(column)
 
       instance.users(:posts, :subject)
@@ -161,7 +161,7 @@ describe ThinkingSphinx::RealTime::Interpreter do
 
   describe '#scope' do
     it "passes the scope block through to the index" do
-      index.should_receive(:scope=).with(instance_of(Proc))
+      expect(index).to receive(:scope=).with(instance_of(Proc))
 
       instance.scope { :foo }
     end
@@ -169,18 +169,18 @@ describe ThinkingSphinx::RealTime::Interpreter do
 
   describe '#set_property' do
     before :each do
-      index.class.stub :settings => [:morphology]
+      allow(index.class).to receive_messages :settings => [:morphology]
     end
 
     it 'saves other settings as index options' do
       instance.set_property :field_weights => {:name => 10}
 
-      index.options[:field_weights].should == {:name => 10}
+      expect(index.options[:field_weights]).to eq({:name => 10})
     end
 
     context 'index settings' do
       it "sets the provided setting" do
-        index.should_receive(:morphology=).with('stem_en')
+        expect(index).to receive(:morphology=).with('stem_en')
 
         instance.set_property :morphology => 'stem_en'
       end
@@ -194,8 +194,8 @@ describe ThinkingSphinx::RealTime::Interpreter do
       }
 
       interpreter = ThinkingSphinx::RealTime::Interpreter.new index, block
-      interpreter.translate!.
-        should == interpreter.__id__
+      expect(interpreter.translate!).
+        to eq(interpreter.__id__)
     end
   end
 end

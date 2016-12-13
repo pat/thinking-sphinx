@@ -21,17 +21,17 @@ describe '64 bit integer support' do
       [small_index, large_index, real_time_index]
     ).reconcile
 
-    large_index.sources.first.attributes.detect { |attribute|
+    expect(large_index.sources.first.attributes.detect { |attribute|
       attribute.name == 'sphinx_internal_id'
-    }.type.should == :bigint
+    }.type).to eq(:bigint)
 
-    small_index.sources.first.attributes.detect { |attribute|
+    expect(small_index.sources.first.attributes.detect { |attribute|
       attribute.name == 'sphinx_internal_id'
-    }.type.should == :bigint
+    }.type).to eq(:bigint)
 
-    real_time_index.attributes.detect { |attribute|
+    expect(real_time_index.attributes.detect { |attribute|
       attribute.name == 'sphinx_internal_id'
-    }.type.should == :bigint
+    }.type).to eq(:bigint)
   end
 end
 

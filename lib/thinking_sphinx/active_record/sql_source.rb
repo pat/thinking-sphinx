@@ -90,7 +90,7 @@ module ThinkingSphinx
         when DatabaseAdapters::PostgreSQLAdapter
           'pgsql'
         else
-          raise "Unknown Adapter Type: #{adapter.class.name}"
+          raise UnknownDatabaseAdapter, "Provided type: #{adapter.class.name}"
         end
       end
 

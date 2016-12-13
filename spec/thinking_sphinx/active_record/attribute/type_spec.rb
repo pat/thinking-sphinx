@@ -23,52 +23,55 @@ describe ThinkingSphinx::ActiveRecord::Attribute::Type do
     before :each do
       column.__stack << :foo
 
-      model.stub :reflect_on_association => association
+      allow(model).to receive(:reflect_on_association).and_return(association)
     end
 
     it "returns true if there are has_many associations" do
-      association.stub :macro => :has_many
+      allow(association).to receive(:macro).and_return(:has_many)
 
-      type.should be_multi
+      expect(type).to be_multi
     end
 
     it "returns true if there are has_and_belongs_to_many associations" do
-      association.stub :macro => :has_and_belongs_to_many
+      allow(association).to receive(:macro).and_return(:has_and_belongs_to_many)
 
-      type.should be_multi
+      expect(type).to be_multi
     end
 
     it "returns false if there are no associations" do
       column.__stack.clear
 
-      type.should_not be_multi
+      expect(type).not_to be_multi
     end
 
     it "returns false if there are only belongs_to associations" do
-      association.stub :macro => :belongs_to
+      allow(association).to receive(:macro).and_return(:belongs_to)
 
-      type.should_not be_multi
+      expect(type).not_to be_multi
     end
 
     it "returns false if there are only has_one associations" do
-      association.stub :macro => :has_one
+      allow(association).to receive(:macro).and_return(:has_one)
 
-      type.should_not be_multi
+      expect(type).not_to be_multi
     end
 
     it "returns true if deeper associations have many" do
       column.__stack << :bar
       deep_association = double(:klass => double, :macro => :has_many)
-      association.stub :macro => :belongs_to,
-        :klass => double(:reflect_on_association => deep_association)
 
-      type.should be_multi
+      allow(association).to receive(:macro).and_return(:belongs_to)
+      allow(association).to receive(:klass).and_return(
+        double(:reflect_on_association => deep_association)
+      )
+
+      expect(type).to be_multi
     end
 
     it "respects the provided setting" do
       attribute.options[:multi] = true
 
-      type.should be_multi
+      expect(type).to be_multi
     end
   end
 
@@ -76,79 +79,79 @@ describe ThinkingSphinx::ActiveRecord::Attribute::Type do
     it "returns the type option provided" do
       attribute.options[:type] = :datetime
 
-      type.type.should == :datetime
+      expect(type.type).to eq(:datetime)
     end
 
     it "detects integer types from the database" do
-      db_column.stub!(:type => :integer, :sql_type => 'integer(11)')
+      allow(db_column).to receive_messages(:type => :integer, :sql_type => 'integer(11)')
 
-      type.type.should == :integer
+      expect(type.type).to eq(:integer)
     end
 
     it "detects boolean types from the database" do
-      db_column.stub!(:type => :boolean)
+      allow(db_column).to receive_messages(:type => :boolean)
 
-      type.type.should == :boolean
+      expect(type.type).to eq(:boolean)
     end
 
     it "detects datetime types from the database as timestamps" do
-      db_column.stub!(:type => :datetime)
+      allow(db_column).to receive_messages(:type => :datetime)
 
-      type.type.should == :timestamp
+      expect(type.type).to eq(:timestamp)
     end
 
     it "detects date types from the database as timestamps" do
-      db_column.stub!(:type => :date)
+      allow(db_column).to receive_messages(:type => :date)
 
-      type.type.should == :timestamp
+      expect(type.type).to eq(:timestamp)
     end
 
     it "detects string types from the database" do
-      db_column.stub!(:type => :string)
+      allow(db_column).to receive_messages(:type => :string)
 
-      type.type.should == :string
+      expect(type.type).to eq(:string)
     end
 
     it "detects text types from the database as strings" do
-      db_column.stub!(:type => :text)
+      allow(db_column).to receive_messages(:type => :text)
 
-      type.type.should == :string
+      expect(type.type).to eq(:string)
     end
 
     it "detects float types from the database" do
-      db_column.stub!(:type => :float)
+      allow(db_column).to receive_messages(:type => :float)
 
-      type.type.should == :float
+      expect(type.type).to eq(:float)
     end
 
     it "detects decimal types from the database as floats" do
-      db_column.stub!(:type => :decimal)
+      allow(db_column).to receive_messages(:type => :decimal)
 
-      type.type.should == :float
+      expect(type.type).to eq(:float)
     end
 
     it "detects big ints as big ints" do
-      db_column.stub :type => :bigint
+      allow(db_column).to receive_messages :type => :bigint
 
-      type.type.should == :bigint
+      expect(type.type).to eq(:bigint)
     end
 
     it "detects large integers as big ints" do
-      db_column.stub :type => :integer, :sql_type => 'bigint(20)'
+      allow(db_column).to receive_messages :type => :integer, :sql_type => 'bigint(20)'
 
-      type.type.should == :bigint
+      expect(type.type).to eq(:bigint)
     end
 
     it "detects JSON" do
-      db_column.stub :type => :json
+      allow(db_column).to receive_messages :type => :json
 
-      type.type.should == :json
+      expect(type.type).to eq(:json)
     end
 
     it "respects provided type setting" do
       attribute.options[:type] = :timestamp
 
-      type.type.should == :timestamp
+      expect(type.type).to eq(:timestamp)
     end
 
     it 'raises an error if the database column does not exist' do

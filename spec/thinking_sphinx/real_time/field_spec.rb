@@ -6,11 +6,11 @@ describe ThinkingSphinx::RealTime::Field do
 
   describe '#column' do
     it 'returns the provided Column object' do
-      field.column.should == column
+      expect(field.column).to eq(column)
     end
 
     it 'translates symbols to Column objects' do
-      ThinkingSphinx::ActiveRecord::Column.should_receive(:new).with(:title).
+      expect(ThinkingSphinx::ActiveRecord::Column).to receive(:new).with(:title).
         and_return(column)
 
       ThinkingSphinx::RealTime::Field.new :title
@@ -20,11 +20,11 @@ describe ThinkingSphinx::RealTime::Field do
   describe '#name' do
     it "uses the provided option by default" do
       field = ThinkingSphinx::RealTime::Field.new column, :as => :foo
-      field.name.should == 'foo'
+      expect(field.name).to eq('foo')
     end
 
     it "falls back to the column's name" do
-      field.name.should == 'created_at'
+      expect(field.name).to eq('created_at')
     end
   end
 
@@ -34,34 +34,34 @@ describe ThinkingSphinx::RealTime::Field do
     let(:parent) { klass.new 'the parent name', nil }
 
     it "returns the column's name if it's a string" do
-      column.stub :__name => 'value'
+      allow(column).to receive_messages :__name => 'value'
 
-      field.translate(object).should == 'value'
+      expect(field.translate(object)).to eq('value')
     end
 
     it "returns the column's name as a string if it's an integer" do
-      column.stub :__name => 404
+      allow(column).to receive_messages :__name => 404
 
-      field.translate(object).should == '404'
+      expect(field.translate(object)).to eq('404')
     end
 
     it "returns the object's method matching the column's name" do
-      object.stub :created_at => 'a time'
+      allow(object).to receive_messages :created_at => 'a time'
 
-      field.translate(object).should == 'a time'
+      expect(field.translate(object)).to eq('a time')
     end
 
     it "uses the column's stack to navigate through the object tree" do
-      column.stub :__name => :name, :__stack => [:parent]
+      allow(column).to receive_messages :__name => :name, :__stack => [:parent]
 
-      field.translate(object).should == 'the parent name'
+      expect(field.translate(object)).to eq('the parent name')
     end
 
     it "returns a blank string if any element in the object tree is nil" do
-      column.stub :__name => :name, :__stack => [:parent]
+      allow(column).to receive_messages :__name => :name, :__stack => [:parent]
       object.parent = nil
 
-      field.translate(object).should == ''
+      expect(field.translate(object)).to eq('')
     end
   end
 end

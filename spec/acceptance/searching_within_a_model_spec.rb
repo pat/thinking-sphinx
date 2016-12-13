@@ -6,7 +6,7 @@ describe 'Searching within a model', :live => true do
     article = Article.create! :title => 'Pancakes'
     index
 
-    Article.search.first.should == article
+    expect(Article.search.first).to eq(article)
   end
 
   it "returns results matching the given query" do
@@ -15,22 +15,22 @@ describe 'Searching within a model', :live => true do
     index
 
     articles = Article.search 'pancakes'
-    articles.should include(pancakes)
-    articles.should_not include(waffles)
+    expect(articles).to include(pancakes)
+    expect(articles).not_to include(waffles)
   end
 
   it "handles unicode characters" do
     istanbul = City.create! :name => 'İstanbul'
     index
 
-    City.search('İstanbul').to_a.should == [istanbul]
+    expect(City.search('İstanbul').to_a).to eq([istanbul])
   end
 
   it "will star provided queries on request" do
     article = Article.create! :title => 'Pancakes'
     index
 
-    Article.search('cake', :star => true).first.should == article
+    expect(Article.search('cake', :star => true).first).to eq(article)
   end
 
   it "allows for searching on specific indices" do
@@ -38,7 +38,7 @@ describe 'Searching within a model', :live => true do
     index
 
     articles = Article.search('pancake', :indices => ['stemmed_article_core'])
-    articles.to_a.should == [article]
+    expect(articles.to_a).to eq([article])
   end
 
   it "allows for searching on distributed indices" do
@@ -46,38 +46,38 @@ describe 'Searching within a model', :live => true do
     index
 
     articles = Article.search('pancake', :indices => ['article'])
-    articles.to_a.should == [article]
+    expect(articles.to_a).to eq([article])
   end
 
   it "can search on namespaced models" do
     person = Admin::Person.create :name => 'James Bond'
     index
 
-    Admin::Person.search('Bond').to_a.should == [person]
+    expect(Admin::Person.search('Bond').to_a).to eq([person])
   end
 
   it "raises an error if searching through an ActiveRecord scope" do
-    lambda {
+    expect {
       City.ordered.search
-    }.should raise_error(ThinkingSphinx::MixedScopesError)
+    }.to raise_error(ThinkingSphinx::MixedScopesError)
   end
 
   it "does not raise an error when searching with a default ActiveRecord scope" do
-    lambda {
+    expect {
       User.search
-    }.should_not raise_error(ThinkingSphinx::MixedScopesError)
+    }.not_to raise_error
   end
 
   it "raises an error when searching with default and applied AR scopes" do
-    lambda {
+    expect {
       User.recent.search
-    }.should raise_error(ThinkingSphinx::MixedScopesError)
+    }.to raise_error(ThinkingSphinx::MixedScopesError)
   end
 
   it "raises an error if the model has no indices defined" do
-    lambda {
+    expect {
       Category.search.to_a
-    }.should raise_error(ThinkingSphinx::NoIndicesError)
+    }.to raise_error(ThinkingSphinx::NoIndicesError)
   end
 end
 
@@ -85,6 +85,6 @@ describe 'Searching within a model with a realtime index', :live => true do
   it "returns results" do
     product = Product.create! :name => 'Widget'
 
-    Product.search.first.should == product
+    expect(Product.search.first).to eq(product)
   end
 end

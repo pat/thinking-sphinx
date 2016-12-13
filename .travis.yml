@@ -2,8 +2,9 @@ language: ruby
 rvm:
   - 2.0.0
   - 2.1
-  - 2.2
-  - jruby-19mode
+  - 2.2.2
+  - 2.3.1
+  - jruby-9.0.5.0
 before_install:
   - gem update --system
   - gem install bundler
@@ -24,3 +25,6 @@ addons:
   postgresql: "9.4"
 services:
   - postgresql
+matrix:
+  allow_failures:
+  - rvm: jruby-9.0.5.0

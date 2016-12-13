@@ -10,18 +10,18 @@ describe ThinkingSphinx::Masks::ScopesMask do
   let(:mask)   { ThinkingSphinx::Masks::ScopesMask.new search }
 
   before :each do
-    FileUtils.stub :mkdir_p => true
+    allow(FileUtils).to receive_messages :mkdir_p => true
   end
 
   describe '#search' do
     it "replaces the query if one is supplied" do
-      search.should_receive(:query=).with('bar')
+      expect(search).to receive(:query=).with('bar')
 
       mask.search('bar')
     end
 
     it "keeps the existing query when only options are offered" do
-      search.should_not_receive(:query=)
+      expect(search).not_to receive(:query=)
 
       mask.search :with => {:foo => :bar}
     end
@@ -31,7 +31,7 @@ describe ThinkingSphinx::Masks::ScopesMask do
 
       mask.search :conditions => {:baz => 'qux'}
 
-      search.options[:conditions].should == {:foo => 'bar', :baz => 'qux'}
+      expect(search.options[:conditions]).to eq({:foo => 'bar', :baz => 'qux'})
     end
 
     it "merges filters" do
@@ -39,7 +39,7 @@ describe ThinkingSphinx::Masks::ScopesMask do
 
       mask.search :with => {:baz => :qux}
 
-      search.options[:with].should == {:foo => :bar, :baz => :qux}
+      expect(search.options[:with]).to eq({:foo => :bar, :baz => :qux})
     end
 
     it "merges exclusive filters" do
@@ -47,7 +47,7 @@ describe ThinkingSphinx::Masks::ScopesMask do
 
       mask.search :without => {:baz => :qux}
 
-      search.options[:without].should == {:foo => :bar, :baz => :qux}
+      expect(search.options[:without]).to eq({:foo => :bar, :baz => :qux})
     end
 
     it "appends excluded ids" do
@@ -55,7 +55,7 @@ describe ThinkingSphinx::Masks::ScopesMask do
 
       mask.search :without_ids => [5, 7]
 
-      search.options[:without_ids].should == [1, 3, 5, 7]
+      expect(search.options[:without_ids]).to eq([1, 3, 5, 7])
     end
 
     it "replaces the retry_stale option" do
@@ -63,23 +63,23 @@ describe ThinkingSphinx::Masks::ScopesMask do
 
       mask.search :retry_stale => 6
 
-      search.options[:retry_stale].should == 6
+      expect(search.options[:retry_stale]).to eq(6)
     end
 
     it "returns the original search object" do
-      mask.search.object_id.should == search.object_id
+      expect(mask.search.object_id).to eq(search.object_id)
     end
   end
 
   describe '#search_for_ids' do
     it "replaces the query if one is supplied" do
-      search.should_receive(:query=).with('bar')
+      expect(search).to receive(:query=).with('bar')
 
       mask.search_for_ids('bar')
     end
 
     it "keeps the existing query when only options are offered" do
-      search.should_not_receive(:query=)
+      expect(search).not_to receive(:query=)
 
       mask.search_for_ids :with => {:foo => :bar}
     end
@@ -89,7 +89,7 @@ describe ThinkingSphinx::Masks::ScopesMask do
 
       mask.search_for_ids :conditions => {:baz => 'qux'}
 
-      search.options[:conditions].should == {:foo => 'bar', :baz => 'qux'}
+      expect(search.options[:conditions]).to eq({:foo => 'bar', :baz => 'qux'})
     end
 
     it "merges filters" do
@@ -97,7 +97,7 @@ describe ThinkingSphinx::Masks::ScopesMask do
 
       mask.search_for_ids :with => {:baz => :qux}
 
-      search.options[:with].should == {:foo => :bar, :baz => :qux}
+      expect(search.options[:with]).to eq({:foo => :bar, :baz => :qux})
     end
 
     it "merges exclusive filters" do
@@ -105,7 +105,7 @@ describe ThinkingSphinx::Masks::ScopesMask do
 
       mask.search_for_ids :without => {:baz => :qux}
 
-      search.options[:without].should == {:foo => :bar, :baz => :qux}
+      expect(search.options[:without]).to eq({:foo => :bar, :baz => :qux})
     end
 
     it "appends excluded ids" do
@@ -113,7 +113,7 @@ describe ThinkingSphinx::Masks::ScopesMask do
 
       mask.search_for_ids :without_ids => [5, 7]
 
-      search.options[:without_ids].should == [1, 3, 5, 7]
+      expect(search.options[:without_ids]).to eq([1, 3, 5, 7])
     end
 
     it "replaces the retry_stale option" do
@@ -121,17 +121,17 @@ describe ThinkingSphinx::Masks::ScopesMask do
 
       mask.search_for_ids :retry_stale => 6
 
-      search.options[:retry_stale].should == 6
+      expect(search.options[:retry_stale]).to eq(6)
     end
 
     it "adds the ids_only option" do
       mask.search_for_ids
 
-      search.options[:ids_only].should be_true
+      expect(search.options[:ids_only]).to be_truthy
     end
 
     it "returns the original search object" do
-      mask.search_for_ids.object_id.should == search.object_id
+      expect(mask.search_for_ids.object_id).to eq(search.object_id)
     end
   end
 end

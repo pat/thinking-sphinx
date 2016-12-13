@@ -15,7 +15,7 @@ describe ThinkingSphinx::Panes::AttributesPane do
     it "returns the object's sphinx attributes by default" do
       raw['foo'] = 24
 
-      pane.sphinx_attributes.should == {'foo' => 24}
+      expect(pane.sphinx_attributes).to eq({'foo' => 24})
     end
   end
 end

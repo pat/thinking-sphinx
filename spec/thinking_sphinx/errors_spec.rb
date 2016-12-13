@@ -6,73 +6,73 @@ describe ThinkingSphinx::SphinxError do
       :backtrace => ['foo', 'bar'] }
 
     it "translates syntax errors" do
-      error.stub :message => 'index foo: syntax error: something is wrong'
+      allow(error).to receive_messages :message => 'index foo: syntax error: something is wrong'
 
-      ThinkingSphinx::SphinxError.new_from_mysql(error).
-        should be_a(ThinkingSphinx::SyntaxError)
+      expect(ThinkingSphinx::SphinxError.new_from_mysql(error)).
+        to be_a(ThinkingSphinx::SyntaxError)
     end
 
     it "translates parse errors" do
-      error.stub :message => 'index foo: parse error: something is wrong'
+      allow(error).to receive_messages :message => 'index foo: parse error: something is wrong'
 
-      ThinkingSphinx::SphinxError.new_from_mysql(error).
-        should be_a(ThinkingSphinx::ParseError)
+      expect(ThinkingSphinx::SphinxError.new_from_mysql(error)).
+        to be_a(ThinkingSphinx::ParseError)
     end
 
     it "translates query errors" do
-      error.stub :message => 'index foo: query error: something is wrong'
+      allow(error).to receive_messages :message => 'index foo: query error: something is wrong'
 
-      ThinkingSphinx::SphinxError.new_from_mysql(error).
-        should be_a(ThinkingSphinx::QueryError)
+      expect(ThinkingSphinx::SphinxError.new_from_mysql(error)).
+        to be_a(ThinkingSphinx::QueryError)
     end
 
     it "translates connection errors" do
-      error.stub :message => "Can't connect to MySQL server on '127.0.0.1' (61)"
+      allow(error).to receive_messages :message => "Can't connect to MySQL server on '127.0.0.1' (61)"
 
-      ThinkingSphinx::SphinxError.new_from_mysql(error).
-        should be_a(ThinkingSphinx::ConnectionError)
+      expect(ThinkingSphinx::SphinxError.new_from_mysql(error)).
+        to be_a(ThinkingSphinx::ConnectionError)
     end
 
     it 'translates out-of-bounds errors' do
-      error.stub :message => "offset out of bounds (offset=1001, max_matches=1000)"
+      allow(error).to receive_messages :message => "offset out of bounds (offset=1001, max_matches=1000)"
 
-      ThinkingSphinx::SphinxError.new_from_mysql(error).
-        should be_a(ThinkingSphinx::OutOfBoundsError)
+      expect(ThinkingSphinx::SphinxError.new_from_mysql(error)).
+        to be_a(ThinkingSphinx::OutOfBoundsError)
     end
 
     it 'prefixes the connection error message' do
-      error.stub :message => "Can't connect to MySQL server on '127.0.0.1' (61)"
+      allow(error).to receive_messages :message => "Can't connect to MySQL server on '127.0.0.1' (61)"
 
-      ThinkingSphinx::SphinxError.new_from_mysql(error).message.
-        should == "Error connecting to Sphinx via the MySQL protocol. Can't connect to MySQL server on '127.0.0.1' (61)"
+      expect(ThinkingSphinx::SphinxError.new_from_mysql(error).message).
+        to eq("Error connecting to Sphinx via the MySQL protocol. Can't connect to MySQL server on '127.0.0.1' (61)")
     end
 
     it "translates jdbc connection errors" do
-      error.stub :message => "Communications link failure"
+      allow(error).to receive_messages :message => "Communications link failure"
 
-      ThinkingSphinx::SphinxError.new_from_mysql(error).
-        should be_a(ThinkingSphinx::ConnectionError)
+      expect(ThinkingSphinx::SphinxError.new_from_mysql(error)).
+        to be_a(ThinkingSphinx::ConnectionError)
     end
 
     it 'prefixes the jdbc connection error message' do
-      error.stub :message => "Communications link failure"
+      allow(error).to receive_messages :message => "Communications link failure"
 
-      ThinkingSphinx::SphinxError.new_from_mysql(error).message.
-        should == "Error connecting to Sphinx via the MySQL protocol. Communications link failure"
+      expect(ThinkingSphinx::SphinxError.new_from_mysql(error).message).
+        to eq("Error connecting to Sphinx via the MySQL protocol. Communications link failure")
     end
 
     it "defaults to sphinx errors" do
-      error.stub :message => 'index foo: unknown error: something is wrong'
+      allow(error).to receive_messages :message => 'index foo: unknown error: something is wrong'
 
-      ThinkingSphinx::SphinxError.new_from_mysql(error).
-        should be_a(ThinkingSphinx::SphinxError)
+      expect(ThinkingSphinx::SphinxError.new_from_mysql(error)).
+        to be_a(ThinkingSphinx::SphinxError)
     end
 
     it "keeps the original error's backtrace" do
-      error.stub :message => 'index foo: unknown error: something is wrong'
+      allow(error).to receive_messages :message => 'index foo: unknown error: something is wrong'
 
-      ThinkingSphinx::SphinxError.new_from_mysql(error).
-        backtrace.should == error.backtrace
+      expect(ThinkingSphinx::SphinxError.new_from_mysql(error).
+        backtrace).to eq(error.backtrace)
     end
   end
 end

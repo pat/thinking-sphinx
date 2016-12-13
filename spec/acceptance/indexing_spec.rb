@@ -8,7 +8,7 @@ describe 'Indexing', :live => true do
 
     article = Article.create! :title => 'Pancakes'
     index 'article_core'
-    Article.search.should be_empty
+    expect(Article.search).to be_empty
 
     FileUtils.rm path
   end
@@ -20,7 +20,7 @@ describe 'Indexing', :live => true do
 
     article = Article.create! :title => 'Pancakes'
     index 'article_core'
-    Article.search.should_not be_empty
+    expect(Article.search).not_to be_empty
 
     FileUtils.rm path
   end
@@ -31,6 +31,6 @@ describe 'Indexing', :live => true do
     index 'article_core'
 
     file = Rails.root.join('db/sphinx/test/ts-article_core.tmp')
-    File.exist?(file).should be_false
+    expect(File.exist?(file)).to be_falsey
   end
 end

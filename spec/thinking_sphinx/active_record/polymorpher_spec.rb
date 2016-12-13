@@ -23,29 +23,29 @@ describe ThinkingSphinx::ActiveRecord::Polymorpher do
     let(:animal_reflection)  { double 'Animal Reflection' }
 
     before :each do
-      ThinkingSphinx::ActiveRecord::FilterReflection.
-        stub(:call).
+      allow(ThinkingSphinx::ActiveRecord::FilterReflection).
+        to receive(:call).
         and_return(article_reflection, animal_reflection)
 
-      model.stub(:reflect_on_association) do |name|
+      allow(model).to receive(:reflect_on_association) do |name|
         name == :foo ? reflection : nil
       end
 
       if ActiveRecord::Reflection.respond_to?(:add_reflection)
-        ActiveRecord::Reflection.stub :add_reflection
+        allow(ActiveRecord::Reflection).to receive :add_reflection
       end
     end
 
     it "creates a new reflection for each class" do
-      ThinkingSphinx::ActiveRecord::FilterReflection.
-        unstub :call
+      allow(ThinkingSphinx::ActiveRecord::FilterReflection).
+        to receive(:call).and_call_original
 
-      ThinkingSphinx::ActiveRecord::FilterReflection.
-        should_receive(:call).
+      expect(ThinkingSphinx::ActiveRecord::FilterReflection).
+        to receive(:call).
         with(reflection, :foo_article, 'Article').
         and_return(article_reflection)
-      ThinkingSphinx::ActiveRecord::FilterReflection.
-        should_receive(:call).
+      expect(ThinkingSphinx::ActiveRecord::FilterReflection).
+        to receive(:call).
         with(reflection, :foo_animal, 'Animal').
         and_return(animal_reflection)
 
@@ -54,9 +54,9 @@ describe ThinkingSphinx::ActiveRecord::Polymorpher do
 
     it "adds the new reflections to the end-of-stack model" do
       if ActiveRecord::Reflection.respond_to?(:add_reflection)
-        ActiveRecord::Reflection.should_receive(:add_reflection).
+        expect(ActiveRecord::Reflection).to receive(:add_reflection).
           with(model, :foo_article, article_reflection)
-        ActiveRecord::Reflection.should_receive(:add_reflection).
+        expect(ActiveRecord::Reflection).to receive(:add_reflection).
           with(model, :foo_animal, animal_reflection)
 
         polymorpher.morph!
@@ -69,14 +69,14 @@ describe ThinkingSphinx::ActiveRecord::Polymorpher do
     end
 
     it "rebases each field" do
-      field.should_receive(:rebase).with([:a, :b, :foo],
+      expect(field).to receive(:rebase).with([:a, :b, :foo],
         :to => [[:a, :b, :foo_article], [:a, :b, :foo_animal]])
 
       polymorpher.morph!
     end
 
     it "rebases each attribute" do
-      attribute.should_receive(:rebase).with([:a, :b, :foo],
+      expect(attribute).to receive(:rebase).with([:a, :b, :foo],
         :to => [[:a, :b, :foo_article], [:a, :b, :foo_animal]])
 
       polymorpher.morph!

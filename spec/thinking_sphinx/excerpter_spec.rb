@@ -7,13 +7,13 @@ describe ThinkingSphinx::Excerpter do
   }
 
   before :each do
-    ThinkingSphinx::Connection.stub(:take).and_yield(connection)
-    Riddle::Query.stub :snippets => 'CALL SNIPPETS'
+    allow(ThinkingSphinx::Connection).to receive(:take).and_yield(connection)
+    allow(Riddle::Query).to receive_messages :snippets => 'CALL SNIPPETS'
   end
 
   describe '#excerpt!' do
     it "generates a snippets call" do
-      Riddle::Query.should_receive(:snippets).
+      expect(Riddle::Query).to receive(:snippets).
         with('all of the words', 'index', 'all words',
           ThinkingSphinx::Excerpter::DefaultOptions).
         and_return('CALL SNIPPETS')
@@ -25,7 +25,7 @@ describe ThinkingSphinx::Excerpter do
       excerpter = ThinkingSphinx::Excerpter.new('index', 'all words',
         :before_match => '<b>', :chunk_separator => ' -- ')
 
-      Riddle::Query.should_receive(:snippets).
+      expect(Riddle::Query).to receive(:snippets).
         with('all of the words', 'index', 'all words',
           :before_match => '<b>', :after_match => '</span>',
           :chunk_separator => ' -- ').
@@ -35,16 +35,16 @@ describe ThinkingSphinx::Excerpter do
     end
 
     it "sends the snippets call to Sphinx" do
-      connection.should_receive(:execute).with('CALL SNIPPETS').
+      expect(connection).to receive(:execute).with('CALL SNIPPETS').
         and_return([{'snippet' => ''}])
 
       excerpter.excerpt!('all of the words')
     end
 
     it "returns the first value returned by Sphinx" do
-      connection.stub :execute => [{'snippet' => 'some highlighted words'}]
+      allow(connection).to receive_messages :execute => [{'snippet' => 'some highlighted words'}]
 
-      excerpter.excerpt!('all of the words').should == 'some highlighted words'
+      expect(excerpter.excerpt!('all of the words')).to eq('some highlighted words')
     end
   end
 end

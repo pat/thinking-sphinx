@@ -4,7 +4,7 @@ describe ThinkingSphinx::Index do
   let(:configuration)  { Struct.new(:indices, :settings).new([], {}) }
   
   before :each do
-    ThinkingSphinx::Configuration.stub :instance => configuration
+    allow(ThinkingSphinx::Configuration).to receive_messages :instance => configuration
   end
   
   describe '.define' do
@@ -12,29 +12,29 @@ describe ThinkingSphinx::Index do
     
     context 'with ActiveRecord' do
       before :each do
-        ThinkingSphinx::ActiveRecord::Index.stub :new => index
+        allow(ThinkingSphinx::ActiveRecord::Index).to receive_messages :new => index
       end
 
       it "creates an ActiveRecord index" do
-        ThinkingSphinx::ActiveRecord::Index.should_receive(:new).
+        expect(ThinkingSphinx::ActiveRecord::Index).to receive(:new).
           with(:user, :with => :active_record).and_return index
 
         ThinkingSphinx::Index.define(:user, :with => :active_record)
       end
 
       it "returns the ActiveRecord index" do
-        ThinkingSphinx::Index.define(:user, :with => :active_record).
-          should == [index]
+        expect(ThinkingSphinx::Index.define(:user, :with => :active_record)).
+          to eq([index])
       end
 
       it "adds the index to the collection of indices" do
         ThinkingSphinx::Index.define(:user, :with => :active_record)
 
-        configuration.indices.should include(index)
+        expect(configuration.indices).to include(index)
       end
 
       it "sets the block in the index" do
-        index.should_receive(:definition_block=).with instance_of(Proc)
+        expect(index).to receive(:definition_block=).with instance_of(Proc)
 
         ThinkingSphinx::Index.define(:user, :with => :active_record) do
           indexes name
@@ -46,19 +46,19 @@ describe ThinkingSphinx::Index do
         let(:processor)   { double('delta processor') }
 
         before :each do
-          ThinkingSphinx::Deltas.stub :processor_for => processor
-          ThinkingSphinx::ActiveRecord::Index.stub(:new).
+          allow(ThinkingSphinx::Deltas).to receive_messages :processor_for => processor
+          allow(ThinkingSphinx::ActiveRecord::Index).to receive(:new).
             and_return(index, delta_index)
         end
 
         it "creates two indices with delta settings" do
-          ThinkingSphinx::ActiveRecord::Index.unstub :new
-          ThinkingSphinx::ActiveRecord::Index.should_receive(:new).
+          allow(ThinkingSphinx::ActiveRecord::Index).to receive(:new).and_call_original
+          expect(ThinkingSphinx::ActiveRecord::Index).to receive(:new).
             with(:user,
               hash_including(:delta? => false, :delta_processor => processor)
             ).once.
             and_return index
-          ThinkingSphinx::ActiveRecord::Index.should_receive(:new).
+          expect(ThinkingSphinx::ActiveRecord::Index).to receive(:new).
             with(:user,
               hash_including(:delta? => true,  :delta_processor => processor)
             ).once.
@@ -74,13 +74,13 @@ describe ThinkingSphinx::Index do
             :with  => :active_record,
             :delta => true
 
-          configuration.indices.should include(index)
-          configuration.indices.should include(delta_index)
+          expect(configuration.indices).to include(index)
+          expect(configuration.indices).to include(delta_index)
         end
 
         it "sets the block in the index" do
-          index.should_receive(:definition_block=).with instance_of(Proc)
-          delta_index.should_receive(:definition_block=).with instance_of(Proc)
+          expect(index).to receive(:definition_block=).with instance_of(Proc)
+          expect(delta_index).to receive(:definition_block=).with instance_of(Proc)
 
           ThinkingSphinx::Index.define(:user,
             :with  => :active_record,
@@ -93,29 +93,29 @@ describe ThinkingSphinx::Index do
 
     context 'with Real-Time' do
       before :each do
-        ThinkingSphinx::RealTime::Index.stub :new => index
+        allow(ThinkingSphinx::RealTime::Index).to receive_messages :new => index
       end
 
       it "creates a real-time index" do
-        ThinkingSphinx::RealTime::Index.should_receive(:new).
+        expect(ThinkingSphinx::RealTime::Index).to receive(:new).
           with(:user, :with => :real_time).and_return index
 
         ThinkingSphinx::Index.define(:user, :with => :real_time)
       end
 
       it "returns the ActiveRecord index" do
-        ThinkingSphinx::Index.define(:user, :with => :real_time).
-          should == [index]
+        expect(ThinkingSphinx::Index.define(:user, :with => :real_time)).
+          to eq([index])
       end
 
       it "adds the index to the collection of indices" do
         ThinkingSphinx::Index.define(:user, :with => :real_time)
 
-        configuration.indices.should include(index)
+        expect(configuration.indices).to include(index)
       end
 
       it "sets the block in the index" do
-        index.should_receive(:definition_block=).with instance_of(Proc)
+        expect(index).to receive(:definition_block=).with instance_of(Proc)
 
         ThinkingSphinx::Index.define(:user, :with => :real_time) do
           indexes name
@@ -126,13 +126,13 @@ describe ThinkingSphinx::Index do
   
   describe '#initialize' do
     it "is fine with no defaults from settings" do
-      ThinkingSphinx::Index.new(:user, {}).options.should == {}
+      expect(ThinkingSphinx::Index.new(:user, {}).options).to eq({})
     end
     
     it "respects defaults from settings" do
       configuration.settings['index_options'] = {'delta' => true}
       
-      ThinkingSphinx::Index.new(:user, {}).options.should == {:delta => true}
+      expect(ThinkingSphinx::Index.new(:user, {}).options).to eq({:delta => true})
     end
   end
 end

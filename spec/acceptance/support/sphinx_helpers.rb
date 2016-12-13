@@ -27,4 +27,8 @@ RSpec.configure do |config|
   config.after :all do |group|
     sphinx.stop if group.class.metadata[:live]
   end
+
+  config.after :suite do
+    SphinxController.new.stop
+  end
 end

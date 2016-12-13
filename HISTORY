@@ -1,3 +1,22 @@
+2016-12-13: 3.3.0
+* [FEATURE] Real-time callbacks can now be used with after_commit hooks if that's preferred over after_save.
+* [CHANGE] Only toggle the delta value if the record has changed or is new (rather than on every single save call).
+* [CHANGE] Delta indexing is now quiet by default (rather than verbose).
+* [FIX] Explicit source method in the SQLQuery Builder instead of relying on method missing, thus avoiding any global methods named 'source' (Asaf Bartov).
+* [CHANGE] Use Riddle's reworked command interface for interacting with Sphinx's command-line tools.
+* [CHANGE] Respect Rake's quiet and silent flags for the Thinking Sphinx rake tasks.
+* [CHANGE] ts:start and ts:stop tasks default to verbose.
+* [FIX] Load indices before deleting index files, to ensure the files are actually found and deleted.
+* [FIX] Avoid loading ActiveRecord earlier than necessary. This avoids loading Rails out of order, which caused problems with Rails 5.
+* [FEATURE] Allow for custom batch sizes when populating real-time indices.
+* [FIX] Handle queries that are too long for Sphinx.
+* [FIX] Improve Rails 5 / JRuby support.
+* [CHANGE] Sort engine paths for loading indices to ensure they're consistent.
+* [CHANGE] Custom exception class for invalid database adapters.
+* [FIX] Fixed handling of multiple field tokens in wildcarding logic.
+* [CHANGE] Memoize the default primary keys per context.
+* [FIX] Ensure custom primary key columns are handled consistently (Julio Monteiro).
+
 2016-05-13: 3.2.0
 * [FIX] Ensure SQL table aliases are reliable for SQL-backed index queries.
 * [FEATURE] Add JSON attribute support for real-time indices.

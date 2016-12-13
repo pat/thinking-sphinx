@@ -25,7 +25,7 @@ describe ThinkingSphinx::Middlewares::StaleIdChecker do
       context[:results] << double('instance', :id => 24)
       context[:results] << double('instance', :id => 42)
 
-      app.should_receive(:call)
+      expect(app).to receive(:call)
 
       middleware.call [context]
     end
@@ -37,11 +37,11 @@ describe ThinkingSphinx::Middlewares::StaleIdChecker do
       context[:results] << double('instance', :id => 24)
       context[:results] << nil
 
-      lambda {
+      expect {
         middleware.call [context]
-      }.should raise_error(ThinkingSphinx::Search::StaleIdsException) { |err|
-        err.ids.should == [42]
-        err.context.should == context
+      }.to raise_error(ThinkingSphinx::Search::StaleIdsException) { |err|
+        expect(err.ids).to eq([42])
+        expect(err.context).to eq(context)
       }
     end
   end

@@ -10,20 +10,20 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks do
     let(:callbacks) { double('callbacks', :after_destroy => nil) }
 
     before :each do
-      ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks.
-        stub :new => callbacks
+      allow(ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks).
+        to receive_messages :new => callbacks
     end
 
     it "builds an object from the instance" do
-      ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks.
-        should_receive(:new).with(instance).and_return(callbacks)
+      expect(ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks).
+        to receive(:new).with(instance).and_return(callbacks)
 
       ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks.
         after_destroy(instance)
     end
 
     it "invokes after_destroy on the object" do
-      callbacks.should_receive(:after_destroy)
+      expect(callbacks).to receive(:after_destroy)
 
       ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks.
         after_destroy(instance)
@@ -37,19 +37,19 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks do
     let(:instance)   { double('instance', :id => 7, :new_record? => false) }
 
     before :each do
-      ThinkingSphinx::IndexSet.stub :new => index_set
+      allow(ThinkingSphinx::IndexSet).to receive_messages :new => index_set
     end
 
     it "performs the deletion for the index and instance" do
-      ThinkingSphinx::Deletion.should_receive(:perform).with(index, 7)
+      expect(ThinkingSphinx::Deletion).to receive(:perform).with(index, 7)
 
       callbacks.after_destroy
     end
 
     it "doesn't do anything if the instance is a new record" do
-      instance.stub :new_record? => true
+      allow(instance).to receive_messages :new_record? => true
 
-      ThinkingSphinx::Deletion.should_not_receive(:perform)
+      expect(ThinkingSphinx::Deletion).not_to receive(:perform)
 
       callbacks.after_destroy
     end
@@ -57,7 +57,7 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks do
     it 'does nothing if callbacks are suspended' do
       ThinkingSphinx::Callbacks.suspend!
 
-      ThinkingSphinx::Deletion.should_not_receive(:perform)
+      expect(ThinkingSphinx::Deletion).not_to receive(:perform)
 
       callbacks.after_destroy
 

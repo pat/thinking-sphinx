@@ -6,15 +6,15 @@ describe ThinkingSphinx do
       :options => {}) }
 
     before :each do
-      ThinkingSphinx::Search.stub :new => search
+      allow(ThinkingSphinx::Search).to receive_messages :new => search
     end
 
     it "returns the total entries of the search object" do
-      ThinkingSphinx.count.should == search.total_entries
+      expect(ThinkingSphinx.count).to eq(search.total_entries)
     end
 
     it "passes through the given query and options" do
-      ThinkingSphinx::Search.should_receive(:new).with('foo', :bar => :baz).
+      expect(ThinkingSphinx::Search).to receive(:new).with('foo', :bar => :baz).
         and_return(search)
 
       ThinkingSphinx.count('foo', :bar => :baz)
@@ -25,15 +25,15 @@ describe ThinkingSphinx do
     let(:search) { double('search') }
 
     before :each do
-      ThinkingSphinx::Search.stub :new => search
+      allow(ThinkingSphinx::Search).to receive_messages :new => search
     end
 
     it "returns a new search object" do
-      ThinkingSphinx.search.should == search
+      expect(ThinkingSphinx.search).to eq(search)
     end
 
     it "passes through the given query and options" do
-      ThinkingSphinx::Search.should_receive(:new).with('foo', :bar => :baz).
+      expect(ThinkingSphinx::Search).to receive(:new).with('foo', :bar => :baz).
         and_return(search)
 
       ThinkingSphinx.search('foo', :bar => :baz)

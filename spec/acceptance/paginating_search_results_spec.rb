@@ -5,20 +5,20 @@ describe 'Paginating search results', :live => true do
     21.times { |number| Article.create :title => "Article #{number}" }
     index
 
-    Article.search.total_entries.should == 21
+    expect(Article.search.total_entries).to eq(21)
   end
 
   it "paginates the result set by default" do
     21.times { |number| Article.create :title => "Article #{number}" }
     index
 
-    Article.search.length.should == 20
+    expect(Article.search.length).to eq(20)
   end
 
   it "tracks the number of pages" do
     21.times { |number| Article.create :title => "Article #{number}" }
     index
 
-    Article.search.total_pages.should == 2
+    expect(Article.search.total_pages).to eq(2)
   end
 end

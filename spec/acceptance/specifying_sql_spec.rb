@@ -8,7 +8,7 @@ describe 'specifying SQL for index definitions' do
       join user
     }
     index.render
-    index.sources.first.sql_query.should match(/LEFT OUTER JOIN .users./)
+    expect(index.sources.first.sql_query).to match(/LEFT OUTER JOIN .users./)
   end
 
   it "handles deep joins" do
@@ -20,8 +20,8 @@ describe 'specifying SQL for index definitions' do
     index.render
 
     query = index.sources.first.sql_query
-    query.should match(/LEFT OUTER JOIN .users./)
-    query.should match(/LEFT OUTER JOIN .articles./)
+    expect(query).to match(/LEFT OUTER JOIN .users./)
+    expect(query).to match(/LEFT OUTER JOIN .articles./)
   end
 
   it "handles has-many :through joins" do
@@ -32,8 +32,8 @@ describe 'specifying SQL for index definitions' do
     index.render
 
     query = index.sources.first.sql_query
-    query.should match(/LEFT OUTER JOIN .taggings./)
-    query.should match(/LEFT OUTER JOIN .tags./)
+    expect(query).to match(/LEFT OUTER JOIN .taggings./)
+    expect(query).to match(/LEFT OUTER JOIN .tags./)
   end
 
   it "handles custom join SQL statements" do
@@ -45,7 +45,7 @@ describe 'specifying SQL for index definitions' do
     index.render
 
     query = index.sources.first.sql_query
-    query.should match(/INNER JOIN foo ON foo.x = bar.y/)
+    expect(query).to match(/INNER JOIN foo ON foo.x = bar.y/)
   end
 
   it "handles GROUP BY clauses" do
@@ -57,7 +57,7 @@ describe 'specifying SQL for index definitions' do
     index.render
 
     query = index.sources.first.sql_query
-    query.should match(/GROUP BY .articles.\..id., .?articles.?\..title., .?articles.?\..id., lat/)
+    expect(query).to match(/GROUP BY .articles.\..id., .?articles.?\..title., .?articles.?\..id., lat/)
   end
 
   it "handles WHERE clauses" do
@@ -69,7 +69,7 @@ describe 'specifying SQL for index definitions' do
     index.render
 
     query = index.sources.first.sql_query
-    query.should match(/WHERE .+title != 'secret'.+ GROUP BY/)
+    expect(query).to match(/WHERE .+title != 'secret'.+ GROUP BY/)
   end
 
   it "handles manual MVA declarations" do
@@ -81,7 +81,7 @@ describe 'specifying SQL for index definitions' do
     }
     index.render
 
-    index.sources.first.sql_attr_multi.should == ['uint tag_ids from field']
+    expect(index.sources.first.sql_attr_multi).to eq(['uint tag_ids from field'])
   end
 
   it "provides the sanitize_sql helper within the index definition block" do
@@ -93,7 +93,7 @@ describe 'specifying SQL for index definitions' do
     index.render
 
     query = index.sources.first.sql_query
-    query.should match(/WHERE .+title != 'secret'.+ GROUP BY/)
+    expect(query).to match(/WHERE .+title != 'secret'.+ GROUP BY/)
   end
 
   it "escapes new lines in SQL snippets" do
@@ -111,7 +111,7 @@ describe 'specifying SQL for index definitions' do
     index.render
 
     query = index.sources.first.sql_query
-    query.should match(/\\\n/)
+    expect(query).to match(/\\\n/)
   end
 
   it "joins each polymorphic relation" do
@@ -123,9 +123,9 @@ describe 'specifying SQL for index definitions' do
     index.render
 
     query = index.sources.first.sql_query
-    query.should match(/LEFT OUTER JOIN .articles. ON .articles.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Article'/)
-    query.should match(/LEFT OUTER JOIN .books. ON .books.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Book'/)
-    query.should match(/.articles.\..title., .books.\..title./)
+    expect(query).to match(/LEFT OUTER JOIN .articles. ON .articles.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Article'/)
+    expect(query).to match(/LEFT OUTER JOIN .books. ON .books.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Book'/)
+    expect(query).to match(/.articles.\..title., .books.\..title./)
   end if ActiveRecord::VERSION::MAJOR > 3
 
   it "concatenates references that have column" do
@@ -137,9 +137,9 @@ describe 'specifying SQL for index definitions' do
     index.render
 
     query = index.sources.first.sql_query
-    query.should match(/LEFT OUTER JOIN .articles. ON .articles.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Article'/)
-    query.should_not match(/articles\..title., users\..title./)
-    query.should match(/.articles.\..title./)
+    expect(query).to match(/LEFT OUTER JOIN .articles. ON .articles.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Article'/)
+    expect(query).not_to match(/articles\..title., users\..title./)
+    expect(query).to match(/.articles.\..title./)
   end if ActiveRecord::VERSION::MAJOR > 3
 
   it "respects deeper associations through polymorphic joins" do
@@ -151,9 +151,9 @@ describe 'specifying SQL for index definitions' do
     index.render
 
     query = index.sources.first.sql_query
-    query.should match(/LEFT OUTER JOIN .articles. ON .articles.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Article'/)
-    query.should match(/LEFT OUTER JOIN .users. ON .users.\..id. = .articles.\..user_id./)
-    query.should match(/.users.\..name./)
+    expect(query).to match(/LEFT OUTER JOIN .articles. ON .articles.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Article'/)
+    expect(query).to match(/LEFT OUTER JOIN .users. ON .users.\..id. = .articles.\..user_id./)
+    expect(query).to match(/.users.\..name./)
   end
 end if ActiveRecord::VERSION::MAJOR > 3
 
@@ -174,8 +174,8 @@ describe 'separate queries for MVAs' do
     }
     declaration, query = attribute.split(/;\s+/)
 
-    declaration.should == 'uint tag_ids from query'
-    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .taggings.\..tag_id. AS .tag_ids. FROM .taggings.\s? WHERE \(.taggings.\..article_id. IS NOT NULL\)$/)
+    expect(declaration).to eq('uint tag_ids from query')
+    expect(query).to match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .taggings.\..tag_id. AS .tag_ids. FROM .taggings.\s? WHERE \(.taggings.\..article_id. IS NOT NULL\)$/)
   end
 
   it "generates a SQL query with joins when appropriate for MVAs" do
@@ -190,8 +190,8 @@ describe 'separate queries for MVAs' do
     }
     declaration, query = attribute.split(/;\s+/)
 
-    declaration.should == 'uint tag_ids from query'
-    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. WHERE \(.taggings.\..article_id. IS NOT NULL\)\s?$/)
+    expect(declaration).to eq('uint tag_ids from query')
+    expect(query).to match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. WHERE \(.taggings.\..article_id. IS NOT NULL\)\s?$/)
   end
 
   it "respects has_many :through joins for MVA queries" do
@@ -206,8 +206,8 @@ describe 'separate queries for MVAs' do
     }
     declaration, query = attribute.split(/;\s+/)
 
-    declaration.should == 'uint tag_ids from query'
-    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. WHERE \(.taggings.\..article_id. IS NOT NULL\)\s?$/)
+    expect(declaration).to eq('uint tag_ids from query')
+    expect(query).to match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. WHERE \(.taggings.\..article_id. IS NOT NULL\)\s?$/)
   end
 
   it "can handle multiple joins for MVA queries" do
@@ -224,8 +224,8 @@ describe 'separate queries for MVAs' do
     }
     declaration, query = attribute.split(/;\s+/)
 
-    declaration.should == 'uint tag_ids from query'
-    query.should match(/^SELECT .articles.\..user_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .articles. INNER JOIN .taggings. ON .taggings.\..article_id. = .articles.\..id. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. WHERE \(.articles.\..user_id. IS NOT NULL\)\s?$/)
+    expect(declaration).to eq('uint tag_ids from query')
+    expect(query).to match(/^SELECT .articles.\..user_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .articles. INNER JOIN .taggings. ON .taggings.\..article_id. = .articles.\..id. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. WHERE \(.articles.\..user_id. IS NOT NULL\)\s?$/)
   end
 
   it "can handle simple HABTM joins for MVA queries" do
@@ -242,8 +242,8 @@ describe 'separate queries for MVAs' do
     }
     declaration, query = attribute.split(/;\s+/)
 
-    declaration.should == 'uint genre_ids from query'
-    query.should match(/^SELECT .books_genres.\..book_id. \* #{count} \+ #{source.offset} AS .id., .books_genres.\..genre_id. AS .genre_ids. FROM .books_genres.\s?$/)
+    expect(declaration).to eq('uint genre_ids from query')
+    expect(query).to match(/^SELECT .books_genres.\..book_id. \* #{count} \+ #{source.offset} AS .id., .books_genres.\..genre_id. AS .genre_ids. FROM .books_genres.\s?$/)
   end if ActiveRecord::VERSION::MAJOR > 3
 
   it "generates an appropriate range SQL queries for an MVA" do
@@ -258,9 +258,9 @@ describe 'separate queries for MVAs' do
     }
     declaration, query, range = attribute.split(/;\s+/)
 
-    declaration.should == 'uint tag_ids from ranged-query'
-    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .taggings.\..tag_id. AS .tag_ids. FROM .taggings. \s?WHERE \(.taggings.\..article_id. BETWEEN \$start AND \$end\) AND \(.taggings.\..article_id. IS NOT NULL\)$/)
-    range.should match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
+    expect(declaration).to eq('uint tag_ids from ranged-query')
+    expect(query).to match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .taggings.\..tag_id. AS .tag_ids. FROM .taggings. \s?WHERE \(.taggings.\..article_id. BETWEEN \$start AND \$end\) AND \(.taggings.\..article_id. IS NOT NULL\)$/)
+    expect(range).to match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
   end
 
   it "generates a SQL query with joins when appropriate for MVAs" do
@@ -275,9 +275,9 @@ describe 'separate queries for MVAs' do
     }
     declaration, query, range = attribute.split(/;\s+/)
 
-    declaration.should == 'uint tag_ids from ranged-query'
-    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. \s?WHERE \(.taggings.\..article_id. BETWEEN \$start AND \$end\) AND \(.taggings.\..article_id. IS NOT NULL\)$/)
-    range.should match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
+    expect(declaration).to eq('uint tag_ids from ranged-query')
+    expect(query).to match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. \s?WHERE \(.taggings.\..article_id. BETWEEN \$start AND \$end\) AND \(.taggings.\..article_id. IS NOT NULL\)$/)
+    expect(range).to match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
   end
 
   it "can handle ranged queries for simple HABTM joins for MVA queries" do
@@ -294,9 +294,9 @@ describe 'separate queries for MVAs' do
     }
     declaration, query, range = attribute.split(/;\s+/)
 
-    declaration.should == 'uint genre_ids from ranged-query'
-    query.should match(/^SELECT .books_genres.\..book_id. \* #{count} \+ #{source.offset} AS .id., .books_genres.\..genre_id. AS .genre_ids. FROM .books_genres. WHERE \(.books_genres.\..book_id. BETWEEN \$start AND \$end\)$/)
-    range.should match(/^SELECT MIN\(.books_genres.\..book_id.\), MAX\(.books_genres.\..book_id.\) FROM .books_genres.$/)
+    expect(declaration).to eq('uint genre_ids from ranged-query')
+    expect(query).to match(/^SELECT .books_genres.\..book_id. \* #{count} \+ #{source.offset} AS .id., .books_genres.\..genre_id. AS .genre_ids. FROM .books_genres. WHERE \(.books_genres.\..book_id. BETWEEN \$start AND \$end\)$/)
+    expect(range).to match(/^SELECT MIN\(.books_genres.\..book_id.\), MAX\(.books_genres.\..book_id.\) FROM .books_genres.$/)
   end if ActiveRecord::VERSION::MAJOR > 3
 
   it "respects custom SQL snippets as the query value" do
@@ -312,8 +312,8 @@ describe 'separate queries for MVAs' do
     }
     declaration, query = attribute.split(/;\s+/)
 
-    declaration.should == 'uint tag_ids from query'
-    query.should == 'My Custom SQL Query'
+    expect(declaration).to eq('uint tag_ids from query')
+    expect(query).to eq('My Custom SQL Query')
   end
 
   it "respects custom SQL snippets as the ranged query value" do
@@ -329,9 +329,9 @@ describe 'separate queries for MVAs' do
     }
     declaration, query, range = attribute.split(/;\s+/)
 
-    declaration.should == 'uint tag_ids from ranged-query'
-    query.should == 'My Custom SQL Query'
-    range.should == 'And a Range'
+    expect(declaration).to eq('uint tag_ids from ranged-query')
+    expect(query).to eq('My Custom SQL Query')
+    expect(range).to eq('And a Range')
   end
 
   it "escapes new lines in custom SQL snippets" do
@@ -349,8 +349,8 @@ SQL Query
     }
     declaration, query = attribute.split(/;\s+/)
 
-    declaration.should == 'uint tag_ids from query'
-    query.should == "My Custom\\\nSQL Query"
+    expect(declaration).to eq('uint tag_ids from query')
+    expect(query).to eq("My Custom\\\nSQL Query")
   end
 end
 
@@ -368,8 +368,8 @@ describe 'separate queries for field' do
     field = source.sql_joined_field.detect { |field| field[/tags/] }
     declaration, query = field.split(/;\s+/)
 
-    declaration.should == 'tags from query'
-    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..name. AS .tags. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id.\s? WHERE \(.taggings.\..article_id. IS NOT NULL\)\s? ORDER BY .taggings.\..article_id. ASC\s?$/)
+    expect(declaration).to eq('tags from query')
+    expect(query).to match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..name. AS .tags. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id.\s? WHERE \(.taggings.\..article_id. IS NOT NULL\)\s? ORDER BY .taggings.\..article_id. ASC\s?$/)
   end
 
   it "respects has_many :through joins for MVF queries" do
@@ -381,8 +381,8 @@ describe 'separate queries for field' do
     field = source.sql_joined_field.detect { |field| field[/tags/] }
     declaration, query = field.split(/;\s+/)
 
-    declaration.should == 'tags from query'
-    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..name. AS .tags. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id.\s? WHERE \(.taggings.\..article_id. IS NOT NULL\)\s? ORDER BY .taggings.\..article_id. ASC\s?$/)
+    expect(declaration).to eq('tags from query')
+    expect(query).to match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..name. AS .tags. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id.\s? WHERE \(.taggings.\..article_id. IS NOT NULL\)\s? ORDER BY .taggings.\..article_id. ASC\s?$/)
   end
 
   it "can handle multiple joins for MVF queries" do
@@ -396,8 +396,8 @@ describe 'separate queries for field' do
     field = source.sql_joined_field.detect { |field| field[/tags/] }
     declaration, query = field.split(/;\s+/)
 
-    declaration.should == 'tags from query'
-    query.should match(/^SELECT .articles.\..user_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..name. AS .tags. FROM .articles. INNER JOIN .taggings. ON .taggings.\..article_id. = .articles.\..id. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id.\s? WHERE \(.articles.\..user_id. IS NOT NULL\)\s? ORDER BY .articles.\..user_id. ASC\s?$/)
+    expect(declaration).to eq('tags from query')
+    expect(query).to match(/^SELECT .articles.\..user_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..name. AS .tags. FROM .articles. INNER JOIN .taggings. ON .taggings.\..article_id. = .articles.\..id. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id.\s? WHERE \(.articles.\..user_id. IS NOT NULL\)\s? ORDER BY .articles.\..user_id. ASC\s?$/)
   end
 
   it "generates a SQL query with joins when appropriate for MVFs" do
@@ -409,9 +409,9 @@ describe 'separate queries for field' do
     field = source.sql_joined_field.detect { |field| field[/tags/] }
     declaration, query, range = field.split(/;\s+/)
 
-    declaration.should == 'tags from ranged-query'
-    query.should match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..name. AS .tags. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. \s?WHERE \(.taggings.\..article_id. BETWEEN \$start AND \$end\) AND \(.taggings.\..article_id. IS NOT NULL\)\s? ORDER BY .taggings.\..article_id. ASC$/)
-    range.should match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
+    expect(declaration).to eq('tags from ranged-query')
+    expect(query).to match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..name. AS .tags. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. \s?WHERE \(.taggings.\..article_id. BETWEEN \$start AND \$end\) AND \(.taggings.\..article_id. IS NOT NULL\)\s? ORDER BY .taggings.\..article_id. ASC$/)
+    expect(range).to match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
   end
 
   it "respects custom SQL snippets as the query value" do
@@ -423,8 +423,8 @@ describe 'separate queries for field' do
     field = source.sql_joined_field.detect { |field| field[/tags/] }
     declaration, query = field.split(/;\s+/)
 
-    declaration.should == 'tags from query'
-    query.should == 'My Custom SQL Query'
+    expect(declaration).to eq('tags from query')
+    expect(query).to eq('My Custom SQL Query')
   end
 
   it "respects custom SQL snippets as the ranged query value" do
@@ -437,9 +437,9 @@ describe 'separate queries for field' do
     field = source.sql_joined_field.detect { |field| field[/tags/] }
     declaration, query, range = field.split(/;\s+/)
 
-    declaration.should == 'tags from ranged-query'
-    query.should == 'My Custom SQL Query'
-    range.should == 'And a Range'
+    expect(declaration).to eq('tags from ranged-query')
+    expect(query).to eq('My Custom SQL Query')
+    expect(range).to eq('And a Range')
   end
 
   it "escapes new lines in custom SQL snippets" do
@@ -454,7 +454,7 @@ SQL Query
     field = source.sql_joined_field.detect { |field| field[/tags/] }
     declaration, query = field.split(/;\s+/)
 
-    declaration.should == 'tags from query'
-    query.should == "My Custom\\\nSQL Query"
+    expect(declaration).to eq('tags from query')
+    expect(query).to eq("My Custom\\\nSQL Query")
   end
 end

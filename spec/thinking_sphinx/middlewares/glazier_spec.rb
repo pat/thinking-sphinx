@@ -22,7 +22,7 @@ describe ThinkingSphinx::Middlewares::Glazier do
     before :each do
       stub_const 'ThinkingSphinx::Search::Glaze', double(:new => glazed_result)
 
-      context.stub :search => search
+      allow(context).to receive_messages :search => search
     end
 
     context 'No panes provided' do
@@ -33,7 +33,7 @@ describe ThinkingSphinx::Middlewares::Glazier do
       it "leaves the results as they are" do
         middleware.call [context]
 
-        context[:results].should == [result]
+        expect(context[:results]).to eq([result])
       end
     end
 
@@ -47,11 +47,11 @@ describe ThinkingSphinx::Middlewares::Glazier do
       it "replaces each result with a glazed version" do
         middleware.call [context]
 
-        context[:results].should == [glazed_result]
+        expect(context[:results]).to eq([glazed_result])
       end
 
       it "creates a glazed result for each result" do
-        ThinkingSphinx::Search::Glaze.should_receive(:new).
+        expect(ThinkingSphinx::Search::Glaze).to receive(:new).
           with(context, result, raw_result, [pane_class]).
           and_return(glazed_result)
 

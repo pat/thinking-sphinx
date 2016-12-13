@@ -5,7 +5,7 @@ ThinkingSphinx::Index.define :article, :with => :active_record do
 
   has published, user_id
   has taggings.tag_id, :as => :tag_ids, :source => :query
-  has taggings.created_at, :as => :taggings_at
+  has taggings.created_at, :as => :taggings_at, :type => :timestamp
 
   set_property :min_infix_len => 4
   set_property :enable_star   => true
@@ -18,7 +18,7 @@ ThinkingSphinx::Index.define :article, :with => :active_record,
 
   has published, user_id
   has taggings.tag_id, :as => :tag_ids
-  has taggings.created_at, :as => :taggings_at
+  has taggings.created_at, :as => :taggings_at, :type => :timestamp
 
   set_property :morphology => 'stem_en'
 end

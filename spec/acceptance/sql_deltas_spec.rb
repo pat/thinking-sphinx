@@ -7,38 +7,38 @@ describe 'SQL delta indexing', :live => true do
     )
     index
 
-    Book.search('Terry Pratchett').to_a.should == [guards]
+    expect(Book.search('Terry Pratchett').to_a).to eq([guards])
 
     men = Book.create(
       :title => 'Men At Arms', :author => 'Terry Pratchett'
     )
     sleep 0.25
 
-    Book.search('Terry Pratchett').to_a.should == [guards, men]
+    expect(Book.search('Terry Pratchett').to_a).to eq([guards, men])
   end
 
   it "automatically indexes updated records" do
     book = Book.create :title => 'Night Watch', :author => 'Harry Pritchett'
     index
 
-    Book.search('Harry').to_a.should == [book]
+    expect(Book.search('Harry').to_a).to eq([book])
 
     book.reload.update_attributes(:author => 'Terry Pratchett')
     sleep 0.25
 
-    Book.search('Terry').to_a.should == [book]
+    expect(Book.search('Terry').to_a).to eq([book])
   end
 
   it "does not match on old values" do
     book = Book.create :title => 'Night Watch', :author => 'Harry Pritchett'
     index
 
-    Book.search('Harry').to_a.should == [book]
+    expect(Book.search('Harry').to_a).to eq([book])
 
     book.reload.update_attributes(:author => 'Terry Pratchett')
     sleep 0.25
 
-    Book.search('Harry').should be_empty
+    expect(Book.search('Harry')).to be_empty
   end
 
   it "automatically indexes new records of subclasses" do
@@ -47,6 +47,6 @@ describe 'SQL delta indexing', :live => true do
     )
     sleep 0.25
 
-    Book.search('Gaiman').to_a.should == [book]
+    expect(Book.search('Gaiman').to_a).to eq([book])
   end
 end
