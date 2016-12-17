@@ -145,9 +145,14 @@ describe ThinkingSphinx::RakeInterface do
     end
 
     it "does not index verbosely if requested" do
+      interface = ThinkingSphinx::RakeInterface.new :verbose => false
+
+      allow(ThinkingSphinx::Configuration).to receive_messages :instance => configuration
+      allow(interface).to receive_messages(:puts => nil)
+
       expect(controller).to receive(:index).with(:verbose => false)
 
-      interface.index true, false
+      interface.index
     end
   end
 

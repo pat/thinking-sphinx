@@ -1,6 +1,8 @@
 class ThinkingSphinx::RakeInterface
+  DEFAULT_OPTIONS = {:verbose => true}
+
   def initialize(options = {})
-    @options           = options
+    @options           = DEFAULT_OPTIONS.merge options
     @options[:verbose] = false if @options[:silent]
   end
 
@@ -37,11 +39,18 @@ class ThinkingSphinx::RakeInterface
     end
   end
 
-  def index(reconfigure = true, verbose = true)
+  def index(reconfigure = true, verbose = nil)
+    puts <<-TXT unless verbose.nil?
+The verbose argument to the index method is now deprecated, and can instead be
+managed by the :verbose option passed in when initialising RakeInterface. That
+option is set automatically when invoked by rake, via rake's --silent and/or
+--quiet arguments.
+    TXT
+
     configure if reconfigure
     FileUtils.mkdir_p configuration.indices_location
     ThinkingSphinx.before_index_hooks.each { |hook| hook.call }
-    controller.index :verbose => verbose
+    controller.index :verbose => options[:verbose]
   rescue Riddle::CommandFailedError => error
     handle_command_failure 'indexing', error.command_result
   end
