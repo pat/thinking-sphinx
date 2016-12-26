@@ -3,7 +3,7 @@ class ThinkingSphinx::SphinxError < StandardError
 
   def self.new_from_mysql(error)
     case error.message
-    when /parse error/
+    when /parse error/, /query is non-computable/
       replacement = ThinkingSphinx::ParseError.new(error.message)
     when /syntax error/
       replacement = ThinkingSphinx::SyntaxError.new(error.message)
