@@ -5,7 +5,9 @@ class ThinkingSphinx::ActiveRecord::JoinAssociation <
     constraint = super
 
     constraint = constraint.and(
-      foreign_table[reflection.options[:foreign_type]].eq(base_klass.name)
+      foreign_table[reflection.options[:foreign_type]].eq(
+        base_klass.base_class.name
+      )
     ) if reflection.options[:sphinx_internal_filtered]
 
     constraint

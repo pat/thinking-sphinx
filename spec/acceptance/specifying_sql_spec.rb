@@ -155,6 +155,20 @@ describe 'specifying SQL for index definitions' do
     expect(query).to match(/LEFT OUTER JOIN .users. ON .users.\..id. = .articles.\..user_id./)
     expect(query).to match(/.users.\..name./)
   end
+
+  it "allows for STI mixed with polymorphic joins" do
+    index = ThinkingSphinx::ActiveRecord::Index.new(:event)
+    index.definition_block = Proc.new {
+      indexes eventable.name, :as => :name
+      polymorphs eventable, :to => %w(Bird Car)
+    }
+    index.render
+
+    query = index.sources.first.sql_query
+    expect(query).to match(/LEFT OUTER JOIN .animals. ON .animals.\..id. = .events.\..eventable_id. .* AND .events.\..eventable_type. = 'Animal'/)
+    expect(query).to match(/LEFT OUTER JOIN .cars. ON .cars.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Car'/)
+    expect(query).to match(/.animals.\..name., .cars.\..name./)
+  end
 end if ActiveRecord::VERSION::MAJOR > 3
 
 describe 'separate queries for MVAs' do
