@@ -1,7 +1,7 @@
 appraise 'rails_3_2' do
   gem 'rails',  '~> 3.2.22.2'
   gem 'rack',   '~> 1.0', :platforms => [:ruby_20, :ruby_21]
-end
+end if RUBY_VERSION.to_f <= 2.3
 
 appraise 'rails_4_0' do
   gem 'rails', '~> 4.0.13'
