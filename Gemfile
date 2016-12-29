@@ -9,4 +9,7 @@ gem 'jdbc-mysql',                          '5.1.35',   :platform => :jruby
 gem 'activerecord-jdbcmysql-adapter',      '~> 1.3.4', :platform => :jruby
 gem 'activerecord-jdbcpostgresql-adapter', '~> 1.3.4', :platform => :jruby
 
-gem 'rack', '~> 1.0' if RUBY_VERSION.to_f <= 2.1
+if RUBY_VERSION.to_f <= 2.1
+  gem 'rack', '~> 1.0'
+  gem 'nokogiri', '1.6.8'
+end
