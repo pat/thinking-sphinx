@@ -15,9 +15,15 @@ describe ThinkingSphinx::IndexSet do
     stub_const 'ActiveRecord::Base', ar_base
   end
 
-  def class_double(name, *superclasses)
+  def class_double(name, methods = {}, *superclasses)
     klass = double 'class', :name => name, :class => Class
-    allow(klass).to receive_messages :ancestors => ([klass] + superclasses + [ar_base])
+
+    allow(klass).to receive_messages(
+      :ancestors          => ([klass] + superclasses + [ar_base]),
+      :inheritance_column => :type
+    )
+    allow(klass).to receive_messages(methods)
+
     klass
   end
 
@@ -47,23 +53,40 @@ describe ThinkingSphinx::IndexSet do
         double(:reference => :page,            :distributed? => false)
       ]
 
-      options[:classes] = [class_double('Article')]
+      options[:classes] = [class_double('Article', :column_names => [])]
 
       expect(set.to_a.length).to eq(1)
     end
 
-    it "requests indices for any superclasses" do
+    it "requests indices for any STI superclasses" do
       configuration.indices.replace [
         double(:reference => :article,         :distributed? => false),
         double(:reference => :opinion_article, :distributed? => false),
         double(:reference => :page,            :distributed? => false)
       ]
 
-      options[:classes] = [
-        class_double('OpinionArticle', class_double('Article'))
-      ]
+      article = class_double('Article', :column_names => [:type])
+      opinion = class_double('OpinionArticle', {:column_names => [:type]},
+        article)
+
+      options[:classes] = [opinion]
 
       expect(set.to_a.length).to eq(2)
+    end
+
+    it "does not use MTI superclasses" do
+      configuration.indices.replace [
+        double(:reference => :article,         :distributed? => false),
+        double(:reference => :opinion_article, :distributed? => false),
+        double(:reference => :page,            :distributed? => false)
+      ]
+
+      article = class_double('Article', :column_names => [])
+      opinion = class_double('OpinionArticle', {:column_names => []}, article)
+
+      options[:classes] = [opinion]
+
+      expect(set.to_a.length).to eq(1)
     end
 
     it "uses named indices if names are provided" do

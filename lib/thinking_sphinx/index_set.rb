@@ -1,6 +1,6 @@
 class ThinkingSphinx::IndexSet
   include Enumerable
-  
+
   def self.reference_name(klass)
     @cached_results ||= {}
     @cached_results[klass.name] ||= klass.name.underscore.to_sym
@@ -40,7 +40,7 @@ class ThinkingSphinx::IndexSet
   end
 
   def classes_and_ancestors
-    @classes_and_ancestors ||= classes.collect { |model|
+    @classes_and_ancestors ||= mti_classes + sti_classes.collect { |model|
       model.ancestors.take_while { |klass|
         klass != ActiveRecord::Base
       }.select { |klass|
@@ -66,6 +66,12 @@ class ThinkingSphinx::IndexSet
     all_indices.select { |index| references.include? index.reference }
   end
 
+  def mti_classes
+    classes.reject { |klass|
+      klass.column_names.include?(klass.inheritance_column)
+    }
+  end
+
   def references
     options[:references] || classes_and_ancestors.collect { |klass|
       ThinkingSphinx::IndexSet.reference_name(klass)
@@ -74,5 +80,11 @@ class ThinkingSphinx::IndexSet
 
   def references_specified?
     options[:references] && options[:references].any?
+  end
+
+  def sti_classes
+    classes.select { |klass|
+      klass.column_names.include?(klass.inheritance_column)
+    }
   end
 end
