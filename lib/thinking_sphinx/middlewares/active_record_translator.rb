@@ -81,6 +81,12 @@ class ThinkingSphinx::Middlewares::ActiveRecordTranslator <
       relation = relation.joins  sql_options[:joins]  if sql_options[:joins]
       relation = relation.order  sql_options[:order]  if sql_options[:order]
       relation = relation.select sql_options[:select] if sql_options[:select]
+
+      # making TS work with CanCan
+      if relation.respond_to?(:accessible_by) && context.search.options[:current_ability].present?
+        relation = relation.accessible_by(context.search.options[:current_ability])
+      end
+
       relation = relation.group  sql_options[:group]  if sql_options[:group]
       relation
     end
