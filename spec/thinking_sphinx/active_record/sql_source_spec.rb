@@ -426,6 +426,24 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
 
       expect(source.mysql_ssl_ca).to  eq '/path/to/ca.pem'
     end
+
+    it "sets the mysql_ssl_cert from the model's database settings" do
+      source.set_database_settings :sslcert => '/path/to/cert.pem'
+
+      source.mysql_ssl_cert.should  eq '/path/to/cert.pem'
+    end
+
+    it "sets the mysql_ssl_key from the model's database settings" do
+      source.set_database_settings :sslkey => '/path/to/key.pem'
+
+      source.mysql_ssl_key.should  eq '/path/to/key.pem'
+    end
+
+    it "sets the mysql_ssl_ca from the model's database settings" do
+      source.set_database_settings :sslca => '/path/to/ca.pem'
+
+      source.mysql_ssl_ca.should  eq '/path/to/ca.pem'
+    end
   end
 
   describe '#type' do
