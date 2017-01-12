@@ -45,6 +45,7 @@ module ThinkingSphinx
 end
 
 # Core
+require 'thinking_sphinx/attribute_types'
 require 'thinking_sphinx/batched_search'
 require 'thinking_sphinx/callbacks'
 require 'thinking_sphinx/core'
