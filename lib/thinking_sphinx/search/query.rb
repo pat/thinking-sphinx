@@ -10,11 +10,17 @@ class ThinkingSphinx::Search::Query
     (star_keyword(keywords || '') + ' ' + conditions.keys.collect { |key|
        next if conditions[key].blank?
 
-      "@#{key} #{star_keyword conditions[key], key}"
+      "#{expand_key key} #{star_keyword conditions[key], key}"
     }.join(' ')).strip
   end
 
   private
+
+  def expand_key(key)
+    return "@#{key}" unless key.is_a?(Array)
+
+    "@(#{key.join(',')})"
+  end
 
   def star_keyword(keyword, key = nil)
     return keyword.to_s unless star
