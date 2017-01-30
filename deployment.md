@@ -32,6 +32,8 @@ production:
 
 Please make sure all of the above files (configuration file, pid file, index files, binlog path) are located in a **shared directory** (instead of a directory tied to a specific deployed release). Otherwise, running rake tasks will become difficult and unreliable.
 
+Symlinked directories are **strongly discouraged** as an alternative to (or in combination with) shared paths. Symlinked paths can be translated to release-specific paths when generating configuration, and this can lead to data inconsistency problems.
+
 <div class="note">
   <p class="old">Thinking Sphinx v1/v2</p>
   <p><strong>Note</strong>: If you are using an older version of Thinking Sphinx, then the file is <code>config/sphinx.yml</code>, and the second setting is <code>searchd_file_path</code> (and the third and fourth can be skipped):</p>
