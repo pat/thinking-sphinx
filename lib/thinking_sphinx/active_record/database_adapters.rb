@@ -23,7 +23,7 @@ module ThinkingSphinx::ActiveRecord::DatabaseAdapters
       case class_name.split('::').last
       when 'MysqlAdapter', 'Mysql2Adapter'
         :mysql
-      when 'PostgreSQLAdapter'
+      when 'PostgreSQLAdapter', 'MainAdapter'
         :postgresql
       when 'JdbcAdapter'
         adapter_type_for_jdbc(model)
