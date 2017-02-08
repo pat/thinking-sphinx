@@ -18,6 +18,16 @@ describe 'Searching with filters', :live => true do
     expect(Book.search(:with => {:year => [2001, 2005]}).to_a).to eq([gods, boys])
   end
 
+  it "doesn't limit any results if the array is empty" do
+    gods  = Book.create! :title => 'American Gods',      :year => 2001
+    boys  = Book.create! :title => 'Anansi Boys',        :year => 2005
+    grave = Book.create! :title => 'The Graveyard Book', :year => 2009
+    index
+
+    results = Book.search(:with => {:year => []}).to_a.sort
+    results.should == [gods, boys, grave].sort
+  end
+
   it "limits results by a ranged filter" do
     gods  = Book.create! :title => 'American Gods'
     boys  = Book.create! :title => 'Anansi Boys'
@@ -47,6 +57,16 @@ describe 'Searching with filters', :live => true do
     index
 
     expect(Book.search(:without => {:year => [2001, 2005]}).to_a).to eq([grave])
+  end
+
+  it "doesn't exclude anything if the :without array is empty" do
+    gods  = Book.create! :title => 'American Gods',      :year => 2001
+    boys  = Book.create! :title => 'Anansi Boys',        :year => 2005
+    grave = Book.create! :title => 'The Graveyard Book', :year => 2009
+    index
+
+    results = Book.search(:without => {:year => []}).to_a.sort
+    results.should == [gods, boys, grave].sort
   end
 
   it "limits results by ranged filters on timestamp MVAs" do
