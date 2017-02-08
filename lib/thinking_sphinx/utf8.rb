@@ -10,7 +10,7 @@ class ThinkingSphinx::UTF8
   end
 
   def encode
-    string.encode!('ISO-8859-1')
+    #string.encode!('ISO-8859-1')
     string.force_encoding('UTF-8')
   end
 end
