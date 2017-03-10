@@ -133,7 +133,7 @@ There may be more information about the failure in #{configuration.searchd.log}.
 
   def start_attached
     unless pid = fork
-      controller.start :verbose => options[:verbose]
+      controller.start :verbose => options[:verbose], :nodetach => true
     end
 
     Signal.trap('TERM') { Process.kill(:TERM, pid); }
