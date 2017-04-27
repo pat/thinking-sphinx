@@ -124,7 +124,8 @@ module ThinkingSphinx::Connection
 
     def client
       @client ||= Mysql2::Client.new({
-        :flags => Mysql2::Client::MULTI_STATEMENTS
+        :flags           => Mysql2::Client::MULTI_STATEMENTS,
+        :connect_timeout => 5
       }.merge(options))
     rescue base_error => error
       raise ThinkingSphinx::SphinxError.new_from_mysql error
