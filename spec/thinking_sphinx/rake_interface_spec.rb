@@ -2,7 +2,8 @@ require 'spec_helper'
 
 describe ThinkingSphinx::RakeInterface do
   let(:configuration) { double('configuration', :controller => controller) }
-  let(:interface)     { ThinkingSphinx::RakeInterface.new }
+  let(:interface_options) { {} }
+  let(:interface)     { ThinkingSphinx::RakeInterface.new(interface_options) }
 
   before :each do
     allow(ThinkingSphinx::Configuration).to receive_messages :instance => configuration
@@ -35,41 +36,83 @@ describe ThinkingSphinx::RakeInterface do
     end
   end
 
-  describe '#clear_real_time' do
-    let(:controller) { double 'controller' }
-    let(:index)      {
-      double(:type => 'rt', :render => true, :path => '/path/to/my/index')
+  context 'with real_time indices' do
+    let(:controller)  { double 'controller' }
+    let(:plain_index) { double(:type => 'plain') }
+    let(:users_index) {
+      double(name: 'users', :type => 'rt', :render => true, :path => '/path/to/my/index/users')
     }
-
+    let(:parts_index) {
+      double(name: 'parts', :type => 'rt', :render => true, :path => '/path/to/my/index/parts')
+    }
     before :each do
       allow(configuration).to receive_messages(
-        :indices         => [double(:type => 'plain'), index],
+        :indices         => [plain_index, users_index, parts_index],
         :searchd         => double(:binlog_path => '/path/to/binlog'),
         :preload_indices => true
       )
 
-      allow(Dir).to receive_messages :[] => ['foo.a', 'foo.b']
+      allow(Dir).to receive(:[]).with('/path/to/my/index/users.*').and_return(['users.a', 'users.b'])
+      allow(Dir).to receive(:[]).with('/path/to/my/index/parts.*').and_return(['parts.a', 'parts.b'])
       allow(FileUtils).to receive_messages :rm_r => true, :rm => true
       allow(File).to receive_messages :exists? => true
     end
 
-    it 'finds each file for real-time indices' do
-      expect(Dir).to receive(:[]).with('/path/to/my/index.*').and_return([])
+    describe '#clear_real_time' do
+      it 'finds each file for real-time indices' do
+        expect(Dir).to receive(:[]).with('/path/to/my/index/users.*').and_return([])
 
-      interface.clear_real_time
+        interface.clear_real_time
+      end
+
+      it "removes each file for real-time indices" do
+        expect(FileUtils).to receive(:rm).with('users.a')
+        expect(FileUtils).to receive(:rm).with('users.b')
+        expect(FileUtils).to receive(:rm).with('parts.a')
+        expect(FileUtils).to receive(:rm).with('parts.b')
+
+        interface.clear_real_time
+      end
+
+      context "with options[:index_filter]" do
+        let(:interface_options) { { :index_filter => "users" } }
+        it "removes each file for real-time indices that match :index_filter" do
+          expect(FileUtils).to receive(:rm).with('users.a')
+          expect(FileUtils).to receive(:rm).with('users.b')
+          expect(FileUtils).not_to receive(:rm).with('parts.a')
+          expect(FileUtils).not_to receive(:rm).with('parts.b')
+
+          interface.clear_real_time
+        end
+      end
+
+      it "removes the directory for the binlog files" do
+        expect(FileUtils).to receive(:rm_r).with('/path/to/binlog')
+
+        interface.clear_real_time
+      end
     end
 
-    it "removes each file for real-time indices" do
-      expect(FileUtils).to receive(:rm).with('foo.a')
-      expect(FileUtils).to receive(:rm).with('foo.b')
+    describe '#generate' do
+      it 'populates each real-index' do
+        expect(ThinkingSphinx::RealTime::Populator).to receive(:populate).with(users_index)
+        expect(ThinkingSphinx::RealTime::Populator).to receive(:populate).with(parts_index)
+        expect(ThinkingSphinx::RealTime::Populator).not_to receive(:populate).with(plain_index)
 
-      interface.clear_real_time
-    end
+        interface.generate
+      end
 
-    it "removes the directory for the binlog files" do
-      expect(FileUtils).to receive(:rm_r).with('/path/to/binlog')
+      context "with options[:index_filter]" do
+        let(:interface_options) { { :index_filter => "users" } }
 
-      interface.clear_real_time
+        it 'populates each real-index that matches :index_filter' do
+          expect(ThinkingSphinx::RealTime::Populator).to receive(:populate).with(users_index)
+          expect(ThinkingSphinx::RealTime::Populator).not_to receive(:populate).with(parts_index)
+          expect(ThinkingSphinx::RealTime::Populator).not_to receive(:populate).with(plain_index)
+
+          interface.generate
+        end
+      end
     end
   end
 
