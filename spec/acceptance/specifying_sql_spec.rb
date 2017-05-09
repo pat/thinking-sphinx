@@ -173,7 +173,7 @@ end if ActiveRecord::VERSION::MAJOR > 3
 
 describe 'separate queries for MVAs' do
   def id_type
-    ActiveRecord::VERSION::STRING.to_f > 5.0 ? 'bigint' : 'int'
+    ActiveRecord::VERSION::STRING.to_f > 5.0 ? 'bigint' : 'uint'
   end
 
   let(:index)  { ThinkingSphinx::ActiveRecord::Index.new(:article) }
