@@ -18,7 +18,7 @@ I am happy to provide support via email and [the google group](http://groups.goo
 
 ### Books
 
-* [Peepcode: Thinking Sphinx PDF](http://peepcode.com/products/thinking-sphinx-pdf)
+There was once a PDF publication on Thinking Sphinx, published by Peepcode. Sadly, it's no longer for sale (but it's terribly out of date now anyway).
 
 ### Blog Posts
 
