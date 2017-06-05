@@ -64,6 +64,57 @@ require 'thinking_sphinx/deploy/capistrano'
 require 'vendor/plugins/thinking-sphinx/recipes/thinking_sphinx'
 {% endhighlight %}
 
+Now, configure Thinking Sphinx 3.x as follows
+
+{% highlight ruby %}
+namespace :sphinx do
+  desc "Symlink Sphinx indexes"
+  task :symlink_indexes do
+    on roles(:app) do
+      sudo "ln -nfs #{shared_path}/db/sphinx #{release_path}/db/sphinx"
+    end
+  end
+
+  desc "Activate Sphinx"
+  task :activate do
+    on roles(:app) do
+      within release_path do
+        as fetch :user do
+          with rails_env: fetch(:rails_env) do
+            execute :rake, 'ts:configure'
+            execute :rake, 'ts:index'
+            execute :rake, 'ts:start'
+          end
+        end
+      end
+    end
+  end
+
+  desc "Stop Sphinx"
+  task :stop do
+    on roles(:app) do
+      within release_path do
+        as fetch :user do
+          with rails_env: fetch(:rails_env) do
+            execute :rake, 'ts:stop'
+          end
+        end
+      end
+    end
+  end
+end
+
+namespace :deploy do
+
+  # THINKING SPHINX
+  before 'deploy:started', 'sphinx:stop'
+  after 'deploy:published', 'sphinx:symlink_indexes'
+  after 'deploy:finished', 'sphinx:activate'
+  # THINKING SPHINX END
+
+end
+{% endhighlight %}
+
 <div class="note">
   <p class="old">Thinking Sphinx v1/v2</p>
   <p><strong>Note</strong>: If you are using an older version of Thinking Sphinx and you've not set your paths up to be outside of a specific deployed release directory, then you'll need to add some extra code to your <code>deploy.rb</code> file to make sure that Sphinx is properly configured, indexed, and started on each deploy.</p>
