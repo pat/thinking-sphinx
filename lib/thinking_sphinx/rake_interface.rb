@@ -17,8 +17,7 @@ class ThinkingSphinx::RakeInterface
 
   def clear_real_time
     configuration.preload_indices
-    indices = configuration.indices.select { |index| index.type == 'rt' }
-    indices.each do |index|
+    real_time_indices.each do |index|
       index.render
       Dir["#{index.path}.*"].each { |path| FileUtils.rm path }
     end
@@ -33,8 +32,7 @@ class ThinkingSphinx::RakeInterface
   end
 
   def generate
-    indices = configuration.indices.select { |index| index.type == 'rt' }
-    indices.each do |index|
+    real_time_indices.each do |index|
       ThinkingSphinx::RealTime::Populator.populate index
     end
   end
@@ -111,6 +109,12 @@ option is set automatically when invoked by rake, via rake's --silent and/or
 
   def configuration
     ThinkingSphinx::Configuration.instance
+  end
+
+  def real_time_indices
+    indices = configuration.indices.select { |index| index.type == 'rt' }
+    indices.select! { |index| index.name == options[:index_filter] } if options[:index_filter]
+    indices
   end
 
   def handle_command_failure(type, result)

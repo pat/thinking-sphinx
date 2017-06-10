@@ -53,7 +53,8 @@ namespace :ts do
     @interface ||= ThinkingSphinx::RakeInterface.new(
       :verbose  => Rake::FileUtilsExt.verbose_flag,
       :silent   => Rake.application.options.silent,
-      :nodetach => (ENV['NODETACH'] == 'true')
+      :nodetach => (ENV['NODETACH'] == 'true'),
+      :index_filter => ENV['INDEX_FILTER']
     )
   end
 end
