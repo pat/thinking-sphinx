@@ -40,7 +40,11 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks do
         double(:name => 'baz', :updateable? => false)
       ])
 
-      allow(instance).to receive_messages :changed => ['bar_column', 'baz'], :bar_column => 7
+      allow(instance).to receive_messages(
+        :changed       => ['bar_column', 'baz'],
+        :bar_column    => 7,
+        :saved_changes => {'bar_column' => [1, 2], 'baz' => [3, 4]}
+      )
     end
 
     it "does not send any updates to Sphinx if updates are disabled" do

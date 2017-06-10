@@ -1,6 +1,12 @@
 class ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks <
   ThinkingSphinx::Callbacks
 
+  if ActiveRecord::Base.instance_methods.grep(/saved_changes/).any?
+    CHANGED_ATTRIBUTES = lambda { |instance| instance.saved_changes.keys }
+  else
+    CHANGED_ATTRIBUTES = lambda { |instance| instance.changed }
+  end
+
   callbacks :after_update
 
   def after_update
@@ -15,12 +21,16 @@ class ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks <
 
   def attributes_hash_for(index)
     updateable_attributes_for(index).inject({}) do |hash, attribute|
-      if instance.changed.include?(attribute.columns.first.__name.to_s)
+      if changed_attributes.include?(attribute.columns.first.__name.to_s)
         hash[attribute.name] = attribute.value_for(instance)
       end
 
       hash
     end
+  end
+
+  def changed_attributes
+    @changed_attributes ||= CHANGED_ATTRIBUTES.call instance
   end
 
   def configuration
