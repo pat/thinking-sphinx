@@ -26,7 +26,7 @@ module ThinkingSphinx::Connection
   def self.pool
     @pool ||= Innertube::Pool.new(
       Proc.new { ThinkingSphinx::Connection.new },
-      Proc.new { |connection| connection.close }
+      Proc.new { |connection| connection.close! }
     )
   end
 
@@ -66,7 +66,11 @@ module ThinkingSphinx::Connection
 
   class Client
     def close
-      client.close unless ThinkingSphinx::Connection.persistent?
+      close! unless ThinkingSphinx::Connection.persistent?
+    end
+
+    def close!
+      client.close
     end
 
     def execute(statement)
