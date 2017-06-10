@@ -47,4 +47,15 @@ gem 'thinking-sphinx', '~> 3.2.0',
 
 At the time of writing this, Rails 4 is supported by Thinking Sphinx releases from 3.0.2 or newer.
 
+### Using Thinking Sphinx with Unicorn
+
+If you're using Unicorn as your web server, you'll want to ensure the connection pool is cleared after forking.
+
+{% highlight ruby %}
+after_fork do |server, worker|
+  # Add this to an existing after_fork block if needed.
+  ThinkingSphinx::Connection.pool.clear
+end
+{% endhighlight %}
+
 [Return to [Installing Thinking Sphinx]](/thinking-sphinx/installing_thinking_sphinx.html)

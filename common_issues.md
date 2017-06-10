@@ -26,6 +26,7 @@ Depending on how you have Sphinx setup, or what database you're using, you might
 * [Catching Exceptions when Searching](#exceptions)
 * [Slow Requests (Especially in Development)](#slow-page-requests)
 * [Errors saying no fields are defined](#no-fields)
+* [Using with Unicorn](#unicorn)
 
 <h3 id="editconf">Editing the generated Sphinx configuration file</h3>
 
@@ -307,4 +308,15 @@ If you have defined fields (using the `indexes` method) but you're getting an er
 gem 'blankslate', '2.1.2.4'
 # ...
 gem 'thinking-sphinx', '2.0.14'
+{% endhighlight %}
+
+<h3 id="unicorn">Using with Unicorn</h3>
+
+If you're using Unicorn as your web server, you'll want to ensure the connection pool is cleared after forking.
+
+{% highlight ruby %}
+after_fork do |server, worker|
+  # Add this to an existing after_fork block if needed.
+  ThinkingSphinx::Connection.pool.clear
+end
 {% endhighlight %}
