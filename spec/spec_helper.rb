@@ -18,4 +18,8 @@ RSpec.configure do |config|
   # enable filtering for examples
   config.filter_run :wip => nil
   config.run_all_when_everything_filtered = true
+
+  config.around :each, :live do |example|
+    example.run_with_retry :retry => 3
+  end
 end
