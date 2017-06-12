@@ -26,8 +26,6 @@ addons:
 services:
   - postgresql
 matrix:
-  allow_failures:
-  - rvm: jruby-9.1.10.0
   exclude:
     - rvm: jruby-9.1.10.0
       env: DATABASE=mysql2 SPHINX_BIN=/usr/local/sphinx-2.0.10/bin/ SPHINX_VERSION=2.0.10
