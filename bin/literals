@@ -1,0 +1,8 @@
+if `ruby --version | grep -q -E "ruby 2\\.[34]"`
+then
+  echo "Automatic frozen string literals are supported"
+  gem install pragmater
+  pragmater --add lib --comments "# frozen_string_literal: true" --whitelist ".rb"
+else
+  echo "Automatic frozen string literals are not supported."
+fi
