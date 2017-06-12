@@ -6,7 +6,7 @@ class JSONColumn
   end
 
   def call
-    sphinx? && postgresql? && column?
+    ruby? && sphinx? && postgresql? && column?
   end
 
   private
@@ -25,6 +25,10 @@ class JSONColumn
 
   def postgresql?
     ENV['DATABASE'] == 'postgresql'
+  end
+
+  def ruby?
+    RUBY_PLATFORM != 'java'
   end
 
   def sphinx?
