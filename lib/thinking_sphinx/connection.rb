@@ -157,8 +157,12 @@ module ThinkingSphinx::Connection
     private
 
     def client
-      @client ||= java.sql.DriverManager.getConnection address,
-        options[:username], options[:password]
+      @client ||= begin
+        properties = Java::JavaUtil::Properties.new
+        properties.setProperty "user", options[:username] if options[:username]
+        properties.setProperty "password", options[:password] if options[:password]
+        Java::ComMysqlJdbc::Driver.new.connect "jdbc:mysql://127.0.0.1:9307/?allowMultiQueries=true", properties
+      end
     rescue base_error => error
       raise ThinkingSphinx::SphinxError.new_from_mysql error
     end
