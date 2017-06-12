@@ -13,14 +13,16 @@ class ThinkingSphinx::Connection::JRuby < ThinkingSphinx::Connection::Client
   private
 
   def client
-    @client ||= begin
-      properties = Java::JavaUtil::Properties.new
-      properties.setProperty "user", options[:username] if options[:username]
-      properties.setProperty "password", options[:password] if options[:password]
-      Java::ComMysqlJdbc::Driver.new.connect "jdbc:mysql://127.0.0.1:9307/?allowMultiQueries=true", properties
-    end
+    @client ||= Java::ComMysqlJdbc::Driver.new.connect address, properties
   rescue base_error => error
     raise ThinkingSphinx::SphinxError.new_from_mysql error
+  end
+
+  def properties
+    object = Java::JavaUtil::Properties.new
+    object.setProperty "user", options[:username]     if options[:username]
+    object.setProperty "password", options[:password] if options[:password]
+    object
   end
 
   def results_for(statements)
