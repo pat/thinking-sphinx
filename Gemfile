@@ -13,3 +13,5 @@ if RUBY_VERSION.to_f <= 2.1
   gem 'rack', '~> 1.0'
   gem 'nokogiri', '1.6.8'
 end
+
+gem 'activerecord', '>= 3.2.22' if RUBY_PLATFORM == 'java'
