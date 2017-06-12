@@ -15,7 +15,7 @@ require 'active_support/core_ext/module/delegation'
 require 'active_support/core_ext/module/attribute_accessors'
 
 module ThinkingSphinx
-  MAXIMUM_STATEMENT_LENGTH = (2 ** 23) - 1
+  MAXIMUM_STATEMENT_LENGTH = (2 ** 23) - 5
 
   def self.count(query = '', options = {})
     search_for_ids(query, options).total_entries
