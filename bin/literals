@@ -1,4 +1,4 @@
-if `ruby --version | grep -q -E "ruby 2\\.[34]"`
+if `ruby --version | grep -q "ruby 2.4"`
 then
   echo "Automatic frozen string literals are supported"
   gem install pragmater
