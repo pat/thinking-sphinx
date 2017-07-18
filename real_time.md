@@ -86,7 +86,7 @@ after_save ThinkingSphinx::RealTime.callback_for(
 )
 {% endhighlight %}
 
-The [rest of the callbacks documentation](indexing.html#callbacks) covers more advanced usage.
+The [rest of the callbacks documentation](indexing.html#callbacks) covers more advanced usage. You do _not_ need to add a `destroy` callback - Thinking Sphinx does this automatically for all indexed models.
 
 ### Testing
 
