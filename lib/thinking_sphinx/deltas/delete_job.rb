@@ -4,6 +4,8 @@ class ThinkingSphinx::Deltas::DeleteJob
   end
 
   def perform
+    return if @document_id.nil?
+
     ThinkingSphinx::Logger.log :query, statement do
       ThinkingSphinx::Connection.take do |connection|
         connection.execute statement

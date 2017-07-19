@@ -30,6 +30,8 @@ module ThinkingSphinx::Core::Index
   end
 
   def document_id_for_key(key)
+    return nil if key.nil?
+
     key * config.indices.count + offset
   end
 
