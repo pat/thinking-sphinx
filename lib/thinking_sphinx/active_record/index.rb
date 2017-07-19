@@ -63,7 +63,7 @@ class ThinkingSphinx::ActiveRecord::Index < Riddle::Configuration::Index
       :delta?          => @options[:delta?],
       :delta_processor => @options[:delta_processor],
       :delta_options   => @options[:delta_options],
-      :primary_key     => @options[:primary_key] || model.primary_key || :id
+      :primary_key     => primary_key
     }
   end
 end

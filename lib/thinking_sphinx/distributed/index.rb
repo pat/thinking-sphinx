@@ -21,4 +21,14 @@ class ThinkingSphinx::Distributed::Index <
   def model
     @model ||= reference.to_s.camelize.constantize
   end
+
+  def primary_key
+    @primary_key ||= configuration.settings['primary_key'] || :id
+  end
+
+  private
+
+  def configuration
+    ThinkingSphinx::Configuration.instance
+  end
 end

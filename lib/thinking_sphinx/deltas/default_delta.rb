@@ -13,7 +13,7 @@ class ThinkingSphinx::Deltas::DefaultDelta
 
   def delete(index, instance)
     ThinkingSphinx::Deltas::DeleteJob.new(
-      index.name, index.document_id_for_key(instance.id)
+      index.name, index.document_id_for_instance(instance)
     ).perform
   end
 

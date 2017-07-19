@@ -25,6 +25,10 @@ module ThinkingSphinx::Core::Index
     false
   end
 
+  def document_id_for_instance(instance)
+    document_id_for_key instance.public_send(primary_key)
+  end
+
   def document_id_for_key(key)
     key * config.indices.count + offset
   end
@@ -45,6 +49,11 @@ module ThinkingSphinx::Core::Index
   def options
     interpret_definition!
     @options
+  end
+
+  def primary_key
+    @primary_key ||= @options[:primary_key] ||
+      config.settings['primary_key'] || model.primary_key || :id
   end
 
   def render

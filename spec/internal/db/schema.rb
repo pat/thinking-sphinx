@@ -4,6 +4,14 @@ ActiveRecord::Schema.define do
     t.timestamps null: false
   end
 
+  create_table(:albums, :force => true, :id => false) do |t|
+    t.string :id
+    t.integer :integer_id
+    t.string :name
+    t.string :artist
+    t.boolean :delta, :default => true, :null => false
+  end
+
   create_table(:animals, :force => true) do |t|
     t.string :name
     t.string :type

@@ -21,7 +21,7 @@ describe ThinkingSphinx::Deltas::DefaultDelta do
   describe '#delete' do
     let(:connection) { double('connection', :execute => nil) }
     let(:index)      { double('index', :name => 'foo_core',
-      :document_id_for_key => 14) }
+      :document_id_for_instance => 14) }
     let(:instance)   { double('instance', :id => 7) }
 
     before :each do
