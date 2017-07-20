@@ -26,3 +26,6 @@ Read up on [installing Sphinx](installing_sphinx.html) and [then Thinking Sphinx
 Read [the quickstart guide](quickstart.html), along with the rest of the documentation.
 
 And when you get stuck, there's always [the google group](http://groups.google.com/group/thinking-sphinx/).
+
+
+### Test
