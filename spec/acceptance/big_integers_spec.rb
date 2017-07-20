@@ -39,7 +39,7 @@ describe '64 bit document ids', :live => true do
   context 'with ActiveRecord' do
     it 'handles large 32 bit integers with an offset multiplier' do
       user = User.create! :name => 'Pat'
-      user.update_column :id, 940983300
+      user.update_column :id, 980190962
 
       index
 
@@ -50,7 +50,7 @@ describe '64 bit document ids', :live => true do
   context 'with Real-Time' do
     it 'handles large 32 bit integers with an offset multiplier' do
       product = Product.create! :name => "Widget"
-      product.update_attributes :id => 940983300
+      product.update_attributes :id => 980190962
       expect(
         Product.search('widget', :indices => ['product_core']).to_a
       ).to eq([product])
