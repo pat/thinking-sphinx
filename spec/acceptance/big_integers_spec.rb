@@ -56,4 +56,4 @@ describe '64 bit document ids', :live => true do
       ).to eq([product])
     end
   end
-end
+end if `searchd --help`.split("\n")[0][/id64/]
