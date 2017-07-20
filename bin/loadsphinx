@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+version=$1
+name="sphinx-$version"
+url="http://sphinxsearch.com/files/$name-release.tar.gz"
+bucket="thinking-sphinx"
+directory="ext/sphinx"
+prefix="`pwd`/$directory"
+file="ext/$name.tar.gz"
+
+download_and_compile_source () {
+  curl -O $url
+  tar -zxf $name-release.tar.gz
+  cd $name-release
+  ./configure --with-mysql --with-pgsql --enable-id64 --prefix=$prefix
+  make
+  make install
+  cd ..
+  rm -rf $name-release.tar.gz $name-release
+}
+
+load_cache () {
+  aws s3 cp s3://$bucket/bincaches/$name.tar.gz $file
+  tar -zxf $file
+}
+
+push_cache () {
+  tar -czf $file $directory
+  aws s3 cp $file s3://$bucket/bincaches/$name.tar.gz --acl public-read
+}
+
+if aws s3api head-object --bucket $bucket --key bincaches/$name.tar.gz
+then
+  load_cache
+else
+  download_and_compile_source
+  push_cache
+fi
