@@ -21,6 +21,17 @@ class ThinkingSphinx::Search < Array
   attr_reader   :options
   attr_accessor :query
 
+  def self.valid_options
+    @valid_options
+  end
+
+  @valid_options = [
+    :classes, :conditions, :geo, :group_by, :ids_only, :ignore_scopes, :indices,
+    :limit, :masks, :max_matches, :middleware, :offset, :order, :order_group_by,
+    :page, :per_page, :populate, :retry_stale, :select, :skip_sti, :sql, :star,
+    :with, :with_all, :without, :without_ids
+  ]
+
   def initialize(query = nil, options = {})
     query, options   = nil, query if query.is_a?(Hash)
     @query, @options = query, options

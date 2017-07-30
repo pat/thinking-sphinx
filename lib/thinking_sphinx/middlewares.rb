@@ -2,7 +2,7 @@ module ThinkingSphinx::Middlewares; end
 
 %w[
   middleware active_record_translator attribute_typer geographer glazier
-  ids_only inquirer sphinxql stale_id_checker stale_id_filter utf8
+  ids_only inquirer sphinxql stale_id_checker stale_id_filter utf8 valid_options
 ].each do |middleware|
   require "thinking_sphinx/middlewares/#{middleware}"
 end
@@ -12,7 +12,7 @@ module ThinkingSphinx::Middlewares
     middlewares.each { |m| builder.use m }
   end
 
-  BASE_MIDDLEWARES = [AttributeTyper, SphinxQL, Geographer, Inquirer]
+  BASE_MIDDLEWARES = [ValidOptions, AttributeTyper, SphinxQL, Geographer, Inquirer]
 
   DEFAULT = ::Middleware::Builder.new do
     use StaleIdFilter
