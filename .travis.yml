@@ -11,3 +11,7 @@ after_script:
 env:
   global:
     secure: WEEu2v8klaShwQ6//6HR3NIfFuUOZLR/5yWcMI8GZBLXqyJ9aFGgvDxfdQyTg60YkPgxAEgADugzeA/prZCKstVU5QMH/UdrY0j4QJ4Q5Av/2AJpXYFTO3spgGJfNyGtzO746ynivpMfnAKQeFwHCokE+zXaAFgrYDqv/uevcj8=
+branches:
+  only:
+  - gh-pages
+  - /.*/
