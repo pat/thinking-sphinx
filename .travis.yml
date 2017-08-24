@@ -1,0 +1,13 @@
+language: ruby
+rvm: 2.4.1
+sudo: false
+before_install:
+- pip install --upgrade --user awscli
+- gem update --system
+- gem install bundler
+script: bundle exec jekyll build
+after_script:
+- aws s3 cp _site s3://freelancing-gods/thinking-sphinx/ --recursive --acl public-read
+env:
+  global:
+    secure: WEEu2v8klaShwQ6//6HR3NIfFuUOZLR/5yWcMI8GZBLXqyJ9aFGgvDxfdQyTg60YkPgxAEgADugzeA/prZCKstVU5QMH/UdrY0j4QJ4Q5Av/2AJpXYFTO3spgGJfNyGtzO746ynivpMfnAKQeFwHCokE+zXaAFgrYDqv/uevcj8=

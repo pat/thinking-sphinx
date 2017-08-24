@@ -1,6 +1,8 @@
 highligher: rouge
 name: Thinking Sphinx
-url: http://freelancing-gods.com/thinking-sphinx
+url: https://freelancing-gods.com/thinking-sphinx
 author:
   name: Pat Allan
-  uri: http://freelancing-gods.com/about.html
+  uri: https://freelancing-gods.com/about.html
+exclude:
+  - vendor
