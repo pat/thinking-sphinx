@@ -41,6 +41,18 @@ describe 'SQL delta indexing', :live => true do
     expect(Book.search('Harry')).to be_empty
   end
 
+  it "does not match on old values with alternative ids" do
+    album = Album.create :name => 'Eternal Nightcap', :artist => 'The Whitloms'
+    index
+
+    expect(Album.search('Whitloms').to_a).to eq([album])
+
+    album.reload.update_attributes(:artist => 'The Whitlams')
+    sleep 0.25
+
+    expect(Book.search('Whitloms')).to be_empty
+  end
+
   it "automatically indexes new records of subclasses" do
     book = Hardcover.create(
       :title => 'American Gods', :author => 'Neil Gaiman'

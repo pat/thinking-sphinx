@@ -2,6 +2,7 @@ class ThinkingSphinx::Middlewares::ActiveRecordTranslator <
   ThinkingSphinx::Middlewares::Middleware
 
   NO_MODEL = Struct.new(:primary_key).new(:id).freeze
+  NO_INDEX = Struct.new(:primary_key).new(:id).freeze
 
   def call(contexts)
     contexts.each do |context|
@@ -38,20 +39,23 @@ class ThinkingSphinx::Middlewares::ActiveRecordTranslator <
       }.compact
     end
 
+    def index_for(model)
+      return NO_INDEX unless context[:indices]
+
+      context[:indices].detect { |index| index.model == model } || NO_INDEX
+    end
+
     def model_names
       @model_names ||= context[:results].collect { |row|
         row['sphinx_internal_class']
       }.uniq
     end
 
-    def primary_key
-      @primary_key ||= primary_key_for NO_MODEL
-    end
-
     def primary_key_for(model)
       model = NO_MODEL unless model.respond_to?(:primary_key)
 
-      context.configuration.settings['primary_key'] || model.primary_key || :id
+      @primary_keys        ||= {}
+      @primary_keys[model] ||= index_for(model).primary_key
     end
 
     def reset_memos
@@ -61,13 +65,16 @@ class ThinkingSphinx::Middlewares::ActiveRecordTranslator <
 
     def result_for(row)
       results_for_models[row['sphinx_internal_class']].detect { |record|
-        record.public_send(primary_key) == row['sphinx_internal_id']
+        record.public_send(
+          primary_key_for(record.class)
+        ) == row['sphinx_internal_id']
       }
     end
 
     def results_for_models
       @results_for_models ||= model_names.inject({}) do |hash, name|
         model = name.constantize
+
         hash[name] = model_relation_with_sql_options(model.unscoped).where(
           primary_key_for(model) => ids_for_model(name)
         )

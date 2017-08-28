@@ -13,6 +13,11 @@ class ThinkingSphinx::ActiveRecord::LogSubscriber < ActiveSupport::LogSubscriber
     identifier = color('Sphinx Query (%.1fms)' % event.duration, GREEN, true)
     debug "  #{identifier}  #{event.payload[:query]}"
   end
+
+  def warn(event)
+    identifier = color 'Sphinx', GREEN, true
+    warn "  #{identifier}  #{event.payload[:guard]}"
+  end
 end
 
 ThinkingSphinx::ActiveRecord::LogSubscriber.attach_to :thinking_sphinx

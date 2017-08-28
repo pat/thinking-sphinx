@@ -13,11 +13,8 @@ describe ThinkingSphinx::Deletion do
 
     context 'index is SQL-backed' do
       it "updates the deleted flag to false" do
-        expect(connection).to receive(:execute).with <<-SQL
-UPDATE foo_core
-SET sphinx_deleted = 1
-WHERE id IN (14)
-        SQL
+        expect(connection).to receive(:execute).
+          with('UPDATE foo_core SET sphinx_deleted = 1 WHERE id IN (14)')
 
         ThinkingSphinx::Deletion.perform index, 7
       end

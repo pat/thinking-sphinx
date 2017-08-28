@@ -1,6 +1,7 @@
 *.gem
 .bundle
 .rbx
+gemfiles
 Gemfile.lock
 *.sublime-*
 pkg/*

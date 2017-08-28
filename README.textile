@@ -1,11 +1,12 @@
 h1. Thinking Sphinx
 
-Thinking Sphinx is a library for connecting ActiveRecord to the Sphinx full-text search tool, and integrates closely with Rails (but also works with other Ruby web frameworks). The current release is v3.3.0.
+Thinking Sphinx is a library for connecting ActiveRecord to the Sphinx full-text search tool, and integrates closely with Rails (but also works with other Ruby web frameworks). The current release is v3.4.0.
 
 h2. Upgrading
 
 Please refer to the release notes for any changes you need to make when upgrading:
 
+* "v3.4.0":https://github.com/pat/thinking-sphinx/releases/tag/v3.4.0
 * "v3.3.0":https://github.com/pat/thinking-sphinx/releases/tag/v3.3.0
 * "v3.2.0":https://github.com/pat/thinking-sphinx/releases/tag/v3.2.0
 * "v3.1.4":https://github.com/pat/thinking-sphinx/releases/tag/v3.1.4
@@ -21,9 +22,9 @@ h2. Installation
 
 It's a gem, so install it like you would any other gem. You will also need to specify the mysql2 gem if you're using MRI, or jdbc-mysql if you're using JRuby:
 
-<pre><code>gem 'mysql2',          '~> 0.3.18', :platform => :ruby
+<pre><code>gem 'mysql2',          '~> 0.3', :platform => :ruby
 gem 'jdbc-mysql',      '= 5.1.35', :platform => :jruby
-gem 'thinking-sphinx', '~> 3.3.0'</code></pre>
+gem 'thinking-sphinx', '~> 3.4.0'</code></pre>
 
 The MySQL gems mentioned are required for connecting to Sphinx, so please include it even when you're using PostgreSQL for your database. If you're using JRuby, there is "currently an issue with Sphinx and jdbc-mysql 5.1.36 or newer":http://sphinxsearch.com/forum/view.html?id=13939, so you'll need to stick to nothing more recent than 5.1.35.
 
@@ -84,4 +85,4 @@ You can then run the unit tests with @rake spec:unit@, the acceptance tests with
 
 h2. Licence
 
-Copyright (c) 2007-2015, Thinking Sphinx is developed and maintained by Pat Allan, and is released under the open MIT Licence. Many thanks to "all who have contributed patches":https://github.com/pat/thinking-sphinx/contributors.
+Copyright (c) 2007-2017, Thinking Sphinx is developed and maintained by Pat Allan, and is released under the open MIT Licence. Many thanks to "all who have contributed patches":https://github.com/pat/thinking-sphinx/contributors.

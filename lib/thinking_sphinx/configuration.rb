@@ -84,9 +84,8 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
         end
       end
 
-      if settings['distributed_indices'].nil? || settings['distributed_indices']
-        ThinkingSphinx::Configuration::DistributedIndices.new(indices).reconcile
-      end
+      normalise
+      verify
 
       @preloaded_indices = true
     end
@@ -94,10 +93,6 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 
   def render
     preload_indices
-
-    ThinkingSphinx::Configuration::ConsistentIds.new(indices).reconcile
-    ThinkingSphinx::Configuration::MinimumFields.new(indices).reconcile
-    ThinkingSphinx::Configuration::DuplicateNames.new(indices).reconcile
 
     super
   end
@@ -137,6 +132,16 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 
   private
 
+  def apply_sphinx_settings!
+    sphinx_sections.each do |object|
+      settings.each do |key, value|
+        next unless object.class.settings.include?(key.to_sym)
+
+        object.send("#{key}=", value)
+      end
+    end
+  end
+
   def configure_searchd
     configure_searchd_log_files
 
@@ -153,17 +158,35 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     searchd.query_log = log_root.join("#{environment}.searchd.query.log").to_s
   end
 
+  def framework_root
+    Pathname.new(framework.root)
+  end
+
   def log_root
     real_path 'log'
   end
 
-  def framework_root
-    Pathname.new(framework.root)
+  def normalise
+    if settings['distributed_indices'].nil? || settings['distributed_indices']
+      ThinkingSphinx::Configuration::DistributedIndices.new(indices).reconcile
+    end
+
+    ThinkingSphinx::Configuration::ConsistentIds.new(indices).reconcile
+    ThinkingSphinx::Configuration::MinimumFields.new(indices).reconcile
   end
 
   def real_path(*arguments)
     path = framework_root.join(*arguments)
     path.exist? ? path.realpath : path
+  end
+
+  def reset
+    @settings = nil
+    setup
+  end
+
+  def settings_file
+    framework_root.join 'config', 'thinking_sphinx.yml'
   end
 
   def settings_to_hash
@@ -174,33 +197,18 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     contents && contents[environment] || {}
   end
 
-  def settings_file
-    framework_root.join 'config', 'thinking_sphinx.yml'
-  end
-
-  def reset
-    @settings = nil
-    setup
-  end
-
-  def tmp_path
-    real_path 'tmp'
-  end
-
   def sphinx_sections
     sections = [indexer, searchd]
     sections.unshift common if settings['common_sphinx_configuration']
     sections
   end
 
-  def apply_sphinx_settings!
-    sphinx_sections.each do |object|
-      settings.each do |key, value|
-        next unless object.class.settings.include?(key.to_sym)
+  def tmp_path
+    real_path 'tmp'
+  end
 
-        object.send("#{key}=", value)
-      end
-    end
+  def verify
+    ThinkingSphinx::Configuration::DuplicateNames.new(indices).reconcile
   end
 end
 

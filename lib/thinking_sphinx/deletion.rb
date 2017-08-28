@@ -25,8 +25,12 @@ class ThinkingSphinx::Deletion
   end
 
   def execute(statement)
-    ThinkingSphinx::Connection.take do |connection|
-      connection.execute statement
+    statement = statement.gsub(/\s*\n\s*/, ' ').strip
+
+    ThinkingSphinx::Logger.log :query, statement do
+      ThinkingSphinx::Connection.take do |connection|
+        connection.execute statement
+      end
     end
   end
 

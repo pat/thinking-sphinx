@@ -79,6 +79,13 @@ describe 'Searching within a model', :live => true do
       Category.search.to_a
     }.to raise_error(ThinkingSphinx::NoIndicesError)
   end
+
+  it "handles models with alternative id columns" do
+    album = Album.create! :name => 'The Seldom Seen Kid', :artist => 'Elbow'
+    index
+
+    expect(Album.search.first).to eq(album)
+  end
 end
 
 describe 'Searching within a model with a realtime index', :live => true do

@@ -15,7 +15,7 @@ require 'active_support/core_ext/module/delegation'
 require 'active_support/core_ext/module/attribute_accessors'
 
 module ThinkingSphinx
-  MAXIMUM_STATEMENT_LENGTH = (2 ** 23) - 1
+  MAXIMUM_STATEMENT_LENGTH = (2 ** 23) - 5
 
   def self.count(query = '', options = {})
     search_for_ids(query, options).total_entries
@@ -40,14 +40,24 @@ module ThinkingSphinx
 
   @before_index_hooks = []
 
-  module Subscribers; end
+  module Commands; end
   module IndexingStrategies; end
+  module Interfaces; end
+  module Subscribers; end
 end
 
 # Core
+require 'thinking_sphinx/attribute_types'
 require 'thinking_sphinx/batched_search'
 require 'thinking_sphinx/callbacks'
 require 'thinking_sphinx/core'
+require 'thinking_sphinx/with_output'
+require 'thinking_sphinx/commands/base'
+require 'thinking_sphinx/commands/configure'
+require 'thinking_sphinx/commands/index'
+require 'thinking_sphinx/commands/start_attached'
+require 'thinking_sphinx/commands/start_detached'
+require 'thinking_sphinx/commands/stop'
 require 'thinking_sphinx/configuration'
 require 'thinking_sphinx/connection'
 require 'thinking_sphinx/controller'
@@ -63,6 +73,9 @@ require 'thinking_sphinx/index'
 require 'thinking_sphinx/indexing_strategies/all_at_once'
 require 'thinking_sphinx/indexing_strategies/one_at_a_time'
 require 'thinking_sphinx/index_set'
+require 'thinking_sphinx/interfaces/daemon'
+require 'thinking_sphinx/interfaces/real_time'
+require 'thinking_sphinx/interfaces/sql'
 require 'thinking_sphinx/masks'
 require 'thinking_sphinx/middlewares'
 require 'thinking_sphinx/panes'

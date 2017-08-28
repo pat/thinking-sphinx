@@ -14,7 +14,7 @@ module ThinkingSphinx
         @model             = model
         @database_settings = model.connection.instance_variable_get(:@config).clone
         @options           = {
-          :utf8? => (@database_settings[:encoding] == 'utf8')
+          :utf8? => (@database_settings[:encoding].to_s[/^utf8/])
         }.merge options
 
         @fields            = []

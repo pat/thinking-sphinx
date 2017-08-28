@@ -74,5 +74,12 @@ describe ThinkingSphinx::Search::Query do
 
       expect(query.to_s).to eq('tasty @title pancakes')
     end
+
+    it "handles multiple fields for a single condition" do
+      query = ThinkingSphinx::Search::Query.new '',
+        [:title, :content] => 'pancakes'
+
+      expect(query.to_s).to eq('@(title,content) pancakes')
+    end
   end
 end

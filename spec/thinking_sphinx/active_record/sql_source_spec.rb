@@ -159,6 +159,12 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       expect(source.options[:utf8?]).to be_truthy
     end
 
+    it "sets utf8? to true if the database encoding starts with utf8" do
+      db_config[:encoding] = 'utf8mb4'
+
+      expect(source.options[:utf8?]).to be_truthy
+    end
+
     describe "#primary key" do
       let(:model)  { double('model', :connection => connection,
                            :name => 'User', :column_names => [], :inheritance_column => 'type') }

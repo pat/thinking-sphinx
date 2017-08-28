@@ -1,3 +1,27 @@
+2017-08-28: 3.4.0
+* [CHANGE] Delta callback logic now prioritises checking for high level settings rather than model changes.
+* [FIX] Index normalisation now occurs consistently, and removes unneccesary sphinx_internal_class_name fields from real-time indices.
+* [FEATURE] Rake tasks are now unified, so the original tasks will operate on real-time indices as well.
+* [FEATURE] Output warnings when unknown options are used in search calls.
+* [CHANGE] Allow for unsaved records when calculating document ids (and return nil).
+* [CHANGE] Display SphinxQL deletion statements in the log.
+* [CHANGE] Add support for Ruby's frozen string literals feature.
+* [FIX] Fix Sphinx connections in JRuby.
+* [FIX] Fix long SphinxQL query handling in JRuby.
+* [FEATURE] Allow generation of a single real-time index (Tim Brown).
+* [FIX] Always close the SphinxQL connection if Innertube's asking (@cmaion).
+* [CHANGE] Use saved_changes if it's available (in Rails 5.1+).
+* [FEATURE] Automatically use UTF8 in Sphinx for encodings that are extensions of UTF8.
+* [FIX] Get bigint primary keys working in Rails 5.1.
+* [CHANGE] Set a default connection timeout of 5 seconds.
+* [FIX] Fix handling of attached starts of Sphinx (via Henne Vogelsang).
+* [FIX] Fix multi-field conditions.
+* [FEATURE] Basic type checking for attribute filters.
+* [CHANGE] Don't search multi-table inheritance ancestors.
+* [FIX] Use the base class of STI models for polymorphic join generation (via Andrés Cirugeda).
+* [CHANGE] Handle non-computable queries as parse errors.
+* [FIX] Ensure ts:index now respects rake silent/quiet flags.
+
 2016-12-13: 3.3.0
 * [FEATURE] Real-time callbacks can now be used with after_commit hooks if that's preferred over after_save.
 * [CHANGE] Only toggle the delta value if the record has changed or is new (rather than on every single save call).

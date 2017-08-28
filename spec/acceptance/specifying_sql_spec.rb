@@ -155,9 +155,27 @@ describe 'specifying SQL for index definitions' do
     expect(query).to match(/LEFT OUTER JOIN .users. ON .users.\..id. = .articles.\..user_id./)
     expect(query).to match(/.users.\..name./)
   end
+
+  it "allows for STI mixed with polymorphic joins" do
+    index = ThinkingSphinx::ActiveRecord::Index.new(:event)
+    index.definition_block = Proc.new {
+      indexes eventable.name, :as => :name
+      polymorphs eventable, :to => %w(Bird Car)
+    }
+    index.render
+
+    query = index.sources.first.sql_query
+    expect(query).to match(/LEFT OUTER JOIN .animals. ON .animals.\..id. = .events.\..eventable_id. .* AND .events.\..eventable_type. = 'Animal'/)
+    expect(query).to match(/LEFT OUTER JOIN .cars. ON .cars.\..id. = .events.\..eventable_id. AND .events.\..eventable_type. = 'Car'/)
+    expect(query).to match(/.animals.\..name., .cars.\..name./)
+  end
 end if ActiveRecord::VERSION::MAJOR > 3
 
 describe 'separate queries for MVAs' do
+  def id_type
+    ActiveRecord::VERSION::STRING.to_f > 5.0 ? 'bigint' : 'uint'
+  end
+
   let(:index)  { ThinkingSphinx::ActiveRecord::Index.new(:article) }
   let(:count)  { ThinkingSphinx::Configuration.instance.indices.count }
   let(:source) { index.sources.first }
@@ -174,7 +192,7 @@ describe 'separate queries for MVAs' do
     }
     declaration, query = attribute.split(/;\s+/)
 
-    expect(declaration).to eq('uint tag_ids from query')
+    expect(declaration).to eq("uint tag_ids from query")
     expect(query).to match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .taggings.\..tag_id. AS .tag_ids. FROM .taggings.\s? WHERE \(.taggings.\..article_id. IS NOT NULL\)$/)
   end
 
@@ -190,7 +208,7 @@ describe 'separate queries for MVAs' do
     }
     declaration, query = attribute.split(/;\s+/)
 
-    expect(declaration).to eq('uint tag_ids from query')
+    expect(declaration).to eq("#{id_type} tag_ids from query")
     expect(query).to match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. WHERE \(.taggings.\..article_id. IS NOT NULL\)\s?$/)
   end
 
@@ -206,7 +224,7 @@ describe 'separate queries for MVAs' do
     }
     declaration, query = attribute.split(/;\s+/)
 
-    expect(declaration).to eq('uint tag_ids from query')
+    expect(declaration).to eq("#{id_type} tag_ids from query")
     expect(query).to match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. WHERE \(.taggings.\..article_id. IS NOT NULL\)\s?$/)
   end
 
@@ -224,7 +242,7 @@ describe 'separate queries for MVAs' do
     }
     declaration, query = attribute.split(/;\s+/)
 
-    expect(declaration).to eq('uint tag_ids from query')
+    expect(declaration).to eq("#{id_type} tag_ids from query")
     expect(query).to match(/^SELECT .articles.\..user_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .articles. INNER JOIN .taggings. ON .taggings.\..article_id. = .articles.\..id. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. WHERE \(.articles.\..user_id. IS NOT NULL\)\s?$/)
   end
 
@@ -242,7 +260,7 @@ describe 'separate queries for MVAs' do
     }
     declaration, query = attribute.split(/;\s+/)
 
-    expect(declaration).to eq('uint genre_ids from query')
+    expect(declaration).to eq("#{id_type} genre_ids from query")
     expect(query).to match(/^SELECT .books_genres.\..book_id. \* #{count} \+ #{source.offset} AS .id., .books_genres.\..genre_id. AS .genre_ids. FROM .books_genres.\s?$/)
   end if ActiveRecord::VERSION::MAJOR > 3
 
@@ -258,7 +276,7 @@ describe 'separate queries for MVAs' do
     }
     declaration, query, range = attribute.split(/;\s+/)
 
-    expect(declaration).to eq('uint tag_ids from ranged-query')
+    expect(declaration).to eq("uint tag_ids from ranged-query")
     expect(query).to match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .taggings.\..tag_id. AS .tag_ids. FROM .taggings. \s?WHERE \(.taggings.\..article_id. BETWEEN \$start AND \$end\) AND \(.taggings.\..article_id. IS NOT NULL\)$/)
     expect(range).to match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
   end
@@ -275,7 +293,7 @@ describe 'separate queries for MVAs' do
     }
     declaration, query, range = attribute.split(/;\s+/)
 
-    expect(declaration).to eq('uint tag_ids from ranged-query')
+    expect(declaration).to eq("#{id_type} tag_ids from ranged-query")
     expect(query).to match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..id. AS .tag_ids. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. \s?WHERE \(.taggings.\..article_id. BETWEEN \$start AND \$end\) AND \(.taggings.\..article_id. IS NOT NULL\)$/)
     expect(range).to match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
   end
@@ -294,7 +312,7 @@ describe 'separate queries for MVAs' do
     }
     declaration, query, range = attribute.split(/;\s+/)
 
-    expect(declaration).to eq('uint genre_ids from ranged-query')
+    expect(declaration).to eq("#{id_type} genre_ids from ranged-query")
     expect(query).to match(/^SELECT .books_genres.\..book_id. \* #{count} \+ #{source.offset} AS .id., .books_genres.\..genre_id. AS .genre_ids. FROM .books_genres. WHERE \(.books_genres.\..book_id. BETWEEN \$start AND \$end\)$/)
     expect(range).to match(/^SELECT MIN\(.books_genres.\..book_id.\), MAX\(.books_genres.\..book_id.\) FROM .books_genres.$/)
   end if ActiveRecord::VERSION::MAJOR > 3

@@ -19,6 +19,13 @@ describe ThinkingSphinx::SphinxError do
         to be_a(ThinkingSphinx::ParseError)
     end
 
+    it "translates 'query is non-computable' errors" do
+      allow(error).to receive_messages :message => 'index model_core: query is non-computable (single NOT operator)'
+
+      expect(ThinkingSphinx::SphinxError.new_from_mysql(error)).
+        to be_a(ThinkingSphinx::ParseError)
+    end
+
     it "translates query errors" do
       allow(error).to receive_messages :message => 'index foo: query error: something is wrong'
 
