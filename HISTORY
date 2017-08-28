@@ -1,4 +1,4 @@
-Next Release:
+2017-08-28: 3.4.0
 * [CHANGE] Delta callback logic now prioritises checking for high level settings rather than model changes.
 * [FIX] Index normalisation now occurs consistently, and removes unneccesary sphinx_internal_class_name fields from real-time indices.
 * [FEATURE] Rake tasks are now unified, so the original tasks will operate on real-time indices as well.
