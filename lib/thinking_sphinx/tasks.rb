@@ -39,7 +39,9 @@ invokes ts:index.
   end
 
   desc 'Delete and regenerate Sphinx files, restart the daemon'
-  task :rebuild => [:stop, :clear, :configure, :index, :start, 'ts:rt:index']
+  task :rebuild => [
+    :stop, :clear, :configure, 'ts:sql:index', :start, 'ts:rt:index'
+  ]
 
   desc 'DEPRECATED: Delete and regenerate Sphinx files, restart the daemon'
   task :regenerate do
