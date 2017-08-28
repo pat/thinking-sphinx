@@ -15,7 +15,18 @@ RSpec.describe ThinkingSphinx::Commands::Stop do
   it "prints a message if the daemon is not already running" do
     allow(controller).to receive_messages :running? => false
 
-    expect(stream).to receive(:puts).with('searchd is not currently running.')
+    expect(stream).to receive(:puts).with('searchd is not currently running.').
+      and_return(nil)
+    expect(stream).to_not receive(:puts).
+      with('"Stopped searchd daemon (pid: ).')
+
+    command.call
+  end
+
+  it "does not try to stop the daemon if it's not running" do
+    allow(controller).to receive_messages :running? => false
+
+    expect(controller).to_not receive(:stop)
 
     command.call
   end

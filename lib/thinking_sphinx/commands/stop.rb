@@ -1,7 +1,8 @@
 class ThinkingSphinx::Commands::Stop < ThinkingSphinx::Commands::Base
   def call
     unless controller.running?
-      log 'searchd is not currently running.' and return
+      log 'searchd is not currently running.'
+      return
     end
 
     pid = controller.pid
