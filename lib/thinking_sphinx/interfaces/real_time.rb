@@ -5,7 +5,6 @@ class ThinkingSphinx::Interfaces::RealTime
     super
 
     configuration.preload_indices
-    configuration.render
 
     FileUtils.mkdir_p configuration.indices_location
   end
