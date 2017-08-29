@@ -20,6 +20,7 @@ download_and_compile_source () {
 }
 
 load_cache () {
+  mkdir ext
   curl -o $file http://$bucket.s3.amazonaws.com/bincaches/$name.tar.gz
   tar -zxf $file
 }
