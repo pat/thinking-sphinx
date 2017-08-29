@@ -1,3 +1,7 @@
+2017-08-29: 3.4.1
+* [CHANGE] Treat "Lost connection to MySQL server" as a connection error (Manuel Schnitzer).
+* [FIX] Index normalisation will now work even when index model tables don't exist.
+
 2017-08-28: 3.4.0
 * [CHANGE] Delta callback logic now prioritises checking for high level settings rather than model changes.
 * [FIX] Index normalisation now occurs consistently, and removes unneccesary sphinx_internal_class_name fields from real-time indices.
