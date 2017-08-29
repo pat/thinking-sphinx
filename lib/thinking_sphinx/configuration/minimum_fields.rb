@@ -28,6 +28,7 @@ class ThinkingSphinx::Configuration::MinimumFields
 
   def no_inheritance_columns?
     indices.select { |index|
+      index.model.table_exists? &&
       index.model.column_names.include?(index.model.inheritance_column)
     }.empty?
   end
