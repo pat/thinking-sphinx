@@ -35,7 +35,14 @@ describe ThinkingSphinx::SphinxError do
 
     it "translates connection errors" do
       allow(error).to receive_messages :message => "Can't connect to MySQL server on '127.0.0.1' (61)"
+      expect(ThinkingSphinx::SphinxError.new_from_mysql(error)).
+        to be_a(ThinkingSphinx::ConnectionError)
 
+      allow(error).to receive_messages :message => "Communications link failure"
+      expect(ThinkingSphinx::SphinxError.new_from_mysql(error)).
+        to be_a(ThinkingSphinx::ConnectionError)
+
+      allow(error).to receive_messages :message => "Lost connection to MySQL server"
       expect(ThinkingSphinx::SphinxError.new_from_mysql(error)).
         to be_a(ThinkingSphinx::ConnectionError)
     end
