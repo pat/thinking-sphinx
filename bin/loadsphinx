@@ -20,7 +20,7 @@ download_and_compile_source () {
 }
 
 load_cache () {
-  aws s3 cp s3://$bucket/bincaches/$name.tar.gz $file
+  curl -o $file http://$bucket.s3.amazonaws.com/bincaches/$name.tar.gz
   tar -zxf $file
 }
 
@@ -29,7 +29,7 @@ push_cache () {
   aws s3 cp $file s3://$bucket/bincaches/$name.tar.gz --acl public-read
 }
 
-if aws s3api head-object --bucket $bucket --key bincaches/$name.tar.gz
+if curl -i --head --fail http://$bucket.s3.amazonaws.com/bincaches/$name.tar.gz
 then
   load_cache
 else
