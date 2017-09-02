@@ -5,4 +5,9 @@ author:
   name: Pat Allan
   uri: https://freelancing-gods.com/about.html
 exclude:
+  - Gemfile
+  - Gemfile.lock
+  - gemfiles
+  - pkg
   - vendor
+  - spec
