@@ -48,11 +48,11 @@ end
 
 You'll also want to add [a real-time callback](#callbacks) to your model.
 
-When you're defining indices for namespaced models, use a lowercase string with /'s for namespacing as the model reference:
+When you're defining indices for namespaced models, use a lowercase string with /'s for namespacing and then casted to a symbol as the model reference:
 
 {% highlight ruby %}
 # For a model named Blog::Article:
-ThinkingSphinx::Index.define 'blog/article', :with => :active_record
+ThinkingSphinx::Index.define 'blog/article'.to_sym, :with => :active_record
 {% endhighlight %}
 
 <div class="note">
