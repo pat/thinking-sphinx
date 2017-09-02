@@ -4,7 +4,7 @@ module ThinkingSphinx::RealTime
   end
 
   def self.callback_for(reference, path = [], &block)
-    Callbacks::RealTimeCallbacks.new reference, path, &block
+    Callbacks::RealTimeCallbacks.new reference.to_sym, path, &block
   end
 end
 
