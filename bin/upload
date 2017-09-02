@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+aws s3 cp _site s3://freelancing-gods/thinking-sphinx/ --recursive \
+  --acl public-read
