@@ -10,8 +10,6 @@ class ThinkingSphinx::RealTime::Populator
   def populate(&block)
     instrument 'start_populating'
 
-    remove_files
-
     scope.find_in_batches(:batch_size => batch_size) do |instances|
       transcriber.copy *instances
       instrument 'populated', :instances => instances
@@ -36,10 +34,6 @@ class ThinkingSphinx::RealTime::Populator
     ActiveSupport::Notifications.instrument(
       "#{message}.thinking_sphinx.real_time", options.merge(:index => index)
     )
-  end
-
-  def remove_files
-    Dir["#{index.path}*"].each { |file| FileUtils.rm file }
   end
 
   def transcriber
