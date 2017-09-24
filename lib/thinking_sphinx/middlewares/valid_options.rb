@@ -13,7 +13,7 @@ class ThinkingSphinx::Middlewares::ValidOptions <
     unknown = invalid_keys options.keys
     return if unknown.empty?
 
-    ThinkingSphinx::Logger.log :warn,
+    ThinkingSphinx::Logger.log :caution,
       "Unexpected search options: #{unknown.inspect}"
   end
 
