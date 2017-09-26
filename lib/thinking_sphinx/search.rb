@@ -6,6 +6,15 @@ class ThinkingSphinx::Search < Array
     respond_to_missing? send should should_not type )
   SAFE_METHODS = %w( partition private_methods protected_methods public_methods
     send class )
+  KNOWN_OPTIONS = (
+    [
+      :classes, :conditions, :geo, :group_by, :ids_only, :ignore_scopes,
+      :indices, :limit, :masks, :max_matches, :middleware, :offset, :order,
+      :order_group_by, :page, :per_page, :populate, :retry_stale, :select,
+      :skip_sti, :sql, :star, :with, :with_all, :without, :without_ids
+    ] +
+    ThinkingSphinx::Middlewares::SphinxQL::SELECT_OPTIONS
+  ).uniq
   DEFAULT_MASKS = [
     ThinkingSphinx::Masks::PaginationMask,
     ThinkingSphinx::Masks::ScopesMask,
@@ -25,12 +34,7 @@ class ThinkingSphinx::Search < Array
     @valid_options
   end
 
-  @valid_options = [
-    :classes, :conditions, :geo, :group_by, :ids_only, :ignore_scopes, :indices,
-    :limit, :masks, :max_matches, :middleware, :offset, :order, :order_group_by,
-    :page, :per_page, :populate, :retry_stale, :select, :skip_sti, :sql, :star,
-    :with, :with_all, :without, :without_ids
-  ]
+  @valid_options = KNOWN_OPTIONS.dup
 
   def initialize(query = nil, options = {})
     query, options   = nil, query if query.is_a?(Hash)
