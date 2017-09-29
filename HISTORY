@@ -1,4 +1,4 @@
-Edge:
+2017-09-29: 3.4.2
 * [FIX] Real-time callback syntax for namespaced models accepts a string (as documented).
 * [CHANGE] Allow use of deletion callbacks for rollback events.
 * [CHANGE] Remove extra deletion code in the Populator - it's also being done by the real-time rake interface.
