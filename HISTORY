@@ -1,3 +1,10 @@
+Edge:
+* [FIX] Real-time callback syntax for namespaced models accepts a string (as documented).
+* [CHANGE] Allow use of deletion callbacks for rollback events.
+* [CHANGE] Remove extra deletion code in the Populator - it's also being done by the real-time rake interface.
+* [FIX] Fix up logged warnings.
+* [FIX] Add missing search options to known values to avoid incorrect warnings.
+
 2017-08-29: 3.4.1
 * [CHANGE] Treat "Lost connection to MySQL server" as a connection error (Manuel Schnitzer).
 * [FIX] Index normalisation will now work even when index model tables don't exist.
