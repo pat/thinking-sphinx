@@ -17,7 +17,7 @@ RSpec.describe ThinkingSphinx::Middlewares::ValidOptions do
 
     it "adds a warning" do
       expect(ThinkingSphinx::Logger).to receive(:log).
-        with(:warn, "Unexpected search options: [:foo]")
+        with(:caution, "Unexpected search options: [:foo]")
 
       middleware.call [context]
     end

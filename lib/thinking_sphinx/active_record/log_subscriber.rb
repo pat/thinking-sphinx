@@ -14,9 +14,9 @@ class ThinkingSphinx::ActiveRecord::LogSubscriber < ActiveSupport::LogSubscriber
     debug "  #{identifier}  #{event.payload[:query]}"
   end
 
-  def warn(event)
+  def caution(event)
     identifier = color 'Sphinx', GREEN, true
-    warn "  #{identifier}  #{event.payload[:guard]}"
+    warn "  #{identifier}  #{event.payload[:caution]}"
   end
 end
 

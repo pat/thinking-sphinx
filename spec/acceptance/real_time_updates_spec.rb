@@ -14,4 +14,15 @@ describe 'Updates to records in real-time indices', :live => true do
     expect(Product.search('blue fish', :indices => ['product_core']).to_a).
       to eq([product])
   end
+
+  it "handles inserts and updates for namespaced models" do
+    person = Admin::Person.create :name => 'Death'
+
+    expect(Admin::Person.search('Death').to_a).to eq([person])
+
+    person.update_attributes :name => 'Mort'
+
+    expect(Admin::Person.search('Death').to_a).to be_empty
+    expect(Admin::Person.search('Mort').to_a).to eq([person])
+  end
 end
