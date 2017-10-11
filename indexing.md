@@ -191,7 +191,7 @@ has author_id
 
 The syntax is very similar to setting up fields. You can set custom names, and drill down into associations. You don't ever need to label an attribute as `:sortable` though - in Sphinx, all attributes can be used for sorting.
 
-You'll also see below that multi-value attributes in **real-time indices** need the `:multi` option to be set.
+You'll also see below that multi-value attributes in **real-time indices** need the `:multi` option to be set. Please note that Sphinx only supports [multi-value attributes](http://sphinxsearch.com/docs/current.html#conf-sql-attr-multi) for 32-bit and 64-bit integers and timestamps. Strings are sadly not supported.
 
 {% highlight ruby %}
 # In a real-time index:
