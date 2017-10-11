@@ -1,1 +1,5 @@
 _site
+Gemfile.lock
+gemfiles
+pkg
+spec
