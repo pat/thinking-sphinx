@@ -27,6 +27,7 @@ Depending on how you have Sphinx setup, or what database you're using, you might
 * [Slow Requests (Especially in Development)](#slow-page-requests)
 * [Errors saying no fields are defined](#no-fields)
 * [Using with Unicorn](#unicorn)
+* [Alternatives to MVAs with Strings](#mva-strings)
 
 <h3 id="editconf">Editing the generated Sphinx configuration file</h3>
 
@@ -173,7 +174,7 @@ As for AfterCommit and Riddle, while they are still included for plugin installs
 
 <h3 id="string_filters">Filtering on String Attributes</h3>
 
-While you can have string columns as attributes in Sphinx, they cannot be filtered on.
+While you can have string columns as attributes in Sphinx, they cannot be filtered on (unless you're using Sphinx 2.2.3 or newer).
 
 To get around this, there's three options: firstly, use integer attributes instead, if you possibly can. This works for small result sets (for example: gender). Secondly, you could just have that attribute is a field instead - which is fine in any case where it's not a big deal if the words in that column influence search results.
 
@@ -192,6 +193,8 @@ Article.search 'pancakes', :with => {
 {% endhighlight %}
 
 Of course, this isn't amazingly clean, especially since CRC32 encoding can have collisions. It's most definitely not the perfect solution.
+
+The best way forward, if it's feasible, is to upgrade the version of Sphinx you're using to 2.2.3 or newer.
 
 <h3 id="external_models">Models outside of `app/models`</h3>
 
@@ -320,3 +323,11 @@ after_fork do |server, worker|
   ThinkingSphinx::Connection.pool.clear
 end
 {% endhighlight %}
+
+<h3 id="mva-strings">Alternatives to MVAs with Strings</h3>
+
+Given Sphinx doesn't support multi-value attributes, what are alternative ways to achieve similar functionality?
+
+The easiest approach is when the string values are coming from an association. In this case, use the foreign key ids instead, and translate string values to the underlying id when you're filtering your searches.
+
+Otherwise, you could look into using [CRC'd integer values of strings](#string_filters), though there is the possibility of collisions.
