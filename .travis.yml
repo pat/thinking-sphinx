@@ -33,7 +33,7 @@ services:
 - postgresql
 matrix:
   exclude:
-  - rvm: jruby-9.1.10.0
+  - rvm: jruby-9.1.13.0
     env: DATABASE=mysql2 SPHINX_VERSION=2.0.10
-  - rvm: jruby-9.1.10.0
+  - rvm: jruby-9.1.13.0
     env: DATABASE=postgresql SPHINX_VERSION=2.0.10
