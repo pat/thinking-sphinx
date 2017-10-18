@@ -1,9 +1,9 @@
 language: ruby
 rvm:
-- 2.2.2
-- 2.3.4
-- 2.4.1
-- jruby-9.1.10.0
+- 2.2.8
+- 2.3.5
+- 2.4.2
+- jruby-9.1.13.0
 before_install:
 - pip install --upgrade --user awscli
 - gem update --system
