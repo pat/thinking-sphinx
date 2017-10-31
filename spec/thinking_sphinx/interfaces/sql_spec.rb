@@ -25,6 +25,8 @@ RSpec.describe ThinkingSphinx::Interfaces::SQL do
         and_return(['users.a', 'users.b'])
       allow(Dir).to receive(:[]).with('/path/to/my/index/parts.*').
         and_return(['parts.a', 'parts.b'])
+      allow(Dir).to receive(:[]).with('/path/to/indices/ts-*.tmp').
+        and_return(['/path/to/indices/ts-foo.tmp'])
 
       allow(FileUtils).to receive_messages :mkdir_p => true, :rm_r => true,
         :rm => true
@@ -43,6 +45,12 @@ RSpec.describe ThinkingSphinx::Interfaces::SQL do
       expect(FileUtils).to receive(:rm).with('users.b')
       expect(FileUtils).to receive(:rm).with('parts.a')
       expect(FileUtils).to receive(:rm).with('parts.b')
+
+      interface.clear
+    end
+
+    it "removes any indexing guard files" do
+      expect(FileUtils).to receive(:rm_r).with(["/path/to/indices/ts-foo.tmp"])
 
       interface.clear
     end

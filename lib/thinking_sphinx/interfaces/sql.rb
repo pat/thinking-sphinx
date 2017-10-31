@@ -14,6 +14,8 @@ class ThinkingSphinx::Interfaces::SQL
       index.render
       Dir["#{index.path}.*"].each { |path| FileUtils.rm path }
     end
+
+    FileUtils.rm_r Dir["#{configuration.indices_location}/ts-*.tmp"]
   end
 
   def index(reconfigure = true, verbose = nil)
