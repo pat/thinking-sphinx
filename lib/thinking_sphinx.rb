@@ -41,6 +41,7 @@ module ThinkingSphinx
   @before_index_hooks = []
 
   module Commands; end
+  module Hooks; end
   module IndexingStrategies; end
   module Interfaces; end
   module Subscribers; end
@@ -69,6 +70,7 @@ require 'thinking_sphinx/facet_search'
 require 'thinking_sphinx/float_formatter'
 require 'thinking_sphinx/frameworks'
 require 'thinking_sphinx/guard'
+require 'thinking_sphinx/hooks/guard_presence'
 require 'thinking_sphinx/index'
 require 'thinking_sphinx/indexing_strategies/all_at_once'
 require 'thinking_sphinx/indexing_strategies/one_at_a_time'
@@ -96,3 +98,5 @@ require 'thinking_sphinx/logger'
 require 'thinking_sphinx/real_time'
 
 require 'thinking_sphinx/railtie' if defined?(Rails::Railtie)
+
+ThinkingSphinx.before_index_hooks << ThinkingSphinx::Hooks::GuardPresence
