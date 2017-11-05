@@ -17,7 +17,9 @@ If you're changing from SQL-backed indices to real-time indices, make sure you s
 
 ### Rake Tasks
 
-With real-time indices, you should never use `ts:index` or `ts:rebuild`. Their functional equivalents are `ts:generate` and `ts:regenerate` (as covered on [the rake tasks page](rake_tasks.html)). You only need to run `ts:regenerate` when you've added an index, removed an index, or edited the structure of an index (e.g. added/removed/modified fields or attributes).
+If you're using Thinking Sphinx v3.4.0 or newer, then you can use the same rake tasks that you're familiar with - they'll take care of both types of indices. But if you're on an older version with real-time indices, use `ts:generate` and `ts:regenerate` in place of `ts:index` and `ts:rebuild` respectively.
+
+Just like with SQL-backed indices, you only need to run `ts:rebuild` when you've added an index, removed an index, or edited the structure of an index (e.g. added/removed/modified fields or attributes).
 
 ### Indexes, Fields & Attributes
 
@@ -59,7 +61,7 @@ indexes comment_texts
 
 #### Eager-loading Associations
 
-Because Thinking Sphinx is loading your records via ActiveRecord, you can define a custom scope to use - although this is only in play for bulk inserts (via `rake ts:generate`/`rake ts:regenerate`):
+Because Thinking Sphinx is loading your records via ActiveRecord, you can define a custom scope to use - although this is only in play for bulk inserts (via `rake ts:index`/`rake ts:rebuild`):
 
 {% highlight ruby %}
 # in your index definition:

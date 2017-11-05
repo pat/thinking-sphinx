@@ -343,19 +343,13 @@ You do _not_ need to add a `destroy` callback - Thinking Sphinx does this automa
 Once you've got your index set up just how you like it, you can run [the rake task](rake_tasks.html) to get Sphinx to process the data.
 
 {% highlight sh %}
-# If you're using SQL-backed indices:
 rake ts:index
-
-# If you're using real-time indices:
-rake ts:generate
 {% endhighlight %}
 
-However, if you have made structural changes to your index (which is anything except adding new data into the database tables), you'll need to stop Sphinx, re-process, and then re-start Sphinx - which can be done through a single rake call.
+If you have made structural changes to your index (which is anything except adding new data into the database tables), you'll need to stop Sphinx, re-process, and then re-start Sphinx - which can be done through a single rake call.
 
 {% highlight sh %}
-# If you're using SQL-backed indices:
 rake ts:rebuild
-
-# If you're using real-time indices:
-rake ts:regenerate
 {% endhighlight %}
+
+If you're using real-time indices and a version of Thinking Sphinx prior to v3.4.0, use `ts:generate` and `ts:regenerate` respectively instead (though these will only impact real-time indices, not SQL-backed indices).

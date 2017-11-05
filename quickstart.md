@@ -39,7 +39,7 @@ after_save ThinkingSphinx::RealTime.callback_for(:article)
 The next step is to process your data (this task stops the Sphinx daemon if it is running, deletes existing Sphinx data, rewrites the Sphinx configuration file, starts the Sphinx daemon again, and then creates Sphinx documents for each indexed model instance):
 
 {% highlight sh %}
-rake ts:regenerate
+rake ts:rebuild
 {% endhighlight %}
 
 And now we can search!
