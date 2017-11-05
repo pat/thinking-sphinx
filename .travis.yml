@@ -9,7 +9,7 @@ script: bundle exec jekyll build
 after_script:
 - aws s3 cp _site s3://freelancing-gods/thinking-sphinx/ --recursive --acl public-read
 - aws configure set preview.cloudfront true
-- aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_ID --paths /*
+- aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_ID --paths "/*"
 env:
   global:
   - secure: WEEu2v8klaShwQ6//6HR3NIfFuUOZLR/5yWcMI8GZBLXqyJ9aFGgvDxfdQyTg60YkPgxAEgADugzeA/prZCKstVU5QMH/UdrY0j4QJ4Q5Av/2AJpXYFTO3spgGJfNyGtzO746ynivpMfnAKQeFwHCokE+zXaAFgrYDqv/uevcj8=
