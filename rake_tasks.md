@@ -23,6 +23,14 @@ It's also worth noting that this task, run normally, will also generate the conf
 INDEX_ONLY=true rake ts:index
 {% endhighlight %}
 
+#### Index Guard Files
+
+Any given SQL-backed index can not be processed more than once concurrently. To avoid multiple indexing requests, Thinking Sphinx adds a lock file in the indices directory while indexing occurs, named `ts-INDEXNAME.tmp`.
+
+In rare cases (generally when the parent process crashes completely), orphan lock files may remain - these are safe to remove if no indexing is occured. If you're finding some of your indices aren't being processed reliably, checking for these index files is recommended.
+
+This feature has been in place since v3.1.0.
+
 ### Generating the Configuration File
 
 If you need to just generate the configuration file, without indexing (something that can be useful when deploying), here's the task to do it:

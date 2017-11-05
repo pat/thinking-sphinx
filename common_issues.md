@@ -28,6 +28,7 @@ Depending on how you have Sphinx setup, or what database you're using, you might
 * [Errors saying no fields are defined](#no-fields)
 * [Using with Unicorn](#unicorn)
 * [Alternatives to MVAs with Strings](#mva-strings)
+* [Indices not being processed](#ignored-indices)
 
 <h3 id="editconf">Editing the generated Sphinx configuration file</h3>
 
@@ -331,3 +332,9 @@ Given Sphinx doesn't support multi-value attributes, what are alternative ways t
 The easiest approach is when the string values are coming from an association. In this case, use the foreign key ids instead, and translate string values to the underlying id when you're filtering your searches.
 
 Otherwise, you could look into using [CRC'd integer values of strings](#string_filters), though there is the possibility of collisions.
+
+<h3 id="ignored-indices">Indices not being processed</h3>
+
+If you're finding indices aren't being processed - particularly delta indices - it could be that [guard files](rake_tasks.html#index-guard-files) haven't been cleaned up properly. They are located in the indices directory, and take the name pattern `ts-INDEXNAME.tmp`.
+
+Provided there is no indexing occuring, they can safely be deleted.
