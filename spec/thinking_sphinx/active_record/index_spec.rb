@@ -10,7 +10,8 @@ describe ThinkingSphinx::ActiveRecord::Index do
   end
 
   describe '#append_source' do
-    let(:model)  { double('model', :primary_key => :id) }
+    let(:model)  { double('model', :primary_key => :id,
+      :table_exists? => true) }
     let(:source) { double('source') }
 
     before :each do

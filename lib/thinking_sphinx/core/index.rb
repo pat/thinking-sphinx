@@ -36,6 +36,7 @@ module ThinkingSphinx::Core::Index
   end
 
   def interpret_definition!
+    return unless model.table_exists?
     return if @interpreted_definition
 
     apply_defaults!
