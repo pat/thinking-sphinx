@@ -3,7 +3,8 @@ require 'pathname'
 class ThinkingSphinx::Configuration < Riddle::Configuration
   attr_accessor :configuration_file, :indices_location, :version, :batch_size
   attr_reader :index_paths
-  attr_writer :controller, :index_set_class, :indexing_strategy
+  attr_writer :controller, :index_set_class, :indexing_strategy,
+    :guarding_strategy
 
   delegate :environment, :to => :framework
 
@@ -56,6 +57,10 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
       engine.paths.add 'app/indices' unless engine.paths['app/indices']
       engine.paths['app/indices'].existent
     end
+  end
+
+  def guarding_strategy
+    @guarding_strategy ||= ThinkingSphinx::Guard::Files
   end
 
   def index_set_class

@@ -4,7 +4,7 @@ class ThinkingSphinx::Controller < Riddle::Controller
     options       = indices.extract_options!
 
     configuration.indexing_strategy.call(indices) do |index_names|
-      ThinkingSphinx::Guard::Files.call(index_names) do |names|
+      configuration.guarding_strategy.call(index_names) do |names|
         super(*(names + [options]))
       end
     end
