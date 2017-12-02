@@ -3,7 +3,7 @@ rvm:
 - 2.2.8
 - 2.3.5
 - 2.4.2
-- jruby-9.1.13.0
+- jruby-9.1.14.0
 before_install:
 - pip install --upgrade --user awscli
 - gem update --system
@@ -33,7 +33,7 @@ services:
 - postgresql
 matrix:
   exclude:
-  - rvm: jruby-9.1.13.0
+  - rvm: jruby-9.1.14.0
     env: DATABASE=mysql2 SPHINX_VERSION=2.0.10
-  - rvm: jruby-9.1.13.0
+  - rvm: jruby-9.1.14.0
     env: DATABASE=postgresql SPHINX_VERSION=2.0.10
