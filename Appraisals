@@ -20,12 +20,10 @@ end if RUBY_VERSION.to_f <= 2.3
 
 appraise 'rails_5_0' do
   gem 'rails', '~> 5.0.2'
-  # gem 'activerecord-jdbc-adapter',
-  #   :git      => 'git://github.com/jruby/activerecord-jdbc-adapter.git',
-  #   :branch   => 'rails-5',
-  #   :platform => :jruby,
-  #   :ref      => 'c3570ce730'
-end if RUBY_VERSION.to_f >= 2.2 && RUBY_PLATFORM != 'java'
+  gem 'jdbc-mysql',                          '~> 5.1.36', :platform => :jruby
+  gem 'activerecord-jdbcmysql-adapter',      '~> 50.0',   :platform => :jruby
+  gem 'activerecord-jdbcpostgresql-adapter', '~> 50.0',   :platform => :jruby
+end if RUBY_VERSION.to_f >= 2.2
 
 appraise 'rails_5_1' do
   gem 'rails', '~> 5.1.0'
