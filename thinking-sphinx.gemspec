@@ -31,6 +31,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'appraisal',        '~> 1.0.2'
   s.add_development_dependency 'combustion',       '~> 0.7.0'
   s.add_development_dependency 'database_cleaner', '~> 1.6.0'
-  s.add_development_dependency 'rspec',            '~> 3.6.0'
-  s.add_development_dependency 'rspec-retry',      '~> 0.5.4'
+  s.add_development_dependency 'rspec',            '~> 3.7.0'
+  s.add_development_dependency 'rspec-retry',      '~> 0.5.6'
 end
