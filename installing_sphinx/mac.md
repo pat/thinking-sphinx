@@ -19,7 +19,7 @@ If you've installed MySQL _after_ installing Sphinx, you'll need to re-install S
 
 {% highlight sh %}
 brew remove sphinx
-brew install sphinx --mysql
+brew install sphinx --with-mysql
 {% endhighlight %}
 
 ### Using MacPorts
