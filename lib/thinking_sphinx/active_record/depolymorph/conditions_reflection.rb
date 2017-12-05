@@ -28,7 +28,7 @@ class ThinkingSphinx::ActiveRecord::Depolymorph::ConditionsReflection <
     when Hash
       @options[:conditions].merge! foreign_type => @options[:class_name]
     else
-      @options[:conditions] << " AND #{condition}"
+      @options[:conditions] = "#{@options[:conditions]} AND #{condition}"
     end
 
     @options
