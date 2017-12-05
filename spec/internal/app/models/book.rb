@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Book < ActiveRecord::Base
   include ThinkingSphinx::Scopes
 

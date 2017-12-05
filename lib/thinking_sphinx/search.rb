@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Search < Array
   CORE_METHODS = %w( == class class_eval extend frozen? id instance_eval
     instance_of? instance_values instance_variable_defined?

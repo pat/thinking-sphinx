@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ThinkingSphinx::Core::Settings
   private
   def apply_defaults!(defaults = self.class.settings)

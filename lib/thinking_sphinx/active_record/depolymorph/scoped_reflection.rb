@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This scoped approach is only available in Rails 4.0. This behaviour is
 # superseded by AssociationReflection for Rails 4.1, and was preceded by
 # ConditionsReflection for Rails 3.2.

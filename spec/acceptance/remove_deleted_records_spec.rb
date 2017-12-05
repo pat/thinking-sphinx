@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'acceptance/spec_helper'
 
 describe 'Hiding deleted records from search results', :live => true do

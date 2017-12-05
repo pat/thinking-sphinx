@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ThinkingSphinx::Core::Index
   extend ActiveSupport::Concern
   include ThinkingSphinx::Core::Settings

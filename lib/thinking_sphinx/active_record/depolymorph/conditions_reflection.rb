@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # The conditions approach is only available in Rails 3. This behaviour is
 # superseded by ScopedReflection for Rails 4.0.
 class ThinkingSphinx::ActiveRecord::Depolymorph::ConditionsReflection <

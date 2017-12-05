@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ThinkingSphinx::Deltas
   def self.config
     ThinkingSphinx::Configuration.instance

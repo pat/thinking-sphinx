@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ThinkingSphinx::WithOutput
   def initialize(configuration, options = {}, stream = STDOUT)
     @configuration = configuration

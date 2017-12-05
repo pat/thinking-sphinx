@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Commands::Stop < ThinkingSphinx::Commands::Base
   def call
     unless controller.running?

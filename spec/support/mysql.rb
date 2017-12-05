@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # New versions of MySQL don't allow NULL values for primary keys, but old
 # versions of Rails do. To use both at the same time, we need to update Rails'
 # default primary key type to no longer have a default NULL value.

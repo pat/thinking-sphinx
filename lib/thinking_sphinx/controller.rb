@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Controller < Riddle::Controller
   def index(*indices)
     configuration = ThinkingSphinx::Configuration.instance

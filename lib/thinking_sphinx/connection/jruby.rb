@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Connection::JRuby < ThinkingSphinx::Connection::Client
   attr_reader :address, :options
 

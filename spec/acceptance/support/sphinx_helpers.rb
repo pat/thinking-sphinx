@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SphinxHelpers
   def sphinx
     @sphinx ||= SphinxController.new

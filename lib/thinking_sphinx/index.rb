@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Index
   attr_reader :reference, :options, :block
 

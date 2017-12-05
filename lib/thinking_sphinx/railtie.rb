@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Railtie < Rails::Railtie
   initializer 'thinking_sphinx.initialisation' do
     ActiveSupport.on_load(:active_record) do

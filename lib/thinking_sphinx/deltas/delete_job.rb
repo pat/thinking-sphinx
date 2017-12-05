@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Deltas::DeleteJob
   def initialize(index_name, document_id)
     @index_name, @document_id = index_name, document_id

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Panes::WeightPane
   def initialize(context, object, raw)
     @raw = raw

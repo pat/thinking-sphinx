@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ThinkingSphinx::Query
   def self.escape(query)
     Riddle::Query.escape query

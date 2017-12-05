@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::ActiveRecord::JoinAssociation <
   ::ActiveRecord::Associations::JoinDependency::JoinAssociation
 

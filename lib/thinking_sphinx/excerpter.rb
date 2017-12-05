@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Excerpter
   DefaultOptions = {
     :before_match    => '<span class="match">',

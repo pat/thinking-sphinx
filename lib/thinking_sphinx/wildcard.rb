@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Wildcard
   DEFAULT_TOKEN = /\p{Word}+/
 

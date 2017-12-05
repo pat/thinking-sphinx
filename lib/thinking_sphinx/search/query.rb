@@ -1,4 +1,6 @@
 # encoding: utf-8
+# frozen_string_literal: true
+
 class ThinkingSphinx::Search::Query
   attr_reader :keywords, :conditions, :star
 

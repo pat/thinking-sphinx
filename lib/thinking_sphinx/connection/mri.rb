@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Connection::MRI < ThinkingSphinx::Connection::Client
   def initialize(options)
     @options = options

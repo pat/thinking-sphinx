@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::ActiveRecord::FilterReflection
   ReflectionGenerator = case ActiveRecord::VERSION::STRING.to_f
   when 5.2..7.0

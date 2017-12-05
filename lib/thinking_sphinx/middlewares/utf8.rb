@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Middlewares::UTF8 <
   ThinkingSphinx::Middlewares::Middleware
 

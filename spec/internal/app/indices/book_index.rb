@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ThinkingSphinx::Index.define :book, :with => :active_record, :delta => true do
   indexes title, :sortable => true
   indexes author, :facet => true

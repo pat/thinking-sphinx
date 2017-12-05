@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Connection::Client
   def close
     close! unless ThinkingSphinx::Connection.persistent?

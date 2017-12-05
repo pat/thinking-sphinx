@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::IndexingStrategies::OneAtATime
   def self.call(indices = [], &block)
     if indices.empty?

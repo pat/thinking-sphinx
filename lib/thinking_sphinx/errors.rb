@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::SphinxError < StandardError
   attr_accessor :statement
 

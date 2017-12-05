@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::RealTime::Attribute < ThinkingSphinx::RealTime::Property
   def multi?
     @options[:multi]

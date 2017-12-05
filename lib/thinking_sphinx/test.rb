@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Test
   def self.init(suppress_delta_output = true)
     FileUtils.mkdir_p config.indices_location

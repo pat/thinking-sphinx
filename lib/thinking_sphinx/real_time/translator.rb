@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::RealTime::Translator
   def self.call(object, column)
     new(object, column).call

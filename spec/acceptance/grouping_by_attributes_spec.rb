@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'acceptance/spec_helper'
 
 describe 'Grouping search results by attributes', :live => true do

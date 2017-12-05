@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::ActiveRecord::LogSubscriber < ActiveSupport::LogSubscriber
   def guard(event)
     identifier = color 'Sphinx', GREEN, true

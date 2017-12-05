@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Interfaces::RealTime
   include ThinkingSphinx::WithOutput
 

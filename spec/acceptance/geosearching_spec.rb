@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'acceptance/spec_helper'
 
 describe 'Searching by latitude and longitude', :live => true do

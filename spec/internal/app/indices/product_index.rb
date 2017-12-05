@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 multi_schema = MultiSchema.new
 
 ThinkingSphinx::Index.define :product, :with => :real_time do

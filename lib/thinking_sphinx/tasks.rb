@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 namespace :ts do
   desc 'Generate the Sphinx configuration file'
   task :configure => :environment do

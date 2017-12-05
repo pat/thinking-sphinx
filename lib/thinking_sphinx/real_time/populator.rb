@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::RealTime::Populator
   def self.populate(index)
     new(index).populate

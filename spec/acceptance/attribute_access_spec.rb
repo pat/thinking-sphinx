@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'acceptance/spec_helper'
 
 describe 'Accessing attributes directly via search results', :live => true do

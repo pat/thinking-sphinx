@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::ActiveRecord::Field <
   ThinkingSphinx::ActiveRecord::Property
   include ThinkingSphinx::Core::Field

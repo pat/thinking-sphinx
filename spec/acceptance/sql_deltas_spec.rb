@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'acceptance/spec_helper'
 
 describe 'SQL delta indexing', :live => true do

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::RealTime::TranscribeInstance
   def self.call(instance, index, properties)
     new(instance, index, properties).call

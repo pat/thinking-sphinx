@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SphinxController
   def initialize
     config.searchd.mysql41 = 9307

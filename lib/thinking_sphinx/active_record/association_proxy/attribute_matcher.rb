@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::ActiveRecord::AssociationProxy::AttributeMatcher
     def initialize(attribute, foreign_key)
       @attribute, @foreign_key = attribute, foreign_key.to_s

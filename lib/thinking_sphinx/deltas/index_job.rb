@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Deltas::IndexJob
   def initialize(index_name)
     @index_name = index_name

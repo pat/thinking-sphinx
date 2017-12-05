@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ThinkingSphinx::Connection
   MAXIMUM_RETRIES = 3
 

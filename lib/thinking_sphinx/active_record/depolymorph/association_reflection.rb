@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This custom association approach is only available in Rails 4.1-5.1. This
 # behaviour is superseded by OverriddenReflection for Rails 5.2, and was
 # preceded by ScopedReflection for Rails 4.0.

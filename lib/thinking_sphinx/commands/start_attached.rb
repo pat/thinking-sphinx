@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Commands::StartAttached < ThinkingSphinx::Commands::Base
   def call
     FileUtils.mkdir_p configuration.indices_location

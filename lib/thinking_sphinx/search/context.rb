@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Search::Context
   attr_reader :search, :configuration
 

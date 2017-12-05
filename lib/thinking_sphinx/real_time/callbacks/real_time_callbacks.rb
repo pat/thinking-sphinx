@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks
   def initialize(reference, path = [], &block)
     @reference, @path, @block = reference, path, block

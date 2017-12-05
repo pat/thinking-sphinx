@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::ActiveRecord::Attribute::SphinxPresenter
   SPHINX_TYPES = {
     :integer   => :uint,

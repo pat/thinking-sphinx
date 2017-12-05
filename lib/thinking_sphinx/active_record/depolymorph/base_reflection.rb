@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::ActiveRecord::Depolymorph::BaseReflection
   def initialize(reflection, name, class_name)
     @reflection = reflection

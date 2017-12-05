@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Masks::GroupEnumeratorsMask
   def initialize(search)
     @search = search

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pathname'
 
 class ThinkingSphinx::Configuration < Riddle::Configuration

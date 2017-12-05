@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::RealTime::Transcriber
   def initialize(index)
     @index = index

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Interfaces::SQL
   include ThinkingSphinx::WithOutput
 

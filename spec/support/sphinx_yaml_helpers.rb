@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SphinxYamlHelpers
   def write_configuration(hash)
     allow(File).to receive_messages :read => {'test' => hash}.to_yaml, :exists? => true

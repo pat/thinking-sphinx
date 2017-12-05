@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::RealTime::Index < Riddle::Configuration::RealtimeIndex
   include ThinkingSphinx::Core::Index
 

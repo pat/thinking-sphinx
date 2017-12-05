@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Configuration::DuplicateNames
   def initialize(indices)
     @indices = indices

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Frameworks::Rails
   def environment
     Rails.env

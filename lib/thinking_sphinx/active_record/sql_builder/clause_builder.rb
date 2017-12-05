@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ThinkingSphinx
   module ActiveRecord
     class SQLBuilder::ClauseBuilder

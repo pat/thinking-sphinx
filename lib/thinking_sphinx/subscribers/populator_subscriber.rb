@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Subscribers::PopulatorSubscriber
   def self.attach_to(namespace)
     subscriber = new

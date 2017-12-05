@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Configuration::DistributedIndices
   def initialize(indices)
     @indices = indices

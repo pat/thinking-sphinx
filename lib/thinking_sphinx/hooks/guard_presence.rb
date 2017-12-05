@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Hooks::GuardPresence
   def self.call(configuration = nil, stream = STDERR)
     new(configuration, stream).call

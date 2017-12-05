@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ActiveRecord::Schema.define do
   create_table(:admin_people, :force => true) do |t|
     t.string :name

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Commands::Configure < ThinkingSphinx::Commands::Base
   def call
     log "Generating configuration to #{configuration.configuration_file}"

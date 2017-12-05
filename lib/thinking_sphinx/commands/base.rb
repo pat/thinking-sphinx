@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Commands::Base
   include ThinkingSphinx::WithOutput
 

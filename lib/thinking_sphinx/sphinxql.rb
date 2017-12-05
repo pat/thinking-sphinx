@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ThinkingSphinx::SphinxQL
   mattr_accessor :weight, :group_by, :count
 

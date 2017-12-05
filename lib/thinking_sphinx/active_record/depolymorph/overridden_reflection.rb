@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This overriding approach is only available in Rails 5.2+. This behaviour
 # was preceded by AssociationReflection for Rails 4.1-5.1.
 class ThinkingSphinx::ActiveRecord::Depolymorph::OverriddenReflection <

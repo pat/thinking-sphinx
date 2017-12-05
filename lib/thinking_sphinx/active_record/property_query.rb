@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::ActiveRecord::PropertyQuery
   def initialize(property, source, type = nil)
     @property, @source, @type = property, source, type

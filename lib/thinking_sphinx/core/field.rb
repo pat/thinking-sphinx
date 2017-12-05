@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ThinkingSphinx::Core::Field
   def infixing?
     options[:infixes]
