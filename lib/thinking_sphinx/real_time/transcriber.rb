@@ -10,7 +10,7 @@ class ThinkingSphinx::RealTime::Transcriber
     return unless items.present?
 
     values = items.collect { |instance|
-      TranscribeInstance.call(instance, index, properties)
+      ThinkingSphinx::RealTime::TranscribeInstance.call(instance, index, properties)
     }
 
     insert = Riddle::Query::Insert.new index.name, columns, values
@@ -20,30 +20,6 @@ class ThinkingSphinx::RealTime::Transcriber
       ThinkingSphinx::Connection.take do |connection|
         connection.execute sphinxql
       end
-    end
-  end
-
-  class TranscribeInstance
-    def self.call(instance, index, properties)
-      new(instance, index, properties).call
-    end
-
-    def initialize(instance, index, properties)
-      @instance, @index, @properties = instance, index, properties
-    end
-
-    def call
-      properties.each_with_object([document_id]) do |property, instance_values|
-        instance_values << property.translate(instance)
-      end
-    end
-
-    private
-
-    attr_reader :instance, :index, :properties
-
-    def document_id
-      index.document_id_for_key instance.id
     end
   end
 
