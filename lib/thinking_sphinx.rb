@@ -40,6 +40,12 @@ module ThinkingSphinx
 
   @before_index_hooks = []
 
+  def self.output
+    @output
+  end
+
+  @output = STDOUT
+
   module Commands; end
   module Hooks; end
   module IndexingStrategies; end

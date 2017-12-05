@@ -38,6 +38,11 @@ Error transcribing #{instance.class} #{instance.id}:
   def finish_populating(event)
     print "\n"
   end
+
+  private
+
+  delegate :output, :to => ThinkingSphinx
+  delegate :puts, :print, :to => :output
 end
 
 ThinkingSphinx::Subscribers::PopulatorSubscriber.attach_to(

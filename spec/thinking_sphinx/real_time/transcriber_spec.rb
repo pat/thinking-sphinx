@@ -86,6 +86,7 @@ RSpec.describe ThinkingSphinx::RealTime::Transcriber do
     allow(ThinkingSphinx::RealTime::TranscribeInstance).to receive(:call).
       with(instance_a, index, anything).
       and_raise(error)
+    allow(ThinkingSphinx.output).to receive(:puts).and_return(nil)
 
     expect(Riddle::Query::Insert).to receive(:new).with(
       'foo_core',
