@@ -12,7 +12,6 @@ before_script:
 - mysql -e 'create database thinking_sphinx;' > /dev/null
 - psql -c 'create database thinking_sphinx;' -U postgres >/dev/null
 - "./bin/loadsphinx $SPHINX_VERSION"
-- "./bin/literals"
 - bundle exec appraisal install
 script: bundle exec appraisal rspec
 env:
