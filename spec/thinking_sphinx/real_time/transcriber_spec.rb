@@ -8,8 +8,8 @@ RSpec.describe ThinkingSphinx::RealTime::Transcriber do
   let(:insert)     { double :replace! => replace }
   let(:replace)    { double :to_sql => 'REPLACE QUERY' }
   let(:connection) { double :execute => true }
-  let(:instance_a) { double :persisted? => true }
-  let(:instance_b) { double :persisted? => true }
+  let(:instance_a) { double :id => 48, :persisted? => true }
+  let(:instance_b) { double :id => 49, :persisted? => true }
   let(:properties_a) { double }
   let(:properties_b) { double }
 
@@ -73,6 +73,24 @@ RSpec.describe ThinkingSphinx::RealTime::Transcriber do
       'foo_core',
       ['id', 'field_a', 'field_b', 'attr_a', 'attr_b'],
       [properties_a]
+    )
+
+    subject.copy instance_a, instance_b
+  end
+
+  it "skips instances that throw an error while transcribing values" do
+    error = ThinkingSphinx::TranscriptionError.new
+    error.instance = instance_a
+    error.inner_exception = StandardError.new
+
+    allow(ThinkingSphinx::RealTime::TranscribeInstance).to receive(:call).
+      with(instance_a, index, anything).
+      and_raise(error)
+
+    expect(Riddle::Query::Insert).to receive(:new).with(
+      'foo_core',
+      ['id', 'field_a', 'field_b', 'attr_a', 'attr_b'],
+      [properties_b]
     )
 
     subject.copy instance_a, instance_b

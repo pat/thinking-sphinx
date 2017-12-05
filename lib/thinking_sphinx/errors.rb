@@ -85,3 +85,7 @@ end
 
 class ThinkingSphinx::UnknownAttributeType < StandardError
 end
+
+class ThinkingSphinx::TranscriptionError < StandardError
+  attr_accessor :inner_exception, :instance, :property
+end

@@ -9,9 +9,16 @@ class ThinkingSphinx::RealTime::Transcriber
     }
     return unless items.present?
 
-    values = items.collect { |instance|
-      ThinkingSphinx::RealTime::TranscribeInstance.call(instance, index, properties)
-    }
+    values = []
+    items.each do |instance|
+      begin
+        values << ThinkingSphinx::RealTime::TranscribeInstance.call(
+          instance, index, properties
+        )
+      rescue ThinkingSphinx::TranscriptionError => error
+        instrument 'error', :error => error
+      end
+    end
 
     insert = Riddle::Query::Insert.new index.name, columns, values
     sphinxql = insert.replace!.to_sql
@@ -44,6 +51,12 @@ class ThinkingSphinx::RealTime::Transcriber
         "Unexpected condition: #{condition}. Expecting Symbol or Proc."
       end
     }
+  end
+
+  def instrument(message, options = {})
+    ActiveSupport::Notifications.instrument(
+      "#{message}.thinking_sphinx.real_time", options.merge(:index => index)
+    )
   end
 
   def properties
