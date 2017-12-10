@@ -19,6 +19,7 @@ title: Searching
 * [Searching for Object Ids](#ids)
 * [Search Counts](#counts)
 * [Avoiding Nil Results](#nils)
+* [Empty multi-value attributes](#zero-counts)
 * [Automatic Wildcards](#star)
 * [Errors](#errors)
 * [Advanced Options](#advanced)
@@ -361,6 +362,19 @@ And obviously, this can be quite an expensive call (as it instantiates objects e
 {% highlight ruby %}
 Article.search 'pancakes', :retry_stale => true
 Article.search 'pancakes', :retry_stale => 1
+{% endhighlight %}
+
+<h3 id="zero-counts">Empty multi-value attributes</h3>
+
+When you have a multi-value attribute in an index and you want to find records where those attributes are empty, you need to add a dynamic attribute with the length of the MVA, and then filter by that.
+
+In this example, the Article model can have many authors, and has an MVA for the author ids (either `has author_ids, :type => :integer, :multi => true` for real-time indices, or `has authors.id, :as => :author_ids` for SQL-backed indices).
+
+{% highlight ruby %}
+Article.search(
+  :select => "*, LENGTH(author_ids) AS author_count",
+  :with   => {:author_count => 0}
+)
 {% endhighlight %}
 
 <h3 id="star">Automatic Wildcards</h3>
