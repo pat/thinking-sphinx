@@ -14,7 +14,14 @@ class ThinkingSphinx::Interfaces::RealTime < ThinkingSphinx::Interfaces::Base
   end
 
   def index
-    return if indices.empty? || !configuration.controller.running?
+    return if indices.empty?
+    if !configuration.controller.running?
+      stream.puts <<-TXT
+The Sphinx daemon is not currently running. Real-time indices can only be
+populated by sending commands to a running daemon.
+      TXT
+      return
+    end
 
     command :index_real_time, :indices => indices
   end
