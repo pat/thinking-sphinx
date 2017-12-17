@@ -1,30 +1,22 @@
 # frozen_string_literal: true
 
-class ThinkingSphinx::Interfaces::RealTime
-  include ThinkingSphinx::WithOutput
-
+class ThinkingSphinx::Interfaces::RealTime < ThinkingSphinx::Interfaces::Base
   def initialize(configuration, options, stream = STDOUT)
     super
 
     configuration.preload_indices
 
-    FileUtils.mkdir_p configuration.indices_location
+    command :prepare
   end
 
   def clear
-    indices.each do |index|
-      index.render
-      Dir["#{index.path}.*"].each { |path| FileUtils.rm path }
-    end
-
-    path = configuration.searchd.binlog_path
-    FileUtils.rm_r(path) if File.exists?(path)
+    command :clear_real_time, :indices => indices
   end
 
   def index
     return if indices.empty? || !configuration.controller.running?
 
-    indices.each { |index| ThinkingSphinx::RealTime::Populator.populate index }
+    command :index_real_time, :indices => indices
   end
 
   private

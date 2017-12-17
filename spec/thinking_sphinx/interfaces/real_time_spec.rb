@@ -10,7 +10,12 @@ RSpec.describe ThinkingSphinx::Interfaces::SQL do
     :render => true, :indices_location => '/path/to/indices',
     :preload_indices => true }
   let(:controller)    { double 'controller', :running? => true }
+  let(:commander)     { double :call => true }
   let(:stream)        { double :puts => nil }
+
+  before :each do
+    stub_const "ThinkingSphinx::Commander", commander
+  end
 
   describe '#clear' do
     let(:plain_index) { double(:type => 'plain') }
@@ -21,38 +26,25 @@ RSpec.describe ThinkingSphinx::Interfaces::SQL do
 
     before :each do
       allow(configuration).to receive_messages(
-        :indices => [plain_index, users_index, parts_index],
-        :searchd => double(:binlog_path => '/path/to/binlog')
+        :indices => [plain_index, users_index, parts_index]
+      )
+    end
+
+    it 'prepares the indices' do
+      expect(commander).to receive(:call).with(
+        :prepare, configuration, {}, stream
       )
 
-      allow(Dir).to receive(:[]).with('/path/to/my/index/users.*').
-        and_return(['users.a', 'users.b'])
-      allow(Dir).to receive(:[]).with('/path/to/my/index/parts.*').
-        and_return(['parts.a', 'parts.b'])
-
-      allow(FileUtils).to receive_messages :mkdir_p => true, :rm_r => true,
-        :rm => true
-      allow(File).to receive_messages :exists? => true
-    end
-
-    it 'finds each file for real-time indices' do
-      expect(Dir).to receive(:[]).with('/path/to/my/index/users.*').
-        and_return([])
-
       interface.clear
     end
 
-    it "removes the directory for the binlog files" do
-      expect(FileUtils).to receive(:rm_r).with('/path/to/binlog')
-
-      interface.clear
-    end
-
-    it "removes each file for real-time indices" do
-      expect(FileUtils).to receive(:rm).with('users.a')
-      expect(FileUtils).to receive(:rm).with('users.b')
-      expect(FileUtils).to receive(:rm).with('parts.a')
-      expect(FileUtils).to receive(:rm).with('parts.b')
+    it 'invokes the clear command' do
+      expect(commander).to receive(:call).with(
+        :clear_real_time,
+        configuration,
+        {:indices => [users_index, parts_index]},
+        stream
+      )
 
       interface.clear
     end
@@ -63,10 +55,12 @@ RSpec.describe ThinkingSphinx::Interfaces::SQL do
       ) }
 
       it "removes each file for real-time indices that match :index_filter" do
-        expect(FileUtils).to receive(:rm).with('users.a')
-        expect(FileUtils).to receive(:rm).with('users.b')
-        expect(FileUtils).not_to receive(:rm).with('parts.a')
-        expect(FileUtils).not_to receive(:rm).with('parts.b')
+        expect(commander).to receive(:call).with(
+          :clear_real_time,
+          configuration,
+          {:index_filter => 'users', :indices => [users_index]},
+          stream
+        )
 
         interface.clear
       end
@@ -82,14 +76,15 @@ RSpec.describe ThinkingSphinx::Interfaces::SQL do
       allow(configuration).to receive_messages(
         :indices => [plain_index, users_index, parts_index]
       )
-
-      allow(FileUtils).to receive_messages :mkdir_p => true
     end
 
-    it 'populates each real-index' do
-      expect(ThinkingSphinx::RealTime::Populator).to receive(:populate).with(users_index)
-      expect(ThinkingSphinx::RealTime::Populator).to receive(:populate).with(parts_index)
-      expect(ThinkingSphinx::RealTime::Populator).not_to receive(:populate).with(plain_index)
+    it 'invokes the index command with real-time indices' do
+      expect(commander).to receive(:call).with(
+        :index_real_time,
+        configuration,
+        {:indices => [users_index, parts_index]},
+        stream
+      )
 
       interface.index
     end
@@ -99,10 +94,13 @@ RSpec.describe ThinkingSphinx::Interfaces::SQL do
         configuration, {:index_filter => 'users'}, stream
       ) }
 
-      it 'populates each real-index that matches :index_filter' do
-        expect(ThinkingSphinx::RealTime::Populator).to receive(:populate).with(users_index)
-        expect(ThinkingSphinx::RealTime::Populator).not_to receive(:populate).with(parts_index)
-        expect(ThinkingSphinx::RealTime::Populator).not_to receive(:populate).with(plain_index)
+      it 'invokes the index command for matching indices' do
+        expect(commander).to receive(:call).with(
+          :index_real_time,
+          configuration,
+          {:index_filter => 'users', :indices => [users_index]},
+          stream
+        )
 
         interface.index
       end
