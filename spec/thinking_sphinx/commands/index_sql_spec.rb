@@ -2,13 +2,26 @@
 
 require 'spec_helper'
 
-RSpec.describe ThinkingSphinx::Commands::Index do
-  let(:command)    { ThinkingSphinx::Commands::Index.new(
+RSpec.describe ThinkingSphinx::Commands::IndexSQL do
+  let(:command)    { ThinkingSphinx::Commands::IndexSQL.new(
     configuration, {:verbose => true}, stream
   ) }
   let(:configuration) { double 'configuration', :controller => controller }
   let(:controller)    { double 'controller', :index => true }
   let(:stream)        { double :puts => nil }
+
+  before :each do
+    allow(ThinkingSphinx).to receive_messages :before_index_hooks => []
+  end
+
+  it "calls all registered hooks" do
+    called = false
+    ThinkingSphinx.before_index_hooks << Proc.new { called = true }
+
+    command.call
+
+    expect(called).to eq(true)
+  end
 
   it "indexes all indices verbosely" do
     expect(controller).to receive(:index).with(:verbose => true)
@@ -17,7 +30,7 @@ RSpec.describe ThinkingSphinx::Commands::Index do
   end
 
   it "does not index verbosely if requested" do
-    command = ThinkingSphinx::Commands::Index.new(
+    command = ThinkingSphinx::Commands::IndexSQL.new(
       configuration, {:verbose => false}, stream
     )
 

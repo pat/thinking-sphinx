@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
-class ThinkingSphinx::Commands::Index < ThinkingSphinx::Commands::Base
+class ThinkingSphinx::Commands::IndexSQL < ThinkingSphinx::Commands::Base
   def call
+    ThinkingSphinx.before_index_hooks.each { |hook| hook.call }
+
     controller.index :verbose => options[:verbose]
   end
 
