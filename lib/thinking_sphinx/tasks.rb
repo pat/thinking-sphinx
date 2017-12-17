@@ -110,7 +110,7 @@ invokes ts:rebuild.
   end
 
   def interface
-    @interface ||= ThinkingSphinx::RakeInterface.new(
+    @interface ||= ThinkingSphinx.rake_interface.new(
       :verbose      => Rake::FileUtilsExt.verbose_flag,
       :silent       => Rake.application.options.silent,
       :nodetach     => (ENV['NODETACH'] == 'true'),

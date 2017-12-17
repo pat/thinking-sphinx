@@ -48,10 +48,16 @@ module ThinkingSphinx
 
   @output = STDOUT
 
-  module Commands; end
+  def self.rake_interface
+    @rake_interface ||= ThinkingSphinx::RakeInterface
+  end
+
+  def self.rake_interface=(interface)
+    @rake_interface = interface
+  end
+
   module Hooks; end
   module IndexingStrategies; end
-  module Interfaces; end
   module Subscribers; end
 end
 
