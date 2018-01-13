@@ -32,7 +32,7 @@ The Sphinx #{type} command failed:
   Output:  #{command_output result.output}
 There may be more information about the failure in #{configuration.searchd.log}.
     TXT
-    exit result.status
+    exit(result.status || 1)
   end
 
   def log(message)
