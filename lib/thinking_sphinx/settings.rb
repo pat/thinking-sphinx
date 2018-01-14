@@ -55,7 +55,14 @@ class ThinkingSphinx::Settings
 
   def defaults
     DEFAULTS.inject({}) do |hash, (key, value)|
-      hash[key] = absolute value.gsub("ENVIRONMENT", framework.environment)
+      value = value.gsub("ENVIRONMENT", framework.environment)
+
+      if FILE_KEYS.include?(key)
+        hash[key] = absolute value
+      else
+        hash[key] = value
+      end
+
       hash
     end
   end
