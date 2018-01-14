@@ -9,6 +9,15 @@ class ThinkingSphinx::Settings
     exceptions global_idf rlp_context rlp_root rlp_environment plugin_dir
     lemmatizer_base mysql_ssl_cert mysql_ssl_key mysql_ssl_ca
   ].freeze
+  DEFAULTS = {
+    "configuration_file" => "config/ENVIRONMENT.sphinx.conf",
+    "indices_location"   => "db/sphinx/ENVIRONMENT",
+    "pid_file"           => "log/ENVIRONMENT.sphinx.pid",
+    "log"                => "log/ENVIRONMENT.searchd.log",
+    "query_log"          => "log/ENVIRONMENT.searchd.query.log",
+    "binlog_path"        => "tmp/binlog/ENVIRONMENT",
+    "workers"            => "threads"
+  }.freeze
 
   def self.call(configuration)
     new(configuration).call
@@ -19,12 +28,12 @@ class ThinkingSphinx::Settings
   end
 
   def call
-    return {} unless File.exists? file
-    return original unless original["absolute_paths"]
+    return defaults unless File.exists? file
+    return merged unless merged["absolute_paths"]
 
-    original.inject({}) do |hash, (key, value)|
+    merged.inject({}) do |hash, (key, value)|
       if file_keys.include?(key)
-        hash[key] = File.absolute_path value, framework.root
+        hash[key] = absolute value
       else
         hash[key] = value
       end
@@ -38,6 +47,22 @@ class ThinkingSphinx::Settings
 
   delegate :framework, :to => :configuration
 
+  def absolute(relative)
+    return relative if relative.nil?
+
+    path      = File.absolute_path(relative, framework.root)
+    directory = File.dirname(path)
+
+    File.exist?(directory) ? File.realdirpath(path) : path
+  end
+
+  def defaults
+    DEFAULTS.inject({}) do |hash, (key, value)|
+      hash[key] = absolute value.gsub("ENVIRONMENT", framework.environment)
+      hash
+    end
+  end
+
   def file
     @file ||= Pathname.new(framework.root).join "config", "thinking_sphinx.yml"
   end
@@ -46,13 +71,15 @@ class ThinkingSphinx::Settings
     @file_keys ||= FILE_KEYS + (original["file_keys"] || [])
   end
 
-  def original
-    @original ||= begin
-      input = File.read file
-      input = ERB.new(input).result if defined?(ERB)
+  def merged
+    @merged ||= defaults.merge original
+  end
 
-      contents = YAML.load input
-      contents && contents[framework.environment] || {}
-    end
+  def original
+    input = File.read file
+    input = ERB.new(input).result if defined?(ERB)
+
+    contents = YAML.load input
+    contents && contents[framework.environment] || {}
   end
 end

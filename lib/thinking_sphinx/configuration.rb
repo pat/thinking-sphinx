@@ -115,13 +115,10 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def setup
-    @configuration_file = settings['configuration_file'] || framework_root.join(
-      'config', "#{environment}.sphinx.conf"
-    ).to_s
-    @index_paths = engine_index_paths + [framework_root.join('app', 'indices').to_s]
-    @indices_location = settings['indices_location'] || framework_root.join(
-      'db', 'sphinx', environment
-    ).to_s
+    @configuration_file = settings['configuration_file']
+    @index_paths = engine_index_paths +
+      [Pathname.new(framework.root).join('app', 'indices').to_s]
+    @indices_location = settings['indices_location']
     @version = settings['version'] || '2.1.4'
     @batch_size = settings['batch_size'] || 1000
 
@@ -150,27 +147,10 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def configure_searchd
-    configure_searchd_log_files
-
-    searchd.binlog_path = tmp_path.join('binlog', environment).to_s
     searchd.address = settings['address'].presence || Defaults::ADDRESS
     searchd.mysql41 = settings['mysql41'] || settings['port'] || Defaults::PORT
-    searchd.workers = 'threads'
+
     searchd.mysql_version_string = '5.5.21' if RUBY_PLATFORM == 'java'
-  end
-
-  def configure_searchd_log_files
-    searchd.pid_file = log_root.join("#{environment}.sphinx.pid").to_s
-    searchd.log = log_root.join("#{environment}.searchd.log").to_s
-    searchd.query_log = log_root.join("#{environment}.searchd.query.log").to_s
-  end
-
-  def framework_root
-    Pathname.new(framework.root)
-  end
-
-  def log_root
-    real_path 'log'
   end
 
   def normalise
@@ -182,11 +162,6 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     ThinkingSphinx::Configuration::MinimumFields.new(indices).reconcile
   end
 
-  def real_path(*arguments)
-    path = framework_root.join(*arguments)
-    path.exist? ? path.realpath : path
-  end
-
   def reset
     @settings = nil
     setup
@@ -196,10 +171,6 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     sections = [indexer, searchd]
     sections.unshift common if settings['common_sphinx_configuration']
     sections
-  end
-
-  def tmp_path
-    real_path 'tmp'
   end
 
   def verify
