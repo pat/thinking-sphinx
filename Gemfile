@@ -18,8 +18,3 @@ if RUBY_PLATFORM == 'java'
   gem 'activerecord-jdbcpostgresql-adapter', '>= 1.3.23', :platform => :jruby
   gem 'activerecord', '>= 3.2.22'
 end
-
-if RUBY_VERSION.to_f <= 2.1
-  gem 'rack', '~> 1.0'
-  gem 'nokogiri', '1.6.8'
-end
