@@ -114,6 +114,53 @@ describe ThinkingSphinx::Configuration do
 
       expect(config.indices_location).to eq('/my/index/files')
     end
+
+    it "respects relative paths" do
+      write_configuration 'indices_location' => 'my/index/files'
+
+      expect(config.indices_location).to eq('my/index/files')
+    end
+
+    it "translates relative paths to absolute if config requests it" do
+      write_configuration(
+        'indices_location' => 'my/index/files',
+        'absolute_paths'   => true
+      )
+
+      expect(config.indices_location).to eq(
+        File.join(config.framework.root, 'my/index/files')
+      )
+    end
+
+    it "respects paths that are already absolute" do
+      write_configuration(
+        'indices_location' => '/my/index/files',
+        'absolute_paths'   => true
+      )
+
+      expect(config.indices_location).to eq('/my/index/files')
+    end
+
+    it "translates linked directories" do
+      write_configuration(
+        'indices_location' => 'mine/index/files',
+        'absolute_paths'   => true
+      )
+
+      framework   = ThinkingSphinx::Frameworks.current
+      local_path  = File.join framework.root, "mine"
+      linked_path = File.join framework.root, "my"
+
+      FileUtils.mkdir_p linked_path
+      `ln -s #{linked_path} #{local_path}`
+
+      expect(config.indices_location).to eq(
+        File.join(config.framework.root, "my/index/files")
+      )
+
+      FileUtils.rm local_path
+      FileUtils.rmdir linked_path
+    end
   end
 
   describe '#initialize' do
@@ -344,6 +391,33 @@ describe ThinkingSphinx::Configuration do
       end
     end
 
+    describe '#log' do
+      it "defaults to an environment-specific file" do
+        expect(config.searchd.log).to eq(
+          File.join(config.framework.root, "log/test.searchd.log")
+        )
+      end
+
+      it "translates linked directories" do
+        framework   = ThinkingSphinx::Frameworks.current
+        log_path    = File.join framework.root, "log"
+        linked_path = File.join framework.root, "logging"
+        log_exists  = File.exist? log_path
+
+        FileUtils.mv log_path, "#{log_path}-tmp" if log_exists
+        FileUtils.mkdir_p linked_path
+        `ln -s #{linked_path} #{log_path}`
+
+        expect(config.searchd.log).to eq(
+          File.join(config.framework.root, "logging/test.searchd.log")
+        )
+
+        FileUtils.rm log_path
+        FileUtils.rmdir linked_path
+        FileUtils.mv "#{log_path}-tmp", log_path if log_exists
+      end
+    end
+
     describe '#mysql41' do
       it "defaults to 9306" do
         expect(config.searchd.mysql41).to eq(9306)
@@ -392,11 +466,11 @@ describe ThinkingSphinx::Configuration do
         config.settings
       end
 
-      it "returns an empty hash when no settings for the environment exist" do
+      it "returns the default hash when no settings for the environment exist" do
         allow(File).to receive_messages :read => {'test' => {'foo' => 'bar'}}.to_yaml
         allow(Rails).to receive_messages :env => 'staging'
 
-        expect(config.settings).to eq({})
+        expect(config.settings.class).to eq(Hash)
       end
     end
 
@@ -411,8 +485,8 @@ describe ThinkingSphinx::Configuration do
         config.settings
       end
 
-      it "returns an empty hash" do
-        expect(config.settings).to eq({})
+      it "returns a hash" do
+        expect(config.settings.class).to eq(Hash)
       end
     end
   end
