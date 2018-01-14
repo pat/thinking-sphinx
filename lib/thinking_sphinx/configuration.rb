@@ -111,7 +111,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def settings
-    @settings ||= File.exists?(settings_file) ? settings_to_hash : {}
+    @settings ||= ThinkingSphinx::Settings.call self
   end
 
   def setup
@@ -190,18 +190,6 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   def reset
     @settings = nil
     setup
-  end
-
-  def settings_file
-    framework_root.join 'config', 'thinking_sphinx.yml'
-  end
-
-  def settings_to_hash
-    input    = File.read settings_file
-    input    = ERB.new(input).result if defined?(ERB)
-
-    contents = YAML.load input
-    contents && contents[environment] || {}
   end
 
   def sphinx_sections

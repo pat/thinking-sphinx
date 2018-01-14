@@ -114,6 +114,32 @@ describe ThinkingSphinx::Configuration do
 
       expect(config.indices_location).to eq('/my/index/files')
     end
+
+    it "respects relative paths" do
+      write_configuration 'indices_location' => 'my/index/files'
+
+      expect(config.indices_location).to eq('my/index/files')
+    end
+
+    it "translates relative paths to absolute if config requests it" do
+      write_configuration(
+        'indices_location' => 'my/index/files',
+        'absolute_paths'   => true
+      )
+
+      expect(config.indices_location).to eq(
+        File.join(config.framework.root, 'my/index/files')
+      )
+    end
+
+    it "respects paths that are already absolute" do
+      write_configuration(
+        'indices_location' => '/my/index/files',
+        'absolute_paths'   => true
+      )
+
+      expect(config.indices_location).to eq('/my/index/files')
+    end
   end
 
   describe '#initialize' do
