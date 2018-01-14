@@ -5,6 +5,11 @@ require 'spec_helper'
 describe ThinkingSphinx::Configuration do
   let(:config) { ThinkingSphinx::Configuration.instance }
 
+  before :each do
+    # Running this before each spec to make JRuby happy.
+    FileUtils.rm_rf Rails.root.join('log')
+  end
+
   after :each do
     ThinkingSphinx::Configuration.reset
   end
@@ -154,20 +159,18 @@ describe ThinkingSphinx::Configuration do
       FileUtils.mkdir_p linked_path
       `ln -s #{linked_path} #{local_path}`
 
+      config # so the settings get populated before files are removed.
+
+      FileUtils.rm_rf local_path
+      FileUtils.rm_rf linked_path
+
       expect(config.indices_location).to eq(
         File.join(config.framework.root, "my/index/files")
       )
-
-      FileUtils.rm local_path
-      FileUtils.rmdir linked_path
     end
   end
 
   describe '#initialize' do
-    before :each do
-      FileUtils.rm_rf Rails.root.join('log')
-    end
-
     it "sets the daemon pid file within log for the Rails app" do
       expect(config.searchd.pid_file).
         to eq(File.join(Rails.root, 'log', 'test.sphinx.pid'))
@@ -402,19 +405,19 @@ describe ThinkingSphinx::Configuration do
         framework   = ThinkingSphinx::Frameworks.current
         log_path    = File.join framework.root, "log"
         linked_path = File.join framework.root, "logging"
-        log_exists  = File.exist? log_path
 
-        FileUtils.mv log_path, "#{log_path}-tmp" if log_exists
+        FileUtils.rm_rf log_path
         FileUtils.mkdir_p linked_path
         `ln -s #{linked_path} #{log_path}`
+
+        config # so the settings get populated before files are removed.
+
+        FileUtils.rm_rf log_path
+        FileUtils.rm_rf linked_path
 
         expect(config.searchd.log).to eq(
           File.join(config.framework.root, "logging/test.searchd.log")
         )
-
-        FileUtils.rm log_path
-        FileUtils.rmdir linked_path
-        FileUtils.mv "#{log_path}-tmp", log_path if log_exists
       end
     end
 
