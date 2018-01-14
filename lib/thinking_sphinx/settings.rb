@@ -50,10 +50,7 @@ class ThinkingSphinx::Settings
   def absolute(relative)
     return relative if relative.nil?
 
-    path      = File.absolute_path(relative, framework.root)
-    directory = File.dirname(path)
-
-    File.exist?(directory) ? File.realdirpath(path) : path
+    real_path File.absolute_path(relative, framework.root)
   end
 
   def defaults
@@ -71,6 +68,12 @@ class ThinkingSphinx::Settings
     @file_keys ||= FILE_KEYS + (original["file_keys"] || [])
   end
 
+  def join(first, last)
+    return first if last.nil?
+
+    File.join first, last
+  end
+
   def merged
     @merged ||= defaults.merge original
   end
@@ -81,5 +84,14 @@ class ThinkingSphinx::Settings
 
     contents = YAML.load input
     contents && contents[framework.environment] || {}
+  end
+
+  def real_path(base, nonexistent = nil)
+    if File.exist?(base)
+      join File.realpath(base), nonexistent
+    else
+      components = File.split base
+      real_path components.first, join(components.last, nonexistent)
+    end
   end
 end

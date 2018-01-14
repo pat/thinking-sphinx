@@ -140,6 +140,27 @@ describe ThinkingSphinx::Configuration do
 
       expect(config.indices_location).to eq('/my/index/files')
     end
+
+    it "translates linked directories" do
+      write_configuration(
+        'indices_location' => 'mine/index/files',
+        'absolute_paths'   => true
+      )
+
+      framework   = ThinkingSphinx::Frameworks.current
+      local_path  = File.join framework.root, "mine"
+      linked_path = File.join framework.root, "my"
+
+      FileUtils.mkdir_p linked_path
+      `ln -s #{linked_path} #{local_path}`
+
+      expect(config.indices_location).to eq(
+        File.join(config.framework.root, "my/index/files")
+      )
+
+      FileUtils.rm local_path
+      FileUtils.rmdir linked_path
+    end
   end
 
   describe '#initialize' do
