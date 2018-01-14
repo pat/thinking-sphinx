@@ -147,8 +147,12 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def configure_searchd
-    searchd.address = settings['address'].presence || Defaults::ADDRESS
-    searchd.mysql41 = settings['mysql41'] || settings['port'] || Defaults::PORT
+    searchd.socket = "#{settings["socket"]}:mysql41" if socket?
+
+    if tcp?
+      searchd.address = settings['address'].presence || Defaults::ADDRESS
+      searchd.mysql41 = settings['mysql41'] || settings['port'] || Defaults::PORT
+    end
 
     searchd.mysql_version_string = '5.5.21' if RUBY_PLATFORM == 'java'
   end
@@ -167,10 +171,21 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     setup
   end
 
+  def socket?
+    settings["socket"].present?
+  end
+
   def sphinx_sections
     sections = [indexer, searchd]
     sections.unshift common if settings['common_sphinx_configuration']
     sections
+  end
+
+  def tcp?
+    settings["socket"].nil?      ||
+    settings["address"].present? ||
+    settings["mysql41"].present? ||
+    settings["port"].present?
   end
 
   def verify

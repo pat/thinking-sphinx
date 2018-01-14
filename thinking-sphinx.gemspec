@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'joiner',       '>= 0.2.0'
   s.add_runtime_dependency 'middleware',   '>= 0.1.0'
   s.add_runtime_dependency 'innertube',    '>= 1.0.2'
-  s.add_runtime_dependency 'riddle',       '>= 2.0.0'
+  s.add_runtime_dependency 'riddle',       '~> 2.3'
 
   s.add_development_dependency 'appraisal',        '~> 1.0.2'
   s.add_development_dependency 'combustion',       '~> 0.7.0'

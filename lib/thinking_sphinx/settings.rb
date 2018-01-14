@@ -3,6 +3,7 @@
 require "pathname"
 
 class ThinkingSphinx::Settings
+  ALWAYS_ABSOLUTE = %w[ socket ]
   FILE_KEYS = %w[
     indices_location configuration_file bin_path log query_log pid_file
     binlog_path snippets_file_prefix sphinxql_state path stopwords wordforms
@@ -29,10 +30,9 @@ class ThinkingSphinx::Settings
 
   def call
     return defaults unless File.exists? file
-    return merged unless merged["absolute_paths"]
 
     merged.inject({}) do |hash, (key, value)|
-      if file_keys.include?(key)
+      if absolute_key?(key)
         hash[key] = absolute value
       else
         hash[key] = value
@@ -51,6 +51,12 @@ class ThinkingSphinx::Settings
     return relative if relative.nil?
 
     real_path File.absolute_path(relative, framework.root)
+  end
+
+  def absolute_key?(key)
+    return true if ALWAYS_ABSOLUTE.include?(key)
+
+    merged["absolute_paths"] && file_keys.include?(key)
   end
 
   def defaults

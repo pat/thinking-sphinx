@@ -435,6 +435,56 @@ describe ThinkingSphinx::Configuration do
         expect(config.searchd.mysql41).to eq(9307)
       end
     end
+
+    describe "#socket" do
+      it "does not set anything by default" do
+        expect(config.searchd.socket).to be_nil
+      end
+
+      it "ignores unspecified address and port when socket is set" do
+        write_configuration("socket" => "/my/socket")
+
+        expect(config.searchd.socket).to eq("/my/socket:mysql41")
+        expect(config.searchd.address).to be_nil
+        expect(config.searchd.mysql41).to be_nil
+      end
+
+      it "allows address and socket settings" do
+        write_configuration("socket" => "/my/socket", "address" => "1.1.1.1")
+
+        expect(config.searchd.socket).to eq("/my/socket:mysql41")
+        expect(config.searchd.address).to eq("1.1.1.1")
+        expect(config.searchd.mysql41).to eq(9306)
+      end
+
+      it "allows mysql41 and socket settings" do
+        write_configuration("socket" => "/my/socket", "mysql41" => 9307)
+
+        expect(config.searchd.socket).to eq("/my/socket:mysql41")
+        expect(config.searchd.address).to eq("127.0.0.1")
+        expect(config.searchd.mysql41).to eq(9307)
+      end
+
+      it "allows port and socket settings" do
+        write_configuration("socket" => "/my/socket", "port" => 9307)
+
+        expect(config.searchd.socket).to eq("/my/socket:mysql41")
+        expect(config.searchd.address).to eq("127.0.0.1")
+        expect(config.searchd.mysql41).to eq(9307)
+      end
+
+      it "allows address, mysql41 and socket settings" do
+        write_configuration(
+          "socket"  => "/my/socket",
+          "address" => "1.2.3.4",
+          "mysql41" => 9307
+        )
+
+        expect(config.searchd.socket).to eq("/my/socket:mysql41")
+        expect(config.searchd.address).to eq("1.2.3.4")
+        expect(config.searchd.mysql41).to eq(9307)
+      end
+    end
   end
 
   describe '#settings' do
