@@ -30,6 +30,14 @@ class SphinxController
 
   def start
     config.controller.start
+  rescue Riddle::CommandFailedError => error
+    puts <<-TXT
+
+The Sphinx #{type} command failed:
+  Command: #{error.command_result.command}
+  Status:  #{error.command_result.status}
+  Output:  #{error.command_result.output}
+    TXT
   end
 
   def stop
