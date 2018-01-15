@@ -32,7 +32,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 
   def controller
     @controller ||= begin
-      rc = ThinkingSphinx::Controller.new self, configuration_file
+      rc = Riddle::Controller.new self, configuration_file
       rc.bin_path = bin_path.gsub(/([^\/])$/, '\1/') if bin_path.present?
       rc
     end

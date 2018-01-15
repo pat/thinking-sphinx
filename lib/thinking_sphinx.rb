@@ -48,10 +48,16 @@ module ThinkingSphinx
 
   @output = STDOUT
 
-  module Commands; end
+  def self.rake_interface
+    @rake_interface ||= ThinkingSphinx::RakeInterface
+  end
+
+  def self.rake_interface=(interface)
+    @rake_interface = interface
+  end
+
   module Hooks; end
   module IndexingStrategies; end
-  module Interfaces; end
   module Subscribers; end
 end
 
@@ -61,15 +67,10 @@ require 'thinking_sphinx/batched_search'
 require 'thinking_sphinx/callbacks'
 require 'thinking_sphinx/core'
 require 'thinking_sphinx/with_output'
-require 'thinking_sphinx/commands/base'
-require 'thinking_sphinx/commands/configure'
-require 'thinking_sphinx/commands/index'
-require 'thinking_sphinx/commands/start_attached'
-require 'thinking_sphinx/commands/start_detached'
-require 'thinking_sphinx/commands/stop'
+require 'thinking_sphinx/commander'
+require 'thinking_sphinx/commands'
 require 'thinking_sphinx/configuration'
 require 'thinking_sphinx/connection'
-require 'thinking_sphinx/controller'
 require 'thinking_sphinx/deletion'
 require 'thinking_sphinx/errors'
 require 'thinking_sphinx/excerpter'
@@ -83,9 +84,7 @@ require 'thinking_sphinx/index'
 require 'thinking_sphinx/indexing_strategies/all_at_once'
 require 'thinking_sphinx/indexing_strategies/one_at_a_time'
 require 'thinking_sphinx/index_set'
-require 'thinking_sphinx/interfaces/daemon'
-require 'thinking_sphinx/interfaces/real_time'
-require 'thinking_sphinx/interfaces/sql'
+require 'thinking_sphinx/interfaces'
 require 'thinking_sphinx/masks'
 require 'thinking_sphinx/middlewares'
 require 'thinking_sphinx/panes'

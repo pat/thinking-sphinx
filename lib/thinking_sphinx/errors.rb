@@ -91,3 +91,6 @@ end
 class ThinkingSphinx::TranscriptionError < StandardError
   attr_accessor :inner_exception, :instance, :property
 end
+
+class ThinkingSphinx::UnknownCommand < StandardError
+end

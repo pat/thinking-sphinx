@@ -70,13 +70,18 @@ describe ThinkingSphinx::Deltas::DefaultDelta do
     let(:config)     { double('config', :controller => controller,
       :settings => {}) }
     let(:controller) { double('controller') }
+    let(:commander)  { double('commander', :call => true) }
 
     before :each do
+      stub_const 'ThinkingSphinx::Commander', commander
+
       allow(ThinkingSphinx::Configuration).to receive_messages :instance => config
     end
 
     it "indexes the given index" do
-      expect(controller).to receive(:index).with('foo_delta', :verbose => false)
+      expect(commander).to receive(:call).with(
+        :index_sql, config, :indices => ['foo_delta'], :verbose => false
+      )
 
       delta.index double('index', :name => 'foo_delta')
     end

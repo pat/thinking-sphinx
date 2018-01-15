@@ -1,22 +1,16 @@
 # frozen_string_literal: true
 
-class ThinkingSphinx::Interfaces::Daemon
-  include ThinkingSphinx::WithOutput
-
+class ThinkingSphinx::Interfaces::Daemon < ThinkingSphinx::Interfaces::Base
   def start
-    if running?
+    if command :running
       raise ThinkingSphinx::SphinxAlreadyRunning, 'searchd is already running'
     end
 
-    if options[:nodetach]
-      ThinkingSphinx::Commands::StartAttached.call configuration, options
-    else
-      ThinkingSphinx::Commands::StartDetached.call configuration, options
-    end
+    command(options[:nodetach] ? :start_attached : :start_detached)
   end
 
   def status
-    if running?
+    if command :running
       stream.puts "The Sphinx daemon searchd is currently running."
     else
       stream.puts "The Sphinx daemon searchd is not currently running."
@@ -24,11 +18,10 @@ class ThinkingSphinx::Interfaces::Daemon
   end
 
   def stop
-    ThinkingSphinx::Commands::Stop.call configuration, options
+    command :stop
   end
 
   private
 
   delegate :controller, :to => :configuration
-  delegate :running?,   :to => :controller
 end
