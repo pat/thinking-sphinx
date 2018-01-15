@@ -72,4 +72,15 @@ RSpec.describe ThinkingSphinx::Commands::IndexSQL do
 
     command.call
   end
+
+  it "does not call hooks when filtering by index" do
+    called = false
+    ThinkingSphinx.before_index_hooks << Proc.new { called = true }
+
+    ThinkingSphinx::Commands::IndexSQL.new(
+      configuration, {:verbose => false, :indices => ['foo_bar']}, stream
+    ).call
+
+    expect(called).to eq(false)
+  end
 end
