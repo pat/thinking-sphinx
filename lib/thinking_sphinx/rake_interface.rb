@@ -9,7 +9,7 @@ class ThinkingSphinx::RakeInterface
   end
 
   def configure
-    ThinkingSphinx::Commands::Configure.call configuration, options
+    ThinkingSphinx::Commander.call :configure, configuration, options
   end
 
   def daemon
