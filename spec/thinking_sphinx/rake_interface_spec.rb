@@ -3,17 +3,17 @@
 require 'spec_helper'
 
 describe ThinkingSphinx::RakeInterface do
-  let(:interface)     { ThinkingSphinx::RakeInterface.new }
+  let(:interface) { ThinkingSphinx::RakeInterface.new }
+  let(:commander) { double :call => nil }
+
+  before :each do
+    stub_const 'ThinkingSphinx::Commander', commander
+  end
 
   describe '#configure' do
-    let(:command) { double 'command', :call => true }
-
-    before :each do
-      stub_const 'ThinkingSphinx::Commands::Configure', command
-    end
-
     it 'sends the configure command' do
-      expect(command).to receive(:call)
+      expect(commander).to receive(:call).
+        with(:configure, anything, {:verbose => true})
 
       interface.configure
     end
