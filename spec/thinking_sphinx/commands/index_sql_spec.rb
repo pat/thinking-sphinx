@@ -6,9 +6,13 @@ RSpec.describe ThinkingSphinx::Commands::IndexSQL do
   let(:command)    { ThinkingSphinx::Commands::IndexSQL.new(
     configuration, {:verbose => true}, stream
   ) }
-  let(:configuration) { double 'configuration', :controller => controller }
-  let(:controller)    { double 'controller', :index => true }
-  let(:stream)        { double :puts => nil }
+  let(:configuration)     { double 'configuration', :controller => controller,
+    :indexing_strategy => indexing_strategy,
+    :guarding_strategy => guarding_strategy }
+  let(:controller)        { double 'controller', :index => true }
+  let(:stream)            { double :puts => nil }
+  let(:indexing_strategy) { Proc.new { |names, &block| block.call names } }
+  let(:guarding_strategy) { Proc.new { |names, &block| block.call names } }
 
   before :each do
     allow(ThinkingSphinx).to receive_messages :before_index_hooks => []
