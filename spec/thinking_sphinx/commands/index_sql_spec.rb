@@ -38,4 +38,34 @@ RSpec.describe ThinkingSphinx::Commands::IndexSQL do
 
     command.call
   end
+
+  it "ignores a nil indices filter" do
+    command = ThinkingSphinx::Commands::IndexSQL.new(
+      configuration, {:verbose => false, :indices => nil}, stream
+    )
+
+    expect(controller).to receive(:index).with(:verbose => false)
+
+    command.call
+  end
+
+  it "ignores an empty indices filter" do
+    command = ThinkingSphinx::Commands::IndexSQL.new(
+      configuration, {:verbose => false, :indices => []}, stream
+    )
+
+    expect(controller).to receive(:index).with(:verbose => false)
+
+    command.call
+  end
+
+  it "uses filtered index names" do
+    command = ThinkingSphinx::Commands::IndexSQL.new(
+      configuration, {:verbose => false, :indices => ['foo_bar']}, stream
+    )
+
+    expect(controller).to receive(:index).with('foo_bar', :verbose => false)
+
+    command.call
+  end
 end
