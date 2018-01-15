@@ -27,6 +27,10 @@ option is set automatically when invoked by rake, via rake's --silent and/or
       :indices => (filtered? ? filtered_indices.collect(&:name) : nil)
   end
 
+  def merge
+    command :merge
+  end
+
   private
 
   def filtered?
