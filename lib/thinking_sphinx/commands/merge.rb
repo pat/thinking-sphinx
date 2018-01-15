@@ -21,9 +21,8 @@ class ThinkingSphinx::Commands::Merge < ThinkingSphinx::Commands::Base
   delegate :controller, :to => :configuration
 
   def delta_for(core_index)
-    indices.detect do |index|
-      index.name = core_index.name.gsub(/_core$/, "_delta")
-    end
+    name = core_index.name.gsub(/_core$/, "_delta")
+    indices.detect { |index| index.name == name }
   end
 
   def index_pairs
