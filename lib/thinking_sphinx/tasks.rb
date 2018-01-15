@@ -111,10 +111,10 @@ invokes ts:rebuild.
 
   def interface
     @interface ||= ThinkingSphinx.rake_interface.new(
-      :verbose      => Rake::FileUtilsExt.verbose_flag,
-      :silent       => Rake.application.options.silent,
-      :nodetach     => (ENV['NODETACH'] == 'true'),
-      :index_filter => ENV['INDEX_FILTER']
+      :verbose     => Rake::FileUtilsExt.verbose_flag,
+      :silent      => Rake.application.options.silent,
+      :nodetach    => (ENV['NODETACH'] == 'true'),
+      :index_names => ENV.fetch('INDEX_FILTER', '').split(',')
     )
   end
 end

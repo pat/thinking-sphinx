@@ -49,16 +49,16 @@ RSpec.describe ThinkingSphinx::Interfaces::SQL do
       interface.clear
     end
 
-    context "with options[:index_filter]" do
+    context "with options[:index_names]" do
       let(:interface) { ThinkingSphinx::Interfaces::RealTime.new(
-        configuration, {:index_filter => 'users'}, stream
+        configuration, {:index_names => ['users']}, stream
       ) }
 
       it "removes each file for real-time indices that match :index_filter" do
         expect(commander).to receive(:call).with(
           :clear_real_time,
           configuration,
-          {:index_filter => 'users', :indices => [users_index]},
+          {:index_names => ['users'], :indices => [users_index]},
           stream
         )
 
@@ -89,16 +89,16 @@ RSpec.describe ThinkingSphinx::Interfaces::SQL do
       interface.index
     end
 
-    context "with options[:index_filter]" do
+    context "with options[:index_names]" do
       let(:interface) { ThinkingSphinx::Interfaces::RealTime.new(
-        configuration, {:index_filter => 'users'}, stream
+        configuration, {:index_names => ['users']}, stream
       ) }
 
       it 'invokes the index command for matching indices' do
         expect(commander).to receive(:call).with(
           :index_real_time,
           configuration,
-          {:index_filter => 'users', :indices => [users_index]},
+          {:index_names => ['users'], :indices => [users_index]},
           stream
         )
 

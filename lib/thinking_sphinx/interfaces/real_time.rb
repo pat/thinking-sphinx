@@ -28,12 +28,16 @@ populated by sending commands to a running daemon.
 
   private
 
+  def index_names
+    @index_names ||= options[:index_names] || []
+  end
+
   def indices
     @indices ||= begin
       indices = configuration.indices.select { |index| index.type == 'rt' }
 
-      if options[:index_filter]
-        indices.select! { |index| index.name == options[:index_filter] }
+      if index_names.any?
+        indices.select! { |index| index_names.include? index.name }
       end
 
       indices
