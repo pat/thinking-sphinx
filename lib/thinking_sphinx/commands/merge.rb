@@ -9,7 +9,8 @@ class ThinkingSphinx::Commands::Merge < ThinkingSphinx::Commands::Base
       next unless indices_exist? core_index, delta_index
 
       controller.merge core_index.name, delta_index.name,
-        :filters => {:sphinx_deleted => 0}
+        :filters => {:sphinx_deleted => 0},
+        :verbose => options[:verbose]
 
       core_index.model.where(:delta => true).update_all(:delta => false)
     end
