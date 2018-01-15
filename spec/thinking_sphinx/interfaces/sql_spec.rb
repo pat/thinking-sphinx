@@ -87,7 +87,7 @@ RSpec.describe ThinkingSphinx::Interfaces::SQL do
         expect(commander).to receive(:call).with(
           :index_sql,
           configuration,
-          {:index_names => ['users'], :indices => [users_index]},
+          {:index_names => ['users'], :indices => ['users']},
           stream
         )
 

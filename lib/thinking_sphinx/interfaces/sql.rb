@@ -23,7 +23,8 @@ option is set automatically when invoked by rake, via rake's --silent and/or
     return if indices.empty?
 
     command :configure if reconfigure
-    command :index_sql, :indices => (filtered? ? filtered_indices : nil)
+    command :index_sql,
+      :indices => (filtered? ? filtered_indices.collect(&:name) : nil)
   end
 
   private
