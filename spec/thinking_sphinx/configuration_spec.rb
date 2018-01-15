@@ -415,7 +415,7 @@ describe ThinkingSphinx::Configuration do
         FileUtils.rm log_path
         FileUtils.rmdir linked_path
         FileUtils.mv "#{log_path}-tmp", log_path if log_exists
-      end
+      end unless RUBY_PLATFORM == "java"
     end
 
     describe '#mysql41' do
