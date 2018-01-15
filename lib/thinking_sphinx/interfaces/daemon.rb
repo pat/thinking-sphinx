@@ -2,7 +2,7 @@
 
 class ThinkingSphinx::Interfaces::Daemon < ThinkingSphinx::Interfaces::Base
   def start
-    if running?
+    if command :running
       raise ThinkingSphinx::SphinxAlreadyRunning, 'searchd is already running'
     end
 
@@ -10,7 +10,7 @@ class ThinkingSphinx::Interfaces::Daemon < ThinkingSphinx::Interfaces::Base
   end
 
   def status
-    if running?
+    if command :running
       stream.puts "The Sphinx daemon searchd is currently running."
     else
       stream.puts "The Sphinx daemon searchd is not currently running."
@@ -24,5 +24,4 @@ class ThinkingSphinx::Interfaces::Daemon < ThinkingSphinx::Interfaces::Base
   private
 
   delegate :controller, :to => :configuration
-  delegate :running?,   :to => :controller
 end

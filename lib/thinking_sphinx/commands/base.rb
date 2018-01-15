@@ -17,6 +17,12 @@ class ThinkingSphinx::Commands::Base
 
   delegate :controller, :to => :configuration
 
+  def command(command, extra_options = {})
+    ThinkingSphinx::Commander.call(
+      command, configuration, options.merge(extra_options), stream
+    )
+  end
+
   def command_output(output)
     return "See above\n" if output.nil?
 

@@ -17,7 +17,6 @@ class ThinkingSphinx::RealTime::Populator
       instrument 'populated', :instances => instances
     end
 
-    controller.rotate
     instrument 'finish_populating'
   end
 

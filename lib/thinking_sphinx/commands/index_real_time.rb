@@ -4,6 +4,8 @@ class ThinkingSphinx::Commands::IndexRealTime < ThinkingSphinx::Commands::Base
   def call
     options[:indices].each do |index|
       ThinkingSphinx::RealTime::Populator.populate index
+
+      command :rotate
     end
   end
 
