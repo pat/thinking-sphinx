@@ -64,10 +64,35 @@ RSpec.describe ThinkingSphinx::Interfaces::SQL do
 
     it "executes the index command" do
       expect(commander).to receive(:call).with(
-        :index_sql, configuration, {:verbose => true}, stream
+        :index_sql, configuration, {:verbose => true, :indices => nil}, stream
       )
 
       interface.index
+    end
+
+    context "with options[:index_names]" do
+      let(:users_index) { double(:name => 'users', :type => 'plain') }
+      let(:parts_index) { double(:name => 'parts', :type => 'plain') }
+      let(:rt_index)    { double(:type => 'rt') }
+      let(:interface)   { ThinkingSphinx::Interfaces::SQL.new(
+        configuration, {:index_names => ['users']}, stream
+      ) }
+
+      before :each do
+        allow(configuration).to receive(:indices).
+          and_return([users_index, parts_index, rt_index])
+      end
+
+      it 'invokes the index command for matching indices' do
+        expect(commander).to receive(:call).with(
+          :index_sql,
+          configuration,
+          {:index_names => ['users'], :indices => [users_index]},
+          stream
+        )
+
+        interface.index
+      end
     end
   end
 end

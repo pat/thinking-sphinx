@@ -10,7 +10,7 @@ class ThinkingSphinx::Interfaces::SQL < ThinkingSphinx::Interfaces::Base
   end
 
   def clear
-    command :clear_sql, :indices => indices
+    command :clear_sql, :indices => (filtered? ? filtered_indices : indices)
   end
 
   def index(reconfigure = true, verbose = nil)
@@ -23,10 +23,22 @@ option is set automatically when invoked by rake, via rake's --silent and/or
     return if indices.empty?
 
     command :configure if reconfigure
-    command :index_sql
+    command :index_sql, :indices => (filtered? ? filtered_indices : nil)
   end
 
   private
+
+  def filtered?
+    index_names.any?
+  end
+
+  def filtered_indices
+    indices.select { |index| index_names.include? index.name }
+  end
+
+  def index_names
+    @index_names ||= options[:index_names] || []
+  end
 
   def indices
     @indices ||= configuration.indices.select do |index|
