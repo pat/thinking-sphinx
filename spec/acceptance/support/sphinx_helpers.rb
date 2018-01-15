@@ -14,6 +14,15 @@ module SphinxHelpers
     sleep 0.25
     sleep 0.5 if ENV['TRAVIS']
   end
+
+  def merge
+    sleep 0.5 if ENV['TRAVIS']
+    sleep 0.5
+
+    sphinx.merge
+    sleep 1
+    sleep 0.5 if ENV['TRAVIS']
+  end
 end
 
 RSpec.configure do |config|

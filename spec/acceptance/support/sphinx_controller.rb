@@ -52,6 +52,10 @@ The Sphinx start command failed:
     ThinkingSphinx::Commander.call :index_sql, config, :indices => indices
   end
 
+  def merge
+    ThinkingSphinx::Commander.call(:merge, config, {})
+  end
+
   private
 
   def config
