@@ -40,7 +40,7 @@ class SphinxController
   end
 
   def index(*indices)
-    config.controller.index *indices
+    ThinkingSphinx::Commander.call :index_sql, config, :indices => indices
   end
 
   private
