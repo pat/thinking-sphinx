@@ -6,10 +6,16 @@ class ThinkingSphinx::Deltas::IndexJob
   end
 
   def perform
-    configuration.controller.index @index_name, :verbose => !quiet_deltas?
+    ThinkingSphinx::Commander.call(
+      :index_sql, configuration,
+      :indices => [index_name],
+      :verbose => !quiet_deltas?
+    )
   end
 
   private
+
+  attr_reader :index_name
 
   def configuration
     @configuration ||= ThinkingSphinx::Configuration.instance
