@@ -8,7 +8,7 @@ class ThinkingSphinx::Commands::Stop < ThinkingSphinx::Commands::Base
     end
 
     pid = controller.pid
-    until command :running do
+    until !command :running do
       controller.stop options
       sleep(0.5)
     end
