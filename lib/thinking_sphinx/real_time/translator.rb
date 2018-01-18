@@ -13,7 +13,7 @@ class ThinkingSphinx::RealTime::Translator
     return name   unless name.is_a?(Symbol)
     return result unless result.is_a?(String)
 
-    result.gsub "\u0000", ''
+    result.gsub("\u0000", '').force_encoding "UTF-8"
   end
 
   private
