@@ -100,4 +100,23 @@ RSpec.describe ThinkingSphinx::Commands::Merge do
 
     command.call
   end
+
+  context "with index name filter" do
+    let(:command)       { ThinkingSphinx::Commands::Merge.new(
+      configuration, {:index_names => ["index_a"]}, stream
+    ) }
+
+    it "only processes matching indices" do
+      expect(controller).to receive(:merge).with(
+        "index_a_core", "index_a_delta",
+        hash_including(:filters => {:sphinx_deleted => 0})
+      )
+      expect(controller).to_not receive(:merge).with(
+        "index_b_core", "index_b_delta",
+        hash_including(:filters => {:sphinx_deleted => 0})
+      )
+
+      command.call
+    end
+  end
 end

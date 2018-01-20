@@ -20,13 +20,20 @@ class ThinkingSphinx::Commands::Merge < ThinkingSphinx::Commands::Base
 
   delegate :controller, :to => :configuration
 
+  def core_indices
+    indices.select { |index| !index.delta? }.select do |index|
+      name_filters.empty? ||
+      name_filters.include?(index.name.gsub(/_core$/, ''))
+    end
+  end
+
   def delta_for(core_index)
     name = core_index.name.gsub(/_core$/, "_delta")
     indices.detect { |index| index.name == name }
   end
 
   def index_pairs
-    indices.select { |index| !index.delta? }.collect { |core_index|
+    core_indices.collect { |core_index|
       [core_index, delta_for(core_index)]
     }
   end
@@ -39,6 +46,10 @@ class ThinkingSphinx::Commands::Merge < ThinkingSphinx::Commands::Base
 
   def indices_exist?(*indices)
     indices.all? { |index| File.exist?("#{index.path}.spi") }
+  end
+
+  def name_filters
+    @name_filters ||= options[:index_names] || []
   end
 
   def type

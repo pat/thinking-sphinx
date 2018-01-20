@@ -95,4 +95,28 @@ RSpec.describe ThinkingSphinx::Interfaces::SQL do
       end
     end
   end
+
+  describe '#merge' do
+    it "invokes the merge command" do
+      expect(commander).to receive(:call).with(
+        :merge, configuration, {:verbose => true}, stream
+      )
+
+      interface.merge
+    end
+
+    context "with options[:index_names]" do
+      let(:interface)   { ThinkingSphinx::Interfaces::SQL.new(
+        configuration, {:index_names => ['users']}, stream
+      ) }
+
+      it 'invokes the merge command with the index_names option' do
+        expect(commander).to receive(:call).with(
+          :merge, configuration, {:index_names => ['users']}, stream
+        )
+
+        interface.merge
+      end
+    end
+  end
 end
