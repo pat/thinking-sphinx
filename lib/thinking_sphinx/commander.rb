@@ -14,6 +14,7 @@ class ThinkingSphinx::Commander
       :configure       => ThinkingSphinx::Commands::Configure,
       :index_sql       => ThinkingSphinx::Commands::IndexSQL,
       :index_real_time => ThinkingSphinx::Commands::IndexRealTime,
+      :merge           => ThinkingSphinx::Commands::Merge,
       :prepare         => ThinkingSphinx::Commands::Prepare,
       :rotate          => ThinkingSphinx::Commands::Rotate,
       :running         => ThinkingSphinx::Commands::Running,

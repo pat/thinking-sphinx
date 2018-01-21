@@ -40,6 +40,9 @@ invokes ts:index.
     Rake::Task['ts:index'].invoke
   end
 
+  desc "Merge all delta indices into their respective core indices"
+  task :merge => ["ts:sql:merge"]
+
   desc 'Delete and regenerate Sphinx files, restart the daemon'
   task :rebuild => [
     :stop, :clear, :configure, 'ts:sql:index', :start, 'ts:rt:index'
@@ -86,6 +89,10 @@ invokes ts:rebuild.
     desc 'Generate fresh index files for SQL-backed indices'
     task :index => :environment do
       interface.sql.index(ENV['INDEX_ONLY'] != 'true')
+    end
+
+    task :merge => :environment do
+      interface.sql.merge
     end
 
     desc 'Delete and regenerate SQL-backed Sphinx files, restart the daemon'
