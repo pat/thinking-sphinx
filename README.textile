@@ -51,7 +51,7 @@ The current release of Thinking Sphinx works with the following versions of its 
 
 h3. Sphinx
 
-Thinking Sphinx v3 is currently built for Sphinx 2.1 or newer, and releases since v3.1.0 expect Sphinx 2.1.2 or newer by default.
+Thinking Sphinx v3 is currently built for Sphinx 2.1.2 or newer.
 
 h3. Rails and ActiveRecord
 
