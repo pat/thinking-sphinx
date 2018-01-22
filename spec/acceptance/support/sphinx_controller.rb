@@ -18,10 +18,6 @@ class SphinxController
 
     ActiveSupport::Dependencies.clear
 
-    if ENV['SPHINX_VERSION'].try :[], /2.0.\d/
-      ThinkingSphinx::Configuration.instance.settings['utf8'] = false
-    end
-
     config.searchd.mysql41 = 9307
     config.settings['quiet_deltas']      = true
     config.settings['attribute_updates'] = true
