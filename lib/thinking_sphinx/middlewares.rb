@@ -14,7 +14,7 @@ module ThinkingSphinx::Middlewares
     middlewares.each { |m| builder.use m }
   end
 
-  BASE_MIDDLEWARES = [ValidOptions, AttributeTyper, SphinxQL, Geographer, Inquirer]
+  BASE_MIDDLEWARES = [ValidOptions, SphinxQL, Geographer, Inquirer]
 
   DEFAULT = ::Middleware::Builder.new do
     use StaleIdFilter
