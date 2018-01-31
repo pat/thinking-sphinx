@@ -4,11 +4,6 @@ source 'https://rubygems.org'
 
 gemspec
 
-# Until there's a version beyond 0.7.0
-gem 'combustion',
-  :git    => 'https://github.com/pat/combustion.git',
-  :branch => 'master'
-
 gem 'mysql2', '~> 0.3.12b4', :platform => :ruby
 gem 'pg',     '~> 0.18.4',   :platform => :ruby
 
