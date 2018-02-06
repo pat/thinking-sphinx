@@ -167,6 +167,15 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
 
         middleware.call [context]
       end
+
+      it "passes through SQL where options to the relation" do
+        search.options[:sql] = {:where => "deleted_at IS NULL"}
+
+        expect(relation).to receive(:where).with("deleted_at IS NULL").and_return(relation)
+
+        middleware.call [context]
+      end
+
     end
   end
 end
