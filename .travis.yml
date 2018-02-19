@@ -20,8 +20,6 @@ env:
   - SPHINX_BIN=ext/sphinx/bin/
   - secure: cUPinkilBafqDSPsTkl/PXYc2aXNKUQKXGK8poBBMqKN9/wjfJx1DWgtowDKalekdZELxDhc85Ye3bL1xlW4nLjOu+U6Tkt8eNw2Nhs1flodHzA/RyENdBLr/tBHt43EjkrDehZx5sBHmWQY4miHs8AJz0oKO9Ae2inTOHx9Iuc=
   matrix:
-  - DATABASE=mysql2 SPHINX_VERSION=2.0.10
-  - DATABASE=postgresql SPHINX_VERSION=2.0.10
   - DATABASE=mysql2 SPHINX_VERSION=2.1.9
   - DATABASE=postgresql SPHINX_VERSION=2.1.9
   - DATABASE=mysql2 SPHINX_VERSION=2.2.11
@@ -31,9 +29,3 @@ addons:
   postgresql: '9.4'
 services:
 - postgresql
-matrix:
-  exclude:
-  - rvm: jruby-9.1.14.0
-    env: DATABASE=mysql2 SPHINX_VERSION=2.0.10
-  - rvm: jruby-9.1.14.0
-    env: DATABASE=postgresql SPHINX_VERSION=2.0.10

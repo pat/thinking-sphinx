@@ -18,7 +18,6 @@ require 'active_support/core_ext/string/inflections'
 require 'thinking_sphinx/middlewares/middleware'
 require 'thinking_sphinx/middlewares/sphinxql'
 require 'thinking_sphinx/errors'
-require 'thinking_sphinx/sphinxql'
 
 describe ThinkingSphinx::Middlewares::SphinxQL do
   let(:app)           { double('app', :call => true) }

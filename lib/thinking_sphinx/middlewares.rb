@@ -4,7 +4,7 @@ module ThinkingSphinx::Middlewares; end
 
 %w[
   middleware active_record_translator geographer glazier ids_only inquirer
-  sphinxql stale_id_checker stale_id_filter utf8 valid_options
+  sphinxql stale_id_checker stale_id_filter valid_options
 ].each do |middleware|
   require "thinking_sphinx/middlewares/#{middleware}"
 end
