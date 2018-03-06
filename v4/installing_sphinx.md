@@ -2,6 +2,7 @@
 layout: en
 title:  Installing Sphinx
 gem_version: v4
+redirect_from: "/installing_sphinx.html"
 ---
 
 ## Installing Sphinx

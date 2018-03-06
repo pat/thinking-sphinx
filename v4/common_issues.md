@@ -2,6 +2,7 @@
 layout: en
 title: Common Questions and Issues
 gem_version: v4
+redirect_from: "/common_issues.html"
 ---
 
 ## Common Questions and Issues

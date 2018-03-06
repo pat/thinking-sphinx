@@ -2,6 +2,7 @@
 layout: en
 title: Indexing
 gem_version: v4
+redirect_from: "/indexing.html"
 ---
 
 ## Indexing your Models

@@ -2,6 +2,7 @@
 layout: en
 title:  Installing Thinking Sphinx
 gem_version: v4
+redirect_from: "/installing_thinking_sphinx/ts2.html"
 ---
 
 ## Installing Thinking Sphinx (Rails 3.0)

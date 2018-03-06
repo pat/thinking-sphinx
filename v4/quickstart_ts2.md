@@ -2,6 +2,7 @@
 layout: en
 title: Quickstart
 gem_version: v4
+redirect_from: "/quickstart_ts2.html"
 ---
 
 ## A Quick Guide to Getting Setup with Thinking Sphinx

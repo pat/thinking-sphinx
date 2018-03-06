@@ -2,6 +2,7 @@
 layout: en
 title: Deployment
 gem_version: v4
+redirect_from: "/deployment.html"
 ---
 
 ## Deployment

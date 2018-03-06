@@ -12,3 +12,5 @@ exclude:
   - pkg
   - vendor
   - spec
+plugins:
+  - jekyll-redirect-from

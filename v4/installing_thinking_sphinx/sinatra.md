@@ -2,6 +2,7 @@
 layout: en
 title:  Installing Thinking Sphinx
 gem_version: v4
+redirect_from: "/installing_thinking_sphinx/sinatra.html"
 ---
 
 ## Installing Thinking Sphinx (Sinatra, Padrino and others)

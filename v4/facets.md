@@ -2,6 +2,7 @@
 layout: en
 title: Facets
 gem_version: v4
+redirect_from: "/facets.html"
 ---
 
 ## Faceted Searching

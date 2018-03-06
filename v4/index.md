@@ -2,6 +2,7 @@
 layout: en
 title:  Home
 gem_version: v4
+redirect_from: "/"
 ---
 
 ## Thinking Sphinx

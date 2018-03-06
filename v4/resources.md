@@ -2,6 +2,7 @@
 layout: en
 title: External Resources
 gem_version: v4
+redirect_from: "/resources.html"
 ---
 
 ## External Resources

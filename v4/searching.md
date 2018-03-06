@@ -2,6 +2,7 @@
 layout: en
 title: Searching
 gem_version: v4
+redirect_from: "/searching.html"
 ---
 
 ## Searching

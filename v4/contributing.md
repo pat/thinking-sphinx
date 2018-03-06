@@ -2,6 +2,7 @@
 layout: en
 title: Contributing to Thinking Sphinx
 gem_version: v4
+redirect_from: "/contributing.html"
 ---
 
 ## Contributing to Thinking Sphinx

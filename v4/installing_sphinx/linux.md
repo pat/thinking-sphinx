@@ -2,6 +2,7 @@
 layout: en
 title:  Installing Sphinx on Linux
 gem_version: v4
+redirect_from: "/installing_sphinx/linux.html"
 ---
 
 ## Installing Sphinx on Linux

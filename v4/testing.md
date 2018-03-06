@@ -2,6 +2,7 @@
 layout: en
 title: Testing
 gem_version: v4
+redirect_from: "/testing.html"
 ---
 
 ## Testing with Thinking Sphinx

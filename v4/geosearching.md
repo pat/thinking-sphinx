@@ -2,6 +2,7 @@
 layout: en
 title: Geo-searching
 gem_version: v4
+redirect_from: "/geosearching.html"
 ---
 
 ## Geo-Searching

@@ -2,6 +2,7 @@
 layout: en
 title: Searching
 gem_version: v4
+redirect_from: "/searching/ts2.html"
 ---
 
 ## Searching with Thinking Sphinx v1/v2

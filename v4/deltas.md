@@ -2,6 +2,7 @@
 layout: en
 title: Delta Indexes
 gem_version: v4
+redirect_from: "/deltas.html"
 ---
 
 ## Delta Indexes

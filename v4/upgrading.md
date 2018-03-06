@@ -2,6 +2,7 @@
 layout: en
 title: Upgrading
 gem_version: v4
+redirect_from: "/upgrading.html"
 ---
 
 ## Upgrading Thinking Sphinx
