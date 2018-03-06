@@ -2,6 +2,7 @@
 layout: en
 title: Searching
 gem_version: v3
+disable_versions: true
 ---
 
 ## Searching with Thinking Sphinx v1/v2

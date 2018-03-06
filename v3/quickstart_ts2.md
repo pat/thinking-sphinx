@@ -2,6 +2,7 @@
 layout: en
 title: Quickstart
 gem_version: v3
+disable_versions: true
 ---
 
 ## A Quick Guide to Getting Setup with Thinking Sphinx

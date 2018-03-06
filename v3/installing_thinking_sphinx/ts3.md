@@ -2,6 +2,7 @@
 layout: en
 title:  Installing Thinking Sphinx
 gem_version: v3
+disable_versions: true
 ---
 
 ## Installing Thinking Sphinx (Rails 3.1 or Newer)
