@@ -7,7 +7,7 @@ redirect_from: "/advanced_config.html"
 
 ## Advanced Sphinx Configuration
 
-Thinking Sphinx provides a good set of defaults out of the box, and for some people, those options are exactly what they need. Sometimes, though, you may need to customise how Sphinx works - and this can usually be done by adding some settings to a file named `thinking_sphinx.yml` (or `sphinx.yml` if you're using a version of Thinking Sphinx prior to 3.0) in your `config` directory. Much like database.yml, settings are defined for each environment. Here's an example:
+Thinking Sphinx provides a good set of defaults out of the box, and for some people, those options are exactly what they need. Sometimes, though, you may need to customise how Sphinx works - and this can usually be done by adding some settings to a file named `thinking_sphinx.yml` in your `config` directory. Much like database.yml, settings are defined for each environment. Here's an example:
 
 {% highlight yaml %}
 development:
@@ -18,23 +18,17 @@ production:
   mysql41: 9312
 {% endhighlight %}
 
-<div class="note">
-  <p class="old">Thinking Sphinx v1/v2</p>
-
-  <p><strong>Note</strong>: The <code>mysql41</code> setting was previously <code>port</code> before Thinking Sphinx v3.</p>
-</div>
-
 Now, [Sphinx has a _lot_ of different settings](http://www.sphinxsearch.com/docs/current.html#confgroup-index) you can play with, and they're pretty much all supported by Thinking Sphinx as well. Documentation will be added here for them over time, but in a pinch, it should be pretty easy to guess the syntax for the YAML file for each setting.
 
 ### Index File Location
 
-You can customise the location of your Sphinx index files using the `indices_location` option (`searchd_file_path` for v2 or earlier).
+You can customise the location of your Sphinx index files using the `indices_location` option.
 
 Thinking Sphinx defaults to putting these files in db/sphinx/ENVIRONMENT - which makes life easier if you're running integration tests with a live Sphinx setup. It's worth keeping this in mind and ensuring your file locations are unique for each environment when they share a machine. Indeed, you'll probably only want to change this value on your production machine.
 
 {% highlight yaml %}
 production:
-  indices_location: "/var/www/latest_web20_craze/shared/sphinx"
+  indices_location: "/var/www/my_app/shared/sphinx"
 # ... repeat for other environments if necessary
 {% endhighlight %}
 
@@ -42,7 +36,7 @@ production:
 
 In the same vein as the above setting, you can nominate custom locations for your configuration, log and pid files.
 
-Here's some example syntax, using Thinking Sphinx's defaults. Uppercase words are placeholders for system variables - you can't actually use them in your YAML file.
+Here's some example syntax, using Thinking Sphinx's defaults. Uppercase words are placeholders for system variables in the example only - you can't actually use them in your YAML file.
 
 {% highlight yaml %}
 development:
@@ -52,8 +46,6 @@ development:
   pid_file: "RAILS_ROOT/log/searchd.ENVIRONMENT.pid"
 # ... repeat for other environments
 {% endhighlight %}
-
-In older versions (before 3.0), these settings were `config_file`, `searchd_log_file`, `query_log_file` and `pid_file`.
 
 <h3 id="daemon-address">Daemon Address and Port</h3>
 
@@ -65,12 +57,6 @@ production:
   mysql41: 3200
 # ... repeat for other environments if necessary
 {% endhighlight %}
-
-<div class="note">
-  <p class="old">Thinking Sphinx v1/v2</p>
-
-  <p><strong>Note</strong>: The <code>mysql41</code> setting was previously <code>port</code> before Thinking Sphinx v3.</p>
-</div>
 
 ### Indexer Memory Usage
 
@@ -96,15 +82,15 @@ development:
 
 ### Wildcard/Star Syntax
 
-By default, Sphinx does not pay any attention to wildcard searching using an asterisk character. You can turn it on, though:
+If you're using Sphinx 2.2.2 or newer, wildcard syntax will be respected by default (though you'll also need infixes or prefixes, as covered in the next section).
+
+If you're using an older version of Sphinx, then you can enable wildcard syntax using the `enable_star` option:
 
 {% highlight yaml %}
 development:
   enable_star: true
 # ... repeat for other environments
 {% endhighlight %}
-
-You'll almost certainly want to enable infix or prefix indexing as well, though (read the next section).
 
 ### Infix and Prefix Indexing
 
@@ -122,7 +108,7 @@ development:
 
 ### Character Sets and Tables
 
-By default, Thinking Sphinx uses the UTF-8 character set. If you wish to use Sphinx's inbuild sbcs encoding, you'll need to specify it via the charset_type setting:
+By default, Sphinx and Thinking Sphinx use the UTF-8 character set. If you're using an older version of Sphinx and prefer Sphinx's inbuild sbcs encoding, you'll need to specify it via the charset_type setting:
 
 {% highlight yaml %}
 development:
@@ -151,7 +137,7 @@ development:
 # ... repeat for other environments
 {% endhighlight %}
 
-Don't forget to rebuild your Sphinx indexes so the daemon is aware of the change.
+Don't forget to reconfigure and restart your Sphinx daemon so it is aware of the change.
 
 {% highlight sh %}
 rake ts:stop ts:configure ts:start
@@ -170,25 +156,6 @@ Article.search 'pancakes',
   :max_matches => 10_000,
   :per_page    => 10_000
 {% endhighlight %}
-
-<h3 id="indexed-models">Indexed Models</h3>
-
-<div class="note">
-  <p class="old">Thinking Sphinx v1/v2</p>
-  <p><strong>Note</strong>: This setting applies only to older versions of Thinking Sphinx. Version 3 is much smarter with index loading, due to the indices being separated from models.</p>
-</div>
-
-While not related to Sphinx, this setting is to provide faster loading of the indexed models by Thinking Sphinx. Normally, Thinking Sphinx has to load _all_ models to determine which ones are indexed. This is not ideal, so if you like, you can explicitly list the relevant models in your `config/sphinx.yml` file:
-
-{% highlight yaml %}
-development:
-  indexed_models:
-    - Article
-    - Company
-    - User
-{% endhighlight %}
-
-Given a standard production environment does not re-initialize the app on every request, this is only useful in development. And make sure you remember to update it if you add index definitions to models!
 
 ### Word Forms, Exceptions, and Stop Words
 
