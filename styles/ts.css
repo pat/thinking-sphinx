@@ -84,6 +84,32 @@ div#header {
   overflow: hidden;
 }
 
+#header ul {
+  margin: 0;
+  padding: 0;
+  top: 7em;
+  position: absolute;
+  right: 0;
+  text-align: right;
+}
+
+#header ul li {
+  display: inline;
+  padding: 0;
+  margin: 0;
+}
+
+#header ul li a {
+  padding: 0.5em 0.5em;
+}
+
+#header ul li .current {
+  font-weight: bold;
+  border: 2px solid #666;
+  padding: 0.5em 0.5em;
+  background-color: #efefef;
+}
+
 div#language {
   position: absolute;
   top: 0;

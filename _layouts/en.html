@@ -27,6 +27,15 @@
       <div class="wrapper">
         <h1 class="riddle"><a href="/thinking-sphinx" title="Thinking Sphinx">Thinking Sphinx</a></h1>
         <p>A Ruby connector between Sphinx and ActiveRecord.</p>
+        <ul>
+          {% if page.gem_version == "v3" %}
+            <li><a href="/thinking-sphinx{{ page.url | replace_first:'v3','v4' }}">v4</a></li>
+            <li><span class="current">You're viewing v3</span></li>
+          {% else %}
+            <li><span class="current">You're viewing: v4</span></li>
+            <li><a href="/thinking-sphinx{{ page.url | replace_first:'v4','v3' }}">v3</a></li>
+          {% endif %}
+        </ul>
       </div><!-- /.wrapper -->
     </div><!-- /#header -->
 
