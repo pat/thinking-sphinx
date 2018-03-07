@@ -7,16 +7,7 @@ redirect_from: "/resources.html"
 
 ## External Resources
 
-I am happy to provide support via email and [the google group](http://groups.google.com/group/thinking-sphinx/) - but please do not contact me on Skype or other instant messaging systems about Thinking Sphinx issues.
-
-### Further Documentation, Support and Discussion
-
-* [RDocs for the official repository](http://rdoc.info/projects/pat/thinking-sphinx)
-* [Thinking Sphinx Google Group](http://groups.google.com/group/thinking-sphinx/)
-
-### Video
-
-* [Railscast #120](http://railscasts.com/episodes/120-thinking-sphinx)
+I am happy to provide support via [GitHub issues](https://github.com/pat/thinking-sphinx/issues), [the google group](http://groups.google.com/group/thinking-sphinx/), and [StackOverflow](https://stackoverflow.com/questions/tagged/thinking-sphinx) where possible.
 
 ### Books
 

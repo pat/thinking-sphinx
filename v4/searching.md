@@ -37,12 +37,7 @@ Article.search 'pancakes'
 Sphinx does have some reserved characters (including the @ character), so you may need to escape your query terms.
 
 {% highlight ruby %}
-# For Thinking Sphinx v3.1.0 or newer:
 Article.search ThinkingSphinx::Query.escape(params[:query])
-# For Thinking Sphinx v3.0.x:
-Article.search Riddle::Query.escape(params[:query])
-# For Thinking Sphinx before v3:
-Article.search Riddle.escape(params[:query])
 {% endhighlight %}
 
 Please note that Sphinx paginates search results, and the default page size is 20. You can find more information further down in the [pagination](#pagination) section.
@@ -118,8 +113,6 @@ You can use all the same syntax to search across all indexed models in your appl
 ThinkingSphinx.search 'pancakes'
 {% endhighlight %}
 
-If you're using a version of Thinking Sphinx prior to 1.2, you will need to use a slightly deeper namespaced method: `ThinkingSphinx::Search.search`.
-
 This search will return all objects that match, no matter what model they are from, ordered by relevance (unless you specify a custom order clause, of course). Don't expect references to attributes and fields to work perfectly if they don't exist in all the models.
 
 If you want to limit global searches to a few specific models, you can do so with the `:classes` option:
@@ -160,14 +153,9 @@ Pagination can also be used in combination with [Kaminari](https://github.com/am
 
 Thinking Sphinx v3 and newer use Sphinx's SphinxQL for querying, and that _always_ uses the extended match mode, which is [covered in detail](http://www.sphinxsearch.com/docs/current.html#extended-syntax) in the Sphinx documentation.
 
-<div class="note">
-  <p class="old">Thinking Sphinx v1/v2</p>
-  <p><strong>Note</strong>: If you are using an older version of Thinking Sphinx, then you have simpler match modes available, which are covered both in the Sphinx documentation and <a href="searching/ts2.html#matchmodes">here</a>.</p>
-</div>
-
 <h3 id="ranking">Ranking Modes</h3>
 
-Sphinx also has a few different ranking modes (again, [the Sphinx documentation](http://www.sphinxsearch.com/docs/current.html#api-func-setrankingmode) is the best source of information on these). They can be set using the `:ranker` option (or `:rank_mode` if you're using Thinking Sphinx v2 or older):
+Sphinx also has a few different ranking modes (again, [the Sphinx documentation](http://www.sphinxsearch.com/docs/current.html#api-func-setrankingmode) is the best source of information on these). They can be set using the `:ranker` option:
 
 {% highlight ruby %}
 Article.search "pancakes", :ranker => :bm25
@@ -238,15 +226,6 @@ ThinkingSphinx.search(
 )
 {% endhighlight %}
 
-<div class="note">
-  <p class="old">Sphinx 2.0.x</p>
-  <p><strong>Note</strong>: If you are using a version of Sphinx prior to 2.1.1, then the ranking is available instead by the internal attribute `@weight`.</p>
-</div>
-
-<div class="note">
-  <p class="old">Thinking Sphinx v1/v2</p>
-  <p><strong>Note</strong>: If you are using an older version of Thinking Sphinx, then you have further sorting options available, which are covered both in the Sphinx documentation and <a href="searching/ts2.html#sorting">here</a>.</p>
-</div>
 
 <h3 id="fieldweights">Field Weights</h3>
 
@@ -308,11 +287,6 @@ Post.search 'syrup',
   :order_group_by => 'count(*) desc'
 {% endhighlight %}
 
-<div class="note">
-  <p class="old">Sphinx 2.0.x</p>
-  <p><strong>Note</strong>: If you are using a version of Sphinx prior to 2.1.1, then the group count is available instead by the internal attribute `@count`.</p>
-</div>
-
 Once you have the grouped results, you can enumerate by each result along with the group value, the number of objects that matched that group value, or both, using the following methods respectively:
 
 {% highlight ruby %}
@@ -329,11 +303,6 @@ ThinkingSphinx.search(
   :group_by => 'grouping'
 )
 {% endhighlight %}
-
-<div class="note">
-  <p class="old">Thinking Sphinx v1/v2</p>
-  <p><strong>Note</strong>: If you are using an older version of Thinking Sphinx, then you have further grouping options available, which are covered both in the Sphinx documentation and <a href="searching/ts2.html#grouping">here</a>.</p>
-</div>
 
 <h3 id="ids">Searching for Object Ids</h3>
 
@@ -388,7 +357,7 @@ Article.search 'pancakes waffles', :star => true
 # => becomes '*pancakes* *waffles*'
 {% endhighlight %}
 
-If you want to manage auto-wildcarding in a more controlled fashion, since v3.1.0 Thinking Sphinx provides the `ThinkingSphinx::Query.wildcard` method:
+If you want to manage auto-wildcarding in a more controlled fashion there's the `ThinkingSphinx::Query.wildcard` method:
 
 {% highlight ruby %}
 Article.search 'pancakes', :conditions => {
@@ -403,11 +372,6 @@ If you construct a query that Sphinx cannot understand, or if the connection fai
 
 Some specific types of errors are given specific subclass - `ThinkingSphinx::QueryError`, `ThinkingSphinx::SyntaxError` and `ThinkingSphinx::ParseError`. The message in any of these errors will give you more detail on what's gone wrong.
 
-<div class="note">
-  <p class="old">Thinking Sphinx v1/v2</p>
-  <p><strong>Note</strong>: If you are using an older version of Thinking Sphinx, then <a href="searching/ts2.html#errors">errors are handled differently</a>.</p>
-</div>
-
 <h3 id="advanced">Advanced Options</h3>
 
 Thinking Sphinx accepts the following [advanced Sphinx arguments](http://sphinxsearch.com/docs/current.html#sphinxql-select):
@@ -416,8 +380,6 @@ Thinking Sphinx accepts the following [advanced Sphinx arguments](http://sphinxs
 * `:retry_count` and `:retry_delay`
 * `:max_query_time`
 * `:comment`
-
-Thinking Sphinx v1/v2 also allows for the [`:id_range`](http://www.sphinxsearch.com/docs/current.html#api-func-setidrange) option.
 
 If you want to set additional arguments for the underlying SQL call when translating Sphinx results into ActiveRecord objects (`:include`, `:joins`, `:select`, `:order`), you can put these within the `:sql` option:
 

@@ -57,30 +57,6 @@ When you're defining indices for namespaced models, use a lowercase string with 
 ThinkingSphinx::Index.define 'blog/article'.to_sym, :with => :active_record
 {% endhighlight %}
 
-<div class="note">
-  <p class="old">Thinking Sphinx v1/v2</p>
-
-  <p><strong>Note</strong>: Index definitions for Thinking Sphinx versions before 3.0.0 went in the model files instead, inside a <code>define_index</code> call.</p>
-
-  <p>Don't forget to place this block <em>below</em> your associations and any <code>accepts_nested_attributes_for</code> calls, otherwise any references to them for fields and attributes will not work.</p>
-
-  {% highlight ruby %}
-class Article < ActiveRecord::Base
-  # ...
-
-  define_index do
-    indexes subject, :sortable => true
-    indexes content
-    indexes author(:name), :as => :author, :sortable => true
-
-    has author_id, created_at, updated_at
-  end
-
-  # ...
-end
-{% endhighlight %}
-</div>
-
 <h3 id="realtime">Real-time Indices vs SQL-backed Indices</h3>
 
 Thinking Sphinx allows for definitions of both real-time indices and SQL-backed indices. (In previous versions, only SQL-backed indices were available.)
@@ -115,16 +91,6 @@ The `indexes` method adds one (or many) fields, by referencing the model's metho
 {% highlight ruby %}
 indexes content
 {% endhighlight %}
-
-<div class="note">
-  <p class="old">Thinking Sphinx v1/v2</p>
-
-  <p>Keep in mind that if you're referencing a column that shares its name with a core Ruby method (such as id, name or type) and you're using Thinking Sphinx v1 or v2, then you'll need to specify it using a symbol.</p>
-
-  {% highlight ruby %}
-indexes :name
-{% endhighlight %}
-</div>
 
 You don't need to keep the same names as your model, though. Use the `:as` option to signify a new name. Field and attribute names must be unique, so specifying custom names (instead of the column name for both) is essential.
 
@@ -275,22 +241,6 @@ end
 
 These index definitions can be in the same file or separate files - it's up to you.
 
-<div class="note">
-  <p class="old">Thinking Sphinx v1/v2</p>
-
-  <p><strong>Note</strong>: Defining multiple indices in Thinking Sphinx v2 or older is just a matter of using define_index multiple times, and supplying a unique name for each:</p>
-
-  {% highlight ruby %}
-define_index 'article_foo' do
-  # index definition
-end
-
-define_index 'article_bar' do
-  # index definition
-end
-{% endhighlight %}
-</div>
-
 <h3 id="callbacks">Real-time Callbacks</h3>
 
 If you're using real-time indices, you will want to add a callback to your model to ensure changes are reflected in Sphinx:
@@ -353,5 +303,3 @@ If you have made structural changes to your index (which is anything except addi
 {% highlight sh %}
 rake ts:rebuild
 {% endhighlight %}
-
-If you're using real-time indices and a version of Thinking Sphinx prior to v3.4.0, use `ts:generate` and `ts:regenerate` respectively instead (though these will only impact real-time indices, not SQL-backed indices).

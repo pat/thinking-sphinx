@@ -7,7 +7,9 @@ redirect_from: "/rake_tasks.html"
 
 ## Rake Tasks
 
-Since v3.4.0, the rake tasks have been consolidated, and all of the tasks originally used for just SQL-backed indices now operate on both real-time and SQL-backed indices.
+<div class="note">
+  <p><strong>Note</strong>: Since v3.4.0, the rake tasks have been consolidated, and all of the tasks originally used for just SQL-backed indices now operate on both real-time and SQL-backed indices.</p>
+</div>
 
 ### Processing indices
 
@@ -30,8 +32,6 @@ INDEX_ONLY=true rake ts:index
 Any given SQL-backed index can not be processed more than once concurrently. To avoid multiple indexing requests, Thinking Sphinx adds a lock file in the indices directory while indexing occurs, named `ts-INDEXNAME.tmp`.
 
 In rare cases (generally when the parent process crashes completely), orphan lock files may remain - these are safe to remove if no indexing is occured. If you're finding some of your indices aren't being processed reliably, checking for these index files is recommended.
-
-This feature has been in place since v3.1.0.
 
 ### Generating the Configuration File
 
@@ -60,24 +60,24 @@ rake ts:stop
 Expected outputs:
 
 {% highlight sh %}
-searchd --pidfile --config \
-  /path/to/RAILS_ROOT/config/development.sphinx.conf
-Sphinx 0.9.8-release (r1371)
-Copyright (c) 2001-2008, Andrew Aksyonoff
+Sphinx 2.2.11-id64-release (95ae9a6)
+Copyright (c) 2001-2016, Andrew Aksyonoff
+Copyright (c) 2008-2016, Sphinx Technologies Inc (http://sphinxsearch.com)
 
-using config file \
-  '/path/to/RAILS_ROOT/config/development.sphinx.conf'...
-Started successfully (pid 12928).
+using config file '/path/to/RAILS_ROOT/config/development.sphinx.conf'...
+WARNING: key 'charset_type' was permanently removed from Sphinx configuration. Refer to documentation for details.
+listening on 127.0.0.1:9322
 {% endhighlight %}
 
 {% highlight sh %}
-Sphinx 0.9.8-release (r1371)
-Copyright (c) 2001-2008, Andrew Aksyonoff
+Sphinx 2.2.11-id64-release (95ae9a6)
+Copyright (c) 2001-2016, Andrew Aksyonoff
+Copyright (c) 2008-2016, Sphinx Technologies Inc (http://sphinxsearch.com)
 
-using config file \
-  '/path/to/RAILS_ROOT/config/development.sphinx.conf'...
-stop: succesfully sent SIGTERM to pid 12928
-Stopped search daemon (pid 12928).
+using config file '/path/to/RAILS_ROOT/config/development.sphinx.conf'...
+WARNING: key 'charset_type' was permanently removed from Sphinx configuration. Refer to documentation for details.
+stop: successfully sent SIGTERM to pid 70509
+Stopped searchd daemon (pid: 70509).
 {% endhighlight %}
 
 ### Rebuilding Sphinx Indexes
@@ -90,14 +90,3 @@ Whenever you change your index structures, or add or remove indices, you will ne
 * Populate data for SQL-backed indices (`ts:sql:index`)
 * Start the Sphinx daemon (`ts:start`)
 * Populate data for real-time indices (`ts:rt:index`)
-
-### Legacy Real-Time Tasks
-
-Prior to v3.4.0, the following tasks were used for managing real-time indices:
-
-{% highlight sh %}
-# For populating data - the equivalent of ts:index
-rake ts:generate
-# For rebuilding Sphinx's setup - the equivalent of ts:rebuild
-rake ts:regenerate
-{% endhighlight %}

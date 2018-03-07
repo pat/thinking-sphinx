@@ -7,17 +7,13 @@ redirect_from: "/scopes.html"
 
 ## Sphinx Scopes
 
-<div class="note">
-  <p><strong>Note</strong>: This feature is available in version 1.2 or later</p>
-</div>
-
 One of the popular features of ActiveRecord is scopes. You can try using them with searches, but they will not impact search results, just the SQL queries used to gather the ActiveRecord objects - Sphinx itself does not use SQL for querying.
 
 However, Thinking Sphinx does have sphinx scopes, which work in pretty much the same manner.
 
 ### Adding Scopes
 
-To add a scope to the model, use the `sphinx_scope` method. This should be called within the class definition, not the index definition. You will also need to include the `ThinkingSphinx::Scopes` module if you're using Thinking Sphinx v3 or newer.
+To add a scope to the model, use the `sphinx_scope` method. This should be called within the class definition, not the index definition. You will also need to include the `ThinkingSphinx::Scopes` module.
 
 {% highlight ruby %}
 class Article < ActiveRecord::Base

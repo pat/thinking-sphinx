@@ -19,7 +19,7 @@ If you're changing from SQL-backed indices to real-time indices, make sure you s
 
 ### Rake Tasks
 
-If you're using Thinking Sphinx v3.4.0 or newer, then you can use the same rake tasks that you're familiar with - they'll take care of both types of indices. But if you're on an older version with real-time indices, use `ts:generate` and `ts:regenerate` in place of `ts:index` and `ts:rebuild` respectively.
+Since Thinking Sphinx v3.4.0, you can use the same rake tasks that you're familiar with for both real-time and SQL-backed indices.
 
 Just like with SQL-backed indices, you only need to run `ts:rebuild` when you've added an index, removed an index, or edited the structure of an index (e.g. added/removed/modified fields or attributes).
 
@@ -103,7 +103,7 @@ RSpec.configure do |config|
   config.before :each do |example|
     if example.metadata[:type] == :request
       ThinkingSphinx::Test.init
-      ThinkingSphinx::Test.start index: false
+      ThinkingSphinx::Test.start :index => false
     end
 
     configuration = ThinkingSphinx::Configuration.instance

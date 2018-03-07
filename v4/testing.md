@@ -16,8 +16,6 @@ test:
   mysql41: 9307
 {% endhighlight %}
 
-(If you're using a version of Thinking Sphinx prior to 3.0, the setting should be `port` instead of `mysql41`, and goes in `config/sphinx.yml` instead.)
-
 * [Unit Tests and Specs](#unit_tests)
 * [Integration/Acceptance Testing](#acceptance)
 
@@ -64,7 +62,7 @@ However, if you're performing browser testing (headless or through Selenium), yo
 
 #### Using non-transactional fixtures
 
-To use Sphinx with transactional fixtures disabled, I recommend using Ben Mabey's [Database Cleaner](http://github.com/bmabey/database_cleaner) and a configuration along the lines of the following (with any tests requiring Sphinx to be tagged with `:sphinx => true`):
+To use Sphinx with transactional fixtures disabled, I recommend using Ben Mabey's [Database Cleaner](https://github.com/DatabaseCleaner/database_cleaner) and a configuration along the lines of the following (with any tests requiring Sphinx to be tagged with `:sphinx => true`):
 
 {% highlight ruby %}
 RSpec.configure do |config|
