@@ -7,20 +7,14 @@ redirect_from: "/facets.html"
 
 ## Faceted Searching
 
-<div class="note">
-  <p class="old">Thinking Sphinx v1/v2</p>
-  <p><strong>Note</strong>: This page has not yet been updated with details for Thinking Sphinx v3, but you should have a look to this release note : https://github.com/pat/thinking-sphinx/releases/tag/v3.0.6  if you are using sphinx 2.1.1 or newer</p>
-
-</div>
-
 Facet Searches are search summaries - they provide a breakdown of result counts for each of the defined categories/facets.
 
 ### Defining Facets
 
-You define facets inside the `define_index` method, within your model. To specify that a field or attribute should be considered a facet, explicitly label it using the `:facet` symbol.
+You define facets inside your index definition. To specify that a field or attribute should be considered a facet, explicitly label it using the `:facet` symbol.
 
 {% highlight ruby %}
-define_index do
+ThinkingSphinx::Index.define :article, :with => :active_record do
   # ...
   indexes author.name, :as => :author, :facet => true
 
@@ -66,7 +60,7 @@ You can also explicitly request just certain facets:
 Article.facets :facets => [:author]
 {% endhighlight %}
 
-To retrieve the ActiveRecord object results based on a selected facet(s), you can use the `for` method on a facet search result. When using the `for` method, Thinking Sphinx will automatically CRC any string values and use their respective `field_name_facet` attribute.
+To retrieve the ActiveRecord object results based on a selected facet(s), you can use the `for` method on a facet search result. Please note that you'll need Sphinx 2.2 for filtering on string attributes.
 
 {% highlight ruby %}
 # Facets for all articles matching 'detection'
@@ -103,18 +97,6 @@ ThinkingSphinx.facets 'pancakes' # =>
 }
 {% endhighlight %}
 
-To disable the class facet, just set :class_facet to false.
-
-{% highlight ruby %}
-ThinkingSphinx.facets 'pancakes', :class_facet => false
-{% endhighlight %}
-
-And if you want absolutely every facet defined to be returned, whether or not they exist in all indexed models, set `:all_facets` to true.
-
-{% highlight ruby %}
-ThinkingSphinx.facets 'pancakes', :all_facets => true
-{% endhighlight %}
-
 ### Displaying Facets
 
 To get you started, here is a basic example displaying the facet options in a view:
@@ -137,24 +119,4 @@ Thinking Sphinx does not sort facet results. If this is what you'd prefer, then 
 @facets[:author].sort
 # Sort by strings to avoid exceptions
 @facets[:author].sort_by { |a| a[0].to_s }
-{% endhighlight %}
-
-### Facets Internals
-
-When you define fields as facets, then an attribute with the same columns is created with the suffix `_facet`. If the field is a string (which is the case in most situations), then the value is converted to a CRC32 integer.
-
-This CRC32 value is necessary as Sphinx currently doesn't support true string attributes, and thus we need a value to filter and group by when determining the facet results.
-
-In the above examples, we have the author's name as a facet. This means there's an author_facet attribute, which you could filter on with the following query:
-
-{% highlight ruby %}
-Article.search :with => {:author_facet => 'John Watson'.to_crc32}
-{% endhighlight %}
-
-This means you can step around the `facets` and `for` calls to get results for specific facet arguments using `search` (again, using earlier examples):
-
-{% highlight ruby %}
-# all 'detection' articles with author 'Sherlock Holmes'
-Article.search 'detection',
-  :with => {:author_facet => 'Sherlock Holmes'.to_crc32}
 {% endhighlight %}
