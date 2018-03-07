@@ -27,13 +27,15 @@ has "RADIANS(longitude)", :as => :longitude, :type => :float
 group_by 'latitude', 'longitude'
 {% endhighlight %}
 
+If you're using real-time indices, then you'll want methods in your model that do the conversion, and then refer to those methods in your index definition.
+
 Once this is done, you'll need to rebuild your Sphinx indexes:
 
 {% highlight sh %}
 rake ts:rebuild
 {% endhighlight %}
 
-You can name your attributes to be whatever you like - Thinking Sphinx will automatically use them if they're called latitude, longitude, lat or lng.
+You can name your attributes to be whatever you like, but Thinking Sphinx will only automatically use them if they're called latitude, longitude, lat or lng.
 
 ### Searching
 
@@ -59,23 +61,7 @@ If you do not provide any reference to `geodist`, then the lat/lng values will b
   <p><strong>Note</strong>: Sphinx expects the latitude and longitude values to be in radians - so you will probably need to convert the values when searching.</p>
 </div>
 
-<div class="note">
-  <p class="old">Thinking Sphinx v1/v2</p>
-  <p><strong>Note</strong>: If you are using an older version of Thinking Sphinx, then the generated geodist attribute needs to be referenced with an @ prefix:</p>
-
-  {% highlight ruby %}
-# Searching for places within 10km
-Place.search "pancakes", :geo => [@lat, @lng],
-  :with => {'@geodist' => 0.0..10_000.0}
-# Searching for places sorted by closest first
-Place.search "pancakes", :geo => [@lat, @lng],
-  :order => "@geodist ASC, @relevance DESC"
-{% endhighlight %}
-</div>
-
 ### Displaying Results
-
-#### Thinking Sphinx since 3.0.0
 
 When you provide a `:geo` option to your search, the distance pane is automatically added to search results, and so you can access the calculated Sphinx distance through either the `distance` or `geodist` methods (your model's own methods of those names take precedence if they exist):
 
@@ -86,24 +72,3 @@ When you provide a `:geo` option to your search, the distance pane is automatica
 {% endhighlight %}
 
 It's worth noting that the distance is in metres - so those stuck on the Imperial system (Americans, that's you), you might want to convert to less archaic measurements.
-
-#### Thinking Sphinx before 3.0.0
-
-There's two ways to access the calculated distance. You can either enumerate through the collection using `each_with_geodist`:
-
-{% highlight erb %}
-<% @places.each_with_geodist do |place, distance| %>
-  <li><%= place.name %>, <%= distance %></li>
-<% end %>
-{% endhighlight %}
-
-Or, you can access the distance as part of the @sphinx_attributes@ collection:
-
-{% highlight rhtml %}
-<% @places.each do |place| %>
-  <li>
-    <%= place.name %>,
-    <%= place.sphinx_attributes['@geodist'] %>
-  </li>
-<% end %>
-{% endhighlight %}

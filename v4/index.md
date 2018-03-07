@@ -21,7 +21,7 @@ Read up on [installing Sphinx](installing_sphinx.html) and [then Thinking Sphinx
 
 ### Who?
 
-[Pat Allan](http://freelancing-gods.com) is the developer behind Thinking Sphinx, and the underlying API for Sphinx, [Riddle](http://pat.github.com/riddle). [Many others](https://github.com/pat/thinking-sphinx/contributors) have contributed valued patches and ideas.
+[Pat Allan](http://freelancing-gods.com) is the developer behind Thinking Sphinx, and the underlying API for Sphinx, [Riddle](http://pat.github.com/riddle). [Many, many others](https://github.com/pat/thinking-sphinx/contributors) have contributed valued patches and ideas.
 
 ### Most importantly: How?
 
