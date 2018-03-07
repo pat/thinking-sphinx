@@ -19,15 +19,11 @@ Depending on how you have Sphinx setup, or what database you're using, you might
 * [Delta Indexing Not Working](#deltas)
 * [Running Delta Indexing with Passenger](#passenger)
 * [Can only access the first thousand search results](#thousand_limit)
-* [Vendored Delayed Job, AfterCommit and Riddle](#vendored)
 * [Filtering on String Attributes](#string_filters)
-* [Models outside of `app/models`](#external_models)
 * [Removing HTML from Excerpts](#escape_html)
 * [Using other Database Adapters](#other_adapters)
 * [Using OR Logic with Attribute Filters](#or_attributes)
 * [Catching Exceptions when Searching](#exceptions)
-* [Slow Requests (Especially in Development)](#slow-page-requests)
-* [Errors saying no fields are defined](#no-fields)
 * [Using with Unicorn](#unicorn)
 * [Alternatives to MVAs with Strings](#mva-strings)
 * [Indices not being processed](#ignored-indices)
@@ -42,7 +38,7 @@ On the off chance that you actually do need to edit the file, make sure you're r
 
 <h3 id="multiple">Running multiple instances of Sphinx on one machine</h3>
 
-You can run as many Sphinx instances as you wish on one machine - but each must be bound to a different port. You can do this via the `config/thinking_sphinx.yml` file - just add a setting for the port for the specific environment using the mysql41 setting (or port for pre-v3):
+You can run as many Sphinx instances as you wish on one machine - but each must be bound to a different port. You can do this via the `config/thinking_sphinx.yml` file - just add a setting for the port for the specific environment using the mysql41 setting:
 
 {% highlight yaml %}
 staging:
@@ -75,14 +71,9 @@ search.each do |article|
 end
 {% endhighlight %}
 
-<div class="note">
-  <p class="old">Sphinx 2.0.x</p>
-  <p><strong>Note</strong>: If you are using a version of Sphinx prior to 2.1.1, then the ranking is available instead by the internal attribute `@weight`.</p>
-</div>
-
 <h3 id="wildcards">Wildcard Searching</h3>
 
-Sphinx can support wildcard searching (for example: Austr&lowast;), but it is turned off by default. To enable it, you need to add two settings to your `config/thinking_sphinx.yml` file:
+Sphinx can support wildcard searching (for example: Austr&lowast;), though it is turned off by default in Sphinx 2.1. To enable it, you need to add two settings to your `config/thinking_sphinx.yml` file:
 
 {% highlight yaml %}
 development:
@@ -140,9 +131,9 @@ group_by "latitude", "longitude"
 
 <h3 id="deltas">Delta Indexing Not Working</h3>
 
-Often people find delta indexing isn't working on their production server. Sometimes, this is because Sphinx is running as one user on the system, and the Rails/Merb application is being served as a different user. Check your production.log and Apache/Nginx error log file for mentions of permissions issues to confirm this.
+Often people find delta indexing isn't working on their production server. Sometimes, this is because Sphinx is running as one user on the system, and the Rails application is being served as a different user. Check your production.log and Apache/Nginx error log file for mentions of permissions issues to confirm this.
 
-Indexing for deltas is invoked by the web user, and so needs to have access to the index files. The simplest way to ensure this is run all Thinking Sphinx rake tasks by that web user.
+Indexing for deltas is invoked by the web user, and so needs to have access to the index files. The simplest way to ensure this is by running all Thinking Sphinx rake tasks with that web user.
 
 If you're still having issues, and you're using Passenger, read the next hint.
 
@@ -150,7 +141,7 @@ If you're still having issues, and you're using Passenger, read the next hint.
 
 If you're using Phusion Passenger on your production server, with delta indexing on some models, a common issue people find is that their delta indexes don't get processed.
 
-If it's not a permissions issue (see the previous hint), another common cause is because Passenger has it's own PATH set up, and can't execute the Sphinx binaries (indexer and searchd) implicitly.
+If it's not a permissions issue (see the previous hint), another common cause is because Passenger has its own PATH set up, and can't execute the Sphinx binaries (indexer and searchd) implicitly.
 
 The way around this is to find out where your binaries are on the server:
 
@@ -169,51 +160,9 @@ production:
 
 This is actually how Sphinx is supposed to behave. Have a read of the [Large Result Sets section of the Advanced Configuration page](advanced_config.html#large-result-sets) to see why, and how to work around it if you really need to.
 
-<h3 id="vendored">Vendored Delayed Job, AfterCommit and Riddle</h3>
-
-If you've still got Delayed Job vendored as part of Thinking Sphinx and would rather use a more up-to-date version of the former, recent releases of Thinking Sphinx do not have it included any longer.
-
-As for AfterCommit and Riddle, while they are still included for plugin installs, they're no longer in the Thinking Sphinx gem (since 1.3.3). Instead, they are considered dependencies, and will be installed as separate gems.
-
 <h3 id="string_filters">Filtering on String Attributes</h3>
 
-While you can have string columns as attributes in Sphinx, they cannot be filtered on (unless you're using Sphinx 2.2.3 or newer).
-
-To get around this, there's three options: firstly, use integer attributes instead, if you possibly can. This works for small result sets (for example: gender). Secondly, you could just have that attribute is a field instead - which is fine in any case where it's not a big deal if the words in that column influence search results.
-
-Otherwise, you might want to consider manually converting the string to a CRC integer value:
-
-{% highlight ruby %}
-has "CRC32(category)", :as => :category, :type => :integer
-{% endhighlight %}
-
-This way, you can filter on it like so:
-
-{% highlight ruby %}
-Article.search 'pancakes', :with => {
-  :category => 'Ruby'.to_crc32
-}
-{% endhighlight %}
-
-Of course, this isn't amazingly clean, especially since CRC32 encoding can have collisions. It's most definitely not the perfect solution.
-
-The best way forward, if it's feasible, is to upgrade the version of Sphinx you're using to 2.2.3 or newer.
-
-<h3 id="external_models">Models outside of `app/models`</h3>
-
-<div class="note">
-  <p class="old">Thinking Sphinx v1/v2</p>
-  <p><strong>Note</strong>: This setting applies only to older versions of Thinking Sphinx. In version 3, indices are stored separately from models.</p>
-</div>
-
-If you're using plugins or other web frameworks (Radiant, Ramaze, etc) that don't always store their models in `app/models`, you can tell Thinking Sphinx to look in other locations when building the configuration file:
-
-{% highlight ruby %}
-ThinkingSphinx::Configuration.instance.
-  model_directories << "/path/to/models/dir"
-{% endhighlight %}
-
-By default, Thinking Sphinx will load all models in `app/models` and `vendor/plugins/*/app/models`.
+To filter by string attributes, you must be using Sphinx 2.2.3 or newer. If that's not possible, the workarounds covered in [older documentation](../v3/common_issues.html#string_filters) could be viable.
 
 <h3 id="escape_html">Removing HTML from Excerpts</h3>
 
@@ -225,41 +174,19 @@ html_strip: true
 
 <h3 id="other_adapters">Using other Database Adapters</h3>
 
-If you're using Thinking Sphinx in combination with a database adapter that isn't quite run-of-the-mill, you may need to add a snippet of code to a Rails initialiser or equivalent (This is only available in versions 1.4.0, 2.0.0 and 3.0.0 onwards).
-
-For Thinking Sphinx v3, there's just one way to do this, and it's pretty simple:
+If you're using Thinking Sphinx in combination with a database adapter that isn't quite run-of-the-mill, you may need to add a snippet of code to a Rails initialiser or equivalent.
 
 {% highlight ruby %}
+# Set the behaviour to use MySQL syntax and functions.
 ThinkingSphinx::ActiveRecord::DatabaseAdapters.default =
   ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter
 {% endhighlight %}
 
-In v1 and v2, you can either supply a block:
-
-{% highlight ruby %}
-ThinkingSphinx.database_adapter = lambda do |model|
-  case model.connection.config[:adapter]
-  when 'mysql', 'mysql2'
-    :mysql
-  when 'postgresql'
-    :postgresql
-  else
-    raise "You can only use Thinking Sphinx with MySQL or PostgreSQL"
-  end
-end
-{% endhighlight %}
-
-Or `ThinkingSphinx.database_adapter` accepts a symbol as well, if you just want to presume that you'll always be using either MySQL or PostgreSQL:
-
-{% highlight ruby %}
-ThinkingSphinx.database_adapter = :postgresql
-{% endhighlight %}
-
 <h3 id="or_attributes">Using OR Logic with Attribute Filters</h3>
 
-It is possible to filter on attributes using OR logic - although you need to be using Sphinx 0.9.9 or newer.
+It is possible to filter on attributes using OR logic. There are two steps: firstly, you need to create a computed attribute while searching, using Sphinx's select option, and _then_ filter by that computed value.
 
-There's two steps to it... firstly, you need to create a computed attribute while searching, using Sphinx's select option, and then filter by that computed value. Here's an example where we want to return all publicly visible articles, as well as articles belonging to the user with an ID of 5.
+Here's an example where we want to return all publicly visible articles, as well as articles belonging to the user with an ID of 5.
 
 {% highlight ruby %}
 with_display = "*, IF(visible = 1 OR user_id = 5, 1, 0) AS display"
@@ -268,11 +195,7 @@ Article.search 'pancakes',
   :with  => {'display' => 1}
 {% endhighlight %}
 
-It's important to note that you'll want to include all existing attribute values by default (that's the `*` at the start of the select) if you're using an old (pre-v3) version of Thinking Sphinx. It's quite similar to standard SQL syntax.
-
-Also for those using pre-v3 versions of Thinking Sphinx, the `:select` option should be `:sphinx_select`.
-
-Finally: if you've given your attributes aliases (using the `:as` option in your index definition), then you must refer to those attributes by their aliases, not the original database columns. This applies generally to anything using those attributes (filtering, ordering, facets, etc).
+If you've given your attributes aliases (using the `:as` option) in your index definition, then you must refer to those attributes by their aliases, not the original database columns. This applies generally to anything using those attributes (filtering, ordering, facets, etc).
 
 For further reading, I recommend Sphinx's documentation on both [the select option](http://sphinxsearch.com/docs/manual-0.9.9.html#api-func-setselect) and [expression syntax](http://sphinxsearch.com/docs/manual-0.9.9.html#sort-expr).
 
@@ -286,34 +209,10 @@ However, this means that exceptions will be fired from within the view - and mos
 Article.search 'pancakes', :populate => true
 {% endhighlight %}
 
-Obviously, if you're chaining scopes together, make sure you add this at the end with a final search call:
+If you're chaining scopes together, make sure you add this at the end with a final search call:
 
 {% highlight ruby %}
 Article.published.search :populate => true
-{% endhighlight %}
-
-<h3 id="slow-page-requests">Slow Requests (Especially in Development)</h3>
-
-<div class="note">
-  <p class="old">Thinking Sphinx v1/v2</p>
-  <p><strong>Note</strong>: This setting applies only to older versions of Thinking Sphinx. In version 3, indices are stored separately from models, and so models are only loaded when necessary.</p>
-</div>
-
-If you're finding a lot of requests are quite slow (particularly in your local development environment), this could be because you have a lot of models. Thinking Sphinx loads all models to determine which ones are indexed by Sphinx (this is necessary to load search results), but you can make things much faster by setting out [a list of indexed models](advanced_config.html#indexed-models) in your `config/sphinx.yml` file.
-
-<h3 id="no-fields">Errors saying no fields are defined</h3>
-
-<div class="note">
-  <p class="old">Thinking Sphinx v1/v2</p>
-  <p><strong>Note</strong>: This setting applies only to older versions of Thinking Sphinx. In version 3, BlankSlate is no longer used.</p>
-</div>
-
-If you have defined fields (using the `indexes` method) but you're getting an error saying none are defined, it could be due to other gems packaging custom (and perhaps broken) versions of the BlankSlate gem. To get around this, add the proper BlankSlate gem to your Gemfile above `thinking-sphinx`:
-
-{% highlight ruby %}
-gem 'blankslate', '2.1.2.4'
-# ...
-gem 'thinking-sphinx', '2.0.14'
 {% endhighlight %}
 
 <h3 id="unicorn">Using with Unicorn</h3>
@@ -329,11 +228,11 @@ end
 
 <h3 id="mva-strings">Alternatives to MVAs with Strings</h3>
 
-Given Sphinx doesn't support multi-value attributes, what are alternative ways to achieve similar functionality?
+Given Sphinx doesn't support multi-value _string_ attributes, what are alternative ways to achieve similar functionality?
 
 The easiest approach is when the string values are coming from an association. In this case, use the foreign key ids instead, and translate string values to the underlying id when you're filtering your searches.
 
-Otherwise, you could look into using [CRC'd integer values of strings](#string_filters), though there is the possibility of collisions.
+Otherwise, you could look into using [CRC'd integer values of strings](../v3/common_issues.html#string_filters), though there is the possibility of collisions.
 
 <h3 id="ignored-indices">Indices not being processed</h3>
 

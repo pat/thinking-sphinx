@@ -12,7 +12,7 @@ redirect_from: "/contributing.html"
 
 <h3 id="forking">Forking and Patching</h3>
 
-If you're offering a patch to Thinking Sphinx, the best way to do this is to fork [the GitHub project](http://github.com/pat/thinking-sphinx), write a patch in a new branch, and then send me a Pull Request. This last step is important - while I may be following your fork on GitHub, the request means an email ends up in my inbox, so I won't forget about your changes.
+If you're offering a patch to Thinking Sphinx, the best way to do this is to fork [the GitHub project](http://github.com/pat/thinking-sphinx), write a patch in a new branch (based on the `develop` branch), and then send me a pull request.
 
 Do not forget to add specs. This keeps Thinking Sphinx as stable as possible, and makes it far easier for me to merge your changes in.
 
@@ -30,4 +30,4 @@ DATABASE=postgresql rspec spec
 
 MySQL's expected user is root, and PostgreSQL's expected user is your local user. Running tests against both databases is recommended.
 
-Sphinx 2.0.6 or newer is required for Thinking Sphinx v3, so make sure you have that.
+Sphinx 2.1.2 or newer is required for Thinking Sphinx v4, so make sure you have that.
