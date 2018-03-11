@@ -58,6 +58,19 @@ production:
 # ... repeat for other environments if necessary
 {% endhighlight %}
 
+### Hosting via a UNIX Socket
+
+It is possible to run the Sphinx daemon on a UNIX socket. To do this, you will need to specify the path to the socket in your `config/thinking_sphinx.yml` file per environment:
+
+{% highlight yaml %}
+production:
+  socket: "RAILS_ROOT/tmp/production.sphinx"
+{% endhighlight %}
+
+If you specify `mysql41` and/or `address`, then the daemon will also be available via TCP, but connections from Thinking Sphinx to Sphinx will still be made via the UNIX socket.
+
+This feature is unfortunately not supported in JRuby (as there doesn't seem to be a way to use UNIX sockets to connect to the MySQL protocol).
+
 ### Indexer Memory Usage
 
 Sphinx indexes your data using the `indexer` command-line tool. This tool runs with a fixed memory limit - defaulting to 64 megabytes. You can change this to something else if you'd like - the more memory, the faster your indexes will be processed.
