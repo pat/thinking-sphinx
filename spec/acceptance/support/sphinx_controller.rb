@@ -49,7 +49,7 @@ The Sphinx start command failed:
   end
 
   def merge
-    ThinkingSphinx::Commander.call(:merge, config, {})
+    ThinkingSphinx::Commander.call(:merge_and_update, config, {})
   end
 
   private

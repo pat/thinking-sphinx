@@ -20,7 +20,7 @@ module SphinxHelpers
     sleep 0.5
 
     sphinx.merge
-    sleep 1
+    sleep 1.5
     sleep 0.5 if ENV['TRAVIS']
   end
 end

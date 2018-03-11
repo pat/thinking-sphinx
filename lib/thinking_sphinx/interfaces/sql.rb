@@ -28,7 +28,7 @@ option is set automatically when invoked by rake, via rake's --silent and/or
   end
 
   def merge
-    command :merge
+    command :merge_and_update
   end
 
   private
