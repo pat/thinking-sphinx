@@ -1,4 +1,18 @@
 Edge:
+* [FEATURE] Support Sphinx 3.0.
+* [FEATURE] Allow disabling of docinfo setting via `skip_docinfo: true` in `config/thinking_sphinx.yml`.
+* [CHANGE] Drop Sphinx 2.0 support.
+* [CHANGE] Drop auto-typing of filter values.
+* [FEATURE] Support merging of delta indices into their core counterparts using ts:merge.
+* [CHANGE] INDEX_FILTER environment variable is applied when running ts:index on SQL-backed indices.
+* [CHANGE] Drop MRI 2.0/2.1 support.
+* [FEATURE] Support UNIX sockets as an alternative for TCP connections to the daemon (MRI-only).
+* [FEATURE] Translate relative paths to absolute when generating configuration when `absolute_paths: true` is set per environment in `config/thinking_sphinx.yml`.
+* [FIX] Handle situations where no exit code is provided for Sphinx binary calls.
+* [CHANGE] Display a useful error message if processing real-time indices but the daemon isn't running.
+* [CHANGE] Refactor interface code into separate command classes, and allow for a custom rake interface.
+* [CHANGE] Add frozen_string_literal pragma comments.
+* [CHANGE] Log exceptions when processing real-time indices, but don't stop.
 * [CHANGE] Update polymorphic properties to support Rails 5.2.
 * [CHANGE] Allow configuration of the index guard approach.
 * [FIX] Don't attempt to interpret indices for models that don't have a database table.
