@@ -24,6 +24,8 @@ env:
   - DATABASE=postgresql SPHINX_VERSION=2.1.9
   - DATABASE=mysql2 SPHINX_VERSION=2.2.11
   - DATABASE=postgresql SPHINX_VERSION=2.2.11
+  - DATABASE=mysql2 SPHINX_VERSION=3.0.2
+  - DATABASE=postgresql SPHINX_VERSION=3.0.2
 sudo: false
 addons:
   postgresql: '9.4'
