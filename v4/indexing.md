@@ -303,3 +303,11 @@ If you have made structural changes to your index (which is anything except addi
 {% highlight sh %}
 rake ts:rebuild
 {% endhighlight %}
+
+#### Index Guard Files
+
+Any given SQL-backed index can not be processed more than once concurrently. To avoid multiple indexing requests, Thinking Sphinx adds a lock file in the indices directory while indexing occurs, named `ts-INDEXNAME.tmp`. When you're processing all indices in the one call (via either of the above rake tasks), then the lock file is instead named `ts--all.tmp`.
+
+In rare cases (generally when the parent process crashes completely), orphan lock files may remain - these are safe to remove if no indexing is occured. If you're finding some of your indices aren't being processed reliably, checking for these index files is recommended.
+
+These lock files are not created when processing real-time indices.

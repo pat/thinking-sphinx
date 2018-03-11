@@ -1,11 +1,11 @@
 ---
 layout: en
-title: Delta Indexes
+title: Delta Indexes and Merging
 gem_version: v4
 redirect_from: "/deltas.html"
 ---
 
-## Delta Indexes
+## Delta Indexes and Merging
 
 If you're using SQL-backed indices (rather than real-time indices) and you wish to keep records up-to-date, you'll come up against a limitation in Sphinx: you can only update records by reprocessing the indices they're stored in.
 
@@ -41,7 +41,7 @@ And finally, we need to rebuild the Sphinx indexes, as we have changed the struc
 rake ts:rebuild
 {% endhighlight %}
 
-Turning on delta indexing does not remove the need for regularly processing all of your indices, as otherwise the delta index itself will grow to become just as large as the core indexes, and this removes the advantage of keeping it separate. It also slows down your requests to your server that make changes to the model records.
+Please note that if you've enabled delta indexing, you will still need to process all indices (via the `ts:index` task) or to [merge](#merging-delta-indices) your delta indices into their corresponding core indices (via the `ts:merge` task) regularly. Either of these approaches ensure the delta changes are kept small and thus fast to process.
 
 It's also worth noting that when each change happens, and the delta indexing is invoked, you will see the output from Sphinx's indexer tool either in your logs, or into your console. This serves as an indication that everything is working, but should you want to hide it, there's a global setting you can use to enable/disable it.
 
@@ -112,3 +112,19 @@ end
 One very important caveat of this background processing approach is that it will only work for **a single searchd instance**. Delayed Job, Resque and Sidekiq are all designed to run each job only once, not once per app server. The best approach is to have Sphinx and the background job worker processing tasks running on one machine.
 
 Also, keep in mind that because the delta indexing requests are queued, they will not be processed immediately - and so your search results will not not be accurate straight after a change (but, tuned correctly, within a few seconds is likely).
+
+### Merging Delta Indices
+
+Instead of processing _all_ indices regularly to get the core indices containing all the recent changes, you can instead merge the delta into the core directly. This is done using the `ts:merge` rake task:
+
+{% highlight sh %}
+rake ts:merge
+{% endhighlight %}
+
+The above task will find each delta index that exists and merge it into the core index, and mark all delta flags as false again.
+
+If you only want to merge _some_ delta indices, you can specify which indices via the `INDEX_FILTER` environment variable, which accepts a comma-separated list of index names (minus their `_core`/`_delta` suffix):
+
+{% highlight sh %}
+rake ts:merge INDEX_FILTER=article,user
+{% endhighlight %}

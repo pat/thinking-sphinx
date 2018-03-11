@@ -19,6 +19,6 @@ The breaking changes since v3 are:
 
 Significant new features:
 
-* You can now merge SQL-backed delta indices into their corresponding core index (rather than processing _all_ the indices again).
+* You can now [merge SQL-backed delta indices](deltas.html#merging-delta-indices) into their corresponding core index (rather than processing _all_ the indices again).
 * You can now run your daemon on a UNIX socket instead of a TCP port.
 * The underlying implementation for rake tasks is more modular, which allows the `flying-sphinx` gem to connect with the `ts` tasks - thus, they can be used as per normal on Flying Sphinx Heroku apps (rather than a similar-but-different set of commands).
