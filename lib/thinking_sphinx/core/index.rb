@@ -11,7 +11,7 @@ module ThinkingSphinx::Core::Index
 
   def initialize(reference, options = {})
     @reference    = reference.to_sym
-    @docinfo      = :extern
+    @docinfo      = :extern unless config.settings["skip_docinfo"]
     @options      = options
     @offset       = config.next_offset(options[:offset_as] || reference)
     @type         = 'plain'
