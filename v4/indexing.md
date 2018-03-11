@@ -312,6 +312,14 @@ In rare cases (generally when the parent process crashes completely), orphan loc
 
 These lock files are not created when processing real-time indices.
 
+You can disable the use of these lock files if you wish, by changing the guarding strategy:
+
+{% highlight ruby %}
+# This can go in an initialiser:
+ThinkingSphinx::Configuration.instance.guarding_strategy =
+  ThinkingSphinx::Guard::None
+{% endhighlight %}
+
 #### Processing Approaches
 
 By default, `ts:index` will instruct Sphinx to process all indices (and this has always been how Thinking Sphinx has behaved). This means that Sphinx will prepare all of the new data together before switching the daemon over to use it.
@@ -320,7 +328,7 @@ It is possible, though, to instead process each index one at a time (and thus, t
 
 {% highlight ruby %}
 # This can go in an initialiser:
-ThinkingSphinx::Configuration.instance.indexing_strategy = \
+ThinkingSphinx::Configuration.instance.indexing_strategy =
   ThinkingSphinx::IndexingStrategies::OneAtATime
 {% endhighlight %}
 

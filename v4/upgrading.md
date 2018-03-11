@@ -16,6 +16,7 @@ The breaking changes since v3 are:
 * Tasks that were specifically for real-time indices (`ts:generate` and `ts:regenerate`) have been removed - their functionality is covered by `ts:index` and `ts:rebuild`.
 * Sphinx 2.0 is no longer supported. You must use Sphinx 2.1.2 or newer (and 2.2.11 is recommended).
 * Ruby 2.1 (or older) is no longer supported. Arguably the code may still work in older Ruby versions, but it's only tested against 2.2+.
+* Auto-typing of filter values no longer occurs. For all search filter values, please make sure you cast them to their appropriate types (rather than string values supplied by request params).
 
 Significant new features:
 

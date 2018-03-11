@@ -20,7 +20,7 @@ production:
 
 Now, [Sphinx has a _lot_ of different settings](http://www.sphinxsearch.com/docs/current.html#confgroup-index) you can play with, and they're pretty much all supported by Thinking Sphinx as well. Documentation will be added here for them over time, but in a pinch, it should be pretty easy to guess the syntax for the YAML file for each setting.
 
-Any paths provided in this configuration can be either absolute or relative to the Rails application. Relative paths will be translated to absolute paths within the generated Sphinx configuration.
+Any paths provided in this configuration are expected to be absolute by default. If you want to provide relative paths, you will need to add `absolute_paths: true` to each relevant environment in `config/thinking_sphinx.yml`. These paths will then be translated to absolute paths from the root of the Rails application, within the generated Sphinx configuration.
 
 ### Index File Location
 
