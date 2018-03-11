@@ -311,3 +311,23 @@ Any given SQL-backed index can not be processed more than once concurrently. To 
 In rare cases (generally when the parent process crashes completely), orphan lock files may remain - these are safe to remove if no indexing is occured. If you're finding some of your indices aren't being processed reliably, checking for these index files is recommended.
 
 These lock files are not created when processing real-time indices.
+
+#### Processing Approaches
+
+By default, `ts:index` will instruct Sphinx to process all indices (and this has always been how Thinking Sphinx has behaved). This means that Sphinx will prepare all of the new data together before switching the daemon over to use it.
+
+It is possible, though, to instead process each index one at a time (and thus, the daemon uses each index's new data as that index's processing is completed):
+
+{% highlight ruby %}
+# This can go in an initialiser:
+ThinkingSphinx::Configuration.instance.indexing_strategy = \
+  ThinkingSphinx::IndexingStrategies::OneAtATime
+{% endhighlight %}
+
+Should you wish to build your own indexint strategy, you can give `ThinkingSphinx::Configuration.instance.indexing_strategy` anything you like that responds to call and expects an array of index options, and yields index names. You can see the implementations of the two approaches [here](https://github.com/pat/thinking-sphinx/tree/develop/lib/thinking_sphinx/indexing_strategies).
+
+You can also process just specific indices via the `INDEX_FILTER` environment variable (without the `_core` or `_delta` prefix):
+
+{% highlight sh %}
+rake ts:index INDEX_FILTER=article,user
+{% endhighlight %}
