@@ -20,6 +20,8 @@ production:
 
 Now, [Sphinx has a _lot_ of different settings](http://www.sphinxsearch.com/docs/current.html#confgroup-index) you can play with, and they're pretty much all supported by Thinking Sphinx as well. Documentation will be added here for them over time, but in a pinch, it should be pretty easy to guess the syntax for the YAML file for each setting.
 
+Any paths provided in this configuration can be either absolute or relative to the Rails application. Relative paths will be translated to absolute paths within the generated Sphinx configuration.
+
 ### Index File Location
 
 You can customise the location of your Sphinx index files using the `indices_location` option.
