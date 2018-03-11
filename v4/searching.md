@@ -17,8 +17,10 @@ redirect_from: "/searching.html"
 * [Sorting](#sorting)
 * [Field Weights](#fieldweights)
 * [Search Results Information](#results)
+* [Dynamic Attributes](#dynamic_attributes)
 * [Grouping/Clustering](#grouping)
 * [Searching for Object Ids](#ids)
+* [Returning Raw Sphinx Results](#raw)
 * [Search Counts](#counts)
 * [Avoiding Nil Results](#nils)
 * [Empty multi-value attributes](#zero-counts)
@@ -267,6 +269,18 @@ If you're building your own pagination output, then you can find out the statist
 @articles.per_page
 {% endhighlight %}
 
+<h3 id="dynamic_attributes">Dynamic Attributes</h3>
+
+It's possible for Sphinx searches to have generated attributes as part of a request, which can then be used for filtering or grouping (or just returned for use by your own application). This is done with the `:select` option - which behaves very similarly to a SQL SELECT clause.
+
+{% highlight ruby %}
+Article.search 'pancakes',
+  :select => '*, LENGTH(tag_ids) AS tags_count',
+  :with   => {:tags_count => 0}
+{% endhighlight %}
+
+Unless you're returning [raw Sphinx results](#raw), you must include all standard attributes (the `"*"` at the start of the `:select` option) to ensure records can be translated to ActiveRecord instances.
+
 <h3 id="grouping">Grouping / Clustering</h3>
 
 Sphinx allows you group search records that share a common attribute, which can be useful when you want to show aggregated collections. For example, if you have a set of posts and they are all part of a category and have a category_id, you could group your results by category id and show a set of all the categories matched by your search, as well as all the posts. You can read more about it in the [official Sphinx documentation](http://sphinxsearch.com/docs/current.html#clustering).
@@ -312,6 +326,17 @@ If you would like just the primary key values returned, instead of instances of 
 Article.search_for_ids 'pancakes'
 ThinkingSphinx.search_for_ids 'pancakes'
 {% endhighlight %}
+
+<h3 id="raw">Returning Raw Sphinx Results</h3>
+
+If you'd rather get the raw Sphinx results back from a search call instead of ActiveRecord instances, use the `RAW_ONLY` middleware stack:
+
+{% highlight ruby %}
+Article.search 'pancakes',
+  :middleware => ThinkingSphinx::Middlewares::RAW_ONLY
+{% endhighlight %}
+
+This is particularly useful when you want computed values from Sphinx without needing to instantiate model instances.
 
 <h3 id="counts">Search Counts</h3>
 
