@@ -542,8 +542,8 @@ describe ThinkingSphinx::Configuration do
   end
 
   describe '#version' do
-    it "defaults to 2.1.4" do
-      expect(config.version).to eq('2.1.4')
+    it "defaults to 2.2.11" do
+      expect(config.version).to eq('2.2.11')
     end
 
     it "respects supplied YAML versions" do
