@@ -119,7 +119,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     @index_paths = engine_index_paths +
       [Pathname.new(framework.root).join('app', 'indices').to_s]
     @indices_location = settings['indices_location']
-    @version = settings['version'] || '2.1.4'
+    @version = settings['version'] || '2.2.11'
     @batch_size = settings['batch_size'] || 1000
 
     if settings['common_sphinx_configuration']
