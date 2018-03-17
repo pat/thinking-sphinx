@@ -30,15 +30,11 @@ gem 'thinking-sphinx', '~> 3.4.2'</code></pre>
 
 The MySQL gems mentioned are required for connecting to Sphinx, so please include it even when you're using PostgreSQL for your database. If you're using JRuby with a version of Sphinx prior to 2.2.11, there is "currently an issue with Sphinx and jdbc-mysql 5.1.36 or newer":http://sphinxsearch.com/forum/view.html?id=13939, so you'll need to stick to nothing more recent than 5.1.35, or upgrade Sphinx.
 
-You'll also need to install Sphinx - this is covered in "the extended documentation":http://pat.github.io/thinking-sphinx/installing_sphinx.html.
+You'll also need to install Sphinx - this is covered in "the extended documentation":https://freelancing-gods.com/thinking-sphinx/installing_sphinx.html.
 
 h2. Usage
 
-Begin by reading the "quick-start guide":http://pat.github.io/thinking-sphinx/quickstart.html, and beyond that, "the documentation":http://pat.github.io/thinking-sphinx/ should serve you pretty well.
-
-h3. Extending with Middleware, Glazes and Panes
-
-These are covered in "a blog post":http://freelancing-gods.com/posts/rewriting_thinking_sphinx_middleware_glazes_and_panes.
+Begin by reading the "quick-start guide":https://freelancing-gods.com/thinking-sphinx/quickstart.html, and beyond that, "the documentation":https://freelancing-gods.com/thinking-sphinx/ should serve you pretty well.
 
 h2. Requirements
 
@@ -65,9 +61,7 @@ If you want ActiveRecord 3.1 support, then refer to the 3.0.x releases of Thinki
 
 h3. Ruby
 
-You'll need either the standard Ruby (v1.9.3 or newer) or JRuby (1.7.9 or newer). I'm open to patches to improve Rubinius support (if required - it may work with it right now).
-
-JRuby is only supported as of Thinking Sphinx v3.1.0, and requires Sphinx 2.1.2 or newer.
+You'll need either the standard Ruby (v2.2 or newer) or JRuby (9.1 or newer).
 
 h3. Database Versions
 
@@ -75,7 +69,7 @@ MySQL 5.x and Postgres 8.4 or better are supported.
 
 h2. Contributing
 
-Please note that this project now has a "Contributor Code of Conduct":http://contributor-covenant.org/version/1/0/0/. By participating in this project you agree to abide by its terms.
+Please note that this project has a "Contributor Code of Conduct":http://contributor-covenant.org/version/1/0/0/. By participating in this project you agree to abide by its terms.
 
 To contribute, clone this repository and have a good look through the specs - you'll notice the distinction between acceptance tests that actually use Sphinx and go through the full stack, and unit tests (everything else) which use liberal test doubles to ensure they're only testing the behaviour of the class in question. I've found this leads to far better code design.
 
@@ -96,4 +90,4 @@ You can then run the unit tests with @rake spec:unit@, the acceptance tests with
 
 h2. Licence
 
-Copyright (c) 2007-2017, Thinking Sphinx is developed and maintained by Pat Allan, and is released under the open MIT Licence. Many thanks to "all who have contributed patches":https://github.com/pat/thinking-sphinx/contributors.
+Copyright (c) 2007-2018, Thinking Sphinx is developed and maintained by Pat Allan, and is released under the open MIT Licence. Many thanks to "all who have contributed patches":https://github.com/pat/thinking-sphinx/contributors.
