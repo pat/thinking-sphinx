@@ -4,7 +4,8 @@ module ThinkingSphinx
   module ActiveRecord
     class SQLSource < Riddle::Configuration::SQLSource
       include ThinkingSphinx::Core::Settings
-      attr_reader :model, :database_settings, :options
+
+      attr_reader :model, :options
       attr_accessor :fields, :attributes, :associations, :conditions,
         :groupings, :polymorphs
 
@@ -14,9 +15,8 @@ module ThinkingSphinx
 
       def initialize(model, options = {})
         @model             = model
-        @database_settings = model.connection.respond_to?(:config) ? model.connection.config.clone : model.connection.instance_variable_get(:@config).clone
         @options           = {
-          :utf8? => (@database_settings[:encoding].to_s[/^utf8/])
+          :utf8? => (database_settings[:encoding].to_s[/^utf8/])
         }.merge options
 
         @fields            = []
@@ -132,6 +132,16 @@ module ThinkingSphinx
 
       def config
         ThinkingSphinx::Configuration.instance
+      end
+
+      def database_settings
+        @database_settings ||= begin
+          if model.connection.respond_to?(:config)
+            model.connection.config.clone
+          else
+            model.connection.instance_variable_get(:@config).clone
+          end
+        end
       end
 
       def prepare_for_render
