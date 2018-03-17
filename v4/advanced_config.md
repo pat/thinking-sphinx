@@ -18,7 +18,9 @@ production:
   mysql41: 9312
 {% endhighlight %}
 
-Now, [Sphinx has a _lot_ of different settings](http://www.sphinxsearch.com/docs/current.html#confgroup-index) you can play with, and they're pretty much all supported by Thinking Sphinx as well. Documentation will be added here for them over time, but in a pinch, it should be pretty easy to guess the syntax for the YAML file for each setting.
+Now, [Sphinx has a _lot_ of different settings](http://www.sphinxsearch.com/docs/current.html#confgroup-index) you can play with, and they're pretty much all supported by Thinking Sphinx as well.
+
+This page covers most of the more important settings, but there is also [a full overview](https://gist.github.com/pat/a7d73376dd657b4457092efc9e9c418a) which is far more exhaustive.
 
 Any paths provided in this configuration are expected to be absolute by default. If you want to provide relative paths, you will need to add `absolute_paths: true` to each relevant environment in `config/thinking_sphinx.yml`. These paths will then be translated to absolute paths from the root of the Rails application, within the generated Sphinx configuration.
 

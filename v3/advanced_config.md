@@ -23,7 +23,9 @@ production:
   <p><strong>Note</strong>: The <code>mysql41</code> setting was previously <code>port</code> before Thinking Sphinx v3.</p>
 </div>
 
-Now, [Sphinx has a _lot_ of different settings](http://www.sphinxsearch.com/docs/current.html#confgroup-index) you can play with, and they're pretty much all supported by Thinking Sphinx as well. Documentation will be added here for them over time, but in a pinch, it should be pretty easy to guess the syntax for the YAML file for each setting.
+Now, [Sphinx has a _lot_ of different settings](http://www.sphinxsearch.com/docs/current.html#confgroup-index) you can play with, and they're pretty much all supported by Thinking Sphinx as well.
+
+This page covers most of the more important settings, but there is also [a full overview](https://gist.github.com/pat/a7d73376dd657b4457092efc9e9c418a) which is far more exhaustive.
 
 ### Index File Location
 
