@@ -26,7 +26,7 @@ appraise 'rails_5_1' do
 end if RUBY_PLATFORM != 'java'
 
 appraise 'rails_5_2' do
-  gem 'rails',  '~> 5.2.0.rc1'
+  gem 'rails',  '~> 5.2.0.rc2'
   gem 'mysql2', '~> 0.4.4', :platform => :ruby
   gem 'pg',     '~> 1.0',   :platform => :ruby
   gem 'joiner',
