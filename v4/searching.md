@@ -25,6 +25,7 @@ redirect_from: "/searching.html"
 * [Avoiding Nil Results](#nils)
 * [Empty multi-value attributes](#zero-counts)
 * [Automatic Wildcards](#star)
+* [Batched Searches](#batched)
 * [Errors](#errors)
 * [Advanced Options](#advanced)
 
@@ -390,6 +391,32 @@ Article.search 'pancakes', :conditions => {
 }
 # => becomes 'pancakes @name *waffles*'
 {% endhighlight %}
+
+<h3 id="batched">Batched Searches</h3>
+
+It is possible to collect multiple searches together to send to Sphinx in one go, via a `ThinkingSphinx::BatchedSearch` instance:
+
+{% highlight ruby %}
+batch = ThinkingSphinx::BatchedSearch.new
+# add each search
+batch.searches << Model.search("foo")
+batch.searches << Model.search("bar")
+# send the search requests together to Sphinx
+batch.populate
+
+# and now you can use those search results
+batch.searches.each do |search|
+  # ...
+end
+{% endhighlight %}
+
+Keep in mind that if you're testing this in a Rails console, the inspection of a search results set populates the data immediately, which would make this fail. An easy way around this is to add `; ""` at the end of lines that involve search calls. For example:
+
+{% highlight ruby %}
+batch.searches << Model.search("foo"); ""
+{% endhighlight %}
+
+One limitation to note is that there is no way for batched searches to reference each other. The key advantage here is just to save on the roundtrip requests going to Sphinx and back.
 
 <h3 id="errors">Errors</h3>
 
