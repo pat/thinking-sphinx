@@ -17,7 +17,34 @@ Firstly, you'll need to be storing latitude and longitude values as attributes f
 has latitude, longitude
 {% endhighlight %}
 
-Keep in mind, though, that Sphinx needs these values to be **floats**, and tracking positions by **radians** instead of degrees. If this isn't the case in your own database (which isn't a surprise - most people store the values as degrees), then you'll need to manually convert columns for the attributes:
+You can name your attributes to be whatever you like - Thinking Sphinx will automatically use them if they're called latitude, longitude, lat or lng.
+
+Keep in mind, though, that Sphinx needs these values to be **floats**, and tracking positions by **radians** instead of degrees.
+
+#### Real-time Indices
+
+For real-time indices, if you're using degrees in your database you'll want to have the conversion to radians happening in your model:
+
+{% highlight ruby %}
+def latitude_in_radians
+  Math::PI * latitude / 180.0
+end
+
+def longitude_in_radians
+  Math::PI * longitude / 180.0
+end
+{% endhighlight %}
+
+And then use these methods in your index definition:
+
+{% highlight ruby %}
+has latitude_in_radians, as: :latitude, type: :float
+has longitude_in_radians, as: :longitude, type: :float
+{% endhighlight %}
+
+#### SQL-backed Indices
+
+For SQL-backed indices, you can have the degrees-to-radians conversion take place in your index definition instead:
 
 {% highlight ruby %}
 has "RADIANS(latitude)",  :as => :latitude,  :type => :float
@@ -27,15 +54,11 @@ has "RADIANS(longitude)", :as => :longitude, :type => :float
 group_by 'latitude', 'longitude'
 {% endhighlight %}
 
-If you're using real-time indices, then you'll want methods in your model that do the conversion, and then refer to those methods in your index definition.
-
 Once this is done, you'll need to rebuild your Sphinx indexes:
 
 {% highlight sh %}
 rake ts:rebuild
 {% endhighlight %}
-
-You can name your attributes to be whatever you like, but Thinking Sphinx will only automatically use them if they're called latitude, longitude, lat or lng.
 
 ### Searching
 
