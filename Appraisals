@@ -15,7 +15,12 @@ appraise 'rails_4_2' do
 end if RUBY_VERSION.to_f <= 2.3
 
 appraise 'rails_5_0' do
-  gem 'rails', '~> 5.0.2'
+  if RUBY_PLATFORM == "java"
+    gem 'rails', '5.0.6'
+  else
+    gem 'rails', '~> 5.0.7'
+  end
+
   gem 'jdbc-mysql',                          '~> 5.1.36', :platform => :jruby
   gem 'activerecord-jdbcmysql-adapter',      '~> 50.0',   :platform => :jruby
   gem 'activerecord-jdbcpostgresql-adapter', '~> 50.0',   :platform => :jruby
