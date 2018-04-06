@@ -5,6 +5,12 @@ rvm:
 - 2.4.3
 - 2.5.0
 - jruby-9.1.14.0
+addons:
+  apt:
+    packages:
+    - cmake
+    - bison
+    - flex
 before_install:
 - pip install --upgrade --user awscli
 - gem update --system
@@ -12,7 +18,7 @@ before_install:
 before_script:
 - mysql -e 'create database thinking_sphinx;' > /dev/null
 - psql -c 'create database thinking_sphinx;' -U postgres >/dev/null
-- "./bin/loadsphinx $SPHINX_VERSION"
+- "./bin/loadsphinx $SPHINX_VERSION $SPHINX_ENGINE"
 - bundle exec appraisal install
 script: bundle exec appraisal rspec
 env:
@@ -20,12 +26,14 @@ env:
   - SPHINX_BIN=ext/sphinx/bin/
   - secure: cUPinkilBafqDSPsTkl/PXYc2aXNKUQKXGK8poBBMqKN9/wjfJx1DWgtowDKalekdZELxDhc85Ye3bL1xlW4nLjOu+U6Tkt8eNw2Nhs1flodHzA/RyENdBLr/tBHt43EjkrDehZx5sBHmWQY4miHs8AJz0oKO9Ae2inTOHx9Iuc=
   matrix:
-  - DATABASE=mysql2 SPHINX_VERSION=2.1.9
-  - DATABASE=postgresql SPHINX_VERSION=2.1.9
-  - DATABASE=mysql2 SPHINX_VERSION=2.2.11
-  - DATABASE=postgresql SPHINX_VERSION=2.2.11
-  - DATABASE=mysql2 SPHINX_VERSION=3.0.2
-  - DATABASE=postgresql SPHINX_VERSION=3.0.2
+  - DATABASE=mysql2 SPHINX_VERSION=2.1.9 SPHINX_ENGINE=sphinx
+  - DATABASE=postgresql SPHINX_VERSION=2.1.9 SPHINX_ENGINE=sphinx
+  - DATABASE=mysql2 SPHINX_VERSION=2.2.11 SPHINX_ENGINE=sphinx
+  - DATABASE=postgresql SPHINX_VERSION=2.2.11 SPHINX_ENGINE=sphinx
+  - DATABASE=mysql2 SPHINX_VERSION=3.0.2 SPHINX_ENGINE=sphinx
+  - DATABASE=postgresql SPHINX_VERSION=3.0.2 SPHINX_ENGINE=sphinx
+  - DATABASE=mysql2 SPHINX_VERSION=2.6.3 SPHINX_ENGINE=manticore
+  - DATABASE=postgresql SPHINX_VERSION=2.6.3 SPHINX_ENGINE=manticore
 sudo: false
 addons:
   postgresql: '9.4'
