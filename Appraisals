@@ -37,4 +37,4 @@ appraise 'rails_5_2' do
   gem 'joiner',
     :git    => 'https://github.com/pat/joiner.git',
     :branch => 'master'
-end if RUBY_PLATFORM != 'java'
+end if RUBY_PLATFORM != 'java' && RUBY_VERSION.to_f >= 2.3
