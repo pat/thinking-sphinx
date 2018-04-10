@@ -2,7 +2,9 @@
 
 All notable changes to this project (at least, from v3.0.0 onwards) are documented in this file.
 
-## Unreleased
+## 4.0.0 - 2018-04-10
+
+[Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v4.0.0)
 
 ### Added
 
