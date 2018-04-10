@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Commands::Base
   include ThinkingSphinx::WithOutput
 
@@ -15,6 +17,12 @@ class ThinkingSphinx::Commands::Base
 
   delegate :controller, :to => :configuration
 
+  def command(command, extra_options = {})
+    ThinkingSphinx::Commander.call(
+      command, configuration, options.merge(extra_options), stream
+    )
+  end
+
   def command_output(output)
     return "See above\n" if output.nil?
 
@@ -30,7 +38,7 @@ The Sphinx #{type} command failed:
   Output:  #{command_output result.output}
 There may be more information about the failure in #{configuration.searchd.log}.
     TXT
-    exit result.status
+    exit(result.status || 1)
   end
 
   def log(message)

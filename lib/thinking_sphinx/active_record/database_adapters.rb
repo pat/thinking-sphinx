@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ThinkingSphinx::ActiveRecord::DatabaseAdapters
   class << self
     attr_accessor :default

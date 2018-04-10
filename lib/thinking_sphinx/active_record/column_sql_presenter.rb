@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::ActiveRecord::ColumnSQLPresenter
   def initialize(model, column, adapter, associations)
     @model, @column, @adapter, @associations = model, column, adapter, associations

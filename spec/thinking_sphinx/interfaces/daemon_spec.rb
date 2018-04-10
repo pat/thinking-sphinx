@@ -1,28 +1,34 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe ThinkingSphinx::Interfaces::Daemon do
-  let(:configuration) { double 'configuration', :controller => controller }
-  let(:controller)    { double 'controller', :running? => false }
+  let(:configuration) { double 'configuration' }
   let(:stream)        { double 'stream', :puts => true }
+  let(:commander)     { double :call => nil }
   let(:interface)     {
     ThinkingSphinx::Interfaces::Daemon.new(configuration, {}, stream)
   }
 
+  before :each do
+    stub_const 'ThinkingSphinx::Commander', commander
+
+    allow(commander).to receive(:call).
+      with(:running, configuration, {}, stream).and_return(false)
+  end
+
   describe '#start' do
-    let(:command) { double 'command', :call => true }
-
-    before :each do
-      stub_const 'ThinkingSphinx::Commands::StartDetached', command
-    end
-
     it "starts the daemon" do
-      expect(command).to receive(:call)
+      expect(commander).to receive(:call).with(
+        :start_detached, configuration, {}, stream
+      )
 
       interface.start
     end
 
     it "raises an error if the daemon is already running" do
-      allow(controller).to receive_messages :running? => true
+      allow(commander).to receive(:call).
+        with(:running, configuration, {}, stream).and_return(true)
 
       expect {
         interface.start
@@ -32,7 +38,8 @@ RSpec.describe ThinkingSphinx::Interfaces::Daemon do
 
   describe '#status' do
     it "reports when the daemon is running" do
-      allow(controller).to receive_messages :running? => true
+      allow(commander).to receive(:call).
+        with(:running, configuration, {}, stream).and_return(true)
 
       expect(stream).to receive(:puts).
         with('The Sphinx daemon searchd is currently running.')
@@ -41,7 +48,8 @@ RSpec.describe ThinkingSphinx::Interfaces::Daemon do
     end
 
     it "reports when the daemon is not running" do
-      allow(controller).to receive_messages :running? => false
+      allow(commander).to receive(:call).
+        with(:running, configuration, {}, stream).and_return(false)
 
       expect(stream).to receive(:puts).
         with('The Sphinx daemon searchd is not currently running.')

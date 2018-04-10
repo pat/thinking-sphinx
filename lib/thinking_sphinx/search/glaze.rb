@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Search::Glaze < BasicObject
   def initialize(context, object, raw = {}, pane_classes = [])
     @object, @raw = object, raw

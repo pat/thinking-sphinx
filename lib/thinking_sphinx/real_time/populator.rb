@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::RealTime::Populator
   def self.populate(index)
     new(index).populate
@@ -15,7 +17,6 @@ class ThinkingSphinx::RealTime::Populator
       instrument 'populated', :instances => instances
     end
 
-    controller.rotate
     instrument 'finish_populating'
   end
 

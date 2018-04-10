@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::ActiveRecord::Polymorpher
   def initialize(source, column, class_names)
     @source, @column, @class_names = source, column, class_names

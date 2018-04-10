@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path('../lib', __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = 'thinking-sphinx'
-  s.version     = '3.4.2'
+  s.version     = '4.0.0'
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Pat Allan"]
   s.email       = ["pat@freelancing-gods.com"]
@@ -26,11 +28,11 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'joiner',       '>= 0.2.0'
   s.add_runtime_dependency 'middleware',   '>= 0.1.0'
   s.add_runtime_dependency 'innertube',    '>= 1.0.2'
-  s.add_runtime_dependency 'riddle',       '>= 2.0.0'
+  s.add_runtime_dependency 'riddle',       '~> 2.3'
 
   s.add_development_dependency 'appraisal',        '~> 1.0.2'
-  s.add_development_dependency 'combustion',       '~> 0.7.0'
+  s.add_development_dependency 'combustion',       '~> 0.8.0'
   s.add_development_dependency 'database_cleaner', '~> 1.6.0'
-  s.add_development_dependency 'rspec',            '~> 3.6.0'
-  s.add_development_dependency 'rspec-retry',      '~> 0.5.4'
+  s.add_development_dependency 'rspec',            '~> 3.7.0'
+  s.add_development_dependency 'rspec-retry',      '~> 0.5.6'
 end

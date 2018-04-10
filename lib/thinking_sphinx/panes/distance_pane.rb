@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Panes::DistancePane
   def initialize(context, object, raw)
     @raw = raw

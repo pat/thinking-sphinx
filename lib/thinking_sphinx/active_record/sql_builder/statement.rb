@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'thinking_sphinx/active_record/sql_builder/clause_builder'
 
 module ThinkingSphinx

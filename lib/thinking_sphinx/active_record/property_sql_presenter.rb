@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::ActiveRecord::PropertySQLPresenter
   attr_reader :property, :adapter, :associations
 

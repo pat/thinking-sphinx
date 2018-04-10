@@ -1,16 +1,15 @@
+# frozen_string_literal: true
+
 module ThinkingSphinx::Connection
   MAXIMUM_RETRIES = 3
 
   def self.new
     configuration = ThinkingSphinx::Configuration.instance
-    # If you use localhost, MySQL insists on a socket connection, but Sphinx
-    # requires a TCP connection. Using 127.0.0.1 fixes that.
-    address = configuration.searchd.address || '127.0.0.1'
-    address = '127.0.0.1' if address == 'localhost'
 
     options = {
-      :host      => address,
+      :host      => configuration.searchd.address,
       :port      => configuration.searchd.mysql41,
+      :socket    => configuration.searchd.socket,
       :reconnect => true
     }.merge(configuration.settings['connection_options'] || {})
 

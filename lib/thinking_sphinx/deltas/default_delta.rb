@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Deltas::DefaultDelta
   attr_reader :adapter, :options
 

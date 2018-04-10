@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ThinkingSphinx::RealTime
   module Callbacks
     #
@@ -14,6 +16,7 @@ require 'thinking_sphinx/real_time/field'
 require 'thinking_sphinx/real_time/index'
 require 'thinking_sphinx/real_time/interpreter'
 require 'thinking_sphinx/real_time/populator'
+require 'thinking_sphinx/real_time/transcribe_instance'
 require 'thinking_sphinx/real_time/transcriber'
 require 'thinking_sphinx/real_time/translator'
 

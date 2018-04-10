@@ -1,9 +1,12 @@
+# frozen_string_literal: true
+
 require 'pathname'
 
 class ThinkingSphinx::Configuration < Riddle::Configuration
   attr_accessor :configuration_file, :indices_location, :version, :batch_size
   attr_reader :index_paths
-  attr_writer :controller, :index_set_class, :indexing_strategy
+  attr_writer :controller, :index_set_class, :indexing_strategy,
+    :guarding_strategy
 
   delegate :environment, :to => :framework
 
@@ -29,7 +32,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 
   def controller
     @controller ||= begin
-      rc = ThinkingSphinx::Controller.new self, configuration_file
+      rc = Riddle::Controller.new self, configuration_file
       rc.bin_path = bin_path.gsub(/([^\/])$/, '\1/') if bin_path.present?
       rc
     end
@@ -56,6 +59,10 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
       engine.paths.add 'app/indices' unless engine.paths['app/indices']
       engine.paths['app/indices'].existent
     end
+  end
+
+  def guarding_strategy
+    @guarding_strategy ||= ThinkingSphinx::Guard::Files
   end
 
   def index_set_class
@@ -104,18 +111,15 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def settings
-    @settings ||= File.exists?(settings_file) ? settings_to_hash : {}
+    @settings ||= ThinkingSphinx::Settings.call self
   end
 
   def setup
-    @configuration_file = settings['configuration_file'] || framework_root.join(
-      'config', "#{environment}.sphinx.conf"
-    ).to_s
-    @index_paths = engine_index_paths + [framework_root.join('app', 'indices').to_s]
-    @indices_location = settings['indices_location'] || framework_root.join(
-      'db', 'sphinx', environment
-    ).to_s
-    @version = settings['version'] || '2.1.4'
+    @configuration_file = settings['configuration_file']
+    @index_paths = engine_index_paths +
+      [Pathname.new(framework.root).join('app', 'indices').to_s]
+    @indices_location = settings['indices_location']
+    @version = settings['version'] || '2.2.11'
     @batch_size = settings['batch_size'] || 1000
 
     if settings['common_sphinx_configuration']
@@ -143,27 +147,14 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def configure_searchd
-    configure_searchd_log_files
+    searchd.socket = "#{settings["socket"]}:mysql41" if socket?
 
-    searchd.binlog_path = tmp_path.join('binlog', environment).to_s
-    searchd.address = settings['address'].presence || Defaults::ADDRESS
-    searchd.mysql41 = settings['mysql41'] || settings['port'] || Defaults::PORT
-    searchd.workers = 'threads'
+    if tcp?
+      searchd.address = settings['address'].presence || Defaults::ADDRESS
+      searchd.mysql41 = settings['mysql41'] || settings['port'] || Defaults::PORT
+    end
+
     searchd.mysql_version_string = '5.5.21' if RUBY_PLATFORM == 'java'
-  end
-
-  def configure_searchd_log_files
-    searchd.pid_file = log_root.join("#{environment}.sphinx.pid").to_s
-    searchd.log = log_root.join("#{environment}.searchd.log").to_s
-    searchd.query_log = log_root.join("#{environment}.searchd.query.log").to_s
-  end
-
-  def framework_root
-    Pathname.new(framework.root)
-  end
-
-  def log_root
-    real_path 'log'
   end
 
   def normalise
@@ -175,26 +166,13 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     ThinkingSphinx::Configuration::MinimumFields.new(indices).reconcile
   end
 
-  def real_path(*arguments)
-    path = framework_root.join(*arguments)
-    path.exist? ? path.realpath : path
-  end
-
   def reset
     @settings = nil
     setup
   end
 
-  def settings_file
-    framework_root.join 'config', 'thinking_sphinx.yml'
-  end
-
-  def settings_to_hash
-    input    = File.read settings_file
-    input    = ERB.new(input).result if defined?(ERB)
-
-    contents = YAML.load input
-    contents && contents[environment] || {}
+  def socket?
+    settings["socket"].present?
   end
 
   def sphinx_sections
@@ -203,8 +181,11 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
     sections
   end
 
-  def tmp_path
-    real_path 'tmp'
+  def tcp?
+    settings["socket"].nil?      ||
+    settings["address"].present? ||
+    settings["mysql41"].present? ||
+    settings["port"].present?
   end
 
   def verify

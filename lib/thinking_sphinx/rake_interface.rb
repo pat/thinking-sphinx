@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::RakeInterface
   DEFAULT_OPTIONS = {:verbose => true}
 
@@ -7,7 +9,7 @@ class ThinkingSphinx::RakeInterface
   end
 
   def configure
-    ThinkingSphinx::Commands::Configure.call configuration, options
+    ThinkingSphinx::Commander.call :configure, configuration, options
   end
 
   def daemon

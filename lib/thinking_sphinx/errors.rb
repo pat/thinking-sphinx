@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::SphinxError < StandardError
   attr_accessor :statement
 
@@ -84,4 +86,11 @@ class ThinkingSphinx::UnknownDatabaseAdapter < StandardError
 end
 
 class ThinkingSphinx::UnknownAttributeType < StandardError
+end
+
+class ThinkingSphinx::TranscriptionError < StandardError
+  attr_accessor :inner_exception, :instance, :property
+end
+
+class ThinkingSphinx::UnknownCommand < StandardError
 end

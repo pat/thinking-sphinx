@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'acceptance/spec_helper'
 
 describe 'Searching by latitude and longitude', :live => true do
@@ -30,7 +32,7 @@ describe 'Searching by latitude and longitude', :live => true do
     index
 
     cities = City.search(:geo => [-0.616241, 2.602712], :order => 'geodist ASC')
-    if ENV['SPHINX_VERSION'].try :[], /2.2.\d/
+    if ENV.fetch('SPHINX_VERSION', '2.1.2').to_f > 2.1
       expected = {:mysql => 249907.171875, :postgresql => 249912.03125}
     else
       expected = {:mysql => 250326.906250, :postgresql => 250331.234375}

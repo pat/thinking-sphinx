@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Panes::ExcerptsPane
   def initialize(context, object, raw)
     @context, @object = context, object

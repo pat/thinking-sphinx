@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::RealTime::Transcriber
   def initialize(index)
     @index = index
@@ -9,9 +11,16 @@ class ThinkingSphinx::RealTime::Transcriber
     }
     return unless items.present?
 
-    values = items.collect { |instance|
-      TranscribeInstance.call(instance, index, properties)
-    }
+    values = []
+    items.each do |instance|
+      begin
+        values << ThinkingSphinx::RealTime::TranscribeInstance.call(
+          instance, index, properties
+        )
+      rescue ThinkingSphinx::TranscriptionError => error
+        instrument 'error', :error => error
+      end
+    end
 
     insert = Riddle::Query::Insert.new index.name, columns, values
     sphinxql = insert.replace!.to_sql
@@ -20,30 +29,6 @@ class ThinkingSphinx::RealTime::Transcriber
       ThinkingSphinx::Connection.take do |connection|
         connection.execute sphinxql
       end
-    end
-  end
-
-  class TranscribeInstance
-    def self.call(instance, index, properties)
-      new(instance, index, properties).call
-    end
-
-    def initialize(instance, index, properties)
-      @instance, @index, @properties = instance, index, properties
-    end
-
-    def call
-      properties.each_with_object([document_id]) do |property, instance_values|
-        instance_values << property.translate(instance)
-      end
-    end
-
-    private
-
-    attr_reader :instance, :index, :properties
-
-    def document_id
-      index.document_id_for_key instance.id
     end
   end
 
@@ -68,6 +53,12 @@ class ThinkingSphinx::RealTime::Transcriber
         "Unexpected condition: #{condition}. Expecting Symbol or Proc."
       end
     }
+  end
+
+  def instrument(message, options = {})
+    ActiveSupport::Notifications.instrument(
+      "#{message}.thinking_sphinx.real_time", options.merge(:index => index)
+    )
   end
 
   def properties

@@ -1,4 +1,5 @@
 # encoding: utf-8
+# frozen_string_literal: true
 
 require 'acceptance/spec_helper'
 
@@ -28,10 +29,8 @@ describe 'Faceted searching', :live => true do
     Article.create!
     index
 
-    article_count = ENV['SPHINX_VERSION'].try(:[], /2.0.\d/) ? 2 : 1
-
     expect(ThinkingSphinx.facets.to_hash[:class]).to eq({
-      'Tee' => 2, 'City' => 1, 'Article' => article_count
+      'Tee' => 2, 'City' => 1, 'Article' => 1
     })
   end
 

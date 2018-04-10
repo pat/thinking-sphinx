@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 namespace :load do
   task :defaults do
     set :thinking_sphinx_roles, :db

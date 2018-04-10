@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 namespace :ts do
   desc 'Generate the Sphinx configuration file'
   task :configure => :environment do
@@ -10,52 +12,13 @@ namespace :ts do
   desc 'Clear out Sphinx files'
   task :clear => ['ts:sql:clear', 'ts:rt:clear']
 
-  desc 'DEPRECATED: Clear out real-time index files'
-  task :clear_rt => :environment do
-    puts <<-TXT
-The ts:clear_rt task is now deprecated due to the unified task approach, and
-invokes ts:rt:clear.
-* To delete all indices (both SQL-backed and real-time), use ts:clear.
-* To delete just real-time indices, use ts:rt:clear.
-* To delete just SQL-backed indices, use ts:sql:clear.
-
-    TXT
-
-    Rake::Task['ts:rt:clear'].invoke
-  end
-
-  desc 'DEPRECATED: Generate fresh index files for all indices'
-  task :generate => :environment do
-    puts <<-TXT
-The ts:generate task is now deprecated due to the unified task approach, and
-invokes ts:index.
-* To process all indices (both SQL-backed and real-time), use ts:index.
-* To process just real-time indices, use ts:rt:index.
-* To process just SQL-backed indices, use ts:sql:index.
-
-    TXT
-
-    Rake::Task['ts:index'].invoke
-  end
+  desc "Merge all delta indices into their respective core indices"
+  task :merge => ["ts:sql:merge"]
 
   desc 'Delete and regenerate Sphinx files, restart the daemon'
   task :rebuild => [
     :stop, :clear, :configure, 'ts:sql:index', :start, 'ts:rt:index'
   ]
-
-  desc 'DEPRECATED: Delete and regenerate Sphinx files, restart the daemon'
-  task :regenerate do
-        puts <<-TXT
-The ts:regenerate task is now deprecated due to the unified task approach, and
-invokes ts:rebuild.
-* To rebuild all indices (both SQL-backed and real-time), use ts:rebuild.
-* To rebuild just real-time indices, use ts:rt:rebuild.
-* To rebuild just SQL-backed indices, use ts:sql:rebuild.
-
-    TXT
-
-    Rake::Task['ts:rebuild'].invoke
-  end
 
   desc 'Restart the Sphinx daemon'
   task :restart => [:stop, :start]
@@ -86,6 +49,10 @@ invokes ts:rebuild.
       interface.sql.index(ENV['INDEX_ONLY'] != 'true')
     end
 
+    task :merge => :environment do
+      interface.sql.merge
+    end
+
     desc 'Delete and regenerate SQL-backed Sphinx files, restart the daemon'
     task :rebuild => ['ts:stop', 'ts:sql:clear', 'ts:sql:index', 'ts:start']
   end
@@ -108,11 +75,11 @@ invokes ts:rebuild.
   end
 
   def interface
-    @interface ||= ThinkingSphinx::RakeInterface.new(
-      :verbose      => Rake::FileUtilsExt.verbose_flag,
-      :silent       => Rake.application.options.silent,
-      :nodetach     => (ENV['NODETACH'] == 'true'),
-      :index_filter => ENV['INDEX_FILTER']
+    @interface ||= ThinkingSphinx.rake_interface.new(
+      :verbose     => Rake::FileUtilsExt.verbose_flag,
+      :silent      => Rake.application.options.silent,
+      :nodetach    => (ENV['NODETACH'] == 'true'),
+      :index_names => ENV.fetch('INDEX_FILTER', '').split(',')
     )
   end
 end

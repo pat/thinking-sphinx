@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::ActiveRecord::SourceJoins
   def self.call(model, source)
     new(model, source).call

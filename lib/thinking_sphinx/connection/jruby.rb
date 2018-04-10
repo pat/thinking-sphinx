@@ -1,9 +1,14 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Connection::JRuby < ThinkingSphinx::Connection::Client
   attr_reader :address, :options
 
   def initialize(options)
-    @address = "jdbc:mysql://#{options[:host]}:#{options[:port]}/?allowMultiQueries=true"
-    @options = options
+    options.delete :socket
+
+    super
+
+    @address = "jdbc:mysql://#{@options[:host]}:#{@options[:port]}/?allowMultiQueries=true"
   end
 
   def base_error

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Subscribers::PopulatorSubscriber
   def self.attach_to(namespace)
     subscriber = new
@@ -16,6 +18,17 @@ class ThinkingSphinx::Subscribers::PopulatorSubscriber
       ActiveSupport::Notifications::Event.new(message, *args)
   end
 
+  def error(event)
+    error    = event.payload[:error].inner_exception
+    instance = event.payload[:error].instance
+
+    puts <<-MESSAGE
+
+Error transcribing #{instance.class} #{instance.id}:
+#{error.message}
+    MESSAGE
+  end
+
   def start_populating(event)
     puts "Generating index files for #{event.payload[:index].name}"
   end
@@ -27,6 +40,11 @@ class ThinkingSphinx::Subscribers::PopulatorSubscriber
   def finish_populating(event)
     print "\n"
   end
+
+  private
+
+  delegate :output, :to => ThinkingSphinx
+  delegate :puts, :print, :to => :output
 end
 
 ThinkingSphinx::Subscribers::PopulatorSubscriber.attach_to(

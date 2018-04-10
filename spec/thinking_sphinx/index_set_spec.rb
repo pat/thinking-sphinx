@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ThinkingSphinx; end
 
 require 'active_support/core_ext/string/inflections'

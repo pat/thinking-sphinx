@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Masks::GroupEnumeratorsMask
   def initialize(search)
     @search = search
@@ -9,20 +11,20 @@ class ThinkingSphinx::Masks::GroupEnumeratorsMask
 
   def each_with_count(&block)
     @search.raw.each_with_index do |row, index|
-      yield @search[index], row[ThinkingSphinx::SphinxQL.count[:column]]
+      yield @search[index], row["sphinx_internal_count"]
     end
   end
 
   def each_with_group(&block)
     @search.raw.each_with_index do |row, index|
-      yield @search[index], row[ThinkingSphinx::SphinxQL.group_by[:column]]
+      yield @search[index], row["sphinx_internal_group"]
     end
   end
 
   def each_with_group_and_count(&block)
     @search.raw.each_with_index do |row, index|
-      yield @search[index], row[ThinkingSphinx::SphinxQL.group_by[:column]],
-        row[ThinkingSphinx::SphinxQL.count[:column]]
+      yield @search[index], row["sphinx_internal_group"],
+        row["sphinx_internal_count"]
     end
   end
 end

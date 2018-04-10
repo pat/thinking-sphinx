@@ -1,19 +1,16 @@
-class ThinkingSphinx::Interfaces::SQL
-  include ThinkingSphinx::WithOutput
+# frozen_string_literal: true
 
+class ThinkingSphinx::Interfaces::SQL < ThinkingSphinx::Interfaces::Base
   def initialize(configuration, options, stream = STDOUT)
     super
 
     configuration.preload_indices
 
-    FileUtils.mkdir_p configuration.indices_location
+    command :prepare
   end
 
   def clear
-    indices.each do |index|
-      index.render
-      Dir["#{index.path}.*"].each { |path| FileUtils.rm path }
-    end
+    command :clear_sql, :indices => (filtered? ? filtered_indices : indices)
   end
 
   def index(reconfigure = true, verbose = nil)
@@ -25,13 +22,28 @@ option is set automatically when invoked by rake, via rake's --silent and/or
     TXT
     return if indices.empty?
 
-    ThinkingSphinx::Commands::Configure.call configuration, options if reconfigure
-    ThinkingSphinx.before_index_hooks.each { |hook| hook.call }
+    command :configure if reconfigure
+    command :index_sql,
+      :indices => (filtered? ? filtered_indices.collect(&:name) : nil)
+  end
 
-    ThinkingSphinx::Commands::Index.call configuration, options, stream
+  def merge
+    command :merge_and_update
   end
 
   private
+
+  def filtered?
+    index_names.any?
+  end
+
+  def filtered_indices
+    indices.select { |index| index_names.include? index.name }
+  end
+
+  def index_names
+    @index_names ||= options[:index_names] || []
+  end
 
   def indices
     @indices ||= configuration.indices.select do |index|

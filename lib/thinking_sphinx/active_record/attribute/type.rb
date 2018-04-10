@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::ActiveRecord::Attribute::Type
   UPDATEABLE_TYPES = [:integer, :timestamp, :boolean, :float]
 

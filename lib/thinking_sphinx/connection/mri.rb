@@ -1,8 +1,6 @@
-class ThinkingSphinx::Connection::MRI < ThinkingSphinx::Connection::Client
-  def initialize(options)
-    @options = options
-  end
+# frozen_string_literal: true
 
+class ThinkingSphinx::Connection::MRI < ThinkingSphinx::Connection::Client
   def base_error
     Mysql2::Error
   end

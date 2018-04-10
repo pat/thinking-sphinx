@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SphinxHelpers
   def sphinx
     @sphinx ||= SphinxController.new
@@ -10,6 +12,15 @@ module SphinxHelpers
 
     sphinx.index *indices
     sleep 0.25
+    sleep 0.5 if ENV['TRAVIS']
+  end
+
+  def merge
+    sleep 0.5 if ENV['TRAVIS']
+    sleep 0.5
+
+    sphinx.merge
+    sleep 1.5
     sleep 0.5 if ENV['TRAVIS']
   end
 end

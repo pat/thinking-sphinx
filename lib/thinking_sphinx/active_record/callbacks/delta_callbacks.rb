@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks <
   ThinkingSphinx::Callbacks
 

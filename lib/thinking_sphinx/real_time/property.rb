@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::RealTime::Property
   include ThinkingSphinx::Core::Property
 

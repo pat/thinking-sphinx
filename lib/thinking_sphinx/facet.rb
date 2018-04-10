@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Facet
   attr_reader :name
 
@@ -11,7 +13,7 @@ class ThinkingSphinx::Facet
 
   def results_from(raw)
     raw.inject({}) { |hash, row|
-      hash[row[group_column]] = row[ThinkingSphinx::SphinxQL.count[:column]]
+      hash[row[group_column]] = row["sphinx_internal_count"]
       hash
     }
   end
@@ -19,8 +21,7 @@ class ThinkingSphinx::Facet
   private
 
   def group_column
-    @properties.any?(&:multi?) ?
-      ThinkingSphinx::SphinxQL.group_by[:column] : name
+    @properties.any?(&:multi?) ? "sphinx_internal_group" : name
   end
 
   def use_field?

@@ -1,4 +1,25 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Connection::Client
+  def initialize(options)
+    if options[:socket].present?
+      options[:socket] = options[:socket].remove /:mysql41$/
+
+      options.delete :host
+      options.delete :port
+    else
+      options.delete :socket
+
+      # If you use localhost, MySQL insists on a socket connection, but in this
+      # situation we want a TCP connection. Using 127.0.0.1 fixes that.
+      if options[:host].nil? || options[:host] == "localhost"
+        options[:host] = "127.0.0.1"
+      end
+    end
+
+    @options = options
+  end
+
   def close
     close! unless ThinkingSphinx::Connection.persistent?
   end

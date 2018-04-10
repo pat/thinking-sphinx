@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::AttributeTypes
   def self.call
     @call ||= new.call

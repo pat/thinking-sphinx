@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::UTF8
   attr_reader :string
 

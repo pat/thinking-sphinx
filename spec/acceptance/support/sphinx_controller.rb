@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SphinxController
   def initialize
     config.searchd.mysql41 = 9307
@@ -16,10 +18,6 @@ class SphinxController
 
     ActiveSupport::Dependencies.clear
 
-    if ENV['SPHINX_VERSION'].try :[], /2.0.\d/
-      ThinkingSphinx::Configuration.instance.settings['utf8'] = false
-    end
-
     config.searchd.mysql41 = 9307
     config.settings['quiet_deltas']      = true
     config.settings['attribute_updates'] = true
@@ -28,6 +26,15 @@ class SphinxController
 
   def start
     config.controller.start
+  rescue Riddle::CommandFailedError => error
+    puts <<-TXT
+
+The Sphinx start command failed:
+  Command: #{error.command_result.command}
+  Status:  #{error.command_result.status}
+  Output:  #{error.command_result.output}
+    TXT
+    raise error
   end
 
   def stop
@@ -38,7 +45,11 @@ class SphinxController
   end
 
   def index(*indices)
-    config.controller.index *indices
+    ThinkingSphinx::Commander.call :index_sql, config, :indices => indices
+  end
+
+  def merge
+    ThinkingSphinx::Commander.call(:merge_and_update, config, {})
   end
 
   private

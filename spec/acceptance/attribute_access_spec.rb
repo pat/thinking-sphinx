@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'acceptance/spec_helper'
 
 describe 'Accessing attributes directly via search results', :live => true do
@@ -15,8 +17,7 @@ describe 'Accessing attributes directly via search results', :live => true do
     Book.create! :title => 'American Gods', :year => 2001
     index
 
-    search = Book.search 'gods',
-      :select => "*, #{ThinkingSphinx::SphinxQL.weight[:select]}"
+    search = Book.search 'gods', :select => "*, weight()"
     search.context[:panes] << ThinkingSphinx::Panes::WeightPane
 
     expect(search.first.weight).to eq(2500)
@@ -26,8 +27,7 @@ describe 'Accessing attributes directly via search results', :live => true do
     gods = Book.create! :title => 'American Gods', :year => 2001
     index
 
-    search = Book.search 'gods',
-      :select => "*, #{ThinkingSphinx::SphinxQL.weight[:select]}"
+    search = Book.search 'gods', :select => "*, weight()"
     search.masks << ThinkingSphinx::Masks::WeightEnumeratorMask
 
     expectations = [[gods, 2500]]

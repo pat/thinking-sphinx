@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Middlewares::SphinxQL <
   ThinkingSphinx::Middlewares::Middleware
 
@@ -159,8 +161,8 @@ SQL
 
     def values
       options[:select] ||= ['*',
-        "#{ThinkingSphinx::SphinxQL.group_by[:select]}",
-        "#{ThinkingSphinx::SphinxQL.count[:select]}"
+        "groupby() AS sphinx_internal_group",
+        "id AS sphinx_document_id, count(DISTINCT sphinx_document_id) AS sphinx_internal_count"
       ].join(', ') if group_attribute.present?
       options[:select]
     end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe ThinkingSphinx::Commands::Stop do
@@ -7,13 +9,18 @@ RSpec.describe ThinkingSphinx::Commands::Stop do
   let(:configuration) { double 'configuration', :controller => controller }
   let(:controller)    { double 'controller', :stop => true, :pid => 101 }
   let(:stream)        { double :puts => nil }
+  let(:commander)     { double :call => nil }
 
   before :each do
-    allow(controller).to receive(:running?).and_return(true, true, false)
+    stub_const 'ThinkingSphinx::Commander', commander
+
+    allow(commander).to receive(:call).
+      with(:running, configuration, {}, stream).and_return(true, true, false)
   end
 
   it "prints a message if the daemon is not already running" do
-    allow(controller).to receive_messages :running? => false
+    allow(commander).to receive(:call).
+      with(:running, configuration, {}, stream).and_return(false)
 
     expect(stream).to receive(:puts).with('searchd is not currently running.').
       and_return(nil)
@@ -24,7 +31,8 @@ RSpec.describe ThinkingSphinx::Commands::Stop do
   end
 
   it "does not try to stop the daemon if it's not running" do
-    allow(controller).to receive_messages :running? => false
+    allow(commander).to receive(:call).
+      with(:running, configuration, {}, stream).and_return(false)
 
     expect(controller).to_not receive(:stop)
 
@@ -44,7 +52,8 @@ RSpec.describe ThinkingSphinx::Commands::Stop do
   end
 
   it "should retry stopping the daemon until it stops" do
-    allow(controller).to receive(:running?).
+    allow(commander).to receive(:call).
+      with(:running, configuration, {}, stream).
       and_return(true, true, true, false)
 
     expect(controller).to receive(:stop).twice

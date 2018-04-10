@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::ActiveRecord::AssociationProxy::AttributeFinder
   def initialize(association)
     @association = association

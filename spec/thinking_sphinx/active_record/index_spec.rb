@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe ThinkingSphinx::ActiveRecord::Index do
@@ -10,7 +12,8 @@ describe ThinkingSphinx::ActiveRecord::Index do
   end
 
   describe '#append_source' do
-    let(:model)  { double('model', :primary_key => :id) }
+    let(:model)  { double('model', :primary_key => :id,
+      :table_exists? => true) }
     let(:source) { double('source') }
 
     before :each do
@@ -88,6 +91,18 @@ describe ThinkingSphinx::ActiveRecord::Index do
         :delta_processor => processor_class
 
       expect(index.delta_processor).to eq(processor)
+    end
+  end
+
+  describe '#docinfo' do
+    it "defaults to extern" do
+      expect(index.docinfo).to eq(:extern)
+    end
+
+    it "can be disabled" do
+      config.settings["skip_docinfo"] = true
+
+      expect(index.docinfo).to be_nil
     end
   end
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Guard::Files
   def self.call(names, &block)
     new(names).call(&block)

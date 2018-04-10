@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Capistrano::Configuration.instance(:must_exist).load do
   _cset(:thinking_sphinx_roles)   { :db }
   _cset(:thinking_sphinx_options) { {:roles => fetch(:thinking_sphinx_roles)} }

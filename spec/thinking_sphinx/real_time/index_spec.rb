@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe ThinkingSphinx::RealTime::Index do
@@ -26,6 +28,18 @@ describe ThinkingSphinx::RealTime::Index do
   describe '#delta?' do
     it "always returns false" do
       expect(index).not_to be_delta
+    end
+  end
+
+  describe '#docinfo' do
+    it "defaults to extern" do
+      expect(index.docinfo).to eq(:extern)
+    end
+
+    it "can be disabled" do
+      config.settings["skip_docinfo"] = true
+
+      expect(index.docinfo).to be_nil
     end
   end
 

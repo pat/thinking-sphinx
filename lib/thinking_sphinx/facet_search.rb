@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::FacetSearch
   include Enumerable
 
@@ -112,8 +114,8 @@ class ThinkingSphinx::FacetSearch
   def options_for(facet)
     options.merge(
       :select      => [(options[:select] || '*'),
-        "#{ThinkingSphinx::SphinxQL.group_by[:select]}",
-        "#{ThinkingSphinx::SphinxQL.count[:select]}"
+        "groupby() AS sphinx_internal_group",
+        "id AS sphinx_document_id, count(DISTINCT sphinx_document_id) AS sphinx_internal_count"
       ].join(', '),
       :group_by    => facet.name,
       :indices     => index_names_for(facet),

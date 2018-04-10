@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Core::Interpreter < BasicObject
   def self.translate!(index, block)
     new(index, block).translate!

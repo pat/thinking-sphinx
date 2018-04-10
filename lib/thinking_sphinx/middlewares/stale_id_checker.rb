@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Middlewares::StaleIdChecker <
   ThinkingSphinx::Middlewares::Middleware
 

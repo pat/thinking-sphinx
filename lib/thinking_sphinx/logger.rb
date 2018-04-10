@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::Logger
   def self.log(notification, message, &block)
     ActiveSupport::Notifications.instrument(
