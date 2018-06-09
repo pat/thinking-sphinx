@@ -334,8 +334,8 @@ ThinkingSphinx::Configuration.instance.indexing_strategy =
 
 Should you wish to build your own indexint strategy, you can give `ThinkingSphinx::Configuration.instance.indexing_strategy` anything you like that responds to call and expects an array of index options, and yields index names. You can see the implementations of the two approaches [here](https://github.com/pat/thinking-sphinx/tree/develop/lib/thinking_sphinx/indexing_strategies).
 
-You can also process just specific indices via the `INDEX_FILTER` environment variable (without the `_core` or `_delta` prefix):
+You can also process just specific indices via the `INDEX_FILTER` environment variable:
 
 {% highlight sh %}
-rake ts:index INDEX_FILTER=article,user
+rake ts:index INDEX_FILTER=article_core,user_delta
 {% endhighlight %}
