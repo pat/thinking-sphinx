@@ -119,11 +119,11 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
 
     context 'SQL options' do
       let(:relation) { double('relation', :where => []) }
+      let(:model_name) { double('article', :constantize => model) }
 
       before :each do
         allow(model).to receive_messages :unscoped => relation
 
-        model_name = double('article', :constantize => model)
         context[:results] << raw_result(1, model_name)
       end
 
@@ -164,6 +164,14 @@ describe ThinkingSphinx::Middlewares::ActiveRecordTranslator do
         search.options[:sql] = {:group => :column}
 
         expect(relation).to receive(:group).with(:column).and_return(relation)
+
+        middleware.call [context]
+      end
+
+      it "passes through SQL options defined by model to the relation" do
+        search.options[:sql] = {model_name => {:joins => :association}}
+
+        expect(relation).to receive(:joins).with(:association).and_return(relation)
 
         middleware.call [context]
       end

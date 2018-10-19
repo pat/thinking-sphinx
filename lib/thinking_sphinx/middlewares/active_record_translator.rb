@@ -77,7 +77,9 @@ class ThinkingSphinx::Middlewares::ActiveRecordTranslator <
       @results_for_models ||= model_names.inject({}) do |hash, name|
         model = name.constantize
 
-        hash[name] = model_relation_with_sql_options(model.unscoped).where(
+        model_sql_options = sql_options[name] || sql_options
+
+        hash[name] = model_relation_with_sql_options(model.unscoped, model_sql_options).where(
           primary_key_for(model) => ids_for_model(name)
         )
 
@@ -85,12 +87,12 @@ class ThinkingSphinx::Middlewares::ActiveRecordTranslator <
       end
     end
 
-    def model_relation_with_sql_options(relation)
-      relation = relation.includes sql_options[:include] if sql_options[:include]
-      relation = relation.joins  sql_options[:joins]  if sql_options[:joins]
-      relation = relation.order  sql_options[:order]  if sql_options[:order]
-      relation = relation.select sql_options[:select] if sql_options[:select]
-      relation = relation.group  sql_options[:group]  if sql_options[:group]
+    def model_relation_with_sql_options(relation, model_sql_options)
+      relation = relation.includes model_sql_options[:include] if model_sql_options[:include]
+      relation = relation.joins  model_sql_options[:joins]  if model_sql_options[:joins]
+      relation = relation.order  model_sql_options[:order]  if model_sql_options[:order]
+      relation = relation.select model_sql_options[:select] if model_sql_options[:select]
+      relation = relation.group  model_sql_options[:group]  if model_sql_options[:group]
       relation
     end
 
