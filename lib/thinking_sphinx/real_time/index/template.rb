@@ -10,7 +10,7 @@ class ThinkingSphinx::RealTime::Index::Template
   def apply
     add_field class_column, :sphinx_internal_class_name
 
-    add_attribute :id,          :sphinx_internal_id,    :bigint
+    add_attribute primary_key,  :sphinx_internal_id,    :bigint
     add_attribute class_column, :sphinx_internal_class, :string, :facet => true
     add_attribute 0,            :sphinx_deleted,        :integer
   end
@@ -32,5 +32,9 @@ class ThinkingSphinx::RealTime::Index::Template
 
   def class_column
     [:class, :name]
+  end
+
+  def primary_key
+    index.primary_key.to_sym
   end
 end

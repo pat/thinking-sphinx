@@ -82,7 +82,7 @@ describe ThinkingSphinx::RealTime::Index do
   end
 
   describe '#model' do
-    let(:model)  { double('model') }
+    let(:model)  { double('model', :primary_key => :id) }
 
     it "translates symbol references to model class" do
       allow(ActiveSupport::Inflector).to receive_messages(:constantize => model)
@@ -167,7 +167,7 @@ describe ThinkingSphinx::RealTime::Index do
   end
 
   describe '#scope' do
-    let(:model)  { double('model') }
+    let(:model)  { double('model', :primary_key => :id) }
 
     it "returns the model by default" do
       allow(ActiveSupport::Inflector).to receive_messages(:constantize => model)
