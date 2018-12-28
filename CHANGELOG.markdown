@@ -2,6 +2,23 @@
 
 All notable changes to this project (at least, from v3.0.0 onwards) are documented in this file.
 
+## 4.1.0 - 2018-12-28
+
+[Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v4.1.0)
+
+### Added
+
+* The `:sql` search option can now accept per-model settings with model names as keys. e.g. `ThinkingSphinx.search "foo", :sql => {'Article' => {:include => :user}}` (Sergey Malykh in [#1120](https://github.com/pat/thinking-sphinx/pull/1120)).
+
+### Changed
+
+* Drop MRI 2.2 from the test matrix, and thus no longer officially supported (though the code will likely continue to work with 2.2 for a while).
+* Added MRI 2.6, Sphinx 3.1 and Manticore 2.7 to the test matrix.
+
+### Fixed
+
+* Real-time indices now work with non-default integer primary keys (alongside UUIDs or other non-integer primary keys).
+
 ## 4.0.0 - 2018-04-10
 
 [Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v4.0.0)
