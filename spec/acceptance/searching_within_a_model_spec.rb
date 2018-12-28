@@ -86,7 +86,11 @@ describe 'Searching within a model', :live => true do
     album = Album.create! :name => 'The Seldom Seen Kid', :artist => 'Elbow'
     index
 
-    expect(Album.search.first).to eq(album)
+    expect(Album.search(:indices => ['album_core', 'album_delta']).first).
+      to eq(album)
+
+    expect(Album.search(:indices => ['album_real_core']).first).
+      to eq(album)
   end
 end
 

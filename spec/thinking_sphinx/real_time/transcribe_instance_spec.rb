@@ -9,7 +9,7 @@ RSpec.describe ThinkingSphinx::RealTime::TranscribeInstance do
     )
   end
   let(:instance)   { double :id => 43 }
-  let(:index)      { double :document_id_for_key => 46 }
+  let(:index)      { double :document_id_for_key => 46, :primary_key => :id }
   let(:property_a) { double :translate => 'A' }
   let(:property_b) { double :translate => 'B' }
   let(:property_c) { double :translate => 'C' }

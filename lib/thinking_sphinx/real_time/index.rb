@@ -10,9 +10,9 @@ class ThinkingSphinx::RealTime::Index < Riddle::Configuration::RealtimeIndex
     @attributes = []
     @conditions = []
 
-    Template.new(self).apply
-
     super reference, options
+
+    Template.new(self).apply
   end
 
   def add_attribute(attribute)

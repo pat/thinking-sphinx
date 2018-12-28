@@ -43,7 +43,8 @@ class ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks <
   end
 
   def indices
-    @indices ||= config.index_set_class.new :classes => [instance.class]
+    @indices ||= config.index_set_class.new(:classes => [instance.class]).
+      select { |index| index.type == "plain" }
   end
 
   def new_or_changed?

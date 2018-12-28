@@ -11,7 +11,7 @@ describe ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks do
     :settings => {}) }
   let(:index)      { double('index', :name => 'my_index', :is_a? => true,
     :document_id_for_key => 123, :fields => [], :attributes => [],
-    :conditions => []) }
+    :conditions => [], :primary_key => :id) }
   let(:connection) { double('connection', :execute => true) }
 
   before :each do

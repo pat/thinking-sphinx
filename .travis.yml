@@ -1,10 +1,9 @@
 language: ruby
 rvm:
-- 2.2.10
-- 2.3.7
-- 2.4.4
-- 2.5.1
-- jruby-9.1.16.0
+- 2.3.8
+- 2.4.5
+- 2.5.3
+- 2.6.0
 addons:
   apt:
     packages:
@@ -30,10 +29,14 @@ env:
   - DATABASE=postgresql SPHINX_VERSION=2.1.9 SPHINX_ENGINE=sphinx
   - DATABASE=mysql2 SPHINX_VERSION=2.2.11 SPHINX_ENGINE=sphinx
   - DATABASE=postgresql SPHINX_VERSION=2.2.11 SPHINX_ENGINE=sphinx
-  - DATABASE=mysql2 SPHINX_VERSION=3.0.2 SPHINX_ENGINE=sphinx
-  - DATABASE=postgresql SPHINX_VERSION=3.0.2 SPHINX_ENGINE=sphinx
+  - DATABASE=mysql2 SPHINX_VERSION=3.0.3 SPHINX_ENGINE=sphinx
+  - DATABASE=postgresql SPHINX_VERSION=3.0.3 SPHINX_ENGINE=sphinx
+  - DATABASE=mysql2 SPHINX_VERSION=3.1.1 SPHINX_ENGINE=sphinx
   - DATABASE=mysql2 SPHINX_VERSION=2.6.3 SPHINX_ENGINE=manticore
   - DATABASE=postgresql SPHINX_VERSION=2.6.3 SPHINX_ENGINE=manticore
+  - DATABASE=mysql2 SPHINX_VERSION=2.7.4 SPHINX_ENGINE=manticore
+  - DATABASE=postgresql SPHINX_VERSION=2.7.4 SPHINX_ENGINE=manticore
+  # - DATABASE=postgresql SPHINX_VERSION=3.1.1 SPHINX_ENGINE=sphinx
 sudo: false
 addons:
   postgresql: '9.4'

@@ -44,7 +44,8 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks do
 
   describe '#after_commit' do
     let(:index) {
-      double('index', :delta? => false, :delta_processor => processor)
+      double('index', :delta? => false, :delta_processor => processor,
+        :type => 'plain')
     }
 
     before :each do
@@ -67,9 +68,9 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks do
 
     context 'with delta indices' do
       let(:core_index) { double('index', :delta? => false, :name => 'foo_core',
-        :delta_processor => processor) }
+        :delta_processor => processor, :type => 'plain') }
       let(:delta_index) { double('index', :delta? => true, :name => 'foo_delta',
-        :delta_processor => processor) }
+        :delta_processor => processor, :type => 'plain') }
 
       before :each do
         allow(ThinkingSphinx::Deltas).to receive_messages :suspended? => false
@@ -127,7 +128,8 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks do
 
   describe '#before_save' do
     let(:index) {
-      double('index', :delta? => true, :delta_processor => processor)
+      double('index', :delta? => true, :delta_processor => processor,
+        :type => 'plain')
     }
 
     before :each do

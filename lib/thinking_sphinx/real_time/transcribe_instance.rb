@@ -24,7 +24,7 @@ class ThinkingSphinx::RealTime::TranscribeInstance
   attr_reader :instance, :index, :properties
 
   def document_id
-    index.document_id_for_key instance.id
+    index.document_id_for_key instance.public_send(index.primary_key)
   end
 
   def raise_wrapper(error, property)
