@@ -1,13 +1,15 @@
 *.gem
 .bundle
 .rbx
+.rspec
+.tool-versions
 gemfiles
 Gemfile.lock
 *.sublime-*
 pkg/*
 spec/internal/config/test.sphinx.conf
 spec/internal/db/sphinx
-spec/internal/log/*.log
+spec/internal/log
 !spec/internal/tmp/.gitkeep
 spec/internal/tmp/*
 tmp
