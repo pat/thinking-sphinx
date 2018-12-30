@@ -35,6 +35,18 @@ describe 'Hiding deleted records from search results', :live => true do
       to be_empty
   end
 
+  it "removes records from real-time index results with alternate ids" do
+    album = Album.create! :name => 'Sing to the Moon', :artist => 'Laura Mvula'
+
+    expect(Album.search('Sing', :indices => ['album_real_core']).to_a).
+      to eq([album])
+
+    album.destroy
+
+    expect(Album.search_for_ids('Sing', :indices => ['album_real_core'])).
+      to be_empty
+  end
+
   it "does not remove real-time results when callbacks are disabled" do
     original = ThinkingSphinx::Configuration.instance.
       settings['real_time_callbacks']
