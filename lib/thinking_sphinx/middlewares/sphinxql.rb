@@ -82,19 +82,6 @@ class ThinkingSphinx::Middlewares::SphinxQL <
       end.flatten
     end
 
-    def indices_match_classes?
-      indices.collect(&:reference).uniq.sort == classes.collect { |klass|
-        ThinkingSphinx::IndexSet.reference_name(klass)
-      }.sort
-    end
-
-    def inheritance_column_select(klass)
-      <<-SQL
-SELECT DISTINCT #{klass.inheritance_column}
-FROM #{klass.table_name}
-SQL
-    end
-
     def exclusive_filters
       @exclusive_filters ||= (options[:without] || {}).tap do |without|
         without[:sphinx_internal_id] = options[:without_ids] if options[:without_ids].present?
@@ -142,6 +129,19 @@ SQL
         raise ThinkingSphinx::NoIndicesError if set.empty?
         set
       end
+    end
+
+    def indices_match_classes?
+      indices.collect(&:reference).uniq.sort == classes.collect { |klass|
+        ThinkingSphinx::IndexSet.reference_name(klass)
+      }.sort
+    end
+
+    def inheritance_column_select(klass)
+      <<-SQL
+SELECT DISTINCT #{klass.inheritance_column}
+FROM #{klass.table_name}
+SQL
     end
 
     def order_clause
