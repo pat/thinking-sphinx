@@ -18,6 +18,10 @@ describe ThinkingSphinx::Scopes do
       model.sphinx_scopes[:foo] = Proc.new { {:with => {:foo => :bar}} }
     end
 
+    it "implements respond_to" do
+      expect(model).to respond_to(:foo)
+    end
+
     it "creates new search" do
       expect(model.foo.class).to eq(ThinkingSphinx::Search)
     end
