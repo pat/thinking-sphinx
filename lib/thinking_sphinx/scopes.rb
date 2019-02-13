@@ -26,5 +26,9 @@ module ThinkingSphinx::Scopes
       query, options = sphinx_scopes[method].call(*args)
       search query, (options || {})
     end
+
+    def respond_to_missing?(method, include_private = false)
+      super || sphinx_scopes.keys.include?(method)
+    end
   end
 end
