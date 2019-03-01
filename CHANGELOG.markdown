@@ -2,6 +2,14 @@
 
 All notable changes to this project (at least, from v3.0.0 onwards) are documented in this file.
 
+## Unreleased
+
+### Fixed
+
+* Fix usage of alternative primary keys in update and deletion callbacks and attribute access.
+* Ensure `respond_to?` takes Sphinx scopes into account ([Jonathan del Strother](https://github.com/jdelstrother) in [#1124](https://github.com/pat/thinking-sphinx/pull/1124)).
+* Add `:excerpts` as a known option for search requests.
+
 ## 4.1.0 - 2018-12-28
 
 [Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v4.1.0)
