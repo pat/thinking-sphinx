@@ -29,10 +29,10 @@ h2. Requirements
 The current release of Thinking Sphinx works with the following versions of its dependencies:
 
 |_. Library |_. Minimum |_. Tested Against |
-| Ruby | v2.3 | v2.3.8, v2.4.5, v2.5.3, v2.6.0 |
+| Ruby | v2.3 | v2.3.8, v2.4.5, v2.5.3, v2.6.1 |
 | Sphinx | v2.1.2 | v2.1.9, v2.2.11, v3.0.3, v3.1.1 |
 | Manticore | v2.6.3 | v2.6.3, v2.7.4 |
-| ActiveRecord | v3.2 | v3.2, v4.0, v4.1, v4.2, v5.0, v5.1, v5.2 |
+| ActiveRecord | v3.2 | v3.2..v6.0 |
 
 It _might_ work with older versions of Ruby, but it's highly recommended to update to a supported release.
 
