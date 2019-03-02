@@ -6,7 +6,8 @@ describe ThinkingSphinx::ActiveRecord::FilterReflection do
   describe '.call' do
     let(:reflection) { double('Reflection', :macro => :has_some,
       :options => options, :active_record => double, :name => 'baz',
-      :foreign_type => :foo_type, :class => original_klass) }
+      :foreign_type => :foo_type, :class => original_klass,
+      :build_join_constraint => nil) }
     let(:options)    { {:polymorphic => true} }
     let(:filtered_reflection) { double 'filtered reflection' }
     let(:original_klass)      { double }
@@ -179,12 +180,23 @@ describe ThinkingSphinx::ActiveRecord::FilterReflection do
     end
 
     it "includes custom behaviour in the subclass" do
-      expect(subclass).to receive(:include).with(ThinkingSphinx::ActiveRecord::Depolymorph::OverriddenReflection::JoinConstraint)
+      expect(subclass).to receive(:include).with(ThinkingSphinx::ActiveRecord::Depolymorph::OverriddenReflection::BuildJoinConstraint)
 
       ThinkingSphinx::ActiveRecord::FilterReflection.call(
         reflection, 'foo_bar', 'Bar'
       )
     end if ActiveRecord::VERSION::STRING.to_f > 5.1
+
+    it "includes custom behaviour in the subclass" do
+      allow(reflection).to receive(:respond_to?).with(:build_join_constraint).
+        and_return(false)
+
+      expect(subclass).to receive(:include).with(ThinkingSphinx::ActiveRecord::Depolymorph::OverriddenReflection::JoinScope)
+
+      ThinkingSphinx::ActiveRecord::FilterReflection.call(
+        reflection, 'foo_bar', 'Bar'
+      )
+    end if ActiveRecord::VERSION::STRING.to_f >= 6.0
 
     it "returns the new reflection" do
       expect(ThinkingSphinx::ActiveRecord::FilterReflection.call(
