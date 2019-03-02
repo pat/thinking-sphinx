@@ -40,6 +40,12 @@ class ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter <
   end
 
   def utf8_query_pre
-    ['SET NAMES utf8']
+    ["SET NAMES #{settings['mysql_encoding']}"]
+  end
+
+  private
+
+  def settings
+    ThinkingSphinx::Configuration.instance.settings
   end
 end
