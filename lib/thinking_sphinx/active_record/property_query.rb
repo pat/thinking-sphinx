@@ -27,6 +27,7 @@ primary key.
   attr_reader :property, :source, :type
 
   delegate :unscoped, :to => :base_association_class, :prefix => true
+  delegate :sql,      :to => Arel
 
   def base_association
     reflections.first
@@ -135,7 +136,7 @@ primary key.
     relation = relation.joins(joins) if joins.present?
     relation = relation.where("#{quoted_foreign_key} BETWEEN $start AND $end") if ranged?
     relation = relation.where("#{quoted_foreign_key} IS NOT NULL")
-    relation = relation.order("#{quoted_foreign_key} ASC") if type.nil?
+    relation = relation.order(sql("#{quoted_foreign_key} ASC")) if type.nil?
 
     relation.to_sql
   end
