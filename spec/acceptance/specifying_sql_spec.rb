@@ -434,6 +434,15 @@ describe 'separate queries for field' do
     expect(range).to match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
   end
 
+  it "does not include a source of type query in the joins" do
+    index.definition_block = Proc.new {
+      indexes taggings.tag.name, :as => :tags, :source => :query
+    }
+    index.render
+
+    expect(source.sql_query).not_to include('tags')
+  end
+
   it "respects custom SQL snippets as the query value" do
     index.definition_block = Proc.new {
       indexes 'My Custom SQL Query', :as => :tags, :source => :query

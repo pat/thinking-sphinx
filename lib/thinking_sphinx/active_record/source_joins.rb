@@ -27,7 +27,7 @@ class ThinkingSphinx::ActiveRecord::SourceJoins
   end
 
   def append_column_associations(column)
-    return if column.__stack.empty?
+    return if column.__stack.empty? or column_included_in_queries?(column)
 
     joins.add_join_to column.__stack if column_exists?(column)
   end
@@ -53,5 +53,16 @@ class ThinkingSphinx::ActiveRecord::SourceJoins
       end
       joins
     end
+  end
+
+  def source_query_fields
+    source.fields.select { |field| field.source_type == :query }
+  end
+
+  # Use "first" here instead of a more intuitive flatten because flatten
+  # will also ask each column to become an Array and that will start
+  # to retrieve data.
+  def column_included_in_queries?(column)
+    source_query_fields.collect(&:columns).map(&:first).include?(column)
   end
 end
