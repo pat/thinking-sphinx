@@ -210,6 +210,19 @@ describe 'separate queries for MVAs' do
     expect(source.sql_query).not_to include('taggings')
   end
 
+  it "keeps the joins in for separately queried tables if they're used elsewhere" do
+    index.definition_block = Proc.new {
+      indexes taggings.tag.name, :as => :tag_names
+      has taggings.tag.created_at, :as => :tag_dates, :source => :query
+    }
+    index.render
+
+    expect(source.sql_query).to include('taggings')
+    expect(source.sql_query).to include('tags')
+    expect(source.sql_query).to_not match(/.tags.\..created_at./)
+    expect(source.sql_query).to match(/.tags.\..name./)
+  end
+
   it "generates a SQL query with joins when appropriate for MVAs" do
     index.definition_block = Proc.new {
       indexes title
