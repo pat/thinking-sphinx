@@ -55,14 +55,14 @@ class ThinkingSphinx::ActiveRecord::SourceJoins
     end
   end
 
-  def source_query_fields
-    source.fields.select { |field| field.source_type == :query }
+  def source_query_properties
+    source.properties.select { |field| field.source_type == :query }
   end
 
   # Use "first" here instead of a more intuitive flatten because flatten
   # will also ask each column to become an Array and that will start
   # to retrieve data.
   def column_included_in_queries?(column)
-    source_query_fields.collect(&:columns).map(&:first).include?(column)
+    source_query_properties.collect(&:columns).collect(&:first).include?(column)
   end
 end

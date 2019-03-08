@@ -198,6 +198,18 @@ describe 'separate queries for MVAs' do
     expect(query).to match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .taggings.\..tag_id. AS .tag_ids. FROM .taggings.\s? WHERE \(.taggings.\..article_id. IS NOT NULL\)$/)
   end
 
+  it "does not include attributes sourced via separate queries" do
+    index.definition_block = Proc.new {
+      indexes title
+      has taggings.tag_id, :as => :tag_ids, :source => :query
+    }
+    index.render
+
+    # We don't want it in the SELECT, JOIN or GROUP clauses. This should catch
+    # them all.
+    expect(source.sql_query).not_to include('taggings')
+  end
+
   it "generates a SQL query with joins when appropriate for MVAs" do
     index.definition_block = Proc.new {
       indexes title
@@ -434,12 +446,14 @@ describe 'separate queries for field' do
     expect(range).to match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
   end
 
-  it "does not include a source of type query in the joins" do
+  it "does not include fields sourced via separate queries" do
     index.definition_block = Proc.new {
       indexes taggings.tag.name, :as => :tags, :source => :query
     }
     index.render
 
+    # We don't want it in the SELECT, JOIN or GROUP clauses. This should catch
+    # them all.
     expect(source.sql_query).not_to include('tags')
   end
 
