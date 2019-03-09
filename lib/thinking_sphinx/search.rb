@@ -10,10 +10,11 @@ class ThinkingSphinx::Search < Array
     send class )
   KNOWN_OPTIONS = (
     [
-      :classes, :conditions, :geo, :group_by, :ids_only, :ignore_scopes,
-      :indices, :limit, :masks, :max_matches, :middleware, :offset, :order,
-      :order_group_by, :page, :per_page, :populate, :retry_stale, :select,
-      :skip_sti, :sql, :star, :with, :with_all, :without, :without_ids
+      :classes, :conditions, :excerpts, :geo, :group_by, :ids_only,
+      :ignore_scopes, :indices, :limit, :masks, :max_matches, :middleware,
+      :offset, :order, :order_group_by, :page, :per_page, :populate,
+      :retry_stale, :select, :skip_sti, :sql, :star, :with, :with_all, :without,
+      :without_ids
     ] +
     ThinkingSphinx::Middlewares::SphinxQL::SELECT_OPTIONS
   ).uniq

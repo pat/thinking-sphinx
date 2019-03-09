@@ -34,7 +34,7 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks do
 
   describe '#after_destroy' do
     let(:index_set)  { double 'index set', :to_a => [index] }
-    let(:index)      { double('index', :name => 'foo_core',
+    let(:index)      { double('index', :name => 'foo_core', :primary_key => :id,
       :document_id_for_key => 14, :type => 'plain', :distributed? => false) }
     let(:instance)   { double('instance', :id => 7, :new_record? => false) }
 
@@ -93,7 +93,7 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks do
 
   describe '#after_rollback' do
     let(:index_set)  { double 'index set', :to_a => [index] }
-    let(:index)      { double('index', :name => 'foo_core',
+    let(:index)      { double('index', :name => 'foo_core', :primary_key => :id,
       :document_id_for_key => 14, :type => 'plain', :distributed? => false) }
     let(:instance)   { double('instance', :id => 7, :new_record? => false) }
 

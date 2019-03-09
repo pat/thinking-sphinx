@@ -55,7 +55,9 @@ class ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks <
     return if attributes.empty?
 
     sphinxql = Riddle::Query.update(
-      index.name, index.document_id_for_key(instance.id), attributes
+      index.name,
+      index.document_id_for_key(instance.public_send(index.primary_key)),
+      attributes
     )
     ThinkingSphinx::Connection.take do |connection|
       connection.execute(sphinxql)

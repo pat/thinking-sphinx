@@ -2,6 +2,26 @@
 
 All notable changes to this project (at least, from v3.0.0 onwards) are documented in this file.
 
+## 4.2.0 - 2019-03-09
+
+### Added
+
+* Allow changing the default encoding for MySQL database connections from utf8 to something else via the `mysql_encoding` setting in `config/thinking_sphinx.yml`. In the next significant release, the default will change to utf8mb4 (which is supported in MySQL 5.5.3 and newer).
+* Added Rails 6.0 and Manticore 2.8 to the test matrix.
+
+### Changed
+
+* Use Arel's SQL literals for generated order clauses, to avoid warnings from Rails 6.
+
+### Fixed
+
+* Fix usage of alternative primary keys in update and deletion callbacks and attribute access.
+* Ensure `respond_to?` takes Sphinx scopes into account ([Jonathan del Strother](https://github.com/jdelstrother) in [#1124](https://github.com/pat/thinking-sphinx/pull/1124)).
+* Add `:excerpts` as a known option for search requests.
+* Fix depolymorphed association join construction with Rails 6.0.0.beta2.
+* Reset ThinkingSphinx::Configuration's cached values when Rails reloads, to avoid holding onto stale references to ActiveRecord models ([#1125](https://github.com/pat/thinking-sphinx/issues/1125)).
+* Don't join against associations in `sql_query` if they're only used by query-sourced properties ([Hans de Graaff](https://github.com/graaff) in [#1127](https://github.com/pat/thinking-sphinx/pull/1127)).
+
 ## 4.1.0 - 2018-12-28
 
 [Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v4.1.0)

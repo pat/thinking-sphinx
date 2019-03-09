@@ -16,6 +16,7 @@ class ThinkingSphinx::Middlewares::Glazier <
   class Inner
     def initialize(context)
       @context = context
+      @indices = {}
     end
 
     def call
@@ -31,10 +32,20 @@ class ThinkingSphinx::Middlewares::Glazier <
 
     attr_reader :context
 
+    def indices_for(model)
+      @indices[model] ||= context[:indices].select do |index|
+        index.model == model
+      end
+    end
+
     def row_for(result)
+      ids = indices_for(result.class).collect do |index|
+        result.send index.primary_key
+      end
+
       context[:raw].detect { |row|
         row['sphinx_internal_class'] == result.class.name &&
-        row['sphinx_internal_id']    == result.id
+        ids.include?(row['sphinx_internal_id'])
       }
     end
   end

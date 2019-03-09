@@ -23,6 +23,15 @@ describe 'Accessing attributes directly via search results', :live => true do
     expect(search.first.weight).to eq(2500)
   end
 
+  it "provides direct access to the weight with alternative primary keys" do
+    album = Album.create! :name => 'Sing to the Moon', :artist => 'Laura Mvula'
+
+    search = Album.search 'sing', :select => "*, weight()"
+    search.context[:panes] << ThinkingSphinx::Panes::WeightPane
+
+    expect(search.first.weight).to be >= 1000
+  end
+
   it "can enumerate with the weight" do
     gods = Book.create! :title => 'American Gods', :year => 2001
     index

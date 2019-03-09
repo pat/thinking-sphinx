@@ -3,7 +3,7 @@ rvm:
 - 2.3.8
 - 2.4.5
 - 2.5.3
-- 2.6.0
+- 2.6.1
 addons:
   apt:
     packages:
@@ -13,7 +13,8 @@ addons:
 before_install:
 - pip install --upgrade --user awscli
 - gem update --system
-- gem install bundler
+- gem uninstall -v '>= 2' -i $(rvm gemdir)@global -ax bundler || true
+- gem install bundler -v '< 2'
 before_script:
 - mysql -e 'create database thinking_sphinx;' > /dev/null
 - psql -c 'create database thinking_sphinx;' -U postgres >/dev/null
@@ -32,10 +33,12 @@ env:
   - DATABASE=mysql2 SPHINX_VERSION=3.0.3 SPHINX_ENGINE=sphinx
   - DATABASE=postgresql SPHINX_VERSION=3.0.3 SPHINX_ENGINE=sphinx
   - DATABASE=mysql2 SPHINX_VERSION=3.1.1 SPHINX_ENGINE=sphinx
-  - DATABASE=mysql2 SPHINX_VERSION=2.6.3 SPHINX_ENGINE=manticore
-  - DATABASE=postgresql SPHINX_VERSION=2.6.3 SPHINX_ENGINE=manticore
-  - DATABASE=mysql2 SPHINX_VERSION=2.7.4 SPHINX_ENGINE=manticore
-  - DATABASE=postgresql SPHINX_VERSION=2.7.4 SPHINX_ENGINE=manticore
+  - DATABASE=mysql2 SPHINX_VERSION=2.6.4 SPHINX_ENGINE=manticore
+  - DATABASE=postgresql SPHINX_VERSION=2.6.4 SPHINX_ENGINE=manticore
+  - DATABASE=mysql2 SPHINX_VERSION=2.7.5 SPHINX_ENGINE=manticore
+  - DATABASE=postgresql SPHINX_VERSION=2.7.5 SPHINX_ENGINE=manticore
+  - DATABASE=mysql2 SPHINX_VERSION=2.8.1 SPHINX_ENGINE=manticore
+  - DATABASE=postgresql SPHINX_VERSION=2.8.1 SPHINX_ENGINE=manticore
   # - DATABASE=postgresql SPHINX_VERSION=3.1.1 SPHINX_ENGINE=sphinx
 sudo: false
 addons:

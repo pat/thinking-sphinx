@@ -48,11 +48,23 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters::MySQLAdapter do
     end
   end
 
-
   describe '#group_concatenate' do
     it "group concatenates the clause with the given separator" do
       expect(adapter.group_concatenate('foo', ',')).
         to eq("GROUP_CONCAT(DISTINCT foo SEPARATOR ',')")
+    end
+  end
+
+  describe '#utf8_query_pre' do
+    it "defaults to using utf8" do
+      expect(adapter.utf8_query_pre).to eq(["SET NAMES utf8"])
+    end
+
+    it "allows custom values" do
+      ThinkingSphinx::Configuration.instance.settings['mysql_encoding'] =
+        'utf8mb4'
+
+      expect(adapter.utf8_query_pre).to eq(["SET NAMES utf8mb4"])
     end
   end
 end

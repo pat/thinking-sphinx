@@ -17,7 +17,8 @@ class ThinkingSphinx::Settings
     "log"                => "log/ENVIRONMENT.searchd.log",
     "query_log"          => "log/ENVIRONMENT.searchd.query.log",
     "binlog_path"        => "tmp/binlog/ENVIRONMENT",
-    "workers"            => "threads"
+    "workers"            => "threads",
+    "mysql_encoding"     => "utf8"
   }.freeze
 
   def self.call(configuration)

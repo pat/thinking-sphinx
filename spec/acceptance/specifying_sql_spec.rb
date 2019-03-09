@@ -198,6 +198,31 @@ describe 'separate queries for MVAs' do
     expect(query).to match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .taggings.\..tag_id. AS .tag_ids. FROM .taggings.\s? WHERE \(.taggings.\..article_id. IS NOT NULL\)$/)
   end
 
+  it "does not include attributes sourced via separate queries" do
+    index.definition_block = Proc.new {
+      indexes title
+      has taggings.tag_id, :as => :tag_ids, :source => :query
+    }
+    index.render
+
+    # We don't want it in the SELECT, JOIN or GROUP clauses. This should catch
+    # them all.
+    expect(source.sql_query).not_to include('taggings')
+  end
+
+  it "keeps the joins in for separately queried tables if they're used elsewhere" do
+    index.definition_block = Proc.new {
+      indexes taggings.tag.name, :as => :tag_names
+      has taggings.tag.created_at, :as => :tag_dates, :source => :query
+    }
+    index.render
+
+    expect(source.sql_query).to include('taggings')
+    expect(source.sql_query).to include('tags')
+    expect(source.sql_query).to_not match(/.tags.\..created_at./)
+    expect(source.sql_query).to match(/.tags.\..name./)
+  end
+
   it "generates a SQL query with joins when appropriate for MVAs" do
     index.definition_block = Proc.new {
       indexes title
@@ -432,6 +457,17 @@ describe 'separate queries for field' do
     expect(declaration).to eq('tags from ranged-query')
     expect(query).to match(/^SELECT .taggings.\..article_id. \* #{count} \+ #{source.offset} AS .id., .tags.\..name. AS .tags. FROM .taggings. INNER JOIN .tags. ON .tags.\..id. = .taggings.\..tag_id. \s?WHERE \(.taggings.\..article_id. BETWEEN \$start AND \$end\) AND \(.taggings.\..article_id. IS NOT NULL\)\s? ORDER BY .taggings.\..article_id. ASC$/)
     expect(range).to match(/^SELECT MIN\(.taggings.\..article_id.\), MAX\(.taggings.\..article_id.\) FROM .taggings.\s?$/)
+  end
+
+  it "does not include fields sourced via separate queries" do
+    index.definition_block = Proc.new {
+      indexes taggings.tag.name, :as => :tags, :source => :query
+    }
+    index.render
+
+    # We don't want it in the SELECT, JOIN or GROUP clauses. This should catch
+    # them all.
+    expect(source.sql_query).not_to include('tags')
   end
 
   it "respects custom SQL snippets as the query value" do

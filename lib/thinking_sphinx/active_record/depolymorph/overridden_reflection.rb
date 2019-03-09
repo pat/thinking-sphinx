@@ -5,9 +5,19 @@
 class ThinkingSphinx::ActiveRecord::Depolymorph::OverriddenReflection <
   ThinkingSphinx::ActiveRecord::Depolymorph::BaseReflection
 
-  module JoinConstraint
+  module BuildJoinConstraint
     def build_join_constraint(table, foreign_table)
       super.and(
+        foreign_table[options[:foreign_type]].eq(
+          options[:class_name].constantize.base_class.name
+        )
+      )
+    end
+  end
+
+  module JoinScope
+    def join_scope(table, foreign_table, foreign_klass)
+      super.where(
         foreign_table[options[:foreign_type]].eq(
           options[:class_name].constantize.base_class.name
         )
@@ -28,8 +38,13 @@ class ThinkingSphinx::ActiveRecord::Depolymorph::OverriddenReflection <
   def klass
     self.class.overridden_classes[reflection.class] ||= begin
       subclass = Class.new reflection.class
-      subclass.include JoinConstraint
+      subclass.include extension(reflection)
       subclass
     end
+  end
+
+  def extension(reflection)
+    reflection.respond_to?(:build_join_constraint) ?
+      BuildJoinConstraint : JoinScope
   end
 end
