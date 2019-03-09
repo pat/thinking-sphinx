@@ -2,12 +2,12 @@
 
 All notable changes to this project (at least, from v3.0.0 onwards) are documented in this file.
 
-## Unreleased
+## 4.2.0 - 2019-03-09
 
 ### Added
 
 * Allow changing the default encoding for MySQL database connections from utf8 to something else via the `mysql_encoding` setting in `config/thinking_sphinx.yml`. In the next significant release, the default will change to utf8mb4 (which is supported in MySQL 5.5.3 and newer).
-* Testing against Manticore 2.8.
+* Added Rails 6.0 and Manticore 2.8 to the test matrix.
 
 ### Changed
 
