@@ -2,7 +2,7 @@
 
 class ThinkingSphinx::Commands::StartDetached < ThinkingSphinx::Commands::Base
   def call
-    FileUtils.mkdir_p configuration.indices_location
+    FileUtils.mkdir_p configuration.indices_location unless skip_directories?
 
     result = controller.start :verbose => options[:verbose]
 

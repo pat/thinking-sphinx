@@ -342,10 +342,13 @@ describe ThinkingSphinx::Configuration do
   end
 
   describe '#render_to_file' do
-    let(:file)   { double('file') }
-    let(:output) { config.render }
+    let(:file)             { double('file') }
+    let(:output)           { config.render }
+    let(:skip_directories) { false }
 
     before :each do
+      write_configuration('skip_directory_creation' => skip_directories)
+
       allow(config.searchd).to receive_messages :render => 'searchd { }'
     end
 
@@ -375,6 +378,16 @@ describe ThinkingSphinx::Configuration do
       expect(FileUtils).not_to receive(:mkdir_p)
 
       config.render_to_file
+    end
+
+    context 'skipping directory creation' do
+      let(:skip_directories) { true }
+
+      it "skips creating a directory when flag is set" do
+        expect(FileUtils).not_to receive(:mkdir_p)
+
+        config.render_to_file
+      end
     end
   end
 

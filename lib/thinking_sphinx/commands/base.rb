@@ -46,4 +46,8 @@ There may be more information about the failure in #{configuration.searchd.log}.
 
     stream.puts message
   end
+
+  def skip_directories?
+    configuration.settings['skip_directory_creation']
+  end
 end

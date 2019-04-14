@@ -7,7 +7,7 @@ RSpec.describe ThinkingSphinx::Commands::Prepare do
     configuration, {}, stream
   ) }
   let(:configuration) { double 'configuration',
-    :indices_location => '/path/to/indices'
+    :indices_location => '/path/to/indices', :settings => {}
   }
   let(:stream)        { double :puts => nil }
 
@@ -17,6 +17,14 @@ RSpec.describe ThinkingSphinx::Commands::Prepare do
 
   it "creates the directory for the index files" do
     expect(FileUtils).to receive(:mkdir_p).with('/path/to/indices')
+
+    command.call
+  end
+
+  it "skips directory creation if flag is set" do
+    configuration.settings['skip_directory_creation'] = true
+
+    expect(FileUtils).to_not receive(:mkdir_p)
 
     command.call
   end
