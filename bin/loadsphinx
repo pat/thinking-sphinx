@@ -2,65 +2,57 @@
 
 version=$1
 engine=$2
-name="$engine-$version"
-bucket="thinking-sphinx"
-directory="ext/sphinx"
-prefix="`pwd`/$directory"
-file="ext/$name.tar.gz"
 
-if [ "$engine" == "sphinx" ]; then
-  url="http://sphinxsearch.com/files/$name-release.tar.gz"
-else
-  url="https://github.com/manticoresoftware/manticore.git"
-fi
+load_sphinx () {
+  case $version in
+    2.1.9)
+      url="http://sphinxsearch.com/files/sphinxsearch_2.1.9-release-0ubuntu11~trusty_amd64.deb"
+      format="deb";;
+    2.2.11)
+      url="http://sphinxsearch.com/files/sphinxsearch_2.2.11-release-1~trusty_amd64.deb"
+      format="deb";;
+    3.0.3)
+      url="http://sphinxsearch.com/files/sphinx-3.0.3-facc3fb-linux-amd64.tar.gz"
+      format="gz";;
+    3.1.1)
+      url="http://sphinxsearch.com/files/sphinx-3.1.1-612d99f-linux-amd64.tar.gz"
+      format="gz";;
+    *)
+      echo "No Sphinx version $version available"
+      exit 1;;
+  esac
 
-download_and_compile_source () {
-  if [ "$engine" == "sphinx" ]; then
-    download_and_compile_sphinx
+  if [ "$format" == "deb" ]; then
+    curl --location $url -o sphinx.deb
+    sudo apt-get install ./sphinx.deb
   else
-    download_and_compile_manticore
+    curl $url -o sphinx.tar.gz
+    tar -zxvf sphinx.tar.gz
+    sudo mv sphinx-$version/bin/* /usr/local/bin/.
   fi
 }
 
-download_and_compile_sphinx () {
-  curl -O $url
-  tar -zxf $name-release.tar.gz
-  cd $name-release
-  ./configure --with-mysql --with-pgsql --enable-id64 --prefix=$prefix
-  make
-  make install
-  cd ..
-  rm -rf $name-release.tar.gz $name-release
+load_manticore () {
+  url="https://github.com/manticoresoftware/manticore/releases/download/$version/manticore_$version.deb"
+
+  case $version in
+    2.6.4)
+      url="https://github.com/manticoresoftware/manticoresearch/releases/download/2.6.4/manticore_2.6.4-180503-37308c3-release-stemmer.trusty_amd64-bin.deb";;
+    2.7.5)
+      url="https://github.com/manticoresoftware/manticoresearch/releases/download/2.7.5/manticore_2.7.5-181204-0f016406-release-stemmer.trusty_amd64-bin.deb";;
+    2.8.2)
+      url="https://github.com/manticoresoftware/manticoresearch/releases/download/2.8.2/manticore_2.8.2-190402-4e81114-release-stemmer.trusty_amd64-bin.deb";;
+    *)
+      echo "No Manticore version $version available"
+      exit 1;;
+  esac
+
+  curl --location $url -o manticore.deb
+  sudo apt-get install ./manticore.deb
 }
 
-download_and_compile_manticore () {
-  git clone $url $engine
-  cd $engine
-  git checkout $version
-  mkdir build
-  cd build
-  cmake -D WITH_MYSQL=TRUE -D WITH_PGSQL=TRUE -D DISABLE_TESTING=TRUE -D CMAKE_INSTALL_PREFIX=$prefix ..
-  make -j4
-  make install
-  cd ../..
-  rm -rf $engine
-}
-
-load_cache () {
-  mkdir ext
-  curl -o $file http://$bucket.s3.amazonaws.com/bincaches/$name.tar.gz
-  tar -zxf $file
-}
-
-push_cache () {
-  tar -czf $file $directory
-  aws s3 cp $file s3://$bucket/bincaches/$name.tar.gz --acl public-read
-}
-
-if curl -i --head --fail http://$bucket.s3.amazonaws.com/bincaches/$name.tar.gz
-then
-  load_cache
+if [ "$engine" == "sphinx" ]; then
+  load_sphinx
 else
-  download_and_compile_source
-  push_cache
+  load_manticore
 fi

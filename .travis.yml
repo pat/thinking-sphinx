@@ -4,12 +4,6 @@ rvm:
 - 2.4.6
 - 2.5.5
 - 2.6.2
-addons:
-  apt:
-    packages:
-    - cmake
-    - bison
-    - flex
 before_install:
 - pip install --upgrade --user awscli
 - gem update --system
@@ -23,7 +17,6 @@ before_script:
 script: bundle exec appraisal rspec
 env:
   global:
-  - SPHINX_BIN=ext/sphinx/bin/
   - secure: cUPinkilBafqDSPsTkl/PXYc2aXNKUQKXGK8poBBMqKN9/wjfJx1DWgtowDKalekdZELxDhc85Ye3bL1xlW4nLjOu+U6Tkt8eNw2Nhs1flodHzA/RyENdBLr/tBHt43EjkrDehZx5sBHmWQY4miHs8AJz0oKO9Ae2inTOHx9Iuc=
   matrix:
   - DATABASE=mysql2 SPHINX_VERSION=2.1.9 SPHINX_ENGINE=sphinx
@@ -44,4 +37,5 @@ sudo: false
 addons:
   postgresql: '9.4'
 services:
+- mysql
 - postgresql
