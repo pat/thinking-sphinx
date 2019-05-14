@@ -10,7 +10,8 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 
   delegate :environment, :to => :framework
 
-  @@mutex = Mutex.new
+  @@mutex = defined?(ActiveSupport::Concurrency::LoadInterlockAwareMonitor) ?
+    ActiveSupport::Concurrency::LoadInterlockAwareMonitor.new : Mutex.new
 
   def initialize
     super
