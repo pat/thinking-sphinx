@@ -124,4 +124,18 @@ describe 'Faceted searching', :live => true do
       calls += 1
     end
   end
+
+  it "can be called on distributed indices" do
+    blue  = Colour.create! :name => 'blue'
+    green = Colour.create! :name => 'green'
+
+    Tee.create! :colour => blue
+    Tee.create! :colour => blue
+    Tee.create! :colour => green
+    index
+
+    expect(Tee.facets(:indices => ["tee"]).to_hash[:colour_id]).to eq({
+      blue.id => 2, green.id => 1
+    })
+  end
 end

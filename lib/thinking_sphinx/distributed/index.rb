@@ -3,11 +3,12 @@
 class ThinkingSphinx::Distributed::Index <
   Riddle::Configuration::DistributedIndex
 
-  attr_reader :reference, :options
+  attr_reader :reference, :options, :local_index_objects
 
   def initialize(reference)
-    @reference = reference
-    @options   = {}
+    @reference           = reference
+    @options             = {}
+    @local_index_objects = []
 
     super reference.to_s.gsub('/', '_')
   end
@@ -18,6 +19,15 @@ class ThinkingSphinx::Distributed::Index <
 
   def distributed?
     true
+  end
+
+  def facets
+    local_index_objects.collect(&:facets).flatten
+  end
+
+  def local_index_objects=(indices)
+    self.local_indices = indices.collect(&:name)
+    @local_index_objects = indices
   end
 
   def model

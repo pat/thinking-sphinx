@@ -21,7 +21,7 @@ class ThinkingSphinx::Configuration::DistributedIndices
 
   def distributed_index(reference, indices)
     index = ThinkingSphinx::Distributed::Index.new reference
-    index.local_indices += indices.collect &:name
+    index.local_index_objects = indices
     index
   end
 
