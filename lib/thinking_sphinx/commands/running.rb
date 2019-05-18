@@ -2,6 +2,8 @@
 
 class ThinkingSphinx::Commands::Running < ThinkingSphinx::Commands::Base
   def call
+    return true if configuration.settings['skip_running_check']
+
     controller.running?
   end
 

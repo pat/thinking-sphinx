@@ -2,7 +2,23 @@
 
 All notable changes to this project (at least, from v3.0.0 onwards) are documented in this file.
 
+## 4.3.0 - 2019-05-18
+
+[Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v4.3.0)
+
+### Added
+
+* Allow overriding of Sphinx's running state, which is useful when Sphinx commands are interacting with a remote Sphinx daemon. As per discussions in [#1131](https://github.com/pat/thinking-sphinx/pull/1124).
+* Allow skipping of directory creation, as per discussions in [#1131](https://github.com/pat/thinking-sphinx/pull/1131).
+
+### Fixed
+
+* Use ActiveSupport's lock monitor where possible (Rails 5.1.5 onwards) to avoid database deadlocks. Essential investigation by [Jonathan del Strother](https://github.com/jdelstrother) ([#1132](https://github.com/pat/thinking-sphinx/pull/1132)).
+* Allow facet searching on distributed indices ([#1135](https://github.com/pat/thinking-sphinx/pull/1132)).
+
 ## 4.2.0 - 2019-03-09
+
+[Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v4.2.0)
 
 ### Added
 

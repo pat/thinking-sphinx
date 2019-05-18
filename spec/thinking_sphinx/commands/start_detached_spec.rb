@@ -6,7 +6,9 @@ RSpec.describe ThinkingSphinx::Commands::StartDetached do
   let(:command)    {
     ThinkingSphinx::Commands::StartDetached.new(configuration, {}, stream)
   }
-  let(:configuration) { double 'configuration', :controller => controller }
+  let(:configuration) {
+    double 'configuration', :controller => controller, :settings => {}
+  }
   let(:controller)    { double 'controller', :start => result, :pid => 101 }
   let(:result)        { double 'result', :command => 'start', :status => 1,
     :output => '' }
@@ -25,6 +27,14 @@ RSpec.describe ThinkingSphinx::Commands::StartDetached do
 
   it "creates the index files directory" do
     expect(FileUtils).to receive(:mkdir_p).with('my/index/files')
+
+    command.call
+  end
+
+  it "skips directory creation if flag is set" do
+    configuration.settings['skip_directory_creation'] = true
+
+    expect(FileUtils).to_not receive(:mkdir_p)
 
     command.call
   end

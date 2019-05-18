@@ -2,7 +2,7 @@
 
 class ThinkingSphinx::Commands::StartAttached < ThinkingSphinx::Commands::Base
   def call
-    FileUtils.mkdir_p configuration.indices_location
+    FileUtils.mkdir_p configuration.indices_location unless skip_directories?
 
     unless pid = fork
       controller.start :verbose => options[:verbose], :nodetach => true

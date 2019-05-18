@@ -10,7 +10,8 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
 
   delegate :environment, :to => :framework
 
-  @@mutex = Mutex.new
+  @@mutex = defined?(ActiveSupport::Concurrency::LoadInterlockAwareMonitor) ?
+    ActiveSupport::Concurrency::LoadInterlockAwareMonitor.new : Mutex.new
 
   def initialize
     super
@@ -105,7 +106,9 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def render_to_file
-    FileUtils.mkdir_p searchd.binlog_path unless searchd.binlog_path.blank?
+    unless settings['skip_directory_creation'] || searchd.binlog_path.blank?
+      FileUtils.mkdir_p searchd.binlog_path
+    end
 
     open(configuration_file, 'w') { |file| file.write render }
   end

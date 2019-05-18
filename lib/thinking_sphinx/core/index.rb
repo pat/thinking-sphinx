@@ -98,7 +98,10 @@ module ThinkingSphinx::Core::Index
   end
 
   def set_path
-    FileUtils.mkdir_p path_prefix
+    unless config.settings['skip_directory_creation']
+      FileUtils.mkdir_p path_prefix
+    end
+
     @path = File.join path_prefix, name
   end
 end
