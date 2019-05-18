@@ -8,7 +8,7 @@ All notable changes to this project (at least, from v3.0.0 onwards) are document
 
 ### Added
 
-* Allow overriding of Sphinx's running state, which is useful when Sphinx commands are interacting with a remote Sphinx daemon. As per discussions in [#1131](https://github.com/pat/thinking-sphinx/pull/1124).
+* Allow overriding of Sphinx's running state, which is useful when Sphinx commands are interacting with a remote Sphinx daemon. As per discussions in [#1131](https://github.com/pat/thinking-sphinx/pull/1131).
 * Allow skipping of directory creation, as per discussions in [#1131](https://github.com/pat/thinking-sphinx/pull/1131).
 
 ### Fixed
