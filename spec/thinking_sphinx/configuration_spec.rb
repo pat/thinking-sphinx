@@ -254,9 +254,9 @@ describe ThinkingSphinx::Configuration do
         '/path/to/indices/bar_index.rb'
       ]
 
-      expect(ActiveSupport::Dependencies).to receive(:require_or_load).
+      expect(config).to receive(:load).
         with('/path/to/indices/foo_index.rb').once
-      expect(ActiveSupport::Dependencies).to receive(:require_or_load).
+      expect(config).to receive(:load).
         with('/path/to/indices/bar_index.rb').once
 
       config.preload_indices
@@ -269,9 +269,9 @@ describe ThinkingSphinx::Configuration do
         '/path/to/indices/bar_index.rb'
       ]
 
-      expect(ActiveSupport::Dependencies).to receive(:require_or_load).
+      expect(config).to receive(:load).
         with('/path/to/indices/foo_index.rb').once
-      expect(ActiveSupport::Dependencies).to receive(:require_or_load).
+      expect(config).to receive(:load).
         with('/path/to/indices/bar_index.rb').once
 
       config.preload_indices
@@ -316,9 +316,9 @@ describe ThinkingSphinx::Configuration do
         '/path/to/indices/bar_index.rb'
       ]
 
-      expect(ActiveSupport::Dependencies).to receive(:require_or_load).
+      expect(config).to receive(:load).
         with('/path/to/indices/foo_index.rb').once
-      expect(ActiveSupport::Dependencies).to receive(:require_or_load).
+      expect(config).to receive(:load).
         with('/path/to/indices/bar_index.rb').once
 
       config.render
@@ -331,9 +331,9 @@ describe ThinkingSphinx::Configuration do
         '/path/to/indices/bar_index.rb'
       ]
 
-      expect(ActiveSupport::Dependencies).to receive(:require_or_load).
+      expect(config).to receive(:load).
         with('/path/to/indices/foo_index.rb').once
-      expect(ActiveSupport::Dependencies).to receive(:require_or_load).
+      expect(config).to receive(:load).
         with('/path/to/indices/bar_index.rb').once
 
       config.preload_indices
