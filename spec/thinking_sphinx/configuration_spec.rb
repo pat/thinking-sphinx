@@ -372,6 +372,8 @@ describe ThinkingSphinx::Configuration do
     end
 
     it "skips creating a directory when the binlog_path is blank" do
+      allow(config).to receive(:load)
+
       allow(FileUtils).to receive_messages :mkdir_p => true
       allow(config).to receive_messages :searchd => double(:binlog_path => '')
 
