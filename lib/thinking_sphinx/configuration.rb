@@ -87,13 +87,21 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
       return if @preloaded_indices
 
       index_paths.each do |path|
-        Dir["#{path}/**/*.rb"].sort.each { |file| load file }
+        Dir["#{path}/**/*.rb"].sort.each { |file| preload_index file }
       end
 
       normalise
       verify
 
       @preloaded_indices = true
+    end
+  end
+
+  def preload_index(file)
+    if ActiveRecord::VERSION::MAJOR < 5
+      ActiveSupport::Dependencies.require_or_load file
+    else
+      load file
     end
   end
 
