@@ -2,13 +2,21 @@
 
 All notable changes to this project (at least, from v3.0.0 onwards) are documented in this file.
 
+## 4.3.1 - 2019-06-27
+
+[Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v4.3.1)
+
+### Fixed
+
+* Fixed loading of index files to work with Rails 6 and Zeitwerk ([#1137](https://github.com/pat/thinking-sphinx/issues/1137)).
+
 ## 4.3.0 - 2019-05-18
 
 [Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v4.3.0)
 
 ### Added
 
-* Allow overriding of Sphinx's running state, which is useful when Sphinx commands are interacting with a remote Sphinx daemon. As per discussions in [#1131](https://github.com/pat/thinking-sphinx/pull/1124).
+* Allow overriding of Sphinx's running state, which is useful when Sphinx commands are interacting with a remote Sphinx daemon. As per discussions in [#1131](https://github.com/pat/thinking-sphinx/pull/1131).
 * Allow skipping of directory creation, as per discussions in [#1131](https://github.com/pat/thinking-sphinx/pull/1131).
 
 ### Fixed

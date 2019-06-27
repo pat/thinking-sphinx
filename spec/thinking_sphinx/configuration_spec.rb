@@ -4,9 +4,16 @@ require 'spec_helper'
 
 describe ThinkingSphinx::Configuration do
   let(:config) { ThinkingSphinx::Configuration.instance }
+  let(:use_load?) { ActiveRecord::VERSION::MAJOR >= 5 }
+  let(:loading_object) { use_load? ? config : ActiveSupport::Dependencies }
+  let(:loading_method) { use_load? ? :load : :require_or_load }
 
   after :each do
     ThinkingSphinx::Configuration.reset
+  end
+
+  def expect_loading_of(file)
+    expect(loading_object).to receive(loading_method).with(file).once
   end
 
   describe '.instance' do
@@ -254,10 +261,8 @@ describe ThinkingSphinx::Configuration do
         '/path/to/indices/bar_index.rb'
       ]
 
-      expect(ActiveSupport::Dependencies).to receive(:require_or_load).
-        with('/path/to/indices/foo_index.rb').once
-      expect(ActiveSupport::Dependencies).to receive(:require_or_load).
-        with('/path/to/indices/bar_index.rb').once
+      expect_loading_of('/path/to/indices/foo_index.rb')
+      expect_loading_of('/path/to/indices/bar_index.rb')
 
       config.preload_indices
     end
@@ -269,10 +274,8 @@ describe ThinkingSphinx::Configuration do
         '/path/to/indices/bar_index.rb'
       ]
 
-      expect(ActiveSupport::Dependencies).to receive(:require_or_load).
-        with('/path/to/indices/foo_index.rb').once
-      expect(ActiveSupport::Dependencies).to receive(:require_or_load).
-        with('/path/to/indices/bar_index.rb').once
+      expect_loading_of('/path/to/indices/foo_index.rb')
+      expect_loading_of('/path/to/indices/bar_index.rb')
 
       config.preload_indices
       config.preload_indices
@@ -316,10 +319,8 @@ describe ThinkingSphinx::Configuration do
         '/path/to/indices/bar_index.rb'
       ]
 
-      expect(ActiveSupport::Dependencies).to receive(:require_or_load).
-        with('/path/to/indices/foo_index.rb').once
-      expect(ActiveSupport::Dependencies).to receive(:require_or_load).
-        with('/path/to/indices/bar_index.rb').once
+      expect_loading_of('/path/to/indices/foo_index.rb')
+      expect_loading_of('/path/to/indices/bar_index.rb')
 
       config.render
     end
@@ -331,10 +332,8 @@ describe ThinkingSphinx::Configuration do
         '/path/to/indices/bar_index.rb'
       ]
 
-      expect(ActiveSupport::Dependencies).to receive(:require_or_load).
-        with('/path/to/indices/foo_index.rb').once
-      expect(ActiveSupport::Dependencies).to receive(:require_or_load).
-        with('/path/to/indices/bar_index.rb').once
+      expect_loading_of('/path/to/indices/foo_index.rb')
+      expect_loading_of('/path/to/indices/bar_index.rb')
 
       config.preload_indices
       config.preload_indices
@@ -372,6 +371,8 @@ describe ThinkingSphinx::Configuration do
     end
 
     it "skips creating a directory when the binlog_path is blank" do
+      allow(loading_object).to receive(loading_method)
+
       allow(FileUtils).to receive_messages :mkdir_p => true
       allow(config).to receive_messages :searchd => double(:binlog_path => '')
 
