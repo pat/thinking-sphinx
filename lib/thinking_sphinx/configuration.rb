@@ -98,7 +98,7 @@ class ThinkingSphinx::Configuration < Riddle::Configuration
   end
 
   def preload_index(file)
-    if ActiveRecord::VERSION::MAJOR < 5
+    if ActiveRecord::VERSION::MAJOR <= 5
       ActiveSupport::Dependencies.require_or_load file
     else
       load file
