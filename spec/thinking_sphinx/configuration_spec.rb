@@ -4,7 +4,7 @@ require 'spec_helper'
 
 describe ThinkingSphinx::Configuration do
   let(:config) { ThinkingSphinx::Configuration.instance }
-  let(:use_load?) { ActiveRecord::VERSION::MAJOR >= 5 }
+  let(:use_load?) { ActiveRecord::VERSION::MAJOR > 5 }
   let(:loading_object) { use_load? ? config : ActiveSupport::Dependencies }
   let(:loading_method) { use_load? ? :load : :require_or_load }
 
