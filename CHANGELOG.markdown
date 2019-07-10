@@ -2,6 +2,14 @@
 
 All notable changes to this project (at least, from v3.0.0 onwards) are documented in this file.
 
+## 4.3.2 - 2019-07-10
+
+[Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v4.3.2)
+
+### Fixed
+
+* Reverted loading change behaviour from v4.3.1 for Rails v5 ([Eduardo J.](https://github.com/eduardoj) in [#1138](https://github.com/pat/thinking-sphinx/pull/1138)).
+
 ## 4.3.1 - 2019-06-27
 
 [Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v4.3.1)
