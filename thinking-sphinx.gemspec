@@ -14,8 +14,6 @@ Gem::Specification.new do |s|
   s.description = %Q{An intelligent layer for ActiveRecord (via Rails and Sinatra) for the Sphinx full-text search tool.}
   s.license     = 'MIT'
 
-  s.rubyforge_project = 'thinking-sphinx'
-
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f|
