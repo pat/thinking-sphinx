@@ -38,7 +38,11 @@ module ThinkingSphinx::Core::Index
   end
 
   def interpret_definition!
-    return unless model.table_exists?
+    table_exists = model.table_exists?
+    unless table_exists
+      Rails.logger.info "No table exists for #{model}. Index can not be created" 
+      return
+    end
     return if @interpreted_definition
 
     apply_defaults!
