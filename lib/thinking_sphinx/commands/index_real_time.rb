@@ -2,9 +2,7 @@
 
 class ThinkingSphinx::Commands::IndexRealTime < ThinkingSphinx::Commands::Base
   def call
-    options[:indices].each do |index|
-      ThinkingSphinx::RealTime::Populator.populate index
-
+    ThinkingSphinx::RealTime.processor.call options[:indices] do
       command :rotate
     end
   end
