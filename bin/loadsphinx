@@ -3,13 +3,18 @@
 version=$1
 engine=$2
 
+set -e
+
 load_sphinx () {
+  distro="xenial"
+
   case $version in
     2.1.9)
       url="http://sphinxsearch.com/files/sphinxsearch_2.1.9-release-0ubuntu11~trusty_amd64.deb"
-      format="deb";;
+      format="deb"
+      distro="trusty";;
     2.2.11)
-      url="http://sphinxsearch.com/files/sphinxsearch_2.2.11-release-1~trusty_amd64.deb"
+      url="http://sphinxsearch.com/files/sphinxsearch_2.2.11-release-1~xenial_amd64.deb"
       format="deb";;
     3.0.3)
       url="http://sphinxsearch.com/files/sphinx-3.0.3-facc3fb-linux-amd64.tar.gz"
@@ -21,6 +26,11 @@ load_sphinx () {
       echo "No Sphinx version $version available"
       exit 1;;
   esac
+
+  if [ "$distro" == "trusty" ]; then
+    curl --location http://launchpadlibrarian.net/247512886/libmysqlclient18_5.6.28-1ubuntu3_amd64.deb -o libmysql.deb
+    sudo apt-get install ./libmysql.deb
+  fi
 
   if [ "$format" == "deb" ]; then
     curl --location $url -o sphinx.deb
@@ -37,11 +47,11 @@ load_manticore () {
 
   case $version in
     2.6.4)
-      url="https://github.com/manticoresoftware/manticoresearch/releases/download/2.6.4/manticore_2.6.4-180503-37308c3-release-stemmer.trusty_amd64-bin.deb";;
+      url="https://github.com/manticoresoftware/manticoresearch/releases/download/2.6.4/manticore_2.6.4-180503-37308c3-release-stemmer.xenial_amd64-bin.deb";;
     2.7.5)
-      url="https://github.com/manticoresoftware/manticoresearch/releases/download/2.7.5/manticore_2.7.5-181204-0f016406-release-stemmer.trusty_amd64-bin.deb";;
+      url="https://github.com/manticoresoftware/manticoresearch/releases/download/2.7.5/manticore_2.7.5-181204-4a31c54-release-stemmer.xenial_amd64-bin.deb";;
     2.8.2)
-      url="https://github.com/manticoresoftware/manticoresearch/releases/download/2.8.2/manticore_2.8.2-190402-4e81114-release-stemmer.trusty_amd64-bin.deb";;
+      url="https://github.com/manticoresoftware/manticoresearch/releases/download/2.8.2/manticore_2.8.2-190402-4e81114-release-stemmer.xenial_amd64-bin.deb";;
     *)
       echo "No Manticore version $version available"
       exit 1;;
