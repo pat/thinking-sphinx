@@ -9,7 +9,7 @@ class ThinkingSphinx::RealTime::Populator
     @index = index
   end
 
-  def populate(&block)
+  def populate
     instrument 'start_populating'
 
     scope.find_in_batches(:batch_size => batch_size) do |instances|
