@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ThinkingSphinx::RealTime::Processor
   def self.call(indices, &block)
     new(indices).call(&block)
@@ -11,7 +13,7 @@ class ThinkingSphinx::RealTime::Processor
     subscribe_to_progress
 
     indices.each do |index|
-      ThinkingSphinx::RealTime::Populator.populate index
+      ThinkingSphinx::RealTime.populator.populate index
 
       block.call
     end

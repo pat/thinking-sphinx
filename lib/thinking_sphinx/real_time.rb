@@ -9,6 +9,14 @@ module ThinkingSphinx::RealTime
     Callbacks::RealTimeCallbacks.new reference.to_sym, path, &block
   end
 
+  def self.populator
+    @populator ||= ThinkingSphinx::RealTime::Populator
+  end
+
+  def self.populator=(value)
+    @populator = value
+  end
+
   def self.processor
     @processor ||= ThinkingSphinx::RealTime::Processor
   end
