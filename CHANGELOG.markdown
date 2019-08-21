@@ -2,6 +2,23 @@
 
 All notable changes to this project (at least, from v3.0.0 onwards) are documented in this file.
 
+## 4.4.0 - 2019-08-21
+
+[Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v4.4.0)
+
+### Added
+
+* Confirmed Rails 6.0 support.
+* Added ability to have custom real-time index processors (which handles all indices) and populators (which handles a particular index). These are available to get/set via `ThinkingSphinx::RealTime.processor` and `ThinkingSphinx::RealTime.populator` (and discussed in more detail in the [release notes](https://github.com/pat/thinking-sphinx/releases/tag/v4.4.0)).
+
+### Changed
+
+* Improve failure message when tables don't exist for models associated with Sphinx indices ([Kiril Mitov](https://github.com/thebravoman) in [#1139](https://github.com/pat/thinking-sphinx/pull/1139)).
+
+### Fixed
+
+* Injected has-many/habtm collection search calls as default extensions to associations in Rails 5+, as it's a more reliable approach in Rails 6.0.0.
+
 ## 4.3.2 - 2019-07-10
 
 [Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v4.3.2)
