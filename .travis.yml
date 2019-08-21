@@ -1,9 +1,10 @@
 language: ruby
+dist: xenial
 rvm:
 - 2.3.8
 - 2.4.6
 - 2.5.5
-- 2.6.2
+- 2.6.3
 before_install:
 - pip install --upgrade --user awscli
 - gem update --system
@@ -36,6 +37,9 @@ env:
 sudo: false
 addons:
   postgresql: '9.4'
+  apt:
+    packages:
+    - libodbc1
 services:
 - mysql
 - postgresql

@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 module ThinkingSphinx::ActiveRecord::AssociationProxy
-  extend ActiveSupport::Concern
-
   def search(query = nil, options = {})
     perform_search super(*normalise_search_arguments(query, options))
   end
@@ -12,6 +10,7 @@ module ThinkingSphinx::ActiveRecord::AssociationProxy
   end
 
   private
+
   def normalise_search_arguments(query, options)
     query, options = nil, query if query.is_a?(Hash)
     options[:ignore_scopes] = true

@@ -46,7 +46,3 @@ Error transcribing #{instance.class} #{instance.id}:
   delegate :output, :to => ThinkingSphinx
   delegate :puts, :print, :to => :output
 end
-
-ThinkingSphinx::Subscribers::PopulatorSubscriber.attach_to(
-  'thinking_sphinx.real_time'
-)
