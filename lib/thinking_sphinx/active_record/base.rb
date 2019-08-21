@@ -9,8 +9,23 @@ module ThinkingSphinx::ActiveRecord::Base
     after_update  ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks
     after_commit  ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks
 
-    ::ActiveRecord::Associations::CollectionProxy.send :include,
-      ThinkingSphinx::ActiveRecord::AssociationProxy
+    if ActiveRecord::VERSION::STRING.to_i >= 5
+      [
+        ::ActiveRecord::Reflection::HasManyReflection,
+        ::ActiveRecord::Reflection::HasAndBelongsToManyReflection
+      ].each do |reflection_class|
+        reflection_class.include DefaultReflectionAssociations
+      end
+    else
+      ::ActiveRecord::Associations::CollectionProxy.send :include,
+        ThinkingSphinx::ActiveRecord::AssociationProxy
+    end
+  end
+
+  module DefaultReflectionAssociations
+    def extensions
+      super + [ThinkingSphinx::ActiveRecord::AssociationProxy]
+    end
   end
 
   module ClassMethods
