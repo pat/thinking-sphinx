@@ -9,6 +9,14 @@ class ThinkingSphinx::Railtie < Rails::Railtie
     ActiveSupport.on_load(:active_record) do
       ActiveRecord::Base.send :include, ThinkingSphinx::ActiveRecord::Base
     end
+
+    if ActiveSupport::VERSION::MAJOR > 5
+      if Rails.application.config.autoloader == :zeitwerk
+        ActiveSupport::Dependencies.autoload_paths.delete(
+          Rails.root.join("app", "indices").to_s
+        )
+      end
+    end
   end
 
   rake_tasks do

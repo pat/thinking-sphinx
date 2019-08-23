@@ -2,6 +2,14 @@
 
 All notable changes to this project (at least, from v3.0.0 onwards) are documented in this file.
 
+## 4.4.1 - 2019-08-23
+
+[Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v4.4.1)
+
+### Changed
+
+* Automatically remove `app/indices` from Zeitwerk's autoload paths in Rails 6.0 onwards (if using Zeitwerk as the autoloader).
+
 ## 4.4.0 - 2019-08-21
 
 [Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v4.4.0)
