@@ -1,6 +1,6 @@
 h1. Thinking Sphinx
 
-Thinking Sphinx is a library for connecting ActiveRecord to the Sphinx full-text search tool, and integrates closely with Rails (but also works with other Ruby web frameworks). The current release is v4.4.0.
+Thinking Sphinx is a library for connecting ActiveRecord to the Sphinx full-text search tool, and integrates closely with Rails (but also works with other Ruby web frameworks). The current release is v4.4.1.
 
 h2. Upgrading
 
@@ -14,7 +14,7 @@ It's a gem, so install it like you would any other gem. You will also need to sp
 
 <pre><code>gem 'mysql2',          '~> 0.3',    :platform => :ruby
 gem 'jdbc-mysql',      '~> 5.1.35', :platform => :jruby
-gem 'thinking-sphinx', '~> 4.3'</code></pre>
+gem 'thinking-sphinx', '~> 4.4'</code></pre>
 
 The MySQL gems mentioned are required for connecting to Sphinx, so please include it even when you're using PostgreSQL for your database. If you're using JRuby with a version of Sphinx prior to 2.2.11, there is "currently an issue with Sphinx and jdbc-mysql 5.1.36 or newer":http://sphinxsearch.com/forum/view.html?id=13939, so you'll need to stick to nothing more recent than 5.1.35, or upgrade Sphinx.
 
