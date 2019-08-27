@@ -51,6 +51,19 @@ gem 'thinking-sphinx', '~> 4.0.0',
   :ref    => 'cb45e1b1bf'
 {% endhighlight %}
 
+### Update .gitignore
+
+When you [start Sphinx](https://freelancing-gods.com/thinking-sphinx/v4/rake_tasks.html), a new folder called `/db/sphinx` will be created. The files contained are equivalent to your database's data files, and should be *not* be committed into version control.
+
+It's also recommended that you ignore the `config/ENV.sphinx.conf` files.
+
+Add the following lines to your `.gitignore` file to ignore these files:
+
+```
+/db/sphinx
+/config/*.sphinx.conf
+```
+
 ### Using Thinking Sphinx with Unicorn
 
 If you're using Unicorn as your web server, you'll want to ensure the connection pool is cleared after forking.
