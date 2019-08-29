@@ -30,7 +30,7 @@ And then you can access excerpted text for any method on each search result:
 <% end %>
 {% endhighlight %}
 
-Instead of wrapping every single search result to add that helper method, you can instead create an `Excerpter` instance and call out to that:
+Instead of wrapping every single search result to add that helper method, you can instead create an `Excerpter` instance (the index is referenced by appending `_core` to its name), and call out to that:
 
 {% highlight ruby %}
 @articles  = Article.search params[:query]
