@@ -35,7 +35,7 @@ And then you can access excerpted text for any method on each search result:
 <% end %>
 {% endhighlight %}
 
-Instead of wrapping every single search result to add that helper method, you can instead create an `Excerpter` instance and call out to that:
+Instead of wrapping every single search result to add that helper method, you can instead create an `Excerpter` instance and call out to that. When constructing the excerpter, you will need to use the full index name (which includes the standard `_core` suffix that Thinking Sphinx appends to the model name).
 
 {% highlight ruby %}
 @articles  = Article.search params[:query]
