@@ -7,6 +7,7 @@ gem_version: v3
 ## Indexing your Models
 
 * [Basic Indexing](#basic)
+* [Index Names](#index-names)
 * [Real-time Indices vs SQL-backed Indices](#realtime)
 * [Fields](#fields)
 * [Attributes](#attributes)
@@ -79,6 +80,14 @@ class Article < ActiveRecord::Base
 end
 {% endhighlight %}
 </div>
+
+<h3 id="index-names">Index Names</h3>
+
+When translating these index definitions into Sphinx configuration, Thinking Sphinx will use the model's name for the index, and append a `_core` suffix to it. So, an index for `Article` will be named `article_core`.
+
+If you're using SQL-backed indices with deltas, then there is also a corresponding index with the `_delta` suffix - e.g. `article_delta`.
+
+You can set different index names if you wish, using the `:name` option (as noted later in this documentation related to [multiple indices](#multiple) for a single model). However, the suffixes will always be applied.
 
 <h3 id="realtime">Real-time Indices vs SQL-backed Indices</h3>
 
