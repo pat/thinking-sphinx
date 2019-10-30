@@ -13,7 +13,7 @@ The common approach around this issue, used by Thinking Sphinx, is the delta ind
 
 To set this up in your web application, you need to do **three** things:
 
-1. Add a delta column to your model
+1. Add a delta column (with a database index) to your model
 2. Turn on delta indexing for the index
 3. Stop, re-index and restart Sphinx.
 
@@ -23,6 +23,7 @@ The first item on the list can be done via a migration, perhaps looking somethin
 def self.up
   add_column :articles, :delta, :boolean, :default => true,
     :null => false
+  add_index :articles, :delta
 end
 {% endhighlight %}
 
