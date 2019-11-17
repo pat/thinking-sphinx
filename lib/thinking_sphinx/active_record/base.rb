@@ -17,8 +17,9 @@ module ThinkingSphinx::ActiveRecord::Base
         reflection_class.include DefaultReflectionAssociations
       end
     else
-      ::ActiveRecord::Associations::CollectionProxy.send :include,
+      ::ActiveRecord::Associations::CollectionProxy.include(
         ThinkingSphinx::ActiveRecord::AssociationProxy
+      )
     end
   end
 
