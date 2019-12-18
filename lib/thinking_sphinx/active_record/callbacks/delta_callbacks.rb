@@ -18,8 +18,7 @@ class ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks <
   end
 
   def before_save
-    return unless !ThinkingSphinx::Callbacks.suspended? && delta_indices? &&
-      new_or_changed?
+    return unless !suspended? && delta_indices? && new_or_changed?
 
     processors.each { |processor| processor.toggle instance }
   end
