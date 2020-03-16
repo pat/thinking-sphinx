@@ -73,7 +73,7 @@ production:
 
 If you specify `mysql41` and/or `address`, then the daemon will also be available via TCP, but connections from Thinking Sphinx to Sphinx will still be made via the UNIX socket.
 
-This feature is unfortunately not supported in JRuby (as there doesn't seem to be a way to use UNIX sockets to connect to the MySQL protocol).
+This feature is unfortunately not supported in JRuby (as there doesn't seem to be a way to use UNIX sockets to connect to the MySQL protocol). It also means that Sphinx cannot be interacted with by other servers - only the machine with the Sphinx daemon. So, remote searches and deletions are not possible with this UNIX socket setting.
 
 ### Indexer Memory Usage
 
