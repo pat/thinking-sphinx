@@ -30,6 +30,16 @@ describe ThinkingSphinx::IndexSet do
   end
 
   describe '#to_a' do
+    let(:article_index) do
+      double(:reference => :article, :distributed? => false)
+    end
+    let(:opinion_article_index) do
+      double(:reference => :opinion_article, :distributed? => false)
+    end
+    let(:page_index) do
+      double(:reference => :page, :distributed? => false)
+    end
+
     it "ensures the indices are loaded" do
       expect(configuration).to receive(:preload_indices)
 
@@ -50,21 +60,17 @@ describe ThinkingSphinx::IndexSet do
 
     it "uses indices for the given classes" do
       configuration.indices.replace [
-        double(:reference => :article,         :distributed? => false),
-        double(:reference => :opinion_article, :distributed? => false),
-        double(:reference => :page,            :distributed? => false)
+        article_index, opinion_article_index, page_index
       ]
 
       options[:classes] = [class_double('Article', :column_names => [])]
 
-      expect(set.to_a.length).to eq(1)
+      expect(set.to_a).to eq([article_index])
     end
 
     it "requests indices for any STI superclasses" do
       configuration.indices.replace [
-        double(:reference => :article,         :distributed? => false),
-        double(:reference => :opinion_article, :distributed? => false),
-        double(:reference => :page,            :distributed? => false)
+        article_index, opinion_article_index, page_index
       ]
 
       article = class_double('Article', :column_names => [:type])
@@ -73,14 +79,12 @@ describe ThinkingSphinx::IndexSet do
 
       options[:classes] = [opinion]
 
-      expect(set.to_a.length).to eq(2)
+      expect(set.to_a).to eq([article_index, opinion_article_index])
     end
 
     it "does not use MTI superclasses" do
       configuration.indices.replace [
-        double(:reference => :article,         :distributed? => false),
-        double(:reference => :opinion_article, :distributed? => false),
-        double(:reference => :page,            :distributed? => false)
+        article_index, opinion_article_index, page_index
       ]
 
       article = class_double('Article', :column_names => [])
@@ -88,7 +92,7 @@ describe ThinkingSphinx::IndexSet do
 
       options[:classes] = [opinion]
 
-      expect(set.to_a.length).to eq(1)
+      expect(set.to_a).to eq([opinion_article_index])
     end
 
     it "uses named indices if names are provided" do
