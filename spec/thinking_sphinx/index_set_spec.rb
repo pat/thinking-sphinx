@@ -68,6 +68,18 @@ describe ThinkingSphinx::IndexSet do
       expect(set.to_a).to eq([article_index])
     end
 
+    it "uses indices for the given instance's class" do
+      configuration.indices.replace [
+        article_index, opinion_article_index, page_index
+      ]
+
+      instance_class = class_double('Article', :column_names => [])
+
+      options[:instances] = [double(:instance, :class => instance_class)]
+
+      expect(set.to_a).to eq([article_index])
+    end
+
     it "requests indices for any STI superclasses" do
       configuration.indices.replace [
         article_index, opinion_article_index, page_index
