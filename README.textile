@@ -30,7 +30,7 @@ The current release of Thinking Sphinx works with the following versions of its 
 
 |_. Library |_. Minimum |_. Tested Against |
 | Ruby | v2.4 | v2.4, v2.5, v2.6, v2.7 |
-| Sphinx | v2.2.11 | v2.2.11, v3.0.3, v3.1.1 |
+| Sphinx | v2.2.11 | v2.2.11, v3.2.1 |
 | Manticore | v2.6.3 | v2.6.4, v2.7.5, v2.8.1 |
 | ActiveRecord | v4.2 | v4.2..v6.0 |
 

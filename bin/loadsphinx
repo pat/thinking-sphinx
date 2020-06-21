@@ -22,6 +22,9 @@ load_sphinx () {
     3.1.1)
       url="http://sphinxsearch.com/files/sphinx-3.1.1-612d99f-linux-amd64.tar.gz"
       format="gz";;
+    3.2.1)
+      url="http://www.sphinxsearch.com/files/sphinx-3.2.1-f152e0b-linux-amd64.tar.gz"
+      format="gz";;
     *)
       echo "No Sphinx version $version available"
       exit 1;;
