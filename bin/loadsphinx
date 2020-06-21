@@ -55,6 +55,8 @@ load_manticore () {
       url="https://github.com/manticoresoftware/manticoresearch/releases/download/2.7.5/manticore_2.7.5-181204-4a31c54-release-stemmer.xenial_amd64-bin.deb";;
     2.8.2)
       url="https://github.com/manticoresoftware/manticoresearch/releases/download/2.8.2/manticore_2.8.2-190402-4e81114-release-stemmer.xenial_amd64-bin.deb";;
+    3.4.2)
+      url="https://github.com/manticoresoftware/manticoresearch/releases/download/3.4.2/manticore_3.4.2-200410-6903305-release.xenial_amd64-bin.deb";;
     *)
       echo "No Manticore version $version available"
       exit 1;;

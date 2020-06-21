@@ -31,7 +31,7 @@ The current release of Thinking Sphinx works with the following versions of its 
 |_. Library |_. Minimum |_. Tested Against |
 | Ruby | v2.4 | v2.4, v2.5, v2.6, v2.7 |
 | Sphinx | v2.2.11 | v2.2.11, v3.2.1 |
-| Manticore | v2.6.3 | v2.6.4, v2.7.5, v2.8.1 |
+| Manticore | v2.8 | v2.8, v3.4 |
 | ActiveRecord | v4.2 | v4.2..v6.0 |
 
 It _might_ work with older versions of Ruby, but it's highly recommended to update to a supported release.
@@ -40,7 +40,7 @@ It should also work with JRuby, but the test environment on Travis CI has been t
 
 h3. Sphinx or Manticore
 
-Thinking Sphinx v3 is currently built for Sphinx 2.2.11 or newer (though it'll likely work with 2.1.x releases), or Manticore v2.6+.
+Thinking Sphinx v3 is currently built for Sphinx 2.2.11 or newer (though it'll likely work with 2.1.x releases), or Manticore v2.8+.
 
 h3. Rails and ActiveRecord
 
