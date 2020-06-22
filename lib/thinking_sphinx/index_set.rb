@@ -34,11 +34,11 @@ class ThinkingSphinx::IndexSet
   end
 
   def classes
-    options[:classes] || []
+    options[:classes] || instances.collect(&:class)
   end
 
   def classes_specified?
-    classes.any? || references_specified?
+    instances.any? || classes.any? || references_specified?
   end
 
   def classes_and_ancestors
@@ -66,6 +66,10 @@ class ThinkingSphinx::IndexSet
 
   def indices_for_references
     all_indices.select { |index| references.include? index.reference }
+  end
+
+  def instances
+    options[:instances] || []
   end
 
   def mti_classes
