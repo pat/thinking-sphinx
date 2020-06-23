@@ -6,7 +6,8 @@ RSpec.describe ThinkingSphinx::RealTime::Transcriber do
   let(:subject)    { ThinkingSphinx::RealTime::Transcriber.new index }
   let(:index)      { double 'index', :name => 'foo_core', :conditions => [],
     :fields => [double(:name => 'field_a'), double(:name => 'field_b')],
-    :attributes => [double(:name => 'attr_a'), double(:name => 'attr_b')] }
+    :attributes => [double(:name => 'attr_a'), double(:name => 'attr_b')],
+    :primary_key => :id }
   let(:insert)     { double :replace! => replace }
   let(:replace)    { double :to_sql => 'REPLACE QUERY' }
   let(:connection) { double :execute => true }
@@ -36,6 +37,13 @@ RSpec.describe ThinkingSphinx::RealTime::Transcriber do
 
   it "executes the SphinxQL command" do
     expect(connection).to receive(:execute).with('REPLACE QUERY')
+
+    subject.copy instance_a, instance_b
+  end
+
+  it "deletes previous records" do
+    expect(connection).to receive(:execute).
+      with('DELETE FROM foo_core WHERE sphinx_internal_id IN (48, 49)')
 
     subject.copy instance_a, instance_b
   end
