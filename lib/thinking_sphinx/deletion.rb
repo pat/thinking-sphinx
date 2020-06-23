@@ -22,10 +22,6 @@ class ThinkingSphinx::Deletion
 
   attr_reader :index, :ids
 
-  def document_ids_for_keys
-    ids.collect { |id| index.document_id_for_key id }
-  end
-
   def execute(statement)
     statement = statement.gsub(/\s*\n\s*/, ' ').strip
 
@@ -36,11 +32,28 @@ class ThinkingSphinx::Deletion
     end
   end
 
+  class PlainDeletion < ThinkingSphinx::Deletion
+    def perform
+      ids.each_slice(1000) do |some_ids|
+        execute <<-SQL
+UPDATE #{name}
+SET sphinx_deleted = 1
+WHERE sphinx_internal_id IN (#{some_ids.join(', ')})
+        SQL
+      end
+    end
+  end
+
   class RealtimeDeletion < ThinkingSphinx::Deletion
     def perform
       return unless callbacks_enabled?
 
-      execute Riddle::Query::Delete.new(name, document_ids_for_keys).to_sql
+      ids.each_slice(1000) do |some_ids|
+        execute <<-SQL
+DELETE FROM #{name}
+WHERE sphinx_internal_id IN (#{some_ids.join(', ')})
+        SQL
+      end
     end
 
     private
@@ -52,18 +65,6 @@ class ThinkingSphinx::Deletion
 
     def configuration
       ThinkingSphinx::Configuration.instance
-    end
-  end
-
-  class PlainDeletion < ThinkingSphinx::Deletion
-    def perform
-      document_ids_for_keys.each_slice(1000) do |document_ids|
-        execute <<-SQL
-UPDATE #{name}
-SET sphinx_deleted = 1
-WHERE id IN (#{document_ids.join(', ')})
-        SQL
-      end
     end
   end
 end

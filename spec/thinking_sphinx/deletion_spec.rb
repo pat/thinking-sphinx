@@ -6,7 +6,7 @@ describe ThinkingSphinx::Deletion do
   describe '.perform' do
     let(:connection) { double('connection', :execute => nil) }
     let(:index)      { double('index', :name => 'foo_core',
-      :document_id_for_key => 14, :type => 'plain', :distributed? => false) }
+      :type => 'plain', :distributed? => false) }
 
     before :each do
       allow(ThinkingSphinx::Connection).to receive(:take).and_yield(connection)
@@ -15,8 +15,9 @@ describe ThinkingSphinx::Deletion do
 
     context 'index is SQL-backed' do
       it "updates the deleted flag to false" do
-        expect(connection).to receive(:execute).
-          with('UPDATE foo_core SET sphinx_deleted = 1 WHERE id IN (14)')
+        expect(connection).to receive(:execute).with(
+          'UPDATE foo_core SET sphinx_deleted = 1 WHERE sphinx_internal_id IN (7)'
+        )
 
         ThinkingSphinx::Deletion.perform index, 7
       end
@@ -38,7 +39,7 @@ describe ThinkingSphinx::Deletion do
 
       it "deletes the record to false" do
         expect(connection).to receive(:execute).
-          with('DELETE FROM foo_core WHERE id = 14')
+          with('DELETE FROM foo_core WHERE sphinx_internal_id IN (7)')
 
         ThinkingSphinx::Deletion.perform index, 7
       end
