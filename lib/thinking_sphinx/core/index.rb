@@ -11,7 +11,6 @@ module ThinkingSphinx::Core::Index
 
   def initialize(reference, options = {})
     @reference    = reference.to_sym
-    @docinfo      = :extern unless config.settings["skip_docinfo"]
     @options      = options
     @offset       = config.next_offset(options[:offset_as] || reference)
     @type         = 'plain'
@@ -40,7 +39,7 @@ module ThinkingSphinx::Core::Index
   def interpret_definition!
     table_exists = model.table_exists?
     unless table_exists
-      Rails.logger.info "No table exists for #{model}. Index can not be created" 
+      Rails.logger.info "No table exists for #{model}. Index can not be created"
       return
     end
     return if @interpreted_definition

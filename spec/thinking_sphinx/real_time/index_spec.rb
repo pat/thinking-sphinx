@@ -31,18 +31,6 @@ describe ThinkingSphinx::RealTime::Index do
     end
   end
 
-  describe '#docinfo' do
-    it "defaults to extern" do
-      expect(index.docinfo).to eq(:extern)
-    end
-
-    it "can be disabled" do
-      config.settings["skip_docinfo"] = true
-
-      expect(index.docinfo).to be_nil
-    end
-  end
-
   describe '#document_id_for_key' do
     it "calculates the document id based on offset and number of indices" do
       allow(config).to receive_message_chain(:indices, :count).and_return(5)
