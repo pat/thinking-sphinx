@@ -52,7 +52,7 @@ describe '64 bit document ids', :live => true do
   context 'with Real-Time' do
     it 'handles large 32 bit integers with an offset multiplier' do
       product = Product.create! :name => "Widget"
-      product.update_attributes :id => 980190962
+      product.update :id => 980190962
       expect(
         Product.search('widget', :indices => ['product_core']).to_a
       ).to eq([product])
