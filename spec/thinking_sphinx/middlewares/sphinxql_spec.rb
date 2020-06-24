@@ -31,7 +31,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
   let(:query)         { double('query') }
   let(:configuration) { double('configuration', :settings => {},
     index_set_class: set_class) }
-  let(:set_class)     { double(:new => index_set) }
+  let(:set_class)     { double(:new => index_set, :reference_name => :article) }
 
   before :each do
     stub_const 'Riddle::Query::Select', double(:new => sphinx_sql)
@@ -115,6 +115,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       model = double('model', :connection => double,
         :ancestors => [ActiveRecord::Base], :name => 'Animal')
       allow(index_set.first).to receive_messages :reference => :animal
+      allow(set_class).to receive_messages(:reference_name => :animal)
 
       search.options[:classes] = [model]
 

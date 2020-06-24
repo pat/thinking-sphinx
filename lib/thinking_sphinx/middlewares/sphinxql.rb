@@ -133,7 +133,7 @@ class ThinkingSphinx::Middlewares::SphinxQL <
 
     def indices_match_classes?
       indices.collect(&:reference).uniq.sort == classes.collect { |klass|
-        ThinkingSphinx::IndexSet.reference_name(klass)
+        configuration.index_set_class.reference_name(klass)
       }.sort
     end
 

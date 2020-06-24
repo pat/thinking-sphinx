@@ -80,7 +80,7 @@ class ThinkingSphinx::IndexSet
 
   def references
     options[:references] || classes_and_ancestors.collect { |klass|
-      ThinkingSphinx::IndexSet.reference_name(klass)
+      self.class.reference_name(klass)
     }
   end
 
