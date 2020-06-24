@@ -15,8 +15,13 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
   let(:block)   { Proc.new { } }
 
   before :each do
-    allow(ThinkingSphinx::ActiveRecord::SQLSource).to receive_messages :new => source
-    allow(source).to receive_messages :model => model
+    allow(ThinkingSphinx::ActiveRecord::SQLSource).to receive_messages(
+      :new => source
+    )
+
+    allow(source).to receive_messages(
+      :model => model, :add_attribute => nil, :add_field => nil
+    )
   end
 
   describe '.translate!' do
@@ -94,17 +99,15 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     end
 
     it "adds an attribute to the source" do
-      instance.has column
+      expect(source).to receive(:add_attribute).with(attribute)
 
-      expect(source.attributes).to include(attribute)
+      instance.has column
     end
 
     it "adds multiple attributes when passed multiple columns" do
-      instance.has column, column
+      expect(source).to receive(:add_attribute).with(attribute).twice
 
-      expect(source.attributes.select { |saved_attribute|
-        saved_attribute == attribute
-      }.length).to eq(2)
+      instance.has column, column
     end
   end
 
@@ -144,17 +147,15 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     end
 
     it "adds a field to the source" do
-      instance.indexes column
+      expect(source).to receive(:add_field).with(field)
 
-      expect(source.fields).to include(field)
+      instance.indexes column
     end
 
     it "adds multiple fields when passed multiple columns" do
-      instance.indexes column, column
+      expect(source).to receive(:add_field).with(field).twice
 
-      expect(source.fields.select { |saved_field|
-        saved_field == field
-      }.length).to eq(2)
+      instance.indexes column, column
     end
   end
 
