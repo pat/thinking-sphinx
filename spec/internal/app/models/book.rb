@@ -5,6 +5,8 @@ class Book < ActiveRecord::Base
 
   has_and_belongs_to_many :genres
 
+  ThinkingSphinx::Callbacks.append(self, :behaviours => [:sql, :deltas])
+
   sphinx_scope(:by_query) { |query| query }
   sphinx_scope(:by_year) do |year|
     {:with => {:year => year}}
