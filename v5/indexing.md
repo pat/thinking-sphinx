@@ -8,6 +8,7 @@ redirect_from: "/indexing.html"
 ## Indexing your Models
 
 * [Basic Indexing](#basic)
+* [Callbacks](#callbacks)
 * [Index Names](#index-names)
 * [Real-time Indices vs SQL-backed Indices](#realtime)
 * [Fields](#fields)
@@ -16,7 +17,6 @@ redirect_from: "/indexing.html"
 * [Sanitizing SQL](#sql)
 * [Index Options](#options)
 * [Multiple Indices](#multiple)
-* [Real-time Callbacks](#callbacks)
 * [Processing your Index](#processing)
 
 <h3 id="basic">Basic Indexing</h3>
@@ -49,13 +49,90 @@ ThinkingSphinx::Index.define :article, :with => :real_time do
 end
 {% endhighlight %}
 
-You'll also want to add [a real-time callback](#callbacks) to your model.
+For both SQL-backed and real-time indices, you'll also want to add [callbacks](#callbacks) to the models that are being indexed.
 
 When you're defining indices for namespaced models, use a lowercase string with /'s for namespacing and then casted to a symbol as the model reference:
 
 {% highlight ruby %}
 # For a model named Blog::Article:
 ThinkingSphinx::Index.define 'blog/article'.to_sym, :with => :active_record
+{% endhighlight %}
+
+<h3 id="callbacks">Callbacks</h3>
+
+To ensure changes are reflected from your database models into Sphinx, you need to explicitly add callbacks to indexed models. This was done automatically in Thinking Sphinx v4 and earlier, but the performance overhead on _all_ model changes was less than ideal, hence now you must specify it for just the indexed models.
+
+{% highlight ruby %}
+# if your indexed model is app/models/article.rb:
+class Article < ApplicationRecord
+  # if you're using SQL-backed indices:
+  ThinkingSphinx::Callbacks.append(
+    self, :behaviours => [:sql]
+  )
+
+  # if you're using SQL-backed indices with deltas:
+  ThinkingSphinx::Callbacks.append(
+    self, :behaviours => [:sql, :deltas]
+  )
+
+  # if you're using real-time indices
+  ThinkingSphinx::Callbacks.append(
+    self, :behaviours => [:real_time]
+  )
+
+  # if you're using namespaced models:
+  ThinkingSphinx::Callbacks.append(
+    self, 'admin/article', :behaviours => [:real_time]
+  )
+
+  # If you have got the `attribute_updates` setting enabled in
+  # their config/thinking_sphinx.yml file, you'll want to
+  # include the callbacks for that as well:
+  ThinkingSphinx::Callbacks.append(
+    self, :behaviours => [:sql, :updates]
+  )
+  # Though given this feature isn't enabled by default, I
+  # suspect not many people will need to do this. The setting
+  # is only useful for updating attribute values in SQL-backed
+  # indices that aren't using deltas. The only way for fields
+  # to be updated is by using deltas or real-time indices.
+end
+{% endhighlight %}
+
+If you want changes to associated data to fire Sphinx updates for a related model and you're using real-time indices, you can specify a method chain for the callback.
+
+{% highlight ruby %}
+# in app/models/comment.rb, presuming a comment belongs_to :article
+ThinkingSphinx::Callbacks.append(
+  self, :behaviours => [:real_time], :path => [:article]
+)
+{% endhighlight %}
+
+The path option is a chain, and should be in the form of an array of symbols, each symbol representing methods called to get to the indexed object (so, an instance of the Article model in the example above).
+
+If you wish to have your callbacks update Sphinx only in certain conditions, you can either define your own callback and then invoke TS if/when needed:
+
+{% highlight ruby %}
+after_save :populate_to_sphinx
+
+# ...
+
+def populate_to_sphinx
+  return unless indexing?
+
+  ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks.new(
+    :article
+  ).after_save self
+end
+{% endhighlight %}
+
+Or supply a block to the callback instantiation which returns an array of instances to process:
+
+{% highlight ruby %}
+# if your model is app/models/article.rb:
+ThinkingSphinx::Callbacks.append(self, :behaviours => [:real_time]) { |instance|
+  instance.indexing? ? [instance] : []
+}
 {% endhighlight %}
 
 <h3 id="index-names">Index Names</h3>
@@ -249,55 +326,6 @@ end
 {% endhighlight %}
 
 These index definitions can be in the same file or separate files - it's up to you.
-
-<h3 id="callbacks">Real-time Callbacks</h3>
-
-If you're using real-time indices, you will want to add a callback to your model to ensure changes are reflected in Sphinx:
-
-{% highlight ruby %}
-# if your model is app/models/article.rb:
-after_save ThinkingSphinx::RealTime.callback_for(:article)
-{% endhighlight %}
-
-If you want changes to associated data to fire Sphinx updates for a related model, you can specify a method chain for the callback.
-
-{% highlight ruby %}
-# in app/models/comment.rb, presuming a comment belongs_to :article
-after_save ThinkingSphinx::RealTime.callback_for(
-  :article, [:article]
-)
-{% endhighlight %}
-
-The first argument, in all situations, should match the index definition's first argument: a symbolised version of the model name. The second argument is a chain, and should be in the form of an array of symbols, each symbol representing methods called to get to the indexed object (so, an instance of the Article model in the example above).
-
-If you wish to have your callbacks update Sphinx only in certain conditions, you can either define your own callback and then invoke TS if/when needed:
-
-{% highlight ruby %}
-after_save :populate_to_sphinx
-
-# ...
-
-def populate_to_sphinx
-  return unless indexing?
-
-  ThinkingSphinx::RealTime::Callbacks::RealTimeCallbacks.new(
-    :article
-  ).after_save self
-end
-{% endhighlight %}
-
-Or supply a block to the callback instantiation which returns an array of instances to process:
-
-{% highlight ruby %}
-# if your model is app/models/article.rb:
-after_save(
-  ThinkingSphinx::RealTime.callback_for(:article) { |instance|
-    instance.indexing? ? [instance] : []
-  }
-)
-{% endhighlight %}
-
-You do _not_ need to add a `destroy` callback - Thinking Sphinx does this automatically for all indexed models.
 
 <h3 id="processing">Processing your Index</h3>
 

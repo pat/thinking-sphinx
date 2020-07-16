@@ -77,20 +77,20 @@ This allows eager loading of associations, or even filtering out specific values
 To ensure changes to your model instances are reflected in Sphinx, you'll need to add a callback:
 
 {% highlight ruby %}
-# if your model is app/models/article.rb:
-after_save ThinkingSphinx::RealTime.callback_for(:article)
+# in the model that's indexed:
+ThinkingSphinx::Callbacks.append(self, :behaviours => [:real_time])
 {% endhighlight %}
 
 If you want changes to associated data to fire Sphinx updates for a related model, you can specify a method chain for the callback.
 
 {% highlight ruby %}
 # in app/models/comment.rb, presuming a comment belongs_to :article
-after_save ThinkingSphinx::RealTime.callback_for(
-  :article, [:article]
+ThinkingSphinx::Callbacks.append(
+  self, :behaviours => [:real_time], :path => [:article]
 )
 {% endhighlight %}
 
-The [rest of the callbacks documentation](indexing.html#callbacks) covers more advanced usage. You do _not_ need to add a `destroy` callback - Thinking Sphinx does this automatically for all indexed models.
+The [rest of the callbacks documentation](indexing.html#callbacks) covers more advanced usage.
 
 ### Testing
 
