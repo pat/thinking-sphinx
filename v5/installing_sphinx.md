@@ -13,11 +13,13 @@ Installing Sphinx can be done in various ways, depending on your operating syste
 * [Linux](installing_sphinx/linux.html)
 * [Windows](installing_sphinx/windows.html)
 
-Please make sure you are using Sphinx 2.1.2 or newer. Sphinx 2.2.11 is highly recommended.
+Please make sure you are using Sphinx 2.2.11 or newer.
+
+Sphinx v3.x releases will work if you're using real-time indices, or you're using MySQL as your database. There are known issues with PostgreSQL and Sphinx 3.x, and at the time of writing (with Sphinx v3.3.1) they are not yet resolved.
 
 <h3 id="compiling">Compiling Sphinx manually</h3>
 
-If none of the prebuilt options are working for you, then you can always compile Sphinx yourself. [Download the code](http://www.sphinxsearch.com/downloads) from the Sphinx website, and then run these commands:
+If none of the prebuilt options are working for you, then you can always compile Sphinx yourself - but only Sphinx v2.2.11, as the v3 source is not available. [Download the code](http://www.sphinxsearch.com/downloads) from the Sphinx website, and then run these commands:
 
 {% highlight sh %}
 ./configure --with-pgsql --with-mysql

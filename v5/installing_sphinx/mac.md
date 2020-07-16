@@ -14,8 +14,8 @@ In Homebrew's case, they also have stopped supporting the PostgreSQL option (whi
 The recommended options are instead:
 
 * [download a pre-built set of binaries](http://sphinxsearch.com/downloads/current/) and copy the appropriate files from the supplied `bin` directory into `/usr/local/bin` (but don't replace the entire directory!); or…
-* [compile Sphinx by hand](../installing_sphinx.html#compiling-sphinx-manually)
+* [compile Sphinx by hand](../installing_sphinx.html#compiling-sphinx-manually) - but this is only an option for the v2.2.11 release.
 
 Compiling will require the MacOS Developer Tools, but it should install the files into their appropriate locations.
 
-[Return to [Installing Sphinx]](/thinking-sphinx/installing_sphinx.html)
+[Return to [Installing Sphinx]](/thinking-sphinx/{{page.gem_version}}/installing_sphinx.html)

@@ -7,9 +7,9 @@ redirect_from: "/real_time.html"
 
 ## Real-time Indices
 
-Historically, Thinking Sphinx has supported SQL-backed indices. However, in recent releases (since 3.0.4), real-time indices are supported as well. Real-time indices can be updated on a per-record basis, which removes the need for delta indices. The trade-off is that they're usually a bit slower to populate (as each record must be iterated through, instead of bulk inserts via SQL queries).
+Historically, Thinking Sphinx has supported SQL-backed indices. However, in more modern releases (since 3.0.4), real-time indices are supported as well. Real-time indices can be updated on a per-record basis, which removes the need for delta indices. The trade-off is that they're usually a bit slower to populate (as each record must be iterated through, instead of bulk inserts via SQL queries).
 
-The documentation here is now pretty good at distinguishing any different behaviours between the two indexing approaches, and there is [a blog post](http://freelancing-gods.com/2013/07/22/rewriting-thinking-sphinx-introducing-realtime-indices.html) from when the feature was first released which covers the basics quite well.
+The documentation here is pretty good at distinguishing any different behaviours between the two indexing approaches, and there is [a blog post](http://freelancing-gods.com/2013/07/22/rewriting-thinking-sphinx-introducing-realtime-indices.html) from when the feature was first released which covers the basics quite well.
 
 However, if you have used SQL-backed indices before and want to change, this page is the best place to understand what's different.
 

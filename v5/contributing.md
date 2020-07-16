@@ -30,4 +30,4 @@ DATABASE=postgresql rspec spec
 
 MySQL's expected user is root, and PostgreSQL's expected user is your local user. Running tests against both databases is recommended.
 
-Sphinx 2.1.2 or newer is required for Thinking Sphinx v4, so make sure you have that.
+Sphinx 2.2.11 or newer is required for Thinking Sphinx v5, so make sure you have that.

@@ -23,7 +23,7 @@ require 'thinking_sphinx/tasks'
 You will also need to make sure you require `thinking_sphinx/sinatra` instead of just `thinking_sphinx` - which is easily done in your Gemfile:
 
 {% highlight ruby %}
-gem 'thinking-sphinx', '~> 4.0',
+gem 'thinking-sphinx', '~> 5.0',
   :require => 'thinking_sphinx/sinatra'
 {% endhighlight %}
 
