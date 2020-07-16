@@ -1,7 +1,8 @@
 ---
 layout: en
 title: Delta Indexes and Merging
-gem_version: v4
+gem_version: v5
+redirect_from: "/deltas.html"
 ---
 
 ## Delta Indexes and Merging

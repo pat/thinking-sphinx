@@ -1,7 +1,8 @@
 ---
 layout: en
 title: Searching
-gem_version: v4
+gem_version: v5
+redirect_from: "/searching.html"
 ---
 
 ## Searching

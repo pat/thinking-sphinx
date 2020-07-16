@@ -1,7 +1,8 @@
 ---
 layout: en
 title: Sphinx Basics
-gem_version: v4
+gem_version: v5
+redirect_from: "/sphinx_basics.html"
 ---
 
 ## An Introduction to Sphinx

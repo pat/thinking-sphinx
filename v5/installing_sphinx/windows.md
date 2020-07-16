@@ -1,7 +1,8 @@
 ---
 layout: en
 title:  Installing Sphinx on Windows
-gem_version: v4
+gem_version: v5
+redirect_from: "/installing_sphinx/windows.html"
 ---
 
 ## Installing Sphinx on Windows

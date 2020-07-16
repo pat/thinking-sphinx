@@ -1,7 +1,8 @@
 ---
 layout: en
 title: Excerpts
-gem_version: v4
+gem_version: v5
+redirect_from: "/excerpts.html"
 ---
 
 ## Excerpts / Keyword Highlighting

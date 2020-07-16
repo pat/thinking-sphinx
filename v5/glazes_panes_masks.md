@@ -1,8 +1,9 @@
 ---
 layout: en
 title: Search Glazes, Panes, and Masks
-gem_version: v4
+gem_version: v5
 disable_versions: true
+redirect_from: "/glazes_panes_masks.html"
 ---
 
 ## Search Glazes, Panes, and Masks

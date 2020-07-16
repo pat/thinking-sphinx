@@ -1,7 +1,8 @@
 ---
 layout: en
 title: Quickstart
-gem_version: v4
+gem_version: v5
+redirect_from: "/quickstart.html"
 ---
 
 ## A Quick Guide to Getting Setup with Thinking Sphinx

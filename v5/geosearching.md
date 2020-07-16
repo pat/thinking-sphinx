@@ -1,7 +1,8 @@
 ---
 layout: en
 title: Geo-searching
-gem_version: v4
+gem_version: v5
+redirect_from: "/geosearching.html"
 ---
 
 ## Geo-Searching

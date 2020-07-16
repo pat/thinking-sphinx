@@ -1,8 +1,9 @@
 ---
 layout: en
 title: Search Middleware
-gem_version: v4
+gem_version: v5
 disable_versions: true
+redirect_from: "/middleware.html"
 ---
 
 ## Search Middleware

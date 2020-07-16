@@ -1,7 +1,8 @@
 ---
 layout: en
 title: Sphinx Scopes
-gem_version: v4
+gem_version: v5
+redirect_from: "/scopes.html"
 ---
 
 ## Sphinx Scopes

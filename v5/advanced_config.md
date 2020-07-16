@@ -1,7 +1,8 @@
 ---
 layout: en
 title: Advanced Sphinx Configuration
-gem_version: v4
+gem_version: v5
+redirect_from: "/advanced_config.html"
 ---
 
 ## Advanced Sphinx Configuration

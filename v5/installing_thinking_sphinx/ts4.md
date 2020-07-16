@@ -1,8 +1,9 @@
 ---
 layout: en
 title:  Installing Thinking Sphinx
-gem_version: v4
+gem_version: v5
 disable_versions: true
+redirect_from: "/installing_thinking_sphinx/ts3.html"
 ---
 
 ## Installing Thinking Sphinx

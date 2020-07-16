@@ -1,7 +1,8 @@
 ---
 layout: en
 title: Rake Tasks
-gem_version: v4
+gem_version: v5
+redirect_from: "/rake_tasks.html"
 ---
 
 ## Rake Tasks

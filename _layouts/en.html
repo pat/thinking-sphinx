@@ -30,11 +30,17 @@
         {% unless page.disable_versions %}
           <ul>
             {% if page.gem_version == "v3" %}
+              <li><a href="/thinking-sphinx{{ page.url | replace_first:'v3','v5' }}">v5</a></li>
               <li><a href="/thinking-sphinx{{ page.url | replace_first:'v3','v4' }}">v4</a></li>
               <li><span class="current">You're viewing v3</span></li>
-            {% else %}
-              <li><span class="current">You're viewing: v4</span></li>
+            {% elsif page.gem_version == "v4" %}
+              <li><a href="/thinking-sphinx{{ page.url | replace_first:'v4','v5' }}">v5</a></li>
+              <li><span class="current">You're viewing v4</span></li>
               <li><a href="/thinking-sphinx{{ page.url | replace_first:'v4','v3' }}">v3</a></li>
+            {% else %}
+              <li><span class="current">You're viewing: v5</span></li>
+              <li><a href="/thinking-sphinx{{ page.url | replace_first:'v5','v4' }}">v4</a></li>
+              <li><a href="/thinking-sphinx{{ page.url | replace_first:'v5','v3' }}">v3</a></li>
             {% endif %}
           </ul>
         {% endunless %}

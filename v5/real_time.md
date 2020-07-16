@@ -1,7 +1,8 @@
 ---
 layout: en
 title: Real-time Indices
-gem_version: v4
+gem_version: v5
+redirect_from: "/real_time.html"
 ---
 
 ## Real-time Indices

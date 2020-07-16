@@ -1,7 +1,8 @@
 ---
 layout: en
 title:  Installing Sphinx on MacOS X
-gem_version: v4
+gem_version: v5
+redirect_from: "/installing_sphinx/mac.html"
 ---
 
 ## Installing Sphinx on MacOS X
