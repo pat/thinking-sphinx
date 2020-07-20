@@ -39,6 +39,18 @@ module ThinkingSphinx
         @adapter ||= DatabaseAdapters.adapter_for(@model)
       end
 
+      def add_attribute(attribute)
+        attributes.delete_if { |existing| existing.name == attribute.name }
+
+        attributes << attribute
+      end
+
+      def add_field(field)
+        fields.delete_if { |existing| existing.name == field.name }
+
+        fields << field
+      end
+
       def delta_processor
         options[:delta_processor].try(:new, adapter, @options[:delta_options] || {})
       end

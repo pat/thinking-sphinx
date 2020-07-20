@@ -16,10 +16,14 @@ class ThinkingSphinx::RealTime::Index < Riddle::Configuration::RealtimeIndex
   end
 
   def add_attribute(attribute)
+    @attributes.delete_if { |existing| existing.name == attribute.name }
+
     @attributes << attribute
   end
 
   def add_field(field)
+    @fields.delete_if { |existing| existing.name == field.name }
+
     @fields << field
   end
 

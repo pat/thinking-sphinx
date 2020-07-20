@@ -10,7 +10,7 @@ describe 'Suspend deltas for a given action', :live => true do
     expect(Book.search('Harry').to_a).to eq([book])
 
     ThinkingSphinx::Deltas.suspend :book do
-      book.reload.update_attributes(:author => 'Terry Pratchett')
+      book.reload.update(:author => 'Terry Pratchett')
       sleep 0.25
 
       expect(Book.search('Terry').to_a).to eq([])
@@ -27,7 +27,7 @@ describe 'Suspend deltas for a given action', :live => true do
     expect(Book.search('Harry').to_a).to eq([book])
 
     ThinkingSphinx::Deltas.suspend :book do
-      book.reload.update_attributes(:author => 'Terry Pratchett')
+      book.reload.update(:author => 'Terry Pratchett')
       sleep 0.25
 
       expect(Book.search('Terry').to_a).to eq([])
@@ -44,7 +44,7 @@ describe 'Suspend deltas for a given action', :live => true do
     expect(Book.search('Harry').to_a).to eq([book])
 
     ThinkingSphinx::Deltas.suspend_and_update :book do
-      book.reload.update_attributes(:author => 'Terry Pratchett')
+      book.reload.update(:author => 'Terry Pratchett')
       sleep 0.25
 
       expect(Book.search('Terry').to_a).to eq([])

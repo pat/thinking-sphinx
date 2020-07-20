@@ -11,6 +11,44 @@ describe ThinkingSphinx::RealTime::Index do
     allow(ThinkingSphinx::Configuration).to receive_messages :instance => config
   end
 
+  describe '#add_attribute' do
+    let(:attribute) { double('attribute', name: 'my_attribute') }
+
+    it "appends attributes to the collection" do
+      index.add_attribute attribute
+
+      expect(index.attributes.collect(&:name)).to include('my_attribute')
+    end
+
+    it "replaces attributes with the same name" do
+      index.add_attribute double('attribute', name: 'my_attribute')
+      index.add_attribute attribute
+
+      matching = index.attributes.select { |attr| attr.name == attribute.name }
+
+      expect(matching).to eq([attribute])
+    end
+  end
+
+  describe '#add_field' do
+    let(:field) { double('field', name: 'my_field') }
+
+    it "appends fields to the collection" do
+      index.add_field field
+
+      expect(index.fields.collect(&:name)).to include('my_field')
+    end
+
+    it "replaces fields with the same name" do
+      index.add_field double('field', name: 'my_field')
+      index.add_field field
+
+      matching = index.fields.select { |fld| fld.name == field.name }
+
+      expect(matching).to eq([field])
+    end
+  end
+
   describe '#attributes' do
     it "has the internal id attribute by default" do
       expect(index.attributes.collect(&:name)).to include('sphinx_internal_id')
@@ -28,18 +66,6 @@ describe ThinkingSphinx::RealTime::Index do
   describe '#delta?' do
     it "always returns false" do
       expect(index).not_to be_delta
-    end
-  end
-
-  describe '#docinfo' do
-    it "defaults to extern" do
-      expect(index.docinfo).to eq(:extern)
-    end
-
-    it "can be disabled" do
-      config.settings["skip_docinfo"] = true
-
-      expect(index.docinfo).to be_nil
     end
   end
 

@@ -47,7 +47,7 @@ class ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks <
   end
 
   def reference
-    ThinkingSphinx::IndexSet.reference_name(instance.class)
+    configuration.index_set_class.reference_name(instance.class)
   end
 
   def update(index)

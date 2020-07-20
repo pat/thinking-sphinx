@@ -5,7 +5,7 @@ $:.push File.expand_path('../lib', __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = 'thinking-sphinx'
-  s.version     = '4.4.1'
+  s.version     = '5.0.0'
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Pat Allan"]
   s.email       = ["pat@freelancing-gods.com"]
@@ -21,9 +21,9 @@ Gem::Specification.new do |s|
   }
   s.require_paths = ['lib']
 
-  s.add_runtime_dependency 'activerecord', '>= 3.1.0'
+  s.add_runtime_dependency 'activerecord', '>= 4.2.0'
   s.add_runtime_dependency 'builder',      '>= 2.1.2'
-  s.add_runtime_dependency 'joiner',       '>= 0.2.0'
+  s.add_runtime_dependency 'joiner',       '>= 0.3.4'
   s.add_runtime_dependency 'middleware',   '>= 0.1.0'
   s.add_runtime_dependency 'innertube',    '>= 1.0.2'
   s.add_runtime_dependency 'riddle',       '~> 2.3'

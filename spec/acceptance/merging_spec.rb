@@ -34,7 +34,7 @@ describe "Merging deltas", :live => true do
       Book.search("Space", :indices => ["book_core"]).to_a
     ).to eq([race])
 
-    race.reload.update_attributes :title => "The Hate Race"
+    race.reload.update :title => "The Hate Race"
     sleep 0.25
     expect(
       Book.search("Race", :indices => ["book_delta"]).to_a

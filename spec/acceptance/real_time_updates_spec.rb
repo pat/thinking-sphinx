@@ -11,7 +11,7 @@ describe 'Updates to records in real-time indices', :live => true do
 
   it "handles attributes for sortable fields accordingly" do
     product = Product.create! :name => 'Red Fish'
-    product.update_attributes :name => 'Blue Fish'
+    product.update :name => 'Blue Fish'
 
     expect(Product.search('blue fish', :indices => ['product_core']).to_a).
       to eq([product])
@@ -22,7 +22,7 @@ describe 'Updates to records in real-time indices', :live => true do
 
     expect(Admin::Person.search('Death').to_a).to eq([person])
 
-    person.update_attributes :name => 'Mort'
+    person.update :name => 'Mort'
 
     expect(Admin::Person.search('Death').to_a).to be_empty
     expect(Admin::Person.search('Mort').to_a).to eq([person])

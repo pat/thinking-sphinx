@@ -19,12 +19,13 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks do
     let(:klass)         { double(:name => 'Article') }
     let(:configuration) { double('configuration',
       :settings => {'attribute_updates' => true},
-      :indices_for_references => [index]) }
+      :indices_for_references => [index], :index_set_class => set_class) }
     let(:connection)    { double('connection', :execute => '') }
     let(:index)         { double 'index', :name => 'article_core',
       :sources => [source], :document_id_for_key => 3, :distributed? => false,
       :type => 'plain', :primary_key => :id}
     let(:source)        { double('source', :attributes => []) }
+    let(:set_class)     { double(:reference_name => :article) }
 
     before :each do
       stub_const 'ThinkingSphinx::Configuration',

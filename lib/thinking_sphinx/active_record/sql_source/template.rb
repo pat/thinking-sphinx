@@ -18,14 +18,14 @@ class ThinkingSphinx::ActiveRecord::SQLSource::Template
   private
 
   def add_attribute(column, name, type, options = {})
-    source.attributes << ThinkingSphinx::ActiveRecord::Attribute.new(
+    source.add_attribute ThinkingSphinx::ActiveRecord::Attribute.new(
       source.model, ThinkingSphinx::ActiveRecord::Column.new(column),
       options.merge(:as => name, :type => type)
     )
   end
 
   def add_field(column, name, options = {})
-    source.fields << ThinkingSphinx::ActiveRecord::Field.new(
+    source.add_field ThinkingSphinx::ActiveRecord::Field.new(
       source.model, ThinkingSphinx::ActiveRecord::Column.new(column),
       options.merge(:as => name)
     )

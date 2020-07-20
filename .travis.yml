@@ -1,39 +1,30 @@
 language: ruby
 dist: xenial
 rvm:
-- 2.3.8
-- 2.4.6
-- 2.5.5
-- 2.6.3
+- 2.4.10
+- 2.5.8
+- 2.6.6
+- 2.7.1
 before_install:
-- pip install --upgrade --user awscli
 - gem update --system
-- gem uninstall -v '>= 2' -i $(rvm gemdir)@global -ax bundler || true
-- gem install bundler -v '< 2'
+- gem install bundler -v '1.17.3'
+install: bundle _1.17.3_ install --jobs=3 --retry=3
 before_script:
 - mysql -e 'create database thinking_sphinx;' > /dev/null
 - psql -c 'create database thinking_sphinx;' -U postgres >/dev/null
 - "./bin/loadsphinx $SPHINX_VERSION $SPHINX_ENGINE"
-- bundle exec appraisal install
-script: bundle exec appraisal rspec
+- bundle _1.17.3_ exec appraisal install
+script: bundle _1.17.3_ exec appraisal rspec
 env:
-  global:
-  - secure: cUPinkilBafqDSPsTkl/PXYc2aXNKUQKXGK8poBBMqKN9/wjfJx1DWgtowDKalekdZELxDhc85Ye3bL1xlW4nLjOu+U6Tkt8eNw2Nhs1flodHzA/RyENdBLr/tBHt43EjkrDehZx5sBHmWQY4miHs8AJz0oKO9Ae2inTOHx9Iuc=
   matrix:
-  - DATABASE=mysql2 SPHINX_VERSION=2.1.9 SPHINX_ENGINE=sphinx
-  - DATABASE=postgresql SPHINX_VERSION=2.1.9 SPHINX_ENGINE=sphinx
   - DATABASE=mysql2 SPHINX_VERSION=2.2.11 SPHINX_ENGINE=sphinx
   - DATABASE=postgresql SPHINX_VERSION=2.2.11 SPHINX_ENGINE=sphinx
-  - DATABASE=mysql2 SPHINX_VERSION=3.0.3 SPHINX_ENGINE=sphinx
-  - DATABASE=postgresql SPHINX_VERSION=3.0.3 SPHINX_ENGINE=sphinx
-  - DATABASE=mysql2 SPHINX_VERSION=3.1.1 SPHINX_ENGINE=sphinx
-  - DATABASE=mysql2 SPHINX_VERSION=2.6.4 SPHINX_ENGINE=manticore
-  - DATABASE=postgresql SPHINX_VERSION=2.6.4 SPHINX_ENGINE=manticore
-  - DATABASE=mysql2 SPHINX_VERSION=2.7.5 SPHINX_ENGINE=manticore
-  - DATABASE=postgresql SPHINX_VERSION=2.7.5 SPHINX_ENGINE=manticore
+  - DATABASE=mysql2 SPHINX_VERSION=3.2.1 SPHINX_ENGINE=sphinx
   - DATABASE=mysql2 SPHINX_VERSION=2.8.2 SPHINX_ENGINE=manticore
   - DATABASE=postgresql SPHINX_VERSION=2.8.2 SPHINX_ENGINE=manticore
-  # - DATABASE=postgresql SPHINX_VERSION=3.1.1 SPHINX_ENGINE=sphinx
+  - DATABASE=mysql2 SPHINX_VERSION=3.4.2 SPHINX_ENGINE=manticore
+  - DATABASE=postgresql SPHINX_VERSION=3.4.2 SPHINX_ENGINE=manticore
+  # - DATABASE=postgresql SPHINX_VERSION=3.2.1 SPHINX_ENGINE=sphinx
 sudo: false
 addons:
   postgresql: '9.4'

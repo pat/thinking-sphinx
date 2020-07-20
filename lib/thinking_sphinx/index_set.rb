@@ -34,11 +34,11 @@ class ThinkingSphinx::IndexSet
   end
 
   def classes
-    options[:classes] || []
+    options[:classes] || instances.collect(&:class)
   end
 
   def classes_specified?
-    classes.any? || references_specified?
+    instances.any? || classes.any? || references_specified?
   end
 
   def classes_and_ancestors
@@ -68,6 +68,10 @@ class ThinkingSphinx::IndexSet
     all_indices.select { |index| references.include? index.reference }
   end
 
+  def instances
+    options[:instances] || []
+  end
+
   def mti_classes
     classes.reject { |klass|
       klass.column_names.include?(klass.inheritance_column)
@@ -76,7 +80,7 @@ class ThinkingSphinx::IndexSet
 
   def references
     options[:references] || classes_and_ancestors.collect { |klass|
-      ThinkingSphinx::IndexSet.reference_name(klass)
+      self.class.reference_name(klass)
     }
   end
 

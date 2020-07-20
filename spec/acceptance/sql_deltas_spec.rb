@@ -25,7 +25,7 @@ describe 'SQL delta indexing', :live => true do
 
     expect(Book.search('Harry').to_a).to eq([book])
 
-    book.reload.update_attributes(:author => 'Terry Pratchett')
+    book.reload.update(:author => 'Terry Pratchett')
     sleep 0.25
 
     expect(Book.search('Terry').to_a).to eq([book])
@@ -37,7 +37,7 @@ describe 'SQL delta indexing', :live => true do
 
     expect(Book.search('Harry').to_a).to eq([book])
 
-    book.reload.update_attributes(:author => 'Terry Pratchett')
+    book.reload.update(:author => 'Terry Pratchett')
     sleep 0.25
 
     expect(Book.search('Harry')).to be_empty
@@ -49,7 +49,7 @@ describe 'SQL delta indexing', :live => true do
 
     expect(Album.search('Whitloms').to_a).to eq([album])
 
-    album.reload.update_attributes(:artist => 'The Whitlams')
+    album.reload.update(:artist => 'The Whitlams')
     sleep 0.25
 
     expect(Book.search('Whitloms')).to be_empty

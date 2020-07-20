@@ -11,25 +11,8 @@ class ThinkingSphinx::RealTime::Transcriber
     }
     return unless items.present?
 
-    values = []
-    items.each do |instance|
-      begin
-        values << ThinkingSphinx::RealTime::TranscribeInstance.call(
-          instance, index, properties
-        )
-      rescue ThinkingSphinx::TranscriptionError => error
-        instrument 'error', :error => error
-      end
-    end
-
-    insert = Riddle::Query::Insert.new index.name, columns, values
-    sphinxql = insert.replace!.to_sql
-
-    ThinkingSphinx::Logger.log :query, sphinxql do
-      ThinkingSphinx::Connection.take do |connection|
-        connection.execute sphinxql
-      end
-    end
+    delete_existing items
+    insert_replacements items
   end
 
   private
@@ -55,6 +38,27 @@ class ThinkingSphinx::RealTime::Transcriber
     }
   end
 
+  def delete_existing(instances)
+    ids = instances.collect(&index.primary_key.to_sym)
+
+    execute <<~SQL.strip
+      DELETE FROM #{@index.name} WHERE sphinx_internal_id IN (#{ids.join(', ')})
+    SQL
+  end
+
+  def execute(sphinxql)
+    ThinkingSphinx::Logger.log :query, sphinxql do
+      ThinkingSphinx::Connection.take do |connection|
+        connection.execute sphinxql
+      end
+    end
+  end
+
+  def insert_replacements(instances)
+    insert = Riddle::Query::Insert.new index.name, columns, values(instances)
+    execute insert.replace!.to_sql
+  end
+
   def instrument(message, options = {})
     ActiveSupport::Notifications.instrument(
       "#{message}.thinking_sphinx.real_time", options.merge(:index => index)
@@ -63,5 +67,17 @@ class ThinkingSphinx::RealTime::Transcriber
 
   def properties
     @properties ||= index.fields + index.attributes
+  end
+
+  def values(instances)
+    instances.each_with_object([]) do |instance, array|
+      begin
+        array << ThinkingSphinx::RealTime::TranscribeInstance.call(
+          instance, index, properties
+        )
+      rescue ThinkingSphinx::TranscriptionError => error
+        instrument 'error', :error => error
+      end
+    end
   end
 end

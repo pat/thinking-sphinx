@@ -13,15 +13,15 @@ class ThinkingSphinx::ActiveRecord::Interpreter <
   end
 
   def has(*columns)
-    __source.attributes += build_properties(
+    build_properties(
       ::ThinkingSphinx::ActiveRecord::Attribute, columns
-    )
+    ).each { |attribute| __source.add_attribute attribute }
   end
 
   def indexes(*columns)
-    __source.fields += build_properties(
+    build_properties(
       ::ThinkingSphinx::ActiveRecord::Field, columns
-    )
+    ).each { |field| __source.add_field field }
   end
 
   def join(*columns)

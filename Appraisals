@@ -1,22 +1,7 @@
-appraise 'rails_3_2' do
-  gem 'rails',  '~> 3.2.22.2'
-  gem 'mysql2', '~> 0.3.10', :platform => :ruby
-end if RUBY_VERSION.to_f <= 2.3
-
-appraise 'rails_4_0' do
-  gem 'rails',  '~> 4.0.13'
-  gem 'mysql2', '~> 0.3.10', :platform => :ruby
-end if RUBY_VERSION.to_f <= 2.3
-
-appraise 'rails_4_1' do
-  gem 'rails',  '~> 4.1.15'
-  gem 'mysql2', '~> 0.3.13', :platform => :ruby
-end if RUBY_VERSION.to_f <= 2.3
-
 appraise 'rails_4_2' do
   gem 'rails',  '~> 4.2.6'
   gem 'mysql2', '~> 0.4.0', :platform => :ruby
-end if RUBY_VERSION.to_f <= 2.3
+end if RUBY_VERSION.to_f <= 2.4
 
 appraise 'rails_5_0' do
   if RUBY_PLATFORM == "java"

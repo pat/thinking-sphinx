@@ -5,16 +5,18 @@ class ThinkingSphinx::RealTime::Interpreter <
 
   def has(*columns)
     options = columns.extract_options!
-    @index.attributes += columns.collect { |column|
+
+    columns.collect { |column|
       ::ThinkingSphinx::RealTime::Attribute.new column, options
-    }
+    }.each { |attribute| @index.add_attribute attribute }
   end
 
   def indexes(*columns)
     options = columns.extract_options!
-    @index.fields += columns.collect { |column|
+
+    columns.collect { |column|
       ::ThinkingSphinx::RealTime::Field.new column, options
-    }
+    }.each { |field| @index.add_field field }
 
     append_sortable_attributes columns, options if options[:sortable]
   end
@@ -39,7 +41,7 @@ class ThinkingSphinx::RealTime::Interpreter <
   def append_sortable_attributes(columns, options)
     options = options.except(:sortable).merge(:type => :string)
 
-    @index.attributes += columns.collect { |column|
+    columns.collect { |column|
       aliased_name   = options[:as]
       aliased_name ||= column.__name.to_sym if column.respond_to?(:__name)
       aliased_name ||= column
@@ -47,6 +49,6 @@ class ThinkingSphinx::RealTime::Interpreter <
       options[:as] = "#{aliased_name}_sort".to_sym
 
       ::ThinkingSphinx::RealTime::Attribute.new column, options
-    }
+    }.each { |attribute| @index.add_attribute attribute }
   end
 end

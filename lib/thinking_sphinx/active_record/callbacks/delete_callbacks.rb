@@ -27,7 +27,7 @@ class ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks <
 
   def indices
     ThinkingSphinx::Configuration.instance.index_set_class.new(
-      :classes => [instance.class]
+      :instances => [instance], :classes => [instance.class]
     ).to_a
   end
 end

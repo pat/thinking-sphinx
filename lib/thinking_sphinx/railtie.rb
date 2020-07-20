@@ -7,7 +7,7 @@ class ThinkingSphinx::Railtie < Rails::Railtie
 
   initializer 'thinking_sphinx.initialisation' do
     ActiveSupport.on_load(:active_record) do
-      ActiveRecord::Base.send :include, ThinkingSphinx::ActiveRecord::Base
+      ActiveRecord::Base.include ThinkingSphinx::ActiveRecord::Base
     end
 
     if ActiveSupport::VERSION::MAJOR > 5
