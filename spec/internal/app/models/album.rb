@@ -6,7 +6,9 @@ class Album < ActiveRecord::Base
   before_validation :set_id, :on => :create
   before_validation :set_integer_id, :on => :create
 
-  after_save ThinkingSphinx::RealTime.callback_for(:album)
+  ThinkingSphinx::Callbacks.append(
+    self, :behaviours => [:sql, :real_time, :deltas]
+  )
 
   validates :id,         :presence => true, :uniqueness => true
   validates :integer_id, :presence => true, :uniqueness => true

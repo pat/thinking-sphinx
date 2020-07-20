@@ -4,11 +4,6 @@ module ThinkingSphinx::ActiveRecord::Base
   extend ActiveSupport::Concern
 
   included do
-    after_destroy ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks
-    before_save   ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks
-    after_update  ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks
-    after_commit  ThinkingSphinx::ActiveRecord::Callbacks::DeltaCallbacks
-
     if ActiveRecord::VERSION::STRING.to_i >= 5
       [
         ::ActiveRecord::Reflection::HasManyReflection,
