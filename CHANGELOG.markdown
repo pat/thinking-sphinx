@@ -2,6 +2,26 @@
 
 All notable changes to this project (at least, from v3.0.0 onwards) are documented in this file.
 
+## 5.0.0 - 2020-07-20
+
+[Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v5.0.0)
+
+### Added
+
+* New interface for adding callbacks to indexed models (which is no longer done automatically). Discussed in [#1173](https://github.com/pat/thinking-sphinx/issues/1173) and committed via [#1175](https://github.com/pat/thinking-sphinx/pull/1175). **This is a breaking change - you will need to add these callbacks. See [the full release notes](https://github.com/pat/thinking-sphinx/releases/tag/v5.0.0) for examples.**
+* Fields and attributes can be overriden - whichever's defined last with a given name is the definition that's used. This is an edge case, but useful if you want to override any of the default fields/indices. (Requested by @kalsan in [#1172](https://github.com/pat/thinking-sphinx/issues/1172).)
+* Custom index_set_class implementations can now expect the `:instances` option to be set alongside `:classes`, which is useful in cases to limit the indices returned if you're splitting index data for given classes/models into shards. (Introduced in PR [#1171](https://github.com/pat/thinking-sphinx/pull/1171) after discussions with @lunaru in [#1166](https://github.com/pat/thinking-sphinx/issues/1166).)
+
+### Changed
+
+* Sphinx 2.2.11 or newer is required, or Manticore 2.8.2 or newer.
+* Ruby 2.4 or newer is required.
+* Rails 4.2 or newer is required.
+* Remove internal uses of `send`, replaced with `public_send` as that's available in all supported Ruby versions.
+* Deletion statements are simplified by avoiding the need to calculate document keys/offsets (@njakobsen via [#1134](https://github.com/pat/thinking-sphinx/issues/1134)).
+* Real-time data is deleted before replacing it, to avoid duplicate data when offsets change (@njakobsen via [#1134](https://github.com/pat/thinking-sphinx/issues/1134)).
+* Use `reference_name` as per custom `index_set_class` definitions. Previously, the class method was called on `ThinkingSphinx::IndexSet` even if a custom subclass was configured. (As per discussinos with @kalsan in [#1172](https://github.com/pat/thinking-sphinx/issues/1172).)
+
 ## 4.4.1 - 2019-08-23
 
 [Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v4.4.1)
