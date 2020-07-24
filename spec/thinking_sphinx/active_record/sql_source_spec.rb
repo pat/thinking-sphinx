@@ -325,14 +325,14 @@ describe ThinkingSphinx::ActiveRecord::SQLSource do
       expect(source.sql_attr_string).to include('name')
     end
 
-    it "adds timestamp attributes to sql_attr_timestamp" do
+    it "adds timestamp attributes to sql_attr_uint" do
       source.attributes << double('attribute')
       allow(presenter).to receive_messages :declaration => 'created_at',
-        :collection_type => :timestamp
+        :collection_type => :uint
 
       source.render
 
-      expect(source.sql_attr_timestamp).to include('created_at')
+      expect(source.sql_attr_uint).to include('created_at')
     end
 
     it "adds float attributes to sql_attr_float" do

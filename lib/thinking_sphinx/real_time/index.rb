@@ -65,12 +65,10 @@ class ThinkingSphinx::RealTime::Index < Riddle::Configuration::RealtimeIndex
 
   def collection_for(attribute)
     case attribute.type
-    when :integer, :boolean
+    when :integer, :boolean, :timestamp
       attribute.multi? ? @rt_attr_multi : @rt_attr_uint
     when :string
       @rt_attr_string
-    when :timestamp
-      @rt_attr_timestamp
     when :float
       @rt_attr_float
     when :bigint
