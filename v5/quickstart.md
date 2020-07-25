@@ -31,7 +31,7 @@ You'll want to add [a callback](indexing.html#callbacks) to your model to ensure
 
 {% highlight ruby %}
 # if your model is app/models/article.rb:
-after_save ThinkingSphinx::RealTime.callback_for(:article)
+ThinkingSphinx::Callbacks.append(self, :behaviours => [:real_time])
 {% endhighlight %}
 
 The next step is to process your data (this task stops the Sphinx daemon if it is running, deletes existing Sphinx data, rewrites the Sphinx configuration file, starts the Sphinx daemon again, and then creates Sphinx documents for each indexed model instance):
