@@ -139,6 +139,7 @@ ThinkingSphinx::Callbacks.append(self, :behaviours => [:real_time]) { |instance|
 
 If you're combining custom indexing conditions with associated data, then you'll need to supply the reference (as noted above), but the `:path` option is ignored, and instead you'll need to return the appropriate instances instead:
 
+{% highlight ruby %}
 # if your model is app/models/comment.rb
 # and you want to process related articles:
 ThinkingSphinx::Callbacks.append(self, :article, :behaviours => [:real_time]) { |instance|
