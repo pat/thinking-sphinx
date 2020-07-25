@@ -99,12 +99,14 @@ class Article < ApplicationRecord
 end
 {% endhighlight %}
 
-If you want changes to associated data to fire Sphinx updates for a related model and you're using real-time indices, you can specify a method chain for the callback.
+If you want changes to associated data to fire Sphinx updates for a related model and you're using real-time indices, you can specify a method chain for the callback - you'll also want to add the _index reference_ (the first argument in an index definition - usually the model's name as an underscored and lowercase symbol) as the second argument:
 
 {% highlight ruby %}
 # in app/models/comment.rb, presuming a comment belongs_to :article
+# note the second argument is :article, as per the
+# ThinkingSphinx::Index.define call.
 ThinkingSphinx::Callbacks.append(
-  self, :behaviours => [:real_time], :path => [:article]
+  self, :article, :behaviours => [:real_time], :path => [:article]
 )
 {% endhighlight %}
 
@@ -132,6 +134,16 @@ Or supply a block to the callback instantiation which returns an array of instan
 # if your model is app/models/article.rb:
 ThinkingSphinx::Callbacks.append(self, :behaviours => [:real_time]) { |instance|
   instance.indexing? ? [instance] : []
+}
+{% endhighlight %}
+
+If you're combining custom indexing conditions with associated data, then you'll need to supply the reference (as noted above), but the `:path` option is ignored, and instead you'll need to return the appropriate instances instead:
+
+# if your model is app/models/comment.rb
+# and you want to process related articles:
+ThinkingSphinx::Callbacks.append(self, :article, :behaviours => [:real_time]) { |instance|
+  # instance is a comment
+  instance.saved_changes.keys.include?("content") ? [instance.article] : []
 }
 {% endhighlight %}
 
