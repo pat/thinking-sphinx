@@ -11,14 +11,15 @@ class ThinkingSphinx::Settings
     lemmatizer_base mysql_ssl_cert mysql_ssl_key mysql_ssl_ca
   ].freeze
   DEFAULTS = {
-    "configuration_file" => "config/ENVIRONMENT.sphinx.conf",
-    "indices_location"   => "db/sphinx/ENVIRONMENT",
-    "pid_file"           => "log/ENVIRONMENT.sphinx.pid",
-    "log"                => "log/ENVIRONMENT.searchd.log",
-    "query_log"          => "log/ENVIRONMENT.searchd.query.log",
-    "binlog_path"        => "tmp/binlog/ENVIRONMENT",
-    "workers"            => "threads",
-    "mysql_encoding"     => "utf8"
+    "configuration_file"       => "config/ENVIRONMENT.sphinx.conf",
+    "indices_location"         => "db/sphinx/ENVIRONMENT",
+    "pid_file"                 => "log/ENVIRONMENT.sphinx.pid",
+    "log"                      => "log/ENVIRONMENT.searchd.log",
+    "query_log"                => "log/ENVIRONMENT.searchd.query.log",
+    "binlog_path"              => "tmp/binlog/ENVIRONMENT",
+    "workers"                  => "threads",
+    "mysql_encoding"           => "utf8",
+    "maximum_statement_length" => (2 ** 23) - 5
   }.freeze
 
   def self.call(configuration)
