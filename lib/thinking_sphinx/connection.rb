@@ -16,6 +16,10 @@ module ThinkingSphinx::Connection
     connection_class.new options
   end
 
+  def self.clear
+    @pool = nil
+  end
+
   def self.connection_class
     return ThinkingSphinx::Connection::JRuby if RUBY_PLATFORM == 'java'
 
