@@ -1,20 +1,7 @@
-language: ruby
-rvm: 2.4.1
+language: minimal
 sudo: false
-before_install:
-- pip install --upgrade --user awscli
-- gem update --system
-- gem install bundler
-script: bundle exec jekyll build
-after_script:
-- aws s3 cp _site s3://freelancing-gods/thinking-sphinx/ --recursive --acl public-read
-- aws configure set preview.cloudfront true
-- aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_ID --paths "/*"
-env:
-  global:
-  - secure: WEEu2v8klaShwQ6//6HR3NIfFuUOZLR/5yWcMI8GZBLXqyJ9aFGgvDxfdQyTg60YkPgxAEgADugzeA/prZCKstVU5QMH/UdrY0j4QJ4Q5Av/2AJpXYFTO3spgGJfNyGtzO746ynivpMfnAKQeFwHCokE+zXaAFgrYDqv/uevcj8=
-  - secure: UYLZE+JR0Hzx+YjBjre49stalvkGSbL9tYVLfSF00M58UARplgqmtTYs37a24y73ZnZBy2oAAhHjCdQQN/fA9o5GXh2lXNeyxYyo7OqClKIRNvS9ddz8jfLdmJj4Fgl0esBZgWWc95puEJ9KG6eFQhzxdY2J10+B6bwurVj6xWk=
+script:
+- curl -X POST -d {} https://api.netlify.com/build_hooks/$NETLIFY_BUILD_HOOK
 branches:
   only:
   - gh-pages
-  - "/.*/"
