@@ -20,7 +20,7 @@ All notable changes to this project (at least, from v3.0.0 onwards) are document
 * Remove internal uses of `send`, replaced with `public_send` as that's available in all supported Ruby versions.
 * Deletion statements are simplified by avoiding the need to calculate document keys/offsets (@njakobsen via [#1134](https://github.com/pat/thinking-sphinx/issues/1134)).
 * Real-time data is deleted before replacing it, to avoid duplicate data when offsets change (@njakobsen via [#1134](https://github.com/pat/thinking-sphinx/issues/1134)).
-* Use `reference_name` as per custom `index_set_class` definitions. Previously, the class method was called on `ThinkingSphinx::IndexSet` even if a custom subclass was configured. (As per discussinos with @kalsan in [#1172](https://github.com/pat/thinking-sphinx/issues/1172).)
+* Use `reference_name` as per custom `index_set_class` definitions. Previously, the class method was called on `ThinkingSphinx::IndexSet` even if a custom subclass was configured. (As per discussions with @kalsan in [#1172](https://github.com/pat/thinking-sphinx/issues/1172).)
 
 ## 4.4.1 - 2019-08-23
 
