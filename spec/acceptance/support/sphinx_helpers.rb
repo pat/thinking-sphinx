@@ -6,22 +6,22 @@ module SphinxHelpers
   end
 
   def index(*indices)
-    sleep 0.5 if ENV['TRAVIS']
+    sleep 0.5 if ENV['CI']
 
     yield if block_given?
 
     sphinx.index *indices
     sleep 0.25
-    sleep 0.5 if ENV['TRAVIS']
+    sleep 0.5 if ENV['CI']
   end
 
   def merge
-    sleep 0.5 if ENV['TRAVIS']
+    sleep 0.5 if ENV['CI']
     sleep 0.5
 
     sphinx.merge
     sleep 1.5
-    sleep 0.5 if ENV['TRAVIS']
+    sleep 0.5 if ENV['CI']
   end
 end
 
