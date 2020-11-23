@@ -6,7 +6,9 @@ class ThinkingSphinx::ActiveRecord::Callbacks::AssociationDeltaCallbacks
   end
 
   def after_commit(instance)
-    Array(objects_for(instance)).each { |object| object.update :delta => true }
+    Array(objects_for(instance)).each do |object|
+      object.update :delta => true unless object.frozen?
+    end
   end
 
   private
