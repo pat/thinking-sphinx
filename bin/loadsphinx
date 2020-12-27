@@ -14,7 +14,7 @@ load_sphinx () {
       format="deb"
       distro="trusty";;
     2.2.11)
-      url="http://sphinxsearch.com/files/sphinxsearch_2.2.11-release-1~xenial_amd64.deb"
+      url="http://sphinxsearch.com/files/sphinxsearch_2.2.11-release-1~jessie_amd64.deb"
       format="deb";;
     3.0.3)
       url="http://sphinxsearch.com/files/sphinx-3.0.3-facc3fb-linux-amd64.tar.gz"
@@ -40,7 +40,9 @@ load_sphinx () {
 
   if [ "$format" == "deb" ]; then
     curl --location $url -o sphinx.deb
-    sudo apt-get install ./sphinx.deb
+    sudo apt-get install libodbc1
+    sudo dpkg -i ./sphinx.deb
+    sudo apt-get install -f
   else
     curl $url -o sphinx.tar.gz
     tar -zxvf sphinx.tar.gz
@@ -57,18 +59,19 @@ load_manticore () {
     2.7.5)
       url="https://github.com/manticoresoftware/manticoresearch/releases/download/2.7.5/manticore_2.7.5-181204-4a31c54-release-stemmer.xenial_amd64-bin.deb";;
     2.8.2)
-      url="https://github.com/manticoresoftware/manticoresearch/releases/download/2.8.2/manticore_2.8.2-190402-4e81114-release-stemmer.xenial_amd64-bin.deb";;
+      url="https://github.com/manticoresoftware/manticoresearch/releases/download/2.8.2/manticore_2.8.2-190402-4e81114d-release-stemmer.stretch_amd64-bin.deb";;
     3.4.2)
       url="https://github.com/manticoresoftware/manticoresearch/releases/download/3.4.2/manticore_3.4.2-200410-6903305-release.xenial_amd64-bin.deb";;
-    3.5.0)
-      url="https://repo.manticoresearch.com/repository/manticoresearch_xenial/pool/m/manticore/manticore_3.5.0-200722-1d34c49_amd64.deb";;
+    3.5.4)
+      url="https://repo.manticoresearch.com/repository/manticoresearch_buster/pool/m/manticore/manticore_3.5.4-201211-13f8d08d_amd64.deb";;
     *)
       echo "No Manticore version $version available"
       exit 1;;
   esac
 
   curl --location $url -o manticore.deb
-  sudo apt-get install ./manticore.deb
+  sudo dpkg -i ./manticore.deb
+  sudo apt-get install -f
 }
 
 if [ "$engine" == "sphinx" ]; then

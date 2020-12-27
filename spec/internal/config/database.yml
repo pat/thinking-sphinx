@@ -1,6 +1,11 @@
 test:
   adapter:      <%= ENV['DATABASE'] || 'mysql2' %>
   database:     thinking_sphinx
-  username:     <%= ENV['DATABASE'] == 'postgresql' ? ENV['USER'] : 'root' %>
+  username:     <%= ENV['DATABASE'] == 'postgresql' ? 'postgres' : 'root' %>
+<% if ENV["CI"] %>
+  password:     thinking_sphinx
+  host:         127.0.0.1
+  port:         <%= ENV['DATABASE'] == 'postgresql' ? 5432 : 3306 %>
+<% end %>
   min_messages: warning
   encoding:     utf8
