@@ -2,6 +2,26 @@
 
 All notable changes to this project (at least, from v3.0.0 onwards) are documented in this file.
 
+## 5.1.0 - 2020-12-28
+
+[Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v5.1.0)
+
+### Added
+
+* Support for Sphinx v3.3 and Manticore v3.5.
+* Support for Rails 6.1 (via [joiner](https://rubygems.org/gems/joiner) v0.6.0).
+
+### Changed
+
+* `enable_star` is no longer available as a configuration option, as it's been enabled by default in Sphinx since v2.2.2, and is no longer allowed in Sphinx v3.3.1.
+* All timestamp attributes are now considered plain integer values from Sphinx's perspective. Sphinx was already expecting integers, but since Sphinx v3.3.1 it doesn't recognise timestamps as a data type. There is no functional difference with this change - Thinking Sphinx was always converting times to their UNIX epoch integer values.
+* Allow configuration of the maximum statement length ([@kalsan](https://github.com/kalsan) in [#1179](https://github.com/pat/thinking-sphinx/pull/1179)).
+* Respect `:path` values to navigate associations for Thinking Sphinx callbacks on SQL-backed indices. Discussed in [#1182](https://github.com/pat/thinking-sphinx/issues/1182).
+
+### Fixed
+
+* Don't attempt to update delta flags on frozen model instances.
+
 ## 5.0.0 - 2020-07-20
 
 [Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v5.0.0)
