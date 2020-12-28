@@ -38,10 +38,20 @@ describe 'Searching by latitude and longitude', :live => true do
       expected = {:mysql => 250326.906250, :postgresql => 250331.234375}
     end
 
-    if ActiveRecord::Base.configurations['test']['adapter'][/postgres/]
-      expect(cities.first.geodist).to eq(expected[:postgresql])
+    adapter = nil
+
+    if ActiveRecord::VERSION::STRING.to_f > 6.0
+      adapter = ActiveRecord::Base.configurations.configs_for.first.adapter
+    elsif ActiveRecord::VERSION::STRING.to_f > 5.2
+      adapter = ActiveRecord::Base.configurations.configs_for.first.config["adapter"]
+    else
+      adapter = ActiveRecord::Base.configurations['test']['adapter']
+    end
+
+    if adapter[/postgres/]
+      expect(cities.first.geodist).to be_within(0.01).of(expected[:postgresql])
     else # mysql
-      expect(cities.first.geodist).to eq(expected[:mysql])
+      expect(cities.first.geodist).to be_within(0.01).of(expected[:mysql])
     end
   end
 

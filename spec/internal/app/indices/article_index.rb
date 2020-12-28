@@ -10,7 +10,6 @@ ThinkingSphinx::Index.define :article, :with => :active_record do
   has taggings.created_at, :as => :taggings_at, :type => :timestamp
 
   set_property :min_infix_len => 4
-  set_property :enable_star   => true
 end
 
 ThinkingSphinx::Index.define :article, :with => :active_record,

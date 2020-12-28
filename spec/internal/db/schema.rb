@@ -68,6 +68,7 @@ ActiveRecord::Schema.define do
 
   create_table(:colours, :force => true) do |t|
     t.string :name
+    t.boolean :delta, :null => false, :default => true
     t.timestamps null: false
   end
 

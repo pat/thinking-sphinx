@@ -63,4 +63,16 @@ describe 'SQL delta indexing', :live => true do
 
     expect(Book.search('Gaiman').to_a).to eq([book])
   end
+
+  it "updates associated models" do
+    colour = Colour.create(:name => 'green')
+    sleep 0.25
+
+    expect(Colour.search('green').to_a).to eq([colour])
+
+    tee = colour.tees.create
+    sleep 0.25
+
+    expect(Colour.search(:with => {:tee_ids => tee.id}).to_a).to eq([colour])
+  end
 end

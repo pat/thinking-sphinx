@@ -1,0 +1,150 @@
+version: 2.1
+
+orbs:
+  ruby: circleci/ruby@1.0
+
+workflows:
+  test:
+    jobs:
+      - test:
+          name: "Sphinx 2.2.11 with MySQL"
+          database: mysql2
+          sphinx_version: 2.2.11
+          sphinx_engine: sphinx
+          debian: jessie
+          ruby: '2.4.6'
+      - test:
+          name: "Sphinx 2.2.11 with PostgreSQL"
+          database: postgresql
+          sphinx_version: 2.2.11
+          sphinx_engine: sphinx
+          debian: jessie
+          ruby: '2.4.6'
+      - test:
+          name: "Sphinx 3.3.1 with MySQL"
+          database: mysql2
+          sphinx_version: 3.3.1
+          sphinx_engine: sphinx
+          debian: buster
+          matrix:
+            parameters:
+              ruby: [ '2.4.9', '2.5.8', '2.6.6', '2.7.2' ]
+      # - test:
+      #     database: postgresql
+      #     sphinx_version: 3.3.1
+      #     sphinx_engine: sphinx
+      #     matrix:
+      #       parameters:
+      #         ruby: [ '2.4', '2.5', '2.6', '2.7' ]
+      - test:
+          name: "Manticore 2.8.2 with MySQL"
+          database: mysql2
+          sphinx_version: 2.8.2
+          sphinx_engine: manticore
+          debian: stretch
+          matrix:
+            parameters:
+              ruby: [ '2.4.9', '2.5.8', '2.6.6' ]
+      - test:
+          name: "Manticore 2.8.2 with PostgreSQL"
+          database: postgresql
+          sphinx_version: 2.8.2
+          sphinx_engine: manticore
+          debian: stretch
+          matrix:
+            parameters:
+              ruby: [ '2.4.9', '2.5.8', '2.6.6' ]
+      - test:
+          name: "Manticore 3.5.4 with MySQL"
+          database: mysql2
+          sphinx_version: 3.5.4
+          sphinx_engine: manticore
+          debian: buster
+          matrix:
+            parameters:
+              ruby: [ '2.4.9', '2.5.8', '2.6.6', '2.7.2' ]
+      - test:
+          name: "Manticore 3.5.4 with PostgreSQL"
+          database: postgresql
+          sphinx_version: 3.5.4
+          sphinx_engine: manticore
+          debian: buster
+          matrix:
+            parameters:
+              ruby: [ '2.4.9', '2.5.8', '2.6.6', '2.7.2' ]
+
+jobs:
+  test:
+    parameters:
+      ruby:
+        type: string
+      database:
+        type: string
+      sphinx_version:
+        type: string
+      sphinx_engine:
+        type: string
+      debian:
+        type: string
+
+    docker:
+      - image: circleci/ruby:<< parameters.ruby >>-<< parameters.debian >>
+
+      - image: circleci/postgres:10
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: thinking_sphinx
+          POSTGRES_DB: thinking_sphinx
+
+      - image: circleci/mysql:5.7
+        environment:
+          MYSQL_ROOT_PASSWORD: thinking_sphinx
+          MYSQL_DATABASE: thinking_sphinx
+
+    working_directory: ~/app
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - v1-dependencies-<< parameters.ruby >>
+
+      - run:
+          name: install bundler
+          command: |
+            if [ "<< parameters.ruby >>" == "2.7.2" ]; then
+              export BUNDLER_VERSION=2.1.4
+            else
+              export BUNDLER_VERSION=1.17.3
+            fi
+            export BUNDLE_PATH=vendor/bundle
+            gem install bundler:$BUNDLER_VERSION
+
+      - run:
+          name: install dependencies
+          command: |
+            bundle install --jobs=4 --retry=3 --path vendor/bundle
+            bundle update
+
+      - run:
+          name: set up appraisal
+          command: bundle exec appraisal update
+
+      - save_cache:
+          paths:
+            - ./vendor/bundle
+          key: v1-dependencies-<< parameters.ruby >>
+
+      - run:
+          name: set up sphinx
+          command: "./bin/loadsphinx << parameters.sphinx_version >> << parameters.sphinx_engine >>"
+
+      - run:
+          name: tests
+          environment:
+            CI: "true"
+            DATABASE: << parameters.database >>
+            SPHINX_VERSION: << parameters.sphinx_version >>
+            SPHINX_ENGINE: << parameters.sphinx_engine >>
+          command: bundle exec appraisal rspec

@@ -29,6 +29,7 @@ require 'thinking_sphinx/active_record/source_joins'
 require 'thinking_sphinx/active_record/sql_builder'
 require 'thinking_sphinx/active_record/sql_source'
 
+require 'thinking_sphinx/active_record/callbacks/association_delta_callbacks'
 require 'thinking_sphinx/active_record/callbacks/delete_callbacks'
 require 'thinking_sphinx/active_record/callbacks/delta_callbacks'
 require 'thinking_sphinx/active_record/callbacks/update_callbacks'

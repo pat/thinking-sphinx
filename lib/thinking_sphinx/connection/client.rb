@@ -39,7 +39,7 @@ class ThinkingSphinx::Connection::Client
   private
 
   def check(statements)
-    if statements.length > ThinkingSphinx::MAXIMUM_STATEMENT_LENGTH
+    if statements.length > maximum_statement_length
       exception           = ThinkingSphinx::QueryLengthError.new
       exception.statement = statements
       raise exception
@@ -54,6 +54,11 @@ class ThinkingSphinx::Connection::Client
   def close_and_clear
     client.close
     @client = nil
+  end
+
+  def maximum_statement_length
+    @maximum_statement_length ||= ThinkingSphinx::Configuration.instance.
+      settings['maximum_statement_length']
   end
 
   def perform(statements)

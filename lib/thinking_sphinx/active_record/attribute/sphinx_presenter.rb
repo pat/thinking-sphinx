@@ -4,7 +4,7 @@ class ThinkingSphinx::ActiveRecord::Attribute::SphinxPresenter
   SPHINX_TYPES = {
     :integer   => :uint,
     :boolean   => :bool,
-    :timestamp => :timestamp,
+    :timestamp => :uint,
     :float     => :float,
     :string    => :string,
     :bigint    => :bigint,
