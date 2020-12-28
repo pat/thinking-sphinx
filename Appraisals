@@ -15,18 +15,18 @@ appraise 'rails_5_0' do
   gem 'jdbc-mysql',                          '~> 5.1.36', :platform => :jruby
   gem 'activerecord-jdbcmysql-adapter',      '~> 50.0',   :platform => :jruby
   gem 'activerecord-jdbcpostgresql-adapter', '~> 50.0',   :platform => :jruby
-end if RUBY_PLATFORM != "java" || ENV["SPHINX_VERSION"].to_f > 2.1
+end if (RUBY_PLATFORM != "java" || ENV["SPHINX_VERSION"].to_f > 2.1) && RUBY_VERSION.to_f < 3.0
 
 appraise 'rails_5_1' do
   gem 'rails',  '~> 5.1.0'
   gem 'mysql2', '~> 0.4.0', :platform => :ruby
-end if RUBY_PLATFORM != 'java'
+end if RUBY_PLATFORM != 'java' && RUBY_VERSION.to_f < 3.0
 
 appraise 'rails_5_2' do
   gem 'rails',  '~> 5.2.0'
   gem 'mysql2', '~> 0.5.0', :platform => :ruby
   gem 'pg',     '~> 1.0',   :platform => :ruby
-end if RUBY_PLATFORM != 'java'
+end if RUBY_PLATFORM != 'java' && RUBY_VERSION.to_f < 3.0
 
 appraise 'rails_6_0' do
   gem 'rails',  '~> 6.0.0'

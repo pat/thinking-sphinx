@@ -28,7 +28,7 @@ workflows:
           debian: buster
           matrix:
             parameters:
-              ruby: [ '2.4.9', '2.5.8', '2.6.6', '2.7.2' ]
+              ruby: [ '2.4.9', '2.5.8', '2.6.6', '2.7.2', '3.0.0-rc1' ]
       # - test:
       #     database: postgresql
       #     sphinx_version: 3.3.1
@@ -62,7 +62,7 @@ workflows:
           debian: buster
           matrix:
             parameters:
-              ruby: [ '2.4.9', '2.5.8', '2.6.6', '2.7.2' ]
+              ruby: [ '2.4.9', '2.5.8', '2.6.6', '2.7.2', '3.0.0-rc1' ]
       - test:
           name: "Manticore 3.5.4 with PostgreSQL"
           database: postgresql
@@ -71,7 +71,7 @@ workflows:
           debian: buster
           matrix:
             parameters:
-              ruby: [ '2.4.9', '2.5.8', '2.6.6', '2.7.2' ]
+              ruby: [ '2.4.9', '2.5.8', '2.6.6', '2.7.2', '3.0.0-rc1' ]
 
 jobs:
   test:
@@ -114,6 +114,8 @@ jobs:
           name: install bundler
           command: |
             if [ "<< parameters.ruby >>" == "2.7.2" ]; then
+              export BUNDLER_VERSION=2.1.4
+            elif [ "<< parameters.ruby >>" == "3.0.0-rc1" ]; then
               export BUNDLER_VERSION=2.1.4
             else
               export BUNDLER_VERSION=1.17.3
