@@ -19,7 +19,8 @@ class ThinkingSphinx::Settings
     "binlog_path"              => "tmp/binlog/ENVIRONMENT",
     "workers"                  => "threads",
     "mysql_encoding"           => "utf8",
-    "maximum_statement_length" => (2 ** 23) - 5
+    "maximum_statement_length" => (2 ** 23) - 5,
+    "real_time_tidy"           => false
   }.freeze
 
   def self.call(configuration)
