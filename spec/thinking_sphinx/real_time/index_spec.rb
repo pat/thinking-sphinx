@@ -5,7 +5,9 @@ require 'spec_helper'
 describe ThinkingSphinx::RealTime::Index do
   let(:index)        { ThinkingSphinx::RealTime::Index.new :user }
   let(:config)       { double('config', :settings => {},
-    :indices_location => 'location', :next_offset => 8) }
+    :indices_location => 'location', :next_offset => 8,
+    :index_set_class => index_set_class) }
+  let(:index_set_class) { double(:index_set_class, :reference_name => :user) }
 
   before :each do
     allow(ThinkingSphinx::Configuration).to receive_messages :instance => config
@@ -60,6 +62,16 @@ describe ThinkingSphinx::RealTime::Index do
 
     it "has the internal deleted attribute by default" do
       expect(index.attributes.collect(&:name)).to include('sphinx_deleted')
+    end
+
+    it "does not have an internal updated_at attribute by default" do
+      expect(index.attributes.collect(&:name)).to_not include('sphinx_updated_at')
+    end
+
+    it "has an internal updated_at attribute if real_time_tidy is true" do
+      config.settings["real_time_tidy"] = true
+
+      expect(index.attributes.collect(&:name)).to include('sphinx_updated_at')
     end
   end
 
