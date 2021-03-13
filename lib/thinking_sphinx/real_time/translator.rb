@@ -10,6 +10,7 @@ class ThinkingSphinx::RealTime::Translator
   end
 
   def call
+    return name.call(object) if name.is_a?(Proc)
     return name   unless name.is_a?(Symbol)
     return result unless result.is_a?(String)
 

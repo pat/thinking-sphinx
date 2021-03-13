@@ -13,7 +13,10 @@ class ThinkingSphinx::RealTime::Index::Template
     add_attribute primary_key,  :sphinx_internal_id,    :bigint
     add_attribute class_column, :sphinx_internal_class, :string, :facet => true
     add_attribute 0,            :sphinx_deleted,        :integer
-    add_attribute 0,            :sphinx_updated_at,     :timestamp if tidying?
+
+    if tidying?
+      add_attribute -> (_) { Time.current.to_i }, :sphinx_updated_at, :timestamp
+    end
   end
 
   private
