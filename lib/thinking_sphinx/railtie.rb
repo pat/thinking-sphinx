@@ -7,6 +7,7 @@ class ThinkingSphinx::Railtie < Rails::Railtie
 
   initializer 'thinking_sphinx.initialisation' do
     ActiveSupport.on_load(:active_record) do
+      require 'thinking_sphinx/active_record'
       ActiveRecord::Base.include ThinkingSphinx::ActiveRecord::Base
     end
 
