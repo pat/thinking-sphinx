@@ -18,9 +18,8 @@ class ThinkingSphinx::Railtie < Rails::Railtie
         )
       end
 
-      Rails.application.config.eager_load_paths -= [
-        Rails.root.join("app", "indices").to_s
-      ]
+      Rails.application.config.eager_load_paths -=
+        ThinkingSphinx::Configuration.instance.index_paths
       Rails.application.config.eager_load_paths.freeze
     end
   end
