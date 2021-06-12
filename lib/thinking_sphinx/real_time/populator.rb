@@ -7,6 +7,7 @@ class ThinkingSphinx::RealTime::Populator
 
   def initialize(index)
     @index = index
+    @started_at = Time.current
   end
 
   def populate
@@ -17,12 +18,14 @@ class ThinkingSphinx::RealTime::Populator
       instrument 'populated', :instances => instances
     end
 
+    transcriber.clear_before(started_at) if configuration.settings["real_time_tidy"]
+
     instrument 'finish_populating'
   end
 
   private
 
-  attr_reader :index
+  attr_reader :index, :started_at
 
   delegate :controller, :batch_size, :to => :configuration
   delegate :scope,                   :to => :index

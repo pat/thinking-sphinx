@@ -13,6 +13,10 @@ class ThinkingSphinx::RealTime::Index::Template
     add_attribute primary_key,  :sphinx_internal_id,    :bigint
     add_attribute class_column, :sphinx_internal_class, :string, :facet => true
     add_attribute 0,            :sphinx_deleted,        :integer
+
+    if tidying?
+      add_attribute -> (_) { Time.current.to_i }, :sphinx_updated_at, :timestamp
+    end
   end
 
   private
@@ -34,7 +38,15 @@ class ThinkingSphinx::RealTime::Index::Template
     [:class, :name]
   end
 
+  def config
+    ThinkingSphinx::Configuration.instance
+  end
+
   def primary_key
     index.primary_key.to_sym
+  end
+
+  def tidying?
+    config.settings["real_time_tidy"]
   end
 end

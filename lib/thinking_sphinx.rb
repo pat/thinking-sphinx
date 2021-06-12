@@ -96,12 +96,15 @@ require 'thinking_sphinx/test'
 require 'thinking_sphinx/utf8'
 require 'thinking_sphinx/wildcard'
 # Extended
-require 'thinking_sphinx/active_record'
 require 'thinking_sphinx/deltas'
 require 'thinking_sphinx/distributed'
 require 'thinking_sphinx/logger'
 require 'thinking_sphinx/real_time'
 
-require 'thinking_sphinx/railtie' if defined?(Rails::Railtie)
+if defined?(Rails::Railtie)
+  require 'thinking_sphinx/railtie'
+else
+  require 'thinking_sphinx/active_record'
+end
 
 ThinkingSphinx.before_index_hooks << ThinkingSphinx::Hooks::GuardPresence

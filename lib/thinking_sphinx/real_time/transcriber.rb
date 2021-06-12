@@ -5,6 +5,12 @@ class ThinkingSphinx::RealTime::Transcriber
     @index = index
   end
 
+  def clear_before(time)
+    execute <<~SQL.strip
+      DELETE FROM #{@index.name} WHERE sphinx_updated_at < #{time.to_i}
+    SQL
+  end
+
   def copy(*instances)
     items = instances.select { |instance|
       instance.persisted? && copy?(instance)
