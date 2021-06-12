@@ -5,7 +5,7 @@ $:.push File.expand_path('../lib', __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = 'thinking-sphinx'
-  s.version     = '5.1.0'
+  s.version     = '5.2.0'
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Pat Allan"]
   s.email       = ["pat@freelancing-gods.com"]
