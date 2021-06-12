@@ -2,6 +2,20 @@
 
 All notable changes to this project (at least, from v3.0.0 onwards) are documented in this file.
 
+## 5.2.0 - 2021-06-12
+
+[Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v5.2.0)
+
+### Added
+
+* Confirmed support for Ruby 3.0.
+* Orphaned records in real-time indices can now be cleaned up without running `rails ts:rebuild`. Disabled by default, can be enabled by setting `real_time_tidy` to true per environment in `config/thinking_sphinx.yml` (and will need `ts:rebuild` to restructure indices upon initial deploy). More details in [#1192](https://github.com/pat/thinking-sphinx/pull/1192).
+
+### Fixed
+
+* Avoid loading ActiveRecord during Rails initialisation so app configuration can still have an impact ([@jdelStrother](https://github.com/jdelStrother) in [#1194](https://github.com/pat/thinking-sphinx/pull/1194)).
+* Remove `app/indices` (in both the Rails app and engines) from Rails' eager load paths, which was otherwise leading to indices being loaded more than once. (See [#1191](https://github.com/pat/thinking-sphinx/issues/1191) and [#1195](https://github.com/pat/thinking-sphinx/issues/1195)).
+
 ## 5.1.0 - 2020-12-28
 
 [Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v5.1.0)
