@@ -1,0 +1,18 @@
+version: 2.1
+
+workflows:
+  build:
+    jobs:
+      - notify:
+        filters:
+          branches:
+            only: "gh-pages"
+
+jobs:
+  notify:
+    docker:
+      - image: "cimg/base:stable"
+    steps:
+      - run:
+          name: ping netlify
+          command: curl -X POST -d {} https://api.netlify.com/build_hooks/$NETLIFY_BUILD_HOOK
