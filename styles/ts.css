@@ -59,7 +59,7 @@ code {
 }
 
 .wrapper {
-  width: 960px;
+  max-width: 960px;
   margin: 0 auto;
   text-align: left;
   overflow: hidden;
@@ -220,7 +220,7 @@ div#content div.pad {
 
 div#main {
   float:left;
-  width: 580px;
+  max-width: 580px;
   overflow: hidden;
   padding-top: 2em;
 }
@@ -316,7 +316,7 @@ div#footer {
 
 div#footer .wrapper {
   background: transparent;
-  width: 920px;
+  max-width: 920px;
 }
 
 div#footer div.box {
@@ -465,6 +465,14 @@ div#sidebar h2 {
   font-family: 'Courier New', 'Terminal', monospace;
   color: #100;
   margin: 1.5em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+  -webkit-overflow-scrolling: touch;
+}
+
+.highlight&::-webkit-scrollbar {
+  display: none;
 }
 
 div#content div.pad {
@@ -490,3 +498,71 @@ p.old {
 a.gyoza {
   float: right;
 }
+
+@media screen and (max-width: 952px) {
+  p, ul, blockquote, pre, td, th, label {
+    font-size: 1.3em;
+  }
+
+  div#navigation {
+    padding-left: 1em;
+  }
+
+  div#navigation .wrapper a#logo {
+    display: none;
+  }
+
+  div#navigation ul li {
+    border-left: none;
+  }
+
+  div#header {
+    padding-left: 1em;
+    padding-right: 1em;
+  }
+
+  div#header h1.riddle {
+    font-size: 3em;
+  }
+
+  div#header p {
+    margin-bottom: 0;
+    border-bottom: none;
+  }
+
+  #header ul {
+    position: initial;
+    top: 0;
+    text-align: left;
+    margin-bottom: 0.5em;
+  }
+
+  div#content {
+    background-image: none;
+  }
+
+  div#main {
+    float: none;
+    padding-left: 1em;
+    padding-right: 1em;
+  }
+
+  div#sidebar {
+    float: none;
+    max-width: 325px;
+  }
+
+  .highlight {
+    font-size: 80%;
+  }
+
+  div#footer {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+
+  div#footer div.box {
+    margin-left: 1em;
+  }
+}
+
