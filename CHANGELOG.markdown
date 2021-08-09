@@ -2,6 +2,14 @@
 
 All notable changes to this project (at least, from v3.0.0 onwards) are documented in this file.
 
+## 5.2.1 - 2021-08-09
+
+[Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v5.2.1)
+
+### Fixed
+
+* Ensure ActiveRecord components are loaded for rake tasks, but only after the Rails application has initialised. More details in [#1199](https://github.com/pat/thinking-sphinx/issues/1199).
+
 ## 5.2.0 - 2021-06-12
 
 [Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v5.2.0)
