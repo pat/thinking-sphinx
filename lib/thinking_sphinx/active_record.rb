@@ -40,3 +40,5 @@ require 'thinking_sphinx/active_record/depolymorph/conditions_reflection'
 require 'thinking_sphinx/active_record/depolymorph/overridden_reflection'
 require 'thinking_sphinx/active_record/depolymorph/scoped_reflection'
 require 'thinking_sphinx/active_record/filter_reflection'
+
+ActiveRecord::Base.include ThinkingSphinx::ActiveRecord::Base
