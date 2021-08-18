@@ -11,6 +11,7 @@ Depending on how you have Sphinx setup, or what database you're using, you might
 
 * [Editing the generated Sphinx configuration file](#editconf)
 * [Running multiple instances of Sphinx on one machine](#multiple)
+* [Record IDs found by Sphinx but not by ActiveRecord](#record-ids)
 * [Viewing Result Weights](#weights)
 * [Wildcard Searching](#wildcards)
 * [Slow Indexing](#slow_indexing)
@@ -46,6 +47,29 @@ staging:
 {% endhighlight %}
 
 Other options are documented on the [Advanced Sphinx Configuration page](advanced_config.html).
+
+<h3 id="record-ids">Record IDs found by Sphinx but not by ActiveRecord</h3>
+
+If `ThinkingSphinx::Search::StaleIdsException` exceptions are being raised with the message "Record IDs found by Sphinx but not by ActiveRecord", then it's likely that your Sphinx data/daemon is out-of-sync with your database. This can happen if data changes occur without firing ActiveRecord callbacks, or if the daemon is somehow [orphaned from its pidfile](https://github.com/pat/thinking-sphinx/issues/1202).
+
+In either case, it's recommended that you restart the daemon (via the `ts:restart` task) and/or reprocess your indices (via `ts:rebuild`) to ensure both daemon and data are correct again.
+
+If you find these exceptions occur regularly, then review anywhere the indexed models have changes to data occurring - if no ActiveRecord callbacks are being invoked (especially when it comes to data deletion), then this could be the underlying cause. To bulk-delete records from Sphinx, the following example code may be helpful:
+
+{% highlight ruby %}
+# primary keys of records that have been deleted:
+ids = [1, 2, 3]
+# obtain all indices for a given model
+# (in this case, Article):
+indices = ThinkingSphinx::Configuration.instance
+  .indices_for_references(:article)
+
+# In all non-delta indices, delete the records
+# from Sphinx:
+indices.reject { |index| index.delta? }.each do |index|
+  ThinkingSphinx::Deletion.perform index, ids
+end
+{% endhighlight %}
 
 <h3 id="weights">Viewing Result Weights</h3>
 
