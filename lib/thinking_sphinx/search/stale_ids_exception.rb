@@ -9,6 +9,7 @@ class ThinkingSphinx::Search::StaleIdsException < StandardError
   end
 
   def message
-    "Record IDs found by Sphinx but not by ActiveRecord : #{ids.join(', ')}"
+    "Record IDs found by Sphinx but not by ActiveRecord : #{ids.join(', ')}\n" \
+    "https://freelancing-gods.com/thinking-sphinx/v5/common_issues.html#record-ids"
   end
 end
