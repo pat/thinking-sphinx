@@ -5,7 +5,9 @@ require 'spec_helper'
 describe ThinkingSphinx::ActiveRecord::Index do
   let(:index)        { ThinkingSphinx::ActiveRecord::Index.new :user }
   let(:config)       { double('config', :settings => {},
-    :indices_location => 'location', :next_offset => 8) }
+    :indices_location => 'location', :next_offset => 8,
+    :index_set_class => index_set_class) }
+  let(:index_set_class) { double :reference_name => :user }
 
   before :each do
     allow(ThinkingSphinx::Configuration).to receive_messages :instance => config

@@ -24,7 +24,10 @@ class ThinkingSphinx::Callbacks::Appender
   attr_reader :model, :reference, :options, :block
 
   def add_core_callbacks
-    model.after_destroy ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks
+    model.after_commit(
+      ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks,
+      on: :destroy
+    )
   end
 
   def add_delta_callbacks
@@ -40,8 +43,9 @@ class ThinkingSphinx::Callbacks::Appender
   end
 
   def add_real_time_callbacks
-    model.after_save ThinkingSphinx::RealTime.callback_for(
-      reference, path, &block
+    model.after_commit(
+      ThinkingSphinx::RealTime.callback_for(reference, path, &block),
+      on: [:create, :update]
     )
   end
 
