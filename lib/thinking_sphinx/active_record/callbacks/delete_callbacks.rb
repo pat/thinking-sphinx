@@ -3,7 +3,11 @@
 class ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks <
   ThinkingSphinx::Callbacks
 
-  callbacks :after_destroy, :after_rollback
+  callbacks :after_commit, :after_destroy, :after_rollback
+
+  def after_commit
+    delete_from_sphinx
+  end
 
   def after_destroy
     delete_from_sphinx

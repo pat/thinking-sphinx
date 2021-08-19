@@ -101,10 +101,6 @@ require 'thinking_sphinx/distributed'
 require 'thinking_sphinx/logger'
 require 'thinking_sphinx/real_time'
 
-if defined?(Rails::Railtie)
-  require 'thinking_sphinx/railtie'
-else
-  require 'thinking_sphinx/active_record'
-end
+require 'thinking_sphinx/railtie' if defined?(Rails::Railtie)
 
 ThinkingSphinx.before_index_hooks << ThinkingSphinx::Hooks::GuardPresence
