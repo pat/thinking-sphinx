@@ -2,6 +2,20 @@
 
 All notable changes to this project (at least, from v3.0.0 onwards) are documented in this file.
 
+## 5.3.0 - 2021-08-19
+
+[Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v5.3.0)
+
+### Changed
+
+* StaleIdsExceptions now include a URL in their error message with recommendations on how to resolve the problem.
+* Fire real-time callbacks on `after_commit` (including deletions) to ensure data is fully persisted to the database before updating Sphinx. More details in [#1204](https://github.com/pat/thinking-sphinx/pull/1204).
+
+### Fixed
+
+* Ensure Thinking Sphinx's ActiveRecord components are loaded by either Rails' after_initialise hook or ActiveSupport's on_load notification, because the order of these two events are not consistent.
+* Remove `app/indices` from eager_load_paths in Rails 4.2 and 5, to match the behaviour in 6.
+
 ## 5.2.1 - 2021-08-09
 
 [Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v5.2.1)
