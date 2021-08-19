@@ -16,7 +16,7 @@ describe 'SQL delta indexing', :live => true do
     )
     sleep 0.25
 
-    expect(Book.search('Terry Pratchett').to_a).to eq([guards, men])
+    expect(Book.search('Terry Pratchett').to_a).to match_array([guards, men])
   end
 
   it "automatically indexes updated records" do
