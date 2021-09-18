@@ -14,8 +14,9 @@ class ThinkingSphinx::Railtie < Rails::Railtie
       require 'thinking_sphinx/active_record'
     end
 
-    if ActiveSupport::VERSION::MAJOR > 5 &&
-      Rails.application.config.autoloader == :zeitwerk
+    if ActiveSupport::VERSION::MAJOR == 7 ||
+       (ActiveSupport::VERSION::MAJOR > 5 &&
+        Rails.application.config.autoloader == :zeitwerk)
       ActiveSupport::Dependencies.autoload_paths.delete(
         Rails.root.join("app", "indices").to_s
       )
