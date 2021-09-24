@@ -7,21 +7,21 @@ workflows:
   test:
     jobs:
       - test:
-          name: "Sphinx 2.2.11 with MySQL"
+          name: "Sphinx 2.2 with MySQL"
           database: mysql2
           sphinx_version: 2.2.11
           sphinx_engine: sphinx
           debian: jessie
           ruby: '2.4.6'
       - test:
-          name: "Sphinx 2.2.11 with PostgreSQL"
+          name: "Sphinx 2.2 with PostgreSQL"
           database: postgresql
           sphinx_version: 2.2.11
           sphinx_engine: sphinx
           debian: jessie
           ruby: '2.4.6'
       - test:
-          name: "Sphinx 3.3.1 with MySQL"
+          name: "Sphinx 3.3 with MySQL"
           database: mysql2
           sphinx_version: 3.3.1
           sphinx_engine: sphinx
@@ -37,25 +37,7 @@ workflows:
       #       parameters:
       #         ruby: [ '2.4', '2.5', '2.6', '2.7' ]
       - test:
-          name: "Manticore 2.8.2 with MySQL"
-          database: mysql2
-          sphinx_version: 2.8.2
-          sphinx_engine: manticore
-          debian: stretch
-          matrix:
-            parameters:
-              ruby: [ '2.4.9', '2.5.8', '2.6.6' ]
-      - test:
-          name: "Manticore 2.8.2 with PostgreSQL"
-          database: postgresql
-          sphinx_version: 2.8.2
-          sphinx_engine: manticore
-          debian: stretch
-          matrix:
-            parameters:
-              ruby: [ '2.4.9', '2.5.8', '2.6.6' ]
-      - test:
-          name: "Manticore 3.5.4 with MySQL"
+          name: "Manticore 3.5 with MySQL"
           database: mysql2
           sphinx_version: 3.5.4
           sphinx_engine: manticore
@@ -64,9 +46,27 @@ workflows:
             parameters:
               ruby: [ '2.4.9', '2.5.8', '2.6.6', '2.7.2', '3.0.0' ]
       - test:
-          name: "Manticore 3.5.4 with PostgreSQL"
+          name: "Manticore 3.5 with PostgreSQL"
           database: postgresql
           sphinx_version: 3.5.4
+          sphinx_engine: manticore
+          debian: buster
+          matrix:
+            parameters:
+              ruby: [ '2.4.9', '2.5.8', '2.6.6', '2.7.2', '3.0.0' ]
+      - test:
+          name: "Manticore 4.0 with MySQL"
+          database: mysql2
+          sphinx_version: 4.0.2
+          sphinx_engine: manticore
+          debian: buster
+          matrix:
+            parameters:
+              ruby: [ '2.4.9', '2.5.8', '2.6.6', '2.7.2', '3.0.0' ]
+      - test:
+          name: "Manticore 4.0 with PostgreSQL"
+          database: postgresql
+          sphinx_version: 4.0.2
           sphinx_engine: manticore
           debian: buster
           matrix:
