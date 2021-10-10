@@ -154,6 +154,6 @@ describe 'Searching with filters', :live => true do
     expect(products.to_a).to eq([pancakes])
 
     products = Product.search :with => {"options.sugar" => 1}
-    expect(products.to_a).to eq([pancakes, waffles])
+    expect(products.to_a).to match_array([pancakes, waffles])
   end if JSONColumn.call
 end
