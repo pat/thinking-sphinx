@@ -14,9 +14,7 @@ class ThinkingSphinx::Railtie < Rails::Railtie
       require 'thinking_sphinx/active_record'
     end
 
-    if ActiveSupport::VERSION::MAJOR == 7 ||
-       (ActiveSupport::VERSION::MAJOR > 5 &&
-        Rails.application.config.autoloader == :zeitwerk)
+    if zeitwerk?
       ActiveSupport::Dependencies.autoload_paths.delete(
         Rails.root.join("app", "indices").to_s
       )
@@ -29,5 +27,12 @@ class ThinkingSphinx::Railtie < Rails::Railtie
 
   rake_tasks do
     load File.expand_path('../tasks.rb', __FILE__)
+  end
+
+  def zeitwerk?
+    return true if ActiveSupport::VERSION::MAJOR >= 7
+    return false if ActiveSupport::VERSION::MAJOR <= 5
+
+    Rails.application.config.autoloader == :zeitwerk
   end
 end
