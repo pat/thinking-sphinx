@@ -17,7 +17,7 @@ describe 'Searching with filters', :live => true do
     grave = Book.create! :title => 'The Graveyard Book', :year => 2009
     index
 
-    expect(Book.search(:with => {:year => [2001, 2005]}).to_a).to eq([gods, boys])
+    expect(Book.search(:with => {:year => [2001, 2005]}).to_a).to match_array([gods, boys])
   end
 
   it "limits results by a ranged filter" do
@@ -31,7 +31,7 @@ describe 'Searching with filters', :live => true do
     index
 
     expect(Book.search(:with => {:created_at => 6.days.ago..2.days.ago}).to_a).
-      to eq([gods, boys])
+      to match_array([gods, boys])
   end
 
   it "limits results by exclusive filters on single values" do
