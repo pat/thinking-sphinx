@@ -21,9 +21,9 @@ workflows:
           debian: jessie
           ruby: '2.4.6'
       - test:
-          name: "Sphinx 3.3 with MySQL"
+          name: "Sphinx 3.4 with MySQL"
           database: mysql2
-          sphinx_version: 3.3.1
+          sphinx_version: 3.4.1
           sphinx_engine: sphinx
           debian: buster
           matrix:
