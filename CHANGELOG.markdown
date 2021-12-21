@@ -2,6 +2,23 @@
 
 All notable changes to this project (at least, from v3.0.0 onwards) are documented in this file.
 
+## 5.4.0 - 2021-12-21
+
+[Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v5.4.0)
+
+### Added
+
+* Rails 7 support, including contributions from @anthonyshull in [#1205](https://github.com/pat/thinking-sphinx/pull/1205).
+
+### Changed
+
+* Confirmed support by testing against Manticore 4.0 and Sphinx 3.4.
+
+### Fixed
+
+* Include instance_exec in ThinkingSphinx::Search::CORE_METHODS by @jdelStrother in [#1210](https://github.com/pat/thinking-sphinx/pull/1210).
+* Use File.exist? instead of the deprecated File.exists? ([#1211](https://github.com/pat/thinking-sphinx/issues/1211)).
+
 ## 5.3.0 - 2021-08-19
 
 [Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v5.3.0)
