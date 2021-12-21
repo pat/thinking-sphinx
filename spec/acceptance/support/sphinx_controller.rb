@@ -12,11 +12,13 @@ class SphinxController
 
     ThinkingSphinx::Configuration.reset
 
-    ActiveSupport::Dependencies.loaded.each do |path|
-      $LOADED_FEATURES.delete "#{path}.rb"
-    end
+    if Rails::VERSION::MAJOR < 7
+      ActiveSupport::Dependencies.loaded.each do |path|
+        $LOADED_FEATURES.delete "#{path}.rb"
+      end
 
-    ActiveSupport::Dependencies.clear
+      ActiveSupport::Dependencies.clear
+    end
 
     config.searchd.mysql41 = 9307
     config.settings['quiet_deltas']      = true

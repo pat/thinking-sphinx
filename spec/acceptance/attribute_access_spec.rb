@@ -20,7 +20,11 @@ describe 'Accessing attributes directly via search results', :live => true do
     search = Book.search 'gods', :select => "*, weight()"
     search.context[:panes] << ThinkingSphinx::Panes::WeightPane
 
-    expect(search.first.weight).to eq(2500)
+    if ENV["SPHINX_ENGINE"] == "sphinx" && ENV["SPHINX_VERSION"].to_f > 3.3
+      expect(search.first.weight).to eq(20_000.0)
+    else
+      expect(search.first.weight).to eq(2500)
+    end
   end
 
   it "provides direct access to the weight with alternative primary keys" do
@@ -39,7 +43,11 @@ describe 'Accessing attributes directly via search results', :live => true do
     search = Book.search 'gods', :select => "*, weight()"
     search.masks << ThinkingSphinx::Masks::WeightEnumeratorMask
 
-    expectations = [[gods, 2500]]
+    if ENV["SPHINX_ENGINE"] == "sphinx" && ENV["SPHINX_VERSION"].to_f > 3.3
+      expectations = [[gods, 20_000.0]]
+    else
+      expectations = [[gods, 2500]]
+    end
     search.each_with_weight do |result, weight|
       expectation = expectations.shift
 

@@ -28,6 +28,9 @@ load_sphinx () {
     3.3.1)
       url="http://sphinxsearch.com/files/sphinx-3.3.1-b72d67b-linux-amd64.tar.gz"
       format="gz";;
+    3.4.1)
+      url="http://sphinxsearch.com/files/sphinx-3.4.1-efbcc65-linux-amd64.tar.gz"
+      format="gz";;
     *)
       echo "No Sphinx version $version available"
       exit 1;;
@@ -64,6 +67,8 @@ load_manticore () {
       url="https://github.com/manticoresoftware/manticoresearch/releases/download/3.4.2/manticore_3.4.2-200410-6903305-release.xenial_amd64-bin.deb";;
     3.5.4)
       url="https://repo.manticoresearch.com/repository/manticoresearch_buster/pool/m/manticore/manticore_3.5.4-201211-13f8d08d_amd64.deb";;
+    4.0.2)
+      url="https://repo.manticoresearch.com/repository/manticoresearch_buster/pool/m/manticore/manticore_4.0.2-210921-af497f245_amd64.deb";;
     *)
       echo "No Manticore version $version available"
       exit 1;;
