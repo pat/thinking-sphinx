@@ -69,6 +69,8 @@ load_manticore () {
       url="https://repo.manticoresearch.com/repository/manticoresearch_buster/pool/m/manticore/manticore_3.5.4-201211-13f8d08d_amd64.deb";;
     4.0.2)
       url="https://repo.manticoresearch.com/repository/manticoresearch_buster/pool/m/manticore/manticore_4.0.2-210921-af497f245_amd64.deb";;
+    4.2.0)
+      url="http://repo.manticoresearch.com/repository/manticoresearch_buster/pool/m/manticore/manticore_4.2.0-211223-15e927b28_amd64.deb";;
     *)
       echo "No Manticore version $version available"
       exit 1;;
