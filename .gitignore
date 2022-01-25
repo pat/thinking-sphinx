@@ -1,11 +1,13 @@
 *.gem
+*.sublime-*
 .bundle
+.overmind.env
 .rbx
 .rspec
 .tool-versions
+data/*
 gemfiles
 Gemfile.lock
-*.sublime-*
 pkg/*
 spec/internal/config/test.sphinx.conf
 spec/internal/db/sphinx
