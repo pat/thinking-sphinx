@@ -51,7 +51,7 @@ class ThinkingSphinx::Masks::PaginationMask
   def total_pages
     return 0 if search.meta['total'].nil?
 
-    @total_pages ||= (search.meta['total'].to_i / search.per_page.to_f).ceil
+    @total_pages ||= (total_entries / search.per_page.to_f).ceil
   end
 
   alias_method :page_count, :total_pages
