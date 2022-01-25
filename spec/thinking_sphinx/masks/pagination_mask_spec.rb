@@ -26,7 +26,7 @@ describe ThinkingSphinx::Masks::PaginationMask do
 
   describe '#last_page?' do
     before :each do
-      search.meta['total'] = '44'
+      search.meta['total_found'] = '44'
     end
 
     it "is true when there's no more pages" do
@@ -42,7 +42,7 @@ describe ThinkingSphinx::Masks::PaginationMask do
 
   describe '#next_page' do
     before :each do
-      search.meta['total'] = '44'
+      search.meta['total_found'] = '44'
     end
 
     it "should return one more than the current page" do
@@ -58,7 +58,7 @@ describe ThinkingSphinx::Masks::PaginationMask do
 
   describe '#next_page?' do
     before :each do
-      search.meta['total'] = '44'
+      search.meta['total_found'] = '44'
     end
 
     it "is true when there is a second page" do
@@ -74,7 +74,7 @@ describe ThinkingSphinx::Masks::PaginationMask do
 
   describe '#previous_page' do
     before :each do
-      search.meta['total'] = '44'
+      search.meta['total_found'] = '44'
     end
 
     it "should return one less than the current page" do
@@ -100,18 +100,17 @@ describe ThinkingSphinx::Masks::PaginationMask do
 
   describe '#total_pages' do
     before :each do
-      search.meta['total']       = '40'
       search.meta['total_found'] = '44'
     end
 
     it "uses the total available from the search request metadata" do
-      expect(mask.total_pages).to eq(2)
+      expect(mask.total_pages).to eq(3)
     end
 
     it "should allow for custom per_page values" do
       allow(search).to receive_messages :per_page => 40
 
-      expect(mask.total_pages).to eq(1)
+      expect(mask.total_pages).to eq(2)
     end
 
     it "should return 0 if there is no index and therefore no results" do
