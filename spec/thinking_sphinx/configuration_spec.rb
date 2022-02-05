@@ -165,8 +165,8 @@ describe ThinkingSphinx::Configuration do
         File.join(config.framework.root, "my/index/files")
       )
 
-      FileUtils.rm local_path
-      FileUtils.rmdir linked_path
+      FileUtils.rm_rf local_path
+      FileUtils.rm_rf linked_path
     end
   end
 

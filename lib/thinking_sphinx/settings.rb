@@ -97,11 +97,7 @@ class ThinkingSphinx::Settings
   end
 
   def original
-    input = File.read file
-    input = ERB.new(input).result if defined?(ERB)
-
-    contents = YAML.unsafe_load input
-    contents && contents[framework.environment] || {}
+    yaml_contents && yaml_contents[framework.environment] || {}
   end
 
   def real_path(base, nonexistent = nil)
@@ -110,6 +106,19 @@ class ThinkingSphinx::Settings
     else
       components = File.split base
       real_path components.first, join(components.last, nonexistent)
+    end
+  end
+
+  def yaml_contents
+    @yaml_contents ||= begin
+      input = File.read file
+      input = ERB.new(input).result if defined?(ERB)
+
+      if YAML.respond_to?(:safe_load)
+        YAML.safe_load(input, aliases: true)
+      else
+        YAML.load(input)
+      end
     end
   end
 end
