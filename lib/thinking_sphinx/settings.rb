@@ -100,7 +100,7 @@ class ThinkingSphinx::Settings
     input = File.read file
     input = ERB.new(input).result if defined?(ERB)
 
-    contents = YAML.load input
+    contents = YAML.unsafe_load input
     contents && contents[framework.environment] || {}
   end
 
