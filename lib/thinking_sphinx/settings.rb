@@ -22,6 +22,9 @@ class ThinkingSphinx::Settings
     "maximum_statement_length" => (2 ** 23) - 5,
     "real_time_tidy"           => false
   }.freeze
+  YAML_SAFE_LOAD = YAML.method(:safe_load).parameters.any? do |parameter|
+    parameter == [:key, :aliases]
+  end
 
   def self.call(configuration)
     new(configuration).call
@@ -114,7 +117,7 @@ class ThinkingSphinx::Settings
       input = File.read file
       input = ERB.new(input).result if defined?(ERB)
 
-      if YAML.respond_to?(:safe_load)
+      if YAML_SAFE_LOAD
         YAML.safe_load(input, aliases: true)
       else
         YAML.load(input)
