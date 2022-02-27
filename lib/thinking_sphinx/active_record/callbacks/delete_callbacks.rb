@@ -20,18 +20,8 @@ class ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks <
   private
 
   def delete_from_sphinx
-    return if ThinkingSphinx::Callbacks.suspended? || instance.new_record?
+    return if ThinkingSphinx::Callbacks.suspended?
 
-    indices.each { |index|
-      ThinkingSphinx::Deletion.perform(
-        index, instance.public_send(index.primary_key)
-      )
-    }
-  end
-
-  def indices
-    ThinkingSphinx::Configuration.instance.index_set_class.new(
-      :instances => [instance], :classes => [instance.class]
-    ).to_a
+    ThinkingSphinx::Processor.new(instance).delete
   end
 end
