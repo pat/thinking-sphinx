@@ -6,8 +6,6 @@ class ThinkingSphinx::Configuration::MinimumFields
   end
 
   def reconcile
-    return unless no_inheritance_columns?
-
     field_collections.each do |collection|
       collection.fields.delete_if do |field|
         field.name == 'sphinx_internal_class_name'
@@ -20,7 +18,7 @@ class ThinkingSphinx::Configuration::MinimumFields
   attr_reader :indices
 
   def field_collections
-    indices_of_type('plain').collect(&:sources).flatten +
+    plain_indices_without_inheritance.collect(&:sources).flatten +
     indices_of_type('rt')
   end
 
@@ -28,10 +26,11 @@ class ThinkingSphinx::Configuration::MinimumFields
     indices.select { |index| index.type == type }
   end
 
-  def no_inheritance_columns?
-    indices.select { |index|
-      index.model.table_exists? &&
-      index.model.column_names.include?(index.model.inheritance_column)
-    }.empty?
+  def inheritance_columns?(index)
+    index.model.table_exists? && index.model.column_names.include?(index.model.inheritance_column)
+  end
+
+  def plain_indices_without_inheritance
+    indices_of_type('plain').reject(&method(:inheritance_columns?))
   end
 end

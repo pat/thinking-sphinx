@@ -38,13 +38,13 @@ RSpec.describe ThinkingSphinx::Configuration::MinimumFields do
     expect(index_b.fields).to eq([field_b2])
   end
 
-  it 'keeps the class name fields when one index model has a type column' do
+  it 'removes the class name fields only for the indices without type column' do
     allow(model_a).to receive(:column_names).and_return(['id', 'name', 'type'])
     allow(model_b).to receive(:column_names).and_return(['id', 'name'])
 
     subject.reconcile
 
     expect(index_a.sources.first.fields).to eq([field_a1, field_a2])
-    expect(index_b.fields).to eq([field_b1, field_b2])
+    expect(index_b.fields).to eq([field_b2])
   end
 end
