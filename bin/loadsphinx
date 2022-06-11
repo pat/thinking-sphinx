@@ -66,14 +66,15 @@ load_manticore () {
     3.4.2)
       url="https://github.com/manticoresoftware/manticoresearch/releases/download/3.4.2/manticore_3.4.2-200410-6903305-release.xenial_amd64-bin.deb";;
     3.5.4)
-      url="https://repo.manticoresearch.com/repository/manticoresearch_buster/dists/buster/main/binary-amd64/manticore_3.5.4-210107-f70faec5_amd64.deb";;
+      url="https://repo.manticoresearch.com/repository/manticoresearch_focal/dists/focal/main/binary-amd64/manticore_3.5.4-210107-f70faec5_amd64.deb";;
     4.0.2)
-      url="https://repo.manticoresearch.com/repository/manticoresearch_buster/dists/buster/main/binary-amd64/manticore_4.0.2-210921-af497f245_amd64.deb";;
+      url="https://repo.manticoresearch.com/repository/manticoresearch_focal/dists/focal/main/binary-amd64/manticore_4.0.2-210921-af497f245_amd64.deb";;
     *)
       echo "No Manticore version $version available"
       exit 1;;
   esac
 
+  sudo apt-get install default-libmysqlclient-dev
   curl --location $url -o manticore.deb
   sudo dpkg -i ./manticore.deb
   sudo apt-get install -f
