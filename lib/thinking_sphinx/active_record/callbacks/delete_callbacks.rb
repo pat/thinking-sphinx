@@ -22,6 +22,6 @@ class ThinkingSphinx::ActiveRecord::Callbacks::DeleteCallbacks <
   def delete_from_sphinx
     return if ThinkingSphinx::Callbacks.suspended?
 
-    ThinkingSphinx::Processor.new(instance).delete
+    ThinkingSphinx::Processor.new(instance: instance).delete
   end
 end

@@ -37,7 +37,7 @@ describe 'Updates to records in real-time indices', :live => true do
     expect(Admin::Person.search('Pat').to_a).to be_empty
 
     instance = Admin::Person.find_by(:name => 'Pat')
-    ThinkingSphinx::Processor.new(instance).upsert
+    ThinkingSphinx::Processor.new(instance: instance).upsert
 
     expect(Admin::Person.search('Pat').to_a).to eq([instance])
 
@@ -48,7 +48,7 @@ describe 'Updates to records in real-time indices', :live => true do
     expect(Admin::Person.search('Patrick').to_a).to be_empty
 
     instance.reload
-    ThinkingSphinx::Processor.new(instance).upsert
+    ThinkingSphinx::Processor.new(model: Admin::Person, id: instance.id).upsert
 
     expect(Admin::Person.search('Patrick').to_a).to eq([instance])
   end
