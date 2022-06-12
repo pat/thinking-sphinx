@@ -16,111 +16,6 @@ workflows:
             parameters:
               database: [ 'mysql2', 'postgresql' ]
               rails: [ '4_2', '5_0', '5_1', '5_2' ]
-      - test:
-          name: "Sphinx 3.4"
-          sphinx_version: 3.4.1
-          sphinx_engine: sphinx
-          debian: buster
-          matrix:
-            parameters:
-              database: [ 'mysql2' ]
-              ruby: [ '2.4.10', '2.5.9', '2.6.9', '2.7.5', '3.0.3' ]
-              rails: [ '4_2', '5_0', '5_1', '5_2' ]
-            exclude:
-              - rails: '4_2'
-                ruby: '2.5.9'
-              - rails: '4_2'
-                ruby: '2.6.9'
-              - rails: '4_2'
-                ruby: '2.7.5'
-              - rails: '4_2'
-                ruby: '3.0.3'
-              - rails: '5_0'
-                ruby: '3.0.3'
-              - rails: '5_1'
-                ruby: '3.0.3'
-              - rails: '5_2'
-                ruby: '3.0.3'
-              - rails: '6_0'
-                ruby: '2.4.10'
-              - rails: '6_1'
-                ruby: '2.4.10'
-              - rails: '7_0'
-                ruby: '2.4.10'
-              - rails: '7_0'
-                ruby: '2.5.9'
-              - rails: '7_0'
-                ruby: '2.6.9'
-      - test:
-          name: "Manticore 3.5"
-          sphinx_version: 3.5.4
-          sphinx_engine: manticore
-          debian: buster
-          matrix:
-            parameters:
-              database: [ 'mysql2', 'postgresql' ]
-              ruby: [ '2.4.10', '2.5.9', '2.6.9', '2.7.5', '3.0.3' ]
-              rails: [ '4_2', '5_0', '5_1', '5_2' ]
-            exclude:
-              - rails: '4_2'
-                ruby: '2.5.9'
-              - rails: '4_2'
-                ruby: '2.6.9'
-              - rails: '4_2'
-                ruby: '2.7.5'
-              - rails: '4_2'
-                ruby: '3.0.3'
-              - rails: '5_0'
-                ruby: '3.0.3'
-              - rails: '5_1'
-                ruby: '3.0.3'
-              - rails: '5_2'
-                ruby: '3.0.3'
-              - rails: '6_0'
-                ruby: '2.4.10'
-              - rails: '6_1'
-                ruby: '2.4.10'
-              - rails: '7_0'
-                ruby: '2.4.10'
-              - rails: '7_0'
-                ruby: '2.5.9'
-              - rails: '7_0'
-                ruby: '2.6.9'
-      - test:
-          name: "Manticore 4.0"
-          sphinx_version: 4.0.2
-          sphinx_engine: manticore
-          debian: buster
-          matrix:
-            parameters:
-              database: [ 'mysql2', 'postgresql' ]
-              ruby: [ '2.4.10', '2.5.9', '2.6.9', '2.7.5', '3.0.3' ]
-              rails: [ '4_2', '5_0', '5_1', '5_2' ]
-            exclude:
-              - rails: '4_2'
-                ruby: '2.5.9'
-              - rails: '4_2'
-                ruby: '2.6.9'
-              - rails: '4_2'
-                ruby: '2.7.5'
-              - rails: '4_2'
-                ruby: '3.0.3'
-              - rails: '5_0'
-                ruby: '3.0.3'
-              - rails: '5_1'
-                ruby: '3.0.3'
-              - rails: '5_2'
-                ruby: '3.0.3'
-              - rails: '6_0'
-                ruby: '2.4.10'
-              - rails: '6_1'
-                ruby: '2.4.10'
-              - rails: '7_0'
-                ruby: '2.4.10'
-              - rails: '7_0'
-                ruby: '2.5.9'
-              - rails: '7_0'
-                ruby: '2.6.9'
 
 jobs:
   test:
@@ -164,13 +59,7 @@ jobs:
       - run:
           name: install bundler
           command: |
-            if [ "<< parameters.ruby >>" == "2.7.5" ]; then
-              export BUNDLER_VERSION=2.1.4
-            elif [ "<< parameters.ruby >>" == "3.0.3" ]; then
-              export BUNDLER_VERSION=2.1.4
-            else
-              export BUNDLER_VERSION=1.17.3
-            fi
+            export BUNDLER_VERSION=1.17.3
             export BUNDLE_PATH=vendor/bundle
             gem install bundler:$BUNDLER_VERSION
 
@@ -188,11 +77,7 @@ jobs:
           name: update gems
           environment:
             BUNDLE_GEMFILE: "./gemfiles/rails_<< parameters.rails >>.gemfile"
-          command: |
-            if [[ -f $BUNDLE_GEMFILE ]]
-            then
-                bundle update
-            fi
+          command: bundle update
 
       - save_cache:
           paths:
@@ -211,8 +96,4 @@ jobs:
             SPHINX_VERSION: << parameters.sphinx_version >>
             SPHINX_ENGINE: << parameters.sphinx_engine >>
             BUNDLE_GEMFILE: "./gemfiles/rails_<< parameters.rails >>.gemfile"
-          command: |
-            if [[ -f $BUNDLE_GEMFILE ]]
-            then
-                bundle exec rspec
-            fi
+          command: bundle exec rspec

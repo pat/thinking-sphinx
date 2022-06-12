@@ -1,0 +1,46 @@
+name: "Test"
+description: "Run RSpec in given environment"
+inputs:
+  ruby-version:
+    description: "Ruby version"
+    required: true
+  rails-version:
+    description: "Rails version"
+    required: true
+  sphinx-version:
+    description: "Sphinx version"
+    required: true
+  sphinx-engine:
+    description: "Sphinx engine"
+    required: true
+  database:
+    description: "Database engine"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ inputs.ruby-version }}
+        bundler-cache: true
+    - name: Set up Sphinx
+      shell: bash
+      run: |
+        ./bin/loadsphinx ${{ inputs.sphinx-version }} ${{ inputs.sphinx-engine }}
+    - name: Set up Appraisal
+      shell: bash
+      run: "bundle exec appraisal generate"
+    - name: Install Appraisal's gems
+      shell: bash
+      env:
+        BUNDLE_GEMFILE: "gemfiles/rails_${{ inputs.rails-version }}.gemfile"
+      run: bundle install
+    - name: Test
+      shell: bash
+      env:
+        CI: "true"
+        DATABASE: ${{ inputs.database }}
+        SPHINX_VERSION: ${{ inputs.sphinx-version }}
+        SPHINX_ENGINE: ${{ inputs.sphinx-engine }}
+        BUNDLE_GEMFILE: "gemfiles/rails_${{ inputs.rails-version }}.gemfile"
+      run: "bundle exec rspec"
