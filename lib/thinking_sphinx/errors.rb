@@ -11,9 +11,9 @@ class ThinkingSphinx::SphinxError < StandardError
       replacement = ThinkingSphinx::SyntaxError.new(error.message)
     when /query error/, /unknown column/
       replacement = ThinkingSphinx::QueryError.new(error.message)
-    when /Can't connect to MySQL server/,
+    when /Can't connect to( MySQL)? server/,
       /Communications link failure/,
-      /Lost connection to MySQL server/
+      /Lost connection to( MySQL)? server/
       replacement = ThinkingSphinx::ConnectionError.new(
         "Error connecting to Sphinx via the MySQL protocol. #{error.message}"
       )

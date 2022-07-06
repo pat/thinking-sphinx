@@ -47,6 +47,15 @@ describe ThinkingSphinx::SphinxError do
       allow(error).to receive_messages :message => "Lost connection to MySQL server"
       expect(ThinkingSphinx::SphinxError.new_from_mysql(error)).
         to be_a(ThinkingSphinx::ConnectionError)
+
+      # MariaDB has removed mention of MySQL in error messages:
+      allow(error).to receive_messages :message => "Can't connect to server on '127.0.0.1' (61)"
+      expect(ThinkingSphinx::SphinxError.new_from_mysql(error)).
+        to be_a(ThinkingSphinx::ConnectionError)
+
+      allow(error).to receive_messages :message => "Lost connection to server"
+      expect(ThinkingSphinx::SphinxError.new_from_mysql(error)).
+        to be_a(ThinkingSphinx::ConnectionError)
     end
 
     it 'translates out-of-bounds errors' do
