@@ -35,7 +35,7 @@ class ThinkingSphinx::Settings
   end
 
   def call
-    return defaults unless File.exists? file
+    return defaults unless File.exist? file
 
     merged.inject({}) do |hash, (key, value)|
       if absolute_key?(key)

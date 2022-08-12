@@ -19,7 +19,7 @@ RSpec.describe ThinkingSphinx::Commands::ClearRealTime do
 
     allow(FileUtils).to receive_messages :rm_r => true,
       :rm => true
-    allow(File).to receive_messages :exists? => true
+    allow(File).to receive_messages :exist? => true
   end
 
   it 'finds each file for real-time indices' do
