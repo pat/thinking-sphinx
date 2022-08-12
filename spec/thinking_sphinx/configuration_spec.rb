@@ -38,7 +38,7 @@ describe ThinkingSphinx::Configuration do
     end
 
     it 'does not cache settings after reset' do
-      allow(File).to receive_messages :exists? => true
+      allow(File).to receive_messages :exist? => true
       allow(File).to receive_messages :read => {
         'test'       => {'foo' => 'bugs'},
         'production' => {'foo' => 'bar'}
@@ -504,7 +504,7 @@ describe ThinkingSphinx::Configuration do
   describe '#settings' do
     context 'YAML file exists' do
       before :each do
-        allow(File).to receive_messages :exists? => true
+        allow(File).to receive_messages :exist? => true
       end
 
       it "reads from the YAML file" do
@@ -540,7 +540,7 @@ describe ThinkingSphinx::Configuration do
 
     context 'YAML file does not exist' do
       before :each do
-        allow(File).to receive_messages :exists? => false
+        allow(File).to receive_messages :exist? => false
       end
 
       it "does not read the file" do

@@ -2,7 +2,7 @@
 
 module SphinxYamlHelpers
   def write_configuration(hash)
-    allow(File).to receive_messages :read => {'test' => hash}.to_yaml, :exists? => true
+    allow(File).to receive_messages :read => {'test' => hash}.to_yaml, :exist? => true, :exists? => true
   end
 end
 
