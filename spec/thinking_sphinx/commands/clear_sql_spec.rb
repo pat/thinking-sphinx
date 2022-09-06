@@ -25,7 +25,7 @@ RSpec.describe ThinkingSphinx::Commands::ClearSQL do
       and_return(['/path/to/indices/ts-foo.tmp'])
 
     allow(FileUtils).to receive_messages :rm_r => true, :rm => true
-    allow(File).to receive_messages :exists? => true
+    allow(File).to receive_messages :exist? => true
   end
 
   it 'finds each file for sql-backed indices' do
