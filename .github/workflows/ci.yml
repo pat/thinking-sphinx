@@ -10,7 +10,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ 'ubuntu-18.04' ]
-        ruby: [ '2.5', '2.6', '2.7', '3.0' ]
+        ruby: [ '2.7', '3.0', '3.1', '3.2' ]
         rails: [ '5_0', '5_1', '5_2', '6_0', '6_1', '7_0' ]
         database: [ 'mysql2', 'postgresql' ]
         sphinx_version: [ '3.4.1' ]
@@ -19,15 +19,23 @@ jobs:
           - database: 'postgresql'
             sphinx_version: '3.4.1'
             sphinx_engine: 'sphinx'
-          - ruby: '2.5'
-            rails: '7_0'
-          - ruby: '2.6'
-            rails: '7_0'
           - ruby: '3.0'
             rails: '5_0'
           - ruby: '3.0'
             rails: '5_1'
           - ruby: '3.0'
+            rails: '5_2'
+          - ruby: '3.1'
+            rails: '5_0'
+          - ruby: '3.1'
+            rails: '5_1'
+          - ruby: '3.1'
+            rails: '5_2'
+          - ruby: '3.2'
+            rails: '5_0'
+          - ruby: '3.2'
+            rails: '5_1'
+          - ruby: '3.2'
             rails: '5_2'
 
     services:
