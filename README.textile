@@ -1,6 +1,6 @@
 h1. Thinking Sphinx
 
-Thinking Sphinx is a library for connecting ActiveRecord to the Sphinx full-text search tool, and integrates closely with Rails (but also works with other Ruby web frameworks). The current release is v5.4.0.
+Thinking Sphinx is a library for connecting ActiveRecord to the Sphinx full-text search tool, and integrates closely with Rails (but also works with other Ruby web frameworks). The current release is v5.5.0.
 
 h2. Upgrading
 
@@ -14,7 +14,7 @@ It's a gem, so install it like you would any other gem. You will also need to sp
 
 <pre><code>gem 'mysql2',          '~> 0.4',    :platform => :ruby
 gem 'jdbc-mysql',      '~> 5.1.35', :platform => :jruby
-gem 'thinking-sphinx', '~> 5.4'</code></pre>
+gem 'thinking-sphinx', '~> 5.5'</code></pre>
 
 The MySQL gems mentioned are required for connecting to Sphinx, so please include it even when you're using PostgreSQL for your database.
 
@@ -29,8 +29,8 @@ h2. Requirements
 The current release of Thinking Sphinx works with the following versions of its dependencies:
 
 |_. Library |_. Minimum |_. Tested Against |
-| Ruby | v2.4 | v2.4, v2.5, v2.6, v2.7, v3.0 |
-| Sphinx | v2.2.11 | v2.2.11, v3.3.1 |
+| Ruby | v2.4 | v2.4, v2.5, v2.6, v2.7, v3.0, v3.1, v3.2 |
+| Sphinx | v2.2.11 | v2.2.11, v3.4.1 |
 | Manticore | v2.8 | v3.5, v4.0 |
 | ActiveRecord | v4.2 | v4.2..v7.0 |
 
@@ -81,4 +81,4 @@ You can then run the unit tests with @rake spec:unit@, the acceptance tests with
 
 h2. Licence
 
-Copyright (c) 2007-2021, Thinking Sphinx is developed and maintained by Pat Allan, and is released under the open MIT Licence. Many thanks to "all who have contributed patches":https://github.com/pat/thinking-sphinx/contributors.
+Copyright (c) 2007-2022, Thinking Sphinx is developed and maintained by Pat Allan, and is released under the open MIT Licence. Many thanks to "all who have contributed patches":https://github.com/pat/thinking-sphinx/contributors.
