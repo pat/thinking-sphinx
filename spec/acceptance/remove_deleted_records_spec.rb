@@ -72,4 +72,28 @@ describe 'Hiding deleted records from search results', :live => true do
 
     expect(Bird.search_for_ids('duck')).to be_empty
   end
+
+  it "can use a direct interface for processing records" do
+    pancakes = Article.create! :title => 'Pancakes'
+    index
+    expect(Article.search('pancakes')).not_to be_empty
+
+    Article.connection.execute "DELETE FROM articles WHERE id = #{pancakes.id}"
+    expect(Article.search_for_ids('pancakes')).not_to be_empty
+
+    ThinkingSphinx::Processor.new(instance: pancakes).delete
+    expect(Article.search_for_ids('pancakes')).to be_empty
+  end
+
+  it "can use a direct interface for processing records without an instance" do
+    pancakes = Article.create! :title => 'Pancakes'
+    index
+    expect(Article.search('pancakes')).not_to be_empty
+
+    Article.connection.execute "DELETE FROM articles WHERE id = #{pancakes.id}"
+    expect(Article.search_for_ids('pancakes')).not_to be_empty
+
+    ThinkingSphinx::Processor.new(model: Article, id: pancakes.id).delete
+    expect(Article.search_for_ids('pancakes')).to be_empty
+  end
 end

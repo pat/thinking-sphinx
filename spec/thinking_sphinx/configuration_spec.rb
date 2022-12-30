@@ -38,7 +38,12 @@ describe ThinkingSphinx::Configuration do
     end
 
     it 'does not cache settings after reset' do
-      allow(File).to receive_messages :exists? => true
+      allow(File).to receive(:exist?).and_wrap_original do |original, path|
+        next true if path.to_s == File.absolute_path("config/thinking_sphinx.yml", Rails.root)
+
+        original.call(path)
+      end
+
       allow(File).to receive_messages :read => {
         'test'       => {'foo' => 'bugs'},
         'production' => {'foo' => 'bar'}
@@ -165,8 +170,8 @@ describe ThinkingSphinx::Configuration do
         File.join(config.framework.root, "my/index/files")
       )
 
-      FileUtils.rm local_path
-      FileUtils.rmdir linked_path
+      FileUtils.rm_rf local_path
+      FileUtils.rm_rf linked_path
     end
   end
 
@@ -504,7 +509,11 @@ describe ThinkingSphinx::Configuration do
   describe '#settings' do
     context 'YAML file exists' do
       before :each do
-        allow(File).to receive_messages :exists? => true
+        allow(File).to receive(:exist?).and_wrap_original do |original, path|
+          next true if path.to_s == File.absolute_path("config/thinking_sphinx.yml", Rails.root)
+
+          original.call(path)
+        end
       end
 
       it "reads from the YAML file" do
@@ -540,7 +549,11 @@ describe ThinkingSphinx::Configuration do
 
     context 'YAML file does not exist' do
       before :each do
-        allow(File).to receive_messages :exists? => false
+        allow(File).to receive(:exist?).and_wrap_original do |original, path|
+          next false if path.to_s == File.absolute_path("config/thinking_sphinx.yml", Rails.root)
+
+          original.call(path)
+        end
       end
 
       it "does not read the file" do

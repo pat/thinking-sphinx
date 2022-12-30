@@ -12,7 +12,7 @@ class ThinkingSphinx::Guard::File
   end
 
   def locked?
-    File.exists? path
+    File.exist? path
   end
 
   def path

@@ -2,6 +2,25 @@
 
 All notable changes to this project (at least, from v3.0.0 onwards) are documented in this file.
 
+## 5.5.0 - 2022-12-30
+
+[Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v5.5.0)
+
+### Added
+
+* ThinkingSphinx::Processor, a public interface to perform index-related operations on model instances or model name/id combinations. In collaboration with @akostadinov ([#1215](https://github.com/pat/thinking-sphinx/issues/1215)).
+
+### Changed
+
+* Confirmed support by testing against Ruby 3.1 and 3.2 by @jdelStrother ([#1237](https://github.com/pat/thinking-sphinx/pull/1237)).
+
+### Fixed
+
+* Fix YAML loading, by @aepyornis ([#1217](https://github.com/pat/thinking-sphinx/pull/1217)).
+* Further fixes for File.exist? instead of the deprecated File.exists?, by @funsim ([#1221](https://github.com/pat/thinking-sphinx/pull/1221)) and @graaf ([1233](https://github.com/pat/thinking-sphinx/pull/1233)).
+* Treat unknown column errors as QueryErrors, so retrying the query occurs automatically.
+* Fix MariaDB error handling.
+
 ## 5.4.0 - 2021-12-21
 
 [Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v5.4.0)

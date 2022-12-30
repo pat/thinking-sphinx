@@ -27,4 +27,29 @@ describe 'Updates to records in real-time indices', :live => true do
     expect(Admin::Person.search('Death').to_a).to be_empty
     expect(Admin::Person.search('Mort').to_a).to eq([person])
   end
+
+  it "can use a direct interface for processing records" do
+    Admin::Person.connection.execute <<~SQL
+      INSERT INTO admin_people (name, created_at, updated_at)
+      VALUES ('Pat', now(), now());
+    SQL
+
+    expect(Admin::Person.search('Pat').to_a).to be_empty
+
+    instance = Admin::Person.find_by(:name => 'Pat')
+    ThinkingSphinx::Processor.new(instance: instance).upsert
+
+    expect(Admin::Person.search('Pat').to_a).to eq([instance])
+
+    Admin::Person.connection.execute <<~SQL
+      UPDATE admin_people SET name = 'Patrick' WHERE name = 'Pat';
+    SQL
+
+    expect(Admin::Person.search('Patrick').to_a).to be_empty
+
+    instance.reload
+    ThinkingSphinx::Processor.new(model: Admin::Person, id: instance.id).upsert
+
+    expect(Admin::Person.search('Patrick').to_a).to eq([instance])
+  end
 end

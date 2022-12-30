@@ -22,6 +22,9 @@ class ThinkingSphinx::Settings
     "maximum_statement_length" => (2 ** 23) - 5,
     "real_time_tidy"           => false
   }.freeze
+  YAML_SAFE_LOAD = YAML.method(:safe_load).parameters.any? do |parameter|
+    parameter == [:key, :aliases]
+  end
 
   def self.call(configuration)
     new(configuration).call
@@ -32,7 +35,7 @@ class ThinkingSphinx::Settings
   end
 
   def call
-    return defaults unless File.exists? file
+    return defaults unless File.exist? file
 
     merged.inject({}) do |hash, (key, value)|
       if absolute_key?(key)
@@ -97,11 +100,7 @@ class ThinkingSphinx::Settings
   end
 
   def original
-    input = File.read file
-    input = ERB.new(input).result if defined?(ERB)
-
-    contents = YAML.load input
-    contents && contents[framework.environment] || {}
+    yaml_contents && yaml_contents[framework.environment] || {}
   end
 
   def real_path(base, nonexistent = nil)
@@ -110,6 +109,19 @@ class ThinkingSphinx::Settings
     else
       components = File.split base
       real_path components.first, join(components.last, nonexistent)
+    end
+  end
+
+  def yaml_contents
+    @yaml_contents ||= begin
+      input = File.read file
+      input = ERB.new(input).result if defined?(ERB)
+
+      if YAML_SAFE_LOAD
+        YAML.safe_load(input, aliases: true)
+      else
+        YAML.load(input)
+      end
     end
   end
 end

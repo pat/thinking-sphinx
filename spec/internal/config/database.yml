@@ -2,7 +2,13 @@ test:
   adapter:      <%= ENV['DATABASE'] || 'mysql2' %>
   database:     thinking_sphinx
   username:     <%= ENV['DATABASE'] == 'postgresql' ? 'postgres' : 'root' %>
-<% if ENV["CI"] %>
+<% if ENV["DATABASE_PASSWORD"] %>
+  password:     <%= ENV["DATABASE_PASSWORD"] %>
+<% end %>
+<% if ENV["DATABASE_PORT"] %>
+  host:         127.0.0.1
+  port:         <%= ENV["DATABASE_PORT"] %>
+<% elsif ENV["CI"] %>
   password:     thinking_sphinx
   host:         127.0.0.1
   port:         <%= ENV['DATABASE'] == 'postgresql' ? 5432 : 3306 %>
