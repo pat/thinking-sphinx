@@ -2,6 +2,14 @@
 
 All notable changes to this project (at least, from v3.0.0 onwards) are documented in this file.
 
+## 5.5.1 - 2022-12-31
+
+[Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v5.5.1)
+
+### Changed
+
+* Fixed total count of results in pagination information for Manticore 5.0+, by disabling the cutoff limit. ([#1239](https://github.com/pat/thinking-sphinx/pull/1239)).
+
 ## 5.5.0 - 2022-12-30
 
 [Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v5.5.0)
