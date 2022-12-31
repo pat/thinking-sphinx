@@ -20,7 +20,8 @@ class ThinkingSphinx::Settings
     "workers"                  => "threads",
     "mysql_encoding"           => "utf8",
     "maximum_statement_length" => (2 ** 23) - 5,
-    "real_time_tidy"           => false
+    "real_time_tidy"           => false,
+    "cutoff"                   => 0
   }.freeze
   YAML_SAFE_LOAD = YAML.method(:safe_load).parameters.any? do |parameter|
     parameter == [:key, :aliases]
