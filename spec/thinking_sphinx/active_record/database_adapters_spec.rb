@@ -75,6 +75,13 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters do
         adapter_type_for(model)).to eq(:postgresql)
     end
 
+    it "translates a normal PostGIS adapter" do
+      allow(klass).to receive_messages(:name => 'ActiveRecord::ConnectionAdapters::PostGISAdapter')
+
+      expect(ThinkingSphinx::ActiveRecord::DatabaseAdapters.
+        adapter_type_for(model)).to eq(:postgresql)
+    end
+
     it "translates a JDBC MySQL adapter to MySQL" do
       allow(klass).to receive_messages(:name => 'ActiveRecord::ConnectionAdapters::JdbcAdapter')
       allow(connection).to receive_messages(:config => {:adapter => 'jdbcmysql'})

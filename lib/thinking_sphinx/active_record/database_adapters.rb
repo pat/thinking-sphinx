@@ -14,7 +14,7 @@ module ThinkingSphinx::ActiveRecord::DatabaseAdapters
       when :postgresql
         PostgreSQLAdapter
       else
-        raise ThinkingSphinx::InvalidDatabaseAdapter, "Invalid adapter '#{adapter}': Thinking Sphinx only supports MySQL and PostgreSQL."
+        raise ThinkingSphinx::InvalidDatabaseAdapter, "Invalid adapter '#{adapter}': Thinking Sphinx only supports MySQL, PostgreSQL and PostGIS."
       end
 
       klass.new model
@@ -25,7 +25,7 @@ module ThinkingSphinx::ActiveRecord::DatabaseAdapters
       case class_name.split('::').last
       when 'MysqlAdapter', 'Mysql2Adapter'
         :mysql
-      when 'PostgreSQLAdapter'
+      when 'PostgreSQLAdapter', 'PostGISAdapter'
         :postgresql
       when 'JdbcAdapter'
         adapter_type_for_jdbc(model)
