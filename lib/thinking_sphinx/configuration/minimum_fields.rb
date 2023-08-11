@@ -18,19 +18,19 @@ class ThinkingSphinx::Configuration::MinimumFields
   attr_reader :indices
 
   def field_collections
-    plain_indices_without_inheritance.collect(&:sources).flatten +
-    indices_of_type('rt')
-  end
-
-  def indices_of_type(type)
-    indices.select { |index| index.type == type }
+    indices_without_inheritance_of_type('plain').collect(&:sources).flatten +
+      indices_without_inheritance_of_type('rt')
   end
 
   def inheritance_columns?(index)
     index.model.table_exists? && index.model.column_names.include?(index.model.inheritance_column)
   end
 
-  def plain_indices_without_inheritance
-    indices_of_type('plain').reject(&method(:inheritance_columns?))
+  def indices_without_inheritance_of_type(type)
+    indices_without_inheritance.select { |index| index.type == type }
+  end
+
+  def indices_without_inheritance
+    indices.reject(&method(:inheritance_columns?))
   end
 end

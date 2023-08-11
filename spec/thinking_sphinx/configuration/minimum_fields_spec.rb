@@ -6,7 +6,7 @@ RSpec.describe ThinkingSphinx::Configuration::MinimumFields do
   let(:indices) { [index_a, index_b] }
   let(:index_a) { double 'Index A', :model => model_a, :type => 'plain',
     :sources => [double(:fields => [field_a1, field_a2])] }
-  let(:index_b) { double 'Index B', :model => model_a, :type => 'rt',
+  let(:index_b) { double 'Index B', :model => model_b, :type => 'rt',
     :fields => [field_b1, field_b2] }
   let(:field_a1) { double :name => 'sphinx_internal_class_name' }
   let(:field_a2) { double :name => 'name' }
@@ -38,7 +38,7 @@ RSpec.describe ThinkingSphinx::Configuration::MinimumFields do
     expect(index_b.fields).to eq([field_b2])
   end
 
-  it 'removes the class name fields only for the indices without type column' do
+  it 'removes the class name fields only for the rt indices without type column' do
     allow(model_a).to receive(:column_names).and_return(['id', 'name', 'type'])
     allow(model_b).to receive(:column_names).and_return(['id', 'name'])
 
@@ -46,5 +46,15 @@ RSpec.describe ThinkingSphinx::Configuration::MinimumFields do
 
     expect(index_a.sources.first.fields).to eq([field_a1, field_a2])
     expect(index_b.fields).to eq([field_b2])
+  end
+
+  it 'removes the class name fields only for the plain indices without type column' do
+    allow(model_a).to receive(:column_names).and_return(['id', 'name'])
+    allow(model_b).to receive(:column_names).and_return(['id', 'name', 'type'])
+
+    subject.reconcile
+
+    expect(index_a.sources.first.fields).to eq([field_a2])
+    expect(index_b.fields).to eq([field_b1, field_b2])
   end
 end
