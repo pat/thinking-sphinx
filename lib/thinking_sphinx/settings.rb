@@ -21,7 +21,8 @@ class ThinkingSphinx::Settings
     "mysql_encoding"           => "utf8",
     "maximum_statement_length" => (2 ** 23) - 5,
     "real_time_tidy"           => false,
-    "cutoff"                   => 0
+    "cutoff"                   => 0,
+    "extend_active_record_base" => true
   }.freeze
   YAML_SAFE_LOAD = YAML.method(:safe_load).parameters.any? do |parameter|
     parameter == [:key, :aliases]

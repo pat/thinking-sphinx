@@ -41,4 +41,6 @@ require 'thinking_sphinx/active_record/depolymorph/overridden_reflection'
 require 'thinking_sphinx/active_record/depolymorph/scoped_reflection'
 require 'thinking_sphinx/active_record/filter_reflection'
 
-ActiveRecord::Base.include ThinkingSphinx::ActiveRecord::Base
+if ThinkingSphinx::Configuration.new.settings.fetch("extend_active_record_base")
+  ActiveRecord::Base.include ThinkingSphinx::ActiveRecord::Base
+end
