@@ -45,7 +45,7 @@ describe ThinkingSphinx::Panes::ExcerptsPane do
       search.options[:excerpts] = {:before_match => 'foo'}
 
       expect(ThinkingSphinx::Excerpter).to receive(:new).
-        with(anything, anything, :before_match => 'foo').and_return(excerpter)
+        with(anything, anything, { :before_match => 'foo' }).and_return(excerpter)
 
       pane.excerpts
     end
