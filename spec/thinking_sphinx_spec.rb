@@ -16,7 +16,7 @@ describe ThinkingSphinx do
     end
 
     it "passes through the given query and options" do
-      expect(ThinkingSphinx::Search).to receive(:new).with('foo', :bar => :baz).
+      expect(ThinkingSphinx::Search).to receive(:new).with('foo', { :bar => :baz }).
         and_return(search)
 
       ThinkingSphinx.count('foo', :bar => :baz)
@@ -35,7 +35,7 @@ describe ThinkingSphinx do
     end
 
     it "passes through the given query and options" do
-      expect(ThinkingSphinx::Search).to receive(:new).with('foo', :bar => :baz).
+      expect(ThinkingSphinx::Search).to receive(:new).with('foo', { :bar => :baz }).
         and_return(search)
 
       ThinkingSphinx.search('foo', :bar => :baz)

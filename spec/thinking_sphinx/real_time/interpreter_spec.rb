@@ -49,7 +49,7 @@ describe ThinkingSphinx::RealTime::Interpreter do
 
     it "passes through options to the attribute" do
       expect(ThinkingSphinx::RealTime::Attribute).to receive(:new).
-        with(column, :as => :other_name).and_return(attribute)
+        with(column, { :as => :other_name }).and_return(attribute)
 
       instance.has column, :as => :other_name
     end
@@ -84,7 +84,7 @@ describe ThinkingSphinx::RealTime::Interpreter do
 
     it "passes through options to the field" do
       expect(ThinkingSphinx::RealTime::Field).to receive(:new).
-        with(column, :as => :other_name).and_return(field)
+        with(column, { :as => :other_name }).and_return(field)
 
       instance.indexes column, :as => :other_name
     end
@@ -112,7 +112,7 @@ describe ThinkingSphinx::RealTime::Interpreter do
 
       it "adds the _sort suffix to the field's name" do
         expect(ThinkingSphinx::RealTime::Attribute).to receive(:new).
-          with(column, :as => :col_sort, :type => :string).
+          with(column, { :as => :col_sort, :type => :string }).
           and_return(attribute)
 
         instance.indexes column, :sortable => true
@@ -120,7 +120,7 @@ describe ThinkingSphinx::RealTime::Interpreter do
 
       it "respects given aliases" do
         expect(ThinkingSphinx::RealTime::Attribute).to receive(:new).
-          with(column, :as => :other_sort, :type => :string).
+          with(column, { :as => :other_sort, :type => :string }).
           and_return(attribute)
 
         instance.indexes column, :sortable => true, :as => :other
@@ -128,7 +128,7 @@ describe ThinkingSphinx::RealTime::Interpreter do
 
       it "respects symbols instead of columns" do
         expect(ThinkingSphinx::RealTime::Attribute).to receive(:new).
-          with(:title, :as => :title_sort, :type => :string).
+          with(:title, { :as => :title_sort, :type => :string }).
           and_return(attribute)
 
         instance.indexes :title, :sortable => true
