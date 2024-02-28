@@ -28,7 +28,7 @@ describe 'Updates to records in real-time indices', :live => true do
     expect(Admin::Person.search('Mort').to_a).to eq([person])
   end
 
-  it "can use a direct interface for processing records" do
+  it "can use direct interface for upserting records" do
     Admin::Person.connection.execute <<~SQL
       INSERT INTO admin_people (name, created_at, updated_at)
       VALUES ('Pat', now(), now());
@@ -51,5 +51,65 @@ describe 'Updates to records in real-time indices', :live => true do
     ThinkingSphinx::Processor.new(model: Admin::Person, id: instance.id).upsert
 
     expect(Admin::Person.search('Patrick').to_a).to eq([instance])
+  end
+
+  it "can use direct interface for processing records outside scope" do
+    Article.connection.execute <<~SQL
+      INSERT INTO articles (title, published, created_at, updated_at)
+      VALUES ('Nice Title', TRUE, now(), now());
+    SQL
+
+    article  = Article.last
+
+    ThinkingSphinx::Processor.new(model: article.class, id: article.id).stage
+
+    expect(ThinkingSphinx.search('Nice', :indices => ["published_articles_core"])).to include(article)
+
+    Article.connection.execute <<~SQL
+      UPDATE articles SET published = FALSE WHERE title = 'Nice Title';
+    SQL
+    ThinkingSphinx::Processor.new(model: article.class, id: article.id).stage
+
+    expect(ThinkingSphinx.search('Nice', :indices => ["published_articles_core"])).to be_empty
+  end
+
+  it "can use direct interface for processing deleted records" do
+    Article.connection.execute <<~SQL
+      INSERT INTO articles (title, published, created_at, updated_at)
+      VALUES ('Nice Title', TRUE, now(), now());
+    SQL
+
+    article  = Article.last
+    ThinkingSphinx::Processor.new(:instance => article).stage
+
+    expect(ThinkingSphinx.search('Nice', :indices => ["published_articles_core"])).to include(article)
+
+    Article.connection.execute <<~SQL
+      DELETE FROM articles where title = 'Nice Title';
+    SQL
+
+    ThinkingSphinx::Processor.new(:instance => article).stage
+
+    expect(ThinkingSphinx.search('Nice', :indices => ["published_articles_core"])).to be_empty
+  end
+
+  it "stages records in real-time index with alternate ids" do
+    Album.connection.execute <<~SQL
+      INSERT INTO albums (id, name, artist, integer_id)
+      VALUES ('#{("a".."z").to_a.sample}', 'Sing to the Moon', 'Laura Mvula', #{rand(10000)});
+    SQL
+
+    album  = Album.last
+    ThinkingSphinx::Processor.new(:model => Album, id: album.integer_id).stage
+
+    expect(ThinkingSphinx.search('Laura', :indices => ["album_real_core"])).to include(album)
+
+    Article.connection.execute <<~SQL
+      DELETE FROM albums where id = '#{album.id}';
+    SQL
+
+    ThinkingSphinx::Processor.new(:instance => album).stage
+
+    expect(ThinkingSphinx.search('Laura', :indices => ["album_real_core"])).to be_empty
   end
 end
