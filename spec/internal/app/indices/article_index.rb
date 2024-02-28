@@ -23,3 +23,9 @@ ThinkingSphinx::Index.define :article, :with => :active_record,
 
   set_property :morphology => 'stem_en'
 end
+
+ThinkingSphinx::Index.define :article, :name => :published_articles, :with => :real_time do
+  indexes title, content
+
+  scope { Article.where :published => true }
+end
