@@ -4,17 +4,17 @@ require 'acceptance/spec_helper'
 
 describe 'Accessing attributes directly via search results', :live => true do
   it "allows access to attribute values" do
-    Book.create! :title => 'American Gods', :year => 2001
+    Book.create! :title => 'American Gods', :publishing_year => 2001
     index
 
     search = Book.search('gods')
     search.context[:panes] << ThinkingSphinx::Panes::AttributesPane
 
-    expect(search.first.sphinx_attributes['year']).to eq(2001)
+    expect(search.first.sphinx_attributes['publishing_year']).to eq(2001)
   end
 
   it "provides direct access to the search weight/relevance scores" do
-    Book.create! :title => 'American Gods', :year => 2001
+    Book.create! :title => 'American Gods', :publishing_year => 2001
     index
 
     search = Book.search 'gods', :select => "*, weight()"
@@ -37,7 +37,7 @@ describe 'Accessing attributes directly via search results', :live => true do
   end
 
   it "can enumerate with the weight" do
-    gods = Book.create! :title => 'American Gods', :year => 2001
+    gods = Book.create! :title => 'American Gods', :publishing_year => 2001
     index
 
     search = Book.search 'gods', :select => "*, weight()"
