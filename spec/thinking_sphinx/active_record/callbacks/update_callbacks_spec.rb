@@ -60,7 +60,7 @@ describe ThinkingSphinx::ActiveRecord::Callbacks::UpdateCallbacks do
 
     it "builds an update query with only updateable attributes that have changed" do
       expect(Riddle::Query).to receive(:update).
-        with('article_core', 3, 'bar' => 7).and_return('SphinxQL')
+        with('article_core', 3, { 'bar' => 7 }).and_return('SphinxQL')
 
       callbacks.after_update
     end

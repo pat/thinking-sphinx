@@ -19,7 +19,7 @@ describe ThinkingSphinx::Index do
 
       it "creates an ActiveRecord index" do
         expect(ThinkingSphinx::ActiveRecord::Index).to receive(:new).
-          with(:user, :with => :active_record).and_return index
+          with(:user, { :with => :active_record }).and_return index
 
         ThinkingSphinx::Index.define(:user, :with => :active_record)
       end
@@ -100,7 +100,7 @@ describe ThinkingSphinx::Index do
 
       it "creates a real-time index" do
         expect(ThinkingSphinx::RealTime::Index).to receive(:new).
-          with(:user, :with => :real_time).and_return index
+          with(:user, { :with => :real_time }).and_return index
 
         ThinkingSphinx::Index.define(:user, :with => :real_time)
       end
