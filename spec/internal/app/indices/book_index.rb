@@ -6,6 +6,6 @@ ThinkingSphinx::Index.define :book, :with => :active_record, :delta => true do
   indexes [title, author], :as => :info
   indexes blurb_file, :file => true
 
-  has year
+  has publishing_year
   has created_at, :type => :timestamp
 end

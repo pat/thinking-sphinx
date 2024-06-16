@@ -12,12 +12,12 @@ describe 'Searching with filters', :live => true do
   end
 
   it "limits results by an array of values" do
-    gods  = Book.create! :title => 'American Gods',      :year => 2001
-    boys  = Book.create! :title => 'Anansi Boys',        :year => 2005
-    grave = Book.create! :title => 'The Graveyard Book', :year => 2009
+    gods  = Book.create! :title => 'American Gods',      :publishing_year => 2001
+    boys  = Book.create! :title => 'Anansi Boys',        :publishing_year => 2005
+    grave = Book.create! :title => 'The Graveyard Book', :publishing_year => 2009
     index
 
-    expect(Book.search(:with => {:year => [2001, 2005]}).to_a).to match_array([gods, boys])
+    expect(Book.search(:with => {:publishing_year => [2001, 2005]}).to_a).to match_array([gods, boys])
   end
 
   it "limits results by a ranged filter" do
@@ -43,12 +43,12 @@ describe 'Searching with filters', :live => true do
   end
 
   it "limits results by exclusive filters on arrays of values" do
-    gods  = Book.create! :title => 'American Gods',      :year => 2001
-    boys  = Book.create! :title => 'Anansi Boys',        :year => 2005
-    grave = Book.create! :title => 'The Graveyard Book', :year => 2009
+    gods  = Book.create! :title => 'American Gods',      :publishing_year => 2001
+    boys  = Book.create! :title => 'Anansi Boys',        :publishing_year => 2005
+    grave = Book.create! :title => 'The Graveyard Book', :publishing_year => 2009
     index
 
-    expect(Book.search(:without => {:year => [2001, 2005]}).to_a).to eq([grave])
+    expect(Book.search(:without => {:publishing_year => [2001, 2005]}).to_a).to eq([grave])
   end
 
   it "limits results by ranged filters on timestamp MVAs" do
