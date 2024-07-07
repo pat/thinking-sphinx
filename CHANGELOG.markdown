@@ -2,6 +2,25 @@
 
 All notable changes to this project (at least, from v3.0.0 onwards) are documented in this file.
 
+## 5.6.0 - 2024-07-07
+
+### Added
+
+* Support for Manticore 6.0 ([#1242](https://github.com/pat/thinking-sphinx/pull/1242))
+* `sphinx`-prefixed search methods, in case the standard `search` is overridden from something unrelated. ([#1265](https://github.com/pat/thinking-sphinx/pull/1265))
+* `none` / `search_none` scopes that can be chained to searches and will return no results.
+* Added `ThinkingSphinx::Processor#sync` to synchronise updates/deletions based on a real-time index's scope, by @akostadinov in [@1258](https://github.com/pat/thinking-sphinx/pull/1258).
+
+### Changed
+
+* Improved Rails 7.1 support, by @jdelstrother in [#1252](https://github.com/pat/thinking-sphinx/pull/1252).
+
+### Fixed
+
+* Handle both SQL and RT indices correctly for inheritance column checks, by @akostadinov in [#1249](https://github.com/pat/thinking-sphinx/pull/1249).
+* Ensure tests and CI work with recent Manticore versions, by @jdelstrother in [#1263](https://github.com/pat/thinking-sphinx/pull/1263).
+* Use `rm -rf` to delete test and temporary directories (instead of `rm -r`).
+
 ## 5.5.1 - 2022-12-31
 
 [Release Notes](https://github.com/pat/thinking-sphinx/releases/tag/v5.5.1)
