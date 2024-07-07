@@ -93,7 +93,7 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
 
     it "passes through options to the attribute" do
       expect(ThinkingSphinx::ActiveRecord::Attribute).to receive(:new).
-        with(model, column, :as => :other_name).and_return(attribute)
+        with(model, column, { :as => :other_name }).and_return(attribute)
 
       instance.has column, :as => :other_name
     end
@@ -141,7 +141,7 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
 
     it "passes through options to the field" do
       expect(ThinkingSphinx::ActiveRecord::Field).to receive(:new).
-        with(model, column, :as => :other_name).and_return(field)
+        with(model, column, { :as => :other_name }).and_return(field)
 
       instance.indexes column, :as => :other_name
     end
@@ -230,19 +230,19 @@ describe ThinkingSphinx::ActiveRecord::Interpreter do
     end
 
     it "sends through a hash if provided" do
-      expect(source).to receive(:set_database_settings).with(:foo => :bar)
+      expect(source).to receive(:set_database_settings).with({ :foo => :bar })
 
       instance.set_database :foo => :bar
     end
 
     it "finds the environment settings if given a string key" do
-      expect(source).to receive(:set_database_settings).with(:baz => 'qux')
+      expect(source).to receive(:set_database_settings).with({ :baz => 'qux' })
 
       instance.set_database 'other'
     end
 
     it "finds the environment settings if given a symbol key" do
-      expect(source).to receive(:set_database_settings).with(:baz => 'qux')
+      expect(source).to receive(:set_database_settings).with({ :baz => 'qux' })
 
       instance.set_database :other
     end

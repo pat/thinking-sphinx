@@ -61,7 +61,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       allow(index_set.first).to receive_messages :reference => :user
 
       expect(set_class).to receive(:new).
-        with(:classes => [klass], :indices => ['user_core']).
+        with({ :classes => [klass], :indices => ['user_core'] }).
         and_return(index_set)
 
       middleware.call [context]
@@ -215,7 +215,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
     end
 
     it "filters out deleted values by default" do
-      expect(sphinx_sql).to receive(:where).with(:sphinx_deleted => false).
+      expect(sphinx_sql).to receive(:where).with({ :sphinx_deleted => false }).
         and_return(sphinx_sql)
 
       middleware.call [context]
@@ -253,7 +253,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       search.options[:with_all] = {:tag_ids => [1, 7]}
 
       expect(sphinx_sql).to receive(:where_all).
-        with(:tag_ids => [1, 7]).and_return(sphinx_sql)
+        with({ :tag_ids => [1, 7] }).and_return(sphinx_sql)
 
       middleware.call [context]
     end
@@ -262,7 +262,7 @@ describe ThinkingSphinx::Middlewares::SphinxQL do
       search.options[:without_all] = {:tag_ids => [1, 7]}
 
       expect(sphinx_sql).to receive(:where_not_all).
-        with(:tag_ids => [1, 7]).and_return(sphinx_sql)
+        with({ :tag_ids => [1, 7] }).and_return(sphinx_sql)
 
       middleware.call [context]
     end

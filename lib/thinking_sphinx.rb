@@ -34,6 +34,10 @@ module ThinkingSphinx
     ThinkingSphinx::Search::Merger.new(search).merge! nil, :ids_only => true
   end
 
+  def self.none
+    ThinkingSphinx::Search.new nil, :none => true
+  end
+
   def self.before_index_hooks
     @before_index_hooks
   end

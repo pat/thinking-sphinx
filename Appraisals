@@ -45,3 +45,9 @@ appraise 'rails_7_0' do
   gem 'mysql2', '~> 0.5.0', :platform => :ruby
   gem 'pg',     '~> 1.0',   :platform => :ruby
 end if RUBY_PLATFORM != 'java' && RUBY_VERSION.to_f >= 2.7
+
+appraise 'rails_7_1' do
+  gem 'rails',  '~> 7.1.0'
+  gem 'mysql2', '~> 0.5.0', :platform => :ruby
+  gem 'pg',     '~> 1.0',   :platform => :ruby
+end if RUBY_PLATFORM != 'java' && RUBY_VERSION.to_f >= 2.7

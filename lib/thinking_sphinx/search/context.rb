@@ -7,6 +7,7 @@ class ThinkingSphinx::Search::Context
     @search        = search
     @configuration = configuration || ThinkingSphinx::Configuration.instance
     @memory        = {
+      :raw     => [],
       :results => [],
       :panes   => ThinkingSphinx::Configuration::Defaults::PANES.clone
     }

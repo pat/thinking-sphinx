@@ -4,6 +4,21 @@ module ThinkingSphinx::ActiveRecord::Base
   extend ActiveSupport::Concern
 
   included do
+    # Avoid method collisions for public Thinking Sphinx methods added to all
+    # ActiveRecord models. The `sphinx_`-prefixed versions will always exist,
+    # and the non-prefixed versions will be added if a method of that name
+    # doesn't already exist.
+    #
+    # If a method is overwritten later by something else, that's also fine - the
+    # prefixed versions will still be there.
+    class_module = ThinkingSphinx::ActiveRecord::Base::ClassMethods
+    class_module.public_instance_methods.each do |method_name|
+      short_method = method_name.to_s.delete_prefix("sphinx_").to_sym
+      next if methods.include?(short_method)
+
+      define_singleton_method(short_method, method(method_name))
+    end
+
     if ActiveRecord::VERSION::STRING.to_i >= 5
       [
         ::ActiveRecord::Reflection::HasManyReflection,
@@ -25,22 +40,26 @@ module ThinkingSphinx::ActiveRecord::Base
   end
 
   module ClassMethods
-    def facets(query = nil, options = {})
+    def sphinx_facets(query = nil, options = {})
       merge_search ThinkingSphinx.facets, query, options
     end
 
-    def search(query = nil, options = {})
+    def sphinx_search(query = nil, options = {})
       merge_search ThinkingSphinx.search, query, options
     end
 
-    def search_count(query = nil, options = {})
+    def sphinx_search_count(query = nil, options = {})
       search_for_ids(query, options).total_entries
     end
 
-    def search_for_ids(query = nil, options = {})
+    def sphinx_search_for_ids(query = nil, options = {})
       ThinkingSphinx::Search::Merger.new(
         search(query, options)
       ).merge! nil, :ids_only => true
+    end
+
+    def sphinx_search_none
+      merge_search ThinkingSphinx.search, nil, none: true
     end
 
     private

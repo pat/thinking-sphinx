@@ -1,6 +1,6 @@
 h1. Thinking Sphinx
 
-Thinking Sphinx is a library for connecting ActiveRecord to the Sphinx full-text search tool, and integrates closely with Rails (but also works with other Ruby web frameworks). The current release is v5.5.1.
+Thinking Sphinx is a library for connecting ActiveRecord to the Sphinx full-text search tool, and integrates closely with Rails (but also works with other Ruby web frameworks). The current release is v5.6.0.
 
 h2. Upgrading
 
@@ -31,7 +31,7 @@ The current release of Thinking Sphinx works with the following versions of its 
 |_. Library |_. Minimum |_. Tested Against |
 | Ruby | v2.4 | v2.4, v2.5, v2.6, v2.7, v3.0, v3.1, v3.2 |
 | Sphinx | v2.2.11 | v2.2.11, v3.4.1 |
-| Manticore | v2.8 | v3.5, v4.0 |
+| Manticore | v2.8 | v4.0, v6.0 |
 | ActiveRecord | v4.2 | v4.2..v7.0 |
 
 It _might_ work with older versions of Ruby, but it's highly recommended to update to a supported release.
@@ -42,7 +42,7 @@ h3. Sphinx or Manticore
 
 If you're using Sphinx, v2.2.11 is recommended even though it's quite old, as it works well with PostgreSQL databases (but if you're using MySQL - or real-time indices - then v3.3.1 should also be fine).
 
-If you're opting for Manticore instead, v2.8 or newer works, but v3 or newer is recommended as that's what is actively tested against.
+If you're opting for Manticore instead, v2.8 or newer works, but v4 or newer is recommended as that's what is actively tested against. The v4.2 and 5.0 releases had bugs with facet searching, but that's been fixed in Manticore v6.0.
 
 h3. Rails and ActiveRecord
 
@@ -81,4 +81,4 @@ You can then run the unit tests with @rake spec:unit@, the acceptance tests with
 
 h2. Licence
 
-Copyright (c) 2007-2022, Thinking Sphinx is developed and maintained by Pat Allan, and is released under the open MIT Licence. Many thanks to "all who have contributed patches":https://github.com/pat/thinking-sphinx/contributors.
+Copyright (c) 2007-2024, Thinking Sphinx is developed and maintained by Pat Allan, and is released under the open MIT Licence. Many thanks to "all who have contributed patches":https://github.com/pat/thinking-sphinx/contributors.

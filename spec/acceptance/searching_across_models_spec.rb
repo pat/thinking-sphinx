@@ -37,4 +37,11 @@ describe 'Searching across models', :live => true do
     expect(ThinkingSphinx.search(:classes => [User, Article]).to_a).
       to match_array([article, user])
   end
+
+  it "has a 'none' default scope" do
+    article = Article.create! :title => 'Pancakes'
+    index
+
+    expect(ThinkingSphinx.none).to be_empty
+  end
 end

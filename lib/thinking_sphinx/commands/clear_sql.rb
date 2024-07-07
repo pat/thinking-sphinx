@@ -7,7 +7,7 @@ class ThinkingSphinx::Commands::ClearSQL < ThinkingSphinx::Commands::Base
       Dir["#{index.path}.*"].each { |path| FileUtils.rm path }
     end
 
-    FileUtils.rm_r Dir["#{configuration.indices_location}/ts-*.tmp"]
+    FileUtils.rm_rf Dir["#{configuration.indices_location}/ts-*.tmp"]
   end
 
   private

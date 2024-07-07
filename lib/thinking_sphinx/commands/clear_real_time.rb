@@ -7,7 +7,7 @@ class ThinkingSphinx::Commands::ClearRealTime < ThinkingSphinx::Commands::Base
       Dir["#{index.path}.*"].each { |path| FileUtils.rm path }
     end
 
-    FileUtils.rm_r(binlog_path) if File.exist?(binlog_path)
+    FileUtils.rm_rf(binlog_path) if File.exist?(binlog_path)
   end
 
   private

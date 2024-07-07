@@ -28,9 +28,10 @@ describe ThinkingSphinx::Excerpter do
         :before_match => '<b>', :chunk_separator => ' -- ')
 
       expect(Riddle::Query).to receive(:snippets).
-        with('all of the words', 'index', 'all words',
+        with('all of the words', 'index', 'all words', {
           :before_match => '<b>', :after_match => '</span>',
-          :chunk_separator => ' -- ').
+          :chunk_separator => ' -- '
+        }).
         and_return('CALL SNIPPETS')
 
       excerpter.excerpt!('all of the words')

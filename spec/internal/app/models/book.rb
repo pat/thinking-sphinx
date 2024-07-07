@@ -8,11 +8,11 @@ class Book < ActiveRecord::Base
   ThinkingSphinx::Callbacks.append(self, :behaviours => [:sql, :deltas])
 
   sphinx_scope(:by_query) { |query| query }
-  sphinx_scope(:by_year) do |year|
-    {:with => {:year => year}}
+  sphinx_scope(:by_publishing_year) do |year|
+    {:with => {:publishing_year => year}}
   end
-  sphinx_scope(:by_query_and_year) do |query, year|
-    [query, {:with => {:year =>year}}]
+  sphinx_scope(:by_query_and_publishing_year) do |query, year|
+    [query, {:with => {:publishing_year =>year}}]
   end
-  sphinx_scope(:ordered) { {:order => 'year DESC'} }
+  sphinx_scope(:ordered) { {:order => 'publishing_year DESC'} }
 end

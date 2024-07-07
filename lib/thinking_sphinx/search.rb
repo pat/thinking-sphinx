@@ -12,7 +12,7 @@ class ThinkingSphinx::Search < Array
     [
       :classes, :conditions, :excerpts, :geo, :group_by, :ids_only,
       :ignore_scopes, :indices, :limit, :masks, :max_matches, :middleware,
-      :offset, :order, :order_group_by, :page, :per_page, :populate,
+      :none, :offset, :order, :order_group_by, :page, :per_page, :populate,
       :retry_stale, :select, :skip_sti, :sql, :star, :with, :with_all, :without,
       :without_ids
     ] +
@@ -92,7 +92,7 @@ class ThinkingSphinx::Search < Array
   def populate
     return self if @populated
 
-    middleware.call [context]
+    middleware.call [context] unless options[:none]
     @populated = true
 
     self
