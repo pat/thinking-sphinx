@@ -59,7 +59,7 @@ module ThinkingSphinx::ActiveRecord::Base
     end
 
     def sphinx_search_none
-      merge ThinkingSphinx.search, nil, none: true
+      merge_search ThinkingSphinx.search, nil, none: true
     end
 
     private
