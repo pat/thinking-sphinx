@@ -61,14 +61,14 @@ describe 'Updates to records in real-time indices', :live => true do
 
     article  = Article.last
 
-    ThinkingSphinx::Processor.new(model: article.class, id: article.id).stage
+    ThinkingSphinx::Processor.new(model: article.class, id: article.id).sync
 
     expect(ThinkingSphinx.search('Nice', :indices => ["published_articles_core"])).to include(article)
 
     Article.connection.execute <<~SQL
       UPDATE articles SET published = FALSE WHERE title = 'Nice Title';
     SQL
-    ThinkingSphinx::Processor.new(model: article.class, id: article.id).stage
+    ThinkingSphinx::Processor.new(model: article.class, id: article.id).sync
 
     expect(ThinkingSphinx.search('Nice', :indices => ["published_articles_core"])).to be_empty
   end
@@ -80,7 +80,7 @@ describe 'Updates to records in real-time indices', :live => true do
     SQL
 
     article  = Article.last
-    ThinkingSphinx::Processor.new(:instance => article).stage
+    ThinkingSphinx::Processor.new(:instance => article).sync
 
     expect(ThinkingSphinx.search('Nice', :indices => ["published_articles_core"])).to include(article)
 
@@ -88,19 +88,19 @@ describe 'Updates to records in real-time indices', :live => true do
       DELETE FROM articles where title = 'Nice Title';
     SQL
 
-    ThinkingSphinx::Processor.new(:instance => article).stage
+    ThinkingSphinx::Processor.new(:instance => article).sync
 
     expect(ThinkingSphinx.search('Nice', :indices => ["published_articles_core"])).to be_empty
   end
 
-  it "stages records in real-time index with alternate ids" do
+  it "syncs records in real-time index with alternate ids" do
     Album.connection.execute <<~SQL
       INSERT INTO albums (id, name, artist, integer_id)
       VALUES ('#{("a".."z").to_a.sample}', 'Sing to the Moon', 'Laura Mvula', #{rand(10000)});
     SQL
 
     album  = Album.last
-    ThinkingSphinx::Processor.new(:model => Album, id: album.integer_id).stage
+    ThinkingSphinx::Processor.new(:model => Album, id: album.integer_id).sync
 
     expect(ThinkingSphinx.search('Laura', :indices => ["album_real_core"])).to include(album)
 
@@ -108,7 +108,7 @@ describe 'Updates to records in real-time indices', :live => true do
       DELETE FROM albums where id = '#{album.id}';
     SQL
 
-    ThinkingSphinx::Processor.new(:instance => album).stage
+    ThinkingSphinx::Processor.new(:instance => album).sync
 
     expect(ThinkingSphinx.search('Laura', :indices => ["album_real_core"])).to be_empty
   end

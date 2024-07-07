@@ -27,7 +27,7 @@ class ThinkingSphinx::Processor
   end
 
   # Will upsert or delete instance into all matching indices based on index scope
-  def stage
+  def sync
     real_time_indices.each do |index|
       found = find_in(index)
 
