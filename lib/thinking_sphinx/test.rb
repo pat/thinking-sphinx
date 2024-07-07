@@ -42,7 +42,7 @@ class ThinkingSphinx::Test
       config.indices_location,
       config.searchd.binlog_path
     ].each do |path|
-      FileUtils.rm_r(path) if File.exist?(path)
+      FileUtils.rm_rf(path) if File.exist?(path)
     end
   end
 

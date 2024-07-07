@@ -17,7 +17,7 @@ RSpec.describe ThinkingSphinx::Commands::ClearRealTime do
     allow(Dir).to receive(:[]).with('/path/to/my/index/parts.*').
       and_return(['parts.a', 'parts.b'])
 
-    allow(FileUtils).to receive_messages :rm_r => true,
+    allow(FileUtils).to receive_messages :rm_rf => true,
       :rm => true
     allow(File).to receive_messages :exist? => true
   end
@@ -30,7 +30,7 @@ RSpec.describe ThinkingSphinx::Commands::ClearRealTime do
   end
 
   it "removes the directory for the binlog files" do
-    expect(FileUtils).to receive(:rm_r).with('/path/to/binlog')
+    expect(FileUtils).to receive(:rm_rf).with('/path/to/binlog')
 
     command.call
   end

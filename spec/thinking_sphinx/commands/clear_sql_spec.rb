@@ -24,7 +24,7 @@ RSpec.describe ThinkingSphinx::Commands::ClearSQL do
     allow(Dir).to receive(:[]).with('/path/to/indices/ts-*.tmp').
       and_return(['/path/to/indices/ts-foo.tmp'])
 
-    allow(FileUtils).to receive_messages :rm_r => true, :rm => true
+    allow(FileUtils).to receive_messages :rm_rf => true, :rm => true
     allow(File).to receive_messages :exist? => true
   end
 
@@ -45,7 +45,7 @@ RSpec.describe ThinkingSphinx::Commands::ClearSQL do
   end
 
   it "removes any indexing guard files" do
-    expect(FileUtils).to receive(:rm_r).with(["/path/to/indices/ts-foo.tmp"])
+    expect(FileUtils).to receive(:rm_rf).with(["/path/to/indices/ts-foo.tmp"])
 
     command.call
   end
