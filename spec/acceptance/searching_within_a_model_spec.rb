@@ -92,6 +92,13 @@ describe 'Searching within a model', :live => true do
     expect(Album.search(:indices => ['album_real_core']).first).
       to eq(album)
   end
+
+  it "is available via a sphinx-prefixed method" do
+    article = Article.create! :title => 'Pancakes'
+    index
+
+    expect(Article.sphinx_search.first).to eq(article)
+  end
 end
 
 describe 'Searching within a model with a realtime index', :live => true do
