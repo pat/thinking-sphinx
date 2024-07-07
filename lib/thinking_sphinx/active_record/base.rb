@@ -58,6 +58,10 @@ module ThinkingSphinx::ActiveRecord::Base
       ).merge! nil, :ids_only => true
     end
 
+    def sphinx_search_none
+      merge ThinkingSphinx.search, nil, none: true
+    end
+
     private
 
     def default_sphinx_scope?

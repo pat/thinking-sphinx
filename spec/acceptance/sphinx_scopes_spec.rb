@@ -77,4 +77,11 @@ describe 'Sphinx scopes', :live => true do
       ThinkingSphinx::PopulatedResultsError
     )
   end
+
+  it "handles a chainable 'none' scope and returns nothing" do
+    Book.create! :title => 'Small Gods'
+    index
+
+    expect(Book.by_query('gods').none).to be_empty
+  end
 end

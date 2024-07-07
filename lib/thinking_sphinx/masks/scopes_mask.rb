@@ -26,6 +26,12 @@ class ThinkingSphinx::Masks::ScopesMask
     search query, options.merge(:ids_only => true)
   end
 
+  def none
+    ThinkingSphinx::Search::Merger.new(@search).merge! nil, :none => true
+  end
+
+  alias_method :search_none, :none
+
   private
 
   def apply_scope(scope, *args)
