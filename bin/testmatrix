@@ -1,0 +1,51 @@
+#! /usr/bin/env ruby
+# frozen_string_literal: true
+
+require "json"
+
+RUBIES = %w[ 2.7 3.0 3.1 3.2 3.3 3.4 4.0 ]
+DATABASES = %w[ mysql2 postgresql ]
+SPHINX_ENGINES = {
+  "sphinx" => %w[ 2.2.11 3.4.1 ]
+}.freeze
+RAILS_VERSIONS = [
+  { version: '5_0', min_ruby: 2.7, max_ruby: 2.7 },
+  { version: '5_1', min_ruby: 2.7, max_ruby: 2.7 },
+  { version: '5_2', min_ruby: 2.7, max_ruby: 2.7 },
+  { version: '6_0', min_ruby: 2.7, max_ruby: 3.3 },
+  { version: '6_1', min_ruby: 2.7, max_ruby: 3.3 },
+  { version: '7_0', min_ruby: 2.7, max_ruby: 4.0 },
+  { version: '7_1', min_ruby: 2.7, max_ruby: 4.0 },
+  { version: '7_2', min_ruby: 3.1, max_ruby: 4.0 },
+  { version: '8_0', min_ruby: 3.2, max_ruby: 4.0 },
+  { version: '8_1', min_ruby: 3.2, max_ruby: 4.0 },
+].freeze
+
+# Returns an array of hashes, with each hash being a valid testable
+# combination:
+output = []
+
+RUBIES.each do |ruby|
+  DATABASES.each do |database|
+    SPHINX_ENGINES.each do |sphinx_engine, sphinx_versions|
+      sphinx_versions.each do |sphinx_version|
+        # Sphinx 3.4.1 doesn't play nicely with Postgres.
+        next if database == 'postgresql' && sphinx_engine == 'sphinx' && sphinx_version == '3.4.1'
+
+        RAILS_VERSIONS.each do |rails|
+          next unless ruby.to_f >= rails[:min_ruby] && ruby.to_f <= rails[:max_ruby]
+
+          output << {
+            ruby: ruby,
+            rails: rails[:version],
+            database: database,
+            sphinx_engine: sphinx_engine,
+            sphinx_version: sphinx_version
+          }
+        end
+      end
+    end
+  end
+end
+
+puts JSON.generate(output.compact)
