@@ -3,16 +3,13 @@
 
 require "json"
 
-RUBIES = %w[ 2.7 3.0 3.1 3.2 3.3 3.4 4.0 ]
+RUBIES = %w[ 3.0 3.1 3.2 3.3 3.4 4.0 ]
 DATABASES = %w[ mysql2 postgresql ]
 SPHINX_ENGINES = {
-  "sphinx" => %w[ 2.2.11 3.4.1 ]
+  "sphinx" => %w[ 2.2.11 3.4.1 ],
+  "manticore" => %w[ 4.0.2 6.0.0 ]
 }.freeze
 RAILS_VERSIONS = [
-  { version: '5_0', min_ruby: 2.7, max_ruby: 2.7 },
-  { version: '5_1', min_ruby: 2.7, max_ruby: 2.7 },
-  { version: '5_2', min_ruby: 2.7, max_ruby: 2.7 },
-  { version: '6_0', min_ruby: 2.7, max_ruby: 3.3 },
   { version: '6_1', min_ruby: 2.7, max_ruby: 3.3 },
   { version: '7_0', min_ruby: 2.7, max_ruby: 4.0 },
   { version: '7_1', min_ruby: 2.7, max_ruby: 4.0 },
