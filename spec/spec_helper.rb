@@ -2,6 +2,7 @@
 
 require 'rubygems'
 require 'bundler'
+require 'logger'
 
 Bundler.require :default, :development
 
