@@ -2,7 +2,7 @@
 
 class ThinkingSphinx::ActiveRecord::FilterReflection
   ReflectionGenerator = case ActiveRecord::VERSION::STRING.to_f
-  when 5.2..7.1
+  when (5.2..)
     ThinkingSphinx::ActiveRecord::Depolymorph::OverriddenReflection
   when 4.1..5.1
     ThinkingSphinx::ActiveRecord::Depolymorph::AssociationReflection
