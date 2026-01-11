@@ -2,6 +2,17 @@
 
 All notable changes to this project (at least, from v3.0.0 onwards) are documented in this file.
 
+## 6.0.0 - 2026-01-11
+
+### Breaking
+
+* Dropping support for Ruby versions prior to v3.0.
+* Dropping support for Rails versions prior to v6.1.
+
+### Changed
+
+* Improved support for Rails 7.2-8.1.
+
 ## 5.6.0 - 2024-07-07
 
 ### Added
