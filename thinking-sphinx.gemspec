@@ -14,6 +14,11 @@ Gem::Specification.new do |s|
   s.description = %Q{An intelligent layer for ActiveRecord (via Rails and Sinatra) for the Sphinx full-text search tool.}
   s.license     = 'MIT'
 
+  s.metadata['homepage_uri'] = s.homepage
+  s.metadata['source_code_uri'] = 'https://github.com/pat/thinking-sphinx'
+  s.metadata['changelog_uri'] = 'https://github.com/pat/thinking-sphinx/blob/develop/CHANGELOG.markdown'
+  s.metadata['rubygems_mfa_required'] = 'true'
+
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f|
@@ -21,12 +26,13 @@ Gem::Specification.new do |s|
   }
   s.require_paths = ['lib']
 
-  s.add_runtime_dependency 'activerecord', '>= 4.2.0'
-  s.add_runtime_dependency 'builder',      '>= 2.1.2'
-  s.add_runtime_dependency 'joiner',       '>= 0.3.4'
+  s.required_ruby_version = '>= 3.0'
+
+  s.add_runtime_dependency 'activerecord', '>= 6.1.0'
+  s.add_runtime_dependency 'joiner',       '>= 0.6.0'
   s.add_runtime_dependency 'middleware',   '>= 0.1.0'
-  s.add_runtime_dependency 'innertube',    '>= 1.0.2'
-  s.add_runtime_dependency 'riddle',       '~> 2.3'
+  s.add_runtime_dependency 'innertube',    '>= 1.1.0'
+  s.add_runtime_dependency 'riddle',       '~> 2.4'
 
   s.add_development_dependency 'appraisal',        '~> 1.0.2'
   s.add_development_dependency 'combustion',       '~> 1.1'
