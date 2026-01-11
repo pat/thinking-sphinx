@@ -1,6 +1,6 @@
 h1. Thinking Sphinx
 
-Thinking Sphinx is a library for connecting ActiveRecord to the Sphinx full-text search tool, and integrates closely with Rails (but also works with other Ruby web frameworks). The current release is v5.6.0.
+Thinking Sphinx is a library for connecting ActiveRecord to the Sphinx full-text search tool, and integrates closely with Rails (but also works with other Ruby web frameworks). The current release is v6.0.0.
 
 h2. Upgrading
 
@@ -14,7 +14,7 @@ It's a gem, so install it like you would any other gem. You will also need to sp
 
 <pre><code>gem 'mysql2',          '~> 0.4',    :platform => :ruby
 gem 'jdbc-mysql',      '~> 5.1.35', :platform => :jruby
-gem 'thinking-sphinx', '~> 5.5'</code></pre>
+gem 'thinking-sphinx', '~> 6.0'</code></pre>
 
 The MySQL gems mentioned are required for connecting to Sphinx, so please include it even when you're using PostgreSQL for your database.
 
@@ -46,17 +46,28 @@ If you're opting for Manticore instead, v2.8 or newer works, but v4 or newer is 
 
 h3. Rails and ActiveRecord
 
-Currently Thinking Sphinx is built to support Rails/ActiveRecord 6.1 or newer. It's possible that Rails 5.0-6.0 will work, but it's no longer tested against. If you're using Sinatra and ActiveRecord instead of Rails, that's fine - just make sure you add the @:require => 'thinking_sphinx/sinatra'@ option when listing @thinking-sphinx@ in your Gemfile.
+Currently Thinking Sphinx is built to support Rails/ActiveRecord 6.1 or newer. If you're using Sinatra and ActiveRecord instead of Rails, that's fine - just make sure you add the @:require => 'thinking_sphinx/sinatra'@ option when listing @thinking-sphinx@ in your Gemfile.
 
-The last release to support Rails 4.2 is v5.6.0.
+The last releases for older Rails versions:
 
-If you want ActiveRecord 3.2-4.1 support, then refer to the 4.x releases of Thinking Sphinx. Or, for ActiveRecord 3.1 support, then refer to the 3.0.x releases. Anything older than that, then you're stuck with Thinking Sphinx v2.x (for Rails/ActiveRecord 3.0) or v1.x (Rails 2.3). Please note that these older versions are no longer actively supported.
+|_. Rails Version |_. Thinking Sphinx Version |
+| 6.0 | v5.6.0 |
+| 5.2 | v5.6.0 |
+| 5.1 | v5.6.0 |
+| 5.0 | v5.6.0 |
+| 4.2 | v5.6.0 |
+| 4.1 | v4.4.1 |
+| 4.0 | v4.4.1 |
+| 3.2 | v4.4.1 |
+| 3.1 | v3.0.6 |
+| 3.0 | v2.1.0 |
+| 2.3 | v1.5.0 |
+
+Please note that these older versions are no longer actively supported.
 
 h3. Ruby
 
-You'll need either the standard Ruby (v3.0 or newer) or JRuby (9.1 or newer). It's possible that Ruby 2.7 will work, but it's no longer tested against.
-
-The last release to support Ruby 2.4-2.7 is v5.6.0.
+You'll need either the standard Ruby (v3.0 or newer) or JRuby (9.1 or newer). The last release to support Ruby 2.4-2.7 is v5.6.0.
 
 h3. Database Versions
 
