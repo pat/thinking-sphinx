@@ -6,7 +6,7 @@ gemspec
 
 gem 'logger'
 gem 'mysql2', '~> 0.5.0',  :platform => :ruby
-gem 'pg',     '~> 0.18.4', :platform => :ruby
+gem 'pg',     '~> 1.6.3',  :platform => :ruby
 
 gem 'activerecord', '< 7' if RUBY_VERSION.to_f <= 2.4
 
