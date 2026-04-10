@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-RSpec.describe ThinkingSphinx::Connection::MRI do
+require 'spec_helper'
+
+RSpec.describe ThinkingSphinx::Connection::Mysql2 do
   subject { described_class.new :host => "127.0.0.1", :port => 9306 }
 
   let(:client) { double :client, :query => "result", :next_result => false }

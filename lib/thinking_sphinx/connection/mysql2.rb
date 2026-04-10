@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-class ThinkingSphinx::Connection::MRI < ThinkingSphinx::Connection::Client
+class ThinkingSphinx::Connection::Mysql2 < ThinkingSphinx::Connection::Client
   def base_error
-    Mysql2::Error
+    ::Mysql2::Error
   end
 
   private
@@ -10,8 +10,8 @@ class ThinkingSphinx::Connection::MRI < ThinkingSphinx::Connection::Client
   attr_reader :options
 
   def client
-    @client ||= Mysql2::Client.new({
-      :flags           => Mysql2::Client::MULTI_STATEMENTS,
+    @client ||= ::Mysql2::Client.new({
+      :flags           => ::Mysql2::Client::MULTI_STATEMENTS,
       :connect_timeout => 5
     }.merge(options))
   rescue base_error => error

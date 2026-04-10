@@ -23,7 +23,11 @@ module ThinkingSphinx::Connection
   def self.connection_class
     return ThinkingSphinx::Connection::JRuby if RUBY_PLATFORM == 'java'
 
-    ThinkingSphinx::Connection::MRI
+    if RUBY_PLATFORM == 'java'
+      ThinkingSphinx::Connection::JRuby 
+    else
+      ThinkingSphinx::Connection::Mysql2
+    end
   end
 
   def self.pool
@@ -70,4 +74,4 @@ end
 
 require 'thinking_sphinx/connection/client'
 require 'thinking_sphinx/connection/jruby'
-require 'thinking_sphinx/connection/mri'
+require 'thinking_sphinx/connection/mysql2'
