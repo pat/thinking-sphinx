@@ -5,7 +5,11 @@ if RUBY_PLATFORM == 'java'
   require 'jdbc/mysql'
   Jdbc::MySQL.load_driver
 else
-  require 'mysql2'
+  begin
+    require 'trilogy'
+  rescue LoadError => e
+    require 'mysql2'
+  end
 end
 
 require 'riddle'

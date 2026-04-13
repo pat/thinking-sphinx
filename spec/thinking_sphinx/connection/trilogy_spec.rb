@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
-RSpec.describe ThinkingSphinx::Connection::MRI do
+require 'spec_helper'
+        
+RSpec.describe ThinkingSphinx::Connection::Trilogy do
   subject { described_class.new :host => "127.0.0.1", :port => 9306 }
 
-  let(:client) { double :client, :query => "result", :next_result => false }
+  let(:result) { double :result, :each_hash => [{ "foo" => "bar" }] }
+  let(:client) { double :client, :query => result, :more_results_exist? => false }
 
   before :each do
-    allow(Mysql2::Client).to receive(:new).and_return(client)
+    allow(Trilogy).to receive(:new).and_return(client)
   end
 
   after :each do
@@ -21,7 +24,7 @@ RSpec.describe ThinkingSphinx::Connection::MRI do
     end
 
     it "returns a result" do
-      expect(subject.execute("SELECT QUERY")).to eq("result")
+      expect(subject.execute("SELECT QUERY")).to eq(["foo" => "bar"])
     end
 
     context "with long queries" do

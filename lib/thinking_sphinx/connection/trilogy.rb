@@ -1,8 +1,8 @@
-# frozen_string_literal: true
+# lib/trilogy.rb
 
-class ThinkingSphinx::Connection::MRI < ThinkingSphinx::Connection::Client
+class ThinkingSphinx::Connection::Trilogy < ThinkingSphinx::Connection::Client
   def base_error
-    Mysql2::Error
+    ::Trilogy::Error
   end
 
   private
@@ -10,8 +10,8 @@ class ThinkingSphinx::Connection::MRI < ThinkingSphinx::Connection::Client
   attr_reader :options
 
   def client
-    @client ||= Mysql2::Client.new({
-      :flags           => Mysql2::Client::MULTI_STATEMENTS,
+    @client ||= Trilogy.new({
+      :multi_statement => true,
       :connect_timeout => 5
     }.merge(options))
   rescue base_error => error
@@ -20,7 +20,7 @@ class ThinkingSphinx::Connection::MRI < ThinkingSphinx::Connection::Client
 
   def results_for(statements)
     results  = [client.query(statements)]
-    results << client.store_result while client.next_result
-    results
+    results << client.next_result while client.more_results_exist?
+    results.map(&:each_hash)
   end
 end
