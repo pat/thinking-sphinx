@@ -68,6 +68,13 @@ describe ThinkingSphinx::ActiveRecord::DatabaseAdapters do
         adapter_type_for(model)).to eq(:mysql)
     end
 
+    it "translates a Trilogy adapter" do
+      allow(klass).to receive_messages(:name => 'ActiveRecord::ConnectionAdapters::TrilogyAdapter')
+
+      expect(ThinkingSphinx::ActiveRecord::DatabaseAdapters.
+        adapter_type_for(model)).to eq(:mysql)
+    end
+
     it "translates a normal PostgreSQL adapter" do
       allow(klass).to receive_messages(:name => 'ActiveRecord::ConnectionAdapters::PostgreSQLAdapter')
 

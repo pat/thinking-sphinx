@@ -4,7 +4,7 @@
 require "json"
 
 RUBIES = %w[ 3.0 3.1 3.2 3.3 3.4 4.0 ]
-DATABASES = %w[ mysql2 postgresql ]
+DATABASES = %w[ mysql2 postgresql trilogy ]
 SPHINX_ENGINES = {
   "sphinx" => %w[ 2.2.11 3.4.1 ],
   "manticore" => %w[ 4.0.2 6.0.0 ]

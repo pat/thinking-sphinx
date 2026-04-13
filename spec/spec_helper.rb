@@ -7,6 +7,7 @@ require 'logger'
 Bundler.require :default, :development
 
 root = File.expand_path File.dirname(__FILE__)
+require "#{root}/support/connection"
 require "#{root}/support/multi_schema"
 require "#{root}/support/json_column"
 require "#{root}/support/mysql"
